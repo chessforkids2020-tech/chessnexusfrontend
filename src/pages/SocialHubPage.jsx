@@ -10,7 +10,10 @@ import MonthlyFocusLeaderboard from './monthlyFocus/MonthlyFocusLeaderboard';
 import AboutFeatureCTA from '../components/marketing/AboutFeatureCTA';
 import UserAvatar from '../components/UserAvatar';
 import CoffeeCta from '../components/CoffeeCta';
+import PageHeader from '../components/ui/PageHeader';
+import Tabs from '../components/ui/Tabs';
 import './SocialHubPage.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 function initials(name) {
@@ -18,26 +21,26 @@ function initials(name) {
 }
 
 const TIER_META = {
-  none:       { label: 'No tier yet',       cls: 'sh-tier-none' },
-  mentor:     { label: '⭐ Mentor',          cls: 'sh-tier-mentor' },
-  ambassador: { label: '🌟 Ambassador',      cls: 'sh-tier-ambassador' },
+  none:       { label: tr('No tier yet'),       cls: 'sh-tier-none' },
+  mentor:     { label: tr('⭐ Mentor'),          cls: 'sh-tier-mentor' },
+  ambassador: { label: tr('🌟 Ambassador'),      cls: 'sh-tier-ambassador' },
 };
 
 const AVATAR_META = {
-  none:   { label: 'No unlock yet',   color: 'var(--color-text-faint)' },
-  basic:  { label: '🖼️ Basic Avatars', color: 'var(--color-accent)' },
-  custom: { label: '📷 Custom Photo',  color: 'var(--color-success)' },
-  '3d':   { label: '🎭 3D Models',     color: 'var(--color-accent-2)' },
+  none:   { label: tr('No unlock yet'),   color: 'var(--color-text-faint)' },
+  basic:  { label: tr('🖼️ Basic Avatars'), color: 'var(--color-accent)' },
+  custom: { label: tr('📷 Custom Photo'),  color: 'var(--color-success)' },
+  '3d':   { label: tr('🎭 3D Models'),     color: 'var(--color-accent-2)' },
 };
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr);
   const mins = Math.floor(diff / 60000);
   if (mins < 1)  return 'just now';
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 60) return tr("{mins}m ago", { mins: mins });
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24)  return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
+  if (hrs < 24)  return tr("{hrs}h ago", { hrs: hrs });
+  return tr("{v0}d ago", { v0: Math.floor(hrs / 24) });
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -46,18 +49,18 @@ function timeAgo(dateStr) {
 function FeedEvent({ event, myId }) {
   const uid = event.user?._id?.toString?.() ?? event.user?._id ?? '';
   const isMe = uid === myId?.toString();
-  const name = isMe ? 'You' : (event.user?.displayName || event.user?.username || 'Someone');
+  const name = isMe ? tr('You') : (event.user?.displayName || event.user?.username || tr('Someone'));
   const ago  = timeAgo(event.createdAt);
 
   if (event.type === 'race') {
     const medal    = event.rank === 1 ? '🥇' : event.rank === 2 ? '🥈' : event.rank === 3 ? '🥉' : '🏁';
-    const rankText = event.rank <= 3 ? `ranked #${event.rank}` : `finished #${event.rank}`;
+    const rankText = event.rank <= 3 ? tr("ranked #{rank}", { rank: event.rank }) : tr("finished #{rank}", { rank: event.rank });
     return (
       <div className="sh-feed-event">
         <div className="sh-feed-icon">{medal}</div>
         <div className="sh-feed-body">
-          <div className="sh-feed-text"><strong>{name}</strong> {rankText} in a Puzzle Race</div>
-          <div className="sh-feed-meta">{event.finalScore}pts · {event.puzzlesSolved} solved · {event.accuracy}% acc · {ago}</div>
+          <div className="sh-feed-text"><strong>{name}</strong> {rankText} {tr("in a Puzzle Race")}</div>
+          <div className="sh-feed-meta">{event.finalScore}{tr("pts ·")} {event.puzzlesSolved} {tr("solved ·")} {event.accuracy}{tr("% acc ·")} {ago}</div>
         </div>
       </div>
     );
@@ -67,8 +70,8 @@ function FeedEvent({ event, myId }) {
       <div className="sh-feed-event">
         <div className="sh-feed-icon">⏱️</div>
         <div className="sh-feed-body">
-          <div className="sh-feed-text"><strong>{name}</strong> raced through <em>{event.topic}</em></div>
-          <div className="sh-feed-meta">{event.finalScore}pts · {event.puzzlesSolved} solved · {event.accuracy}% acc · {ago}</div>
+          <div className="sh-feed-text"><strong>{name}</strong> {tr("raced through")} <em>{event.topic}</em></div>
+          <div className="sh-feed-meta">{event.finalScore}{tr("pts ·")} {event.puzzlesSolved} {tr("solved ·")} {event.accuracy}{tr("% acc ·")} {ago}</div>
         </div>
       </div>
     );
@@ -87,18 +90,18 @@ function LiveEventCard({ event }) {
     <div className="sh-live-event">
       <div className="sh-live-event-name">{event.name}</div>
       <div className="sh-live-event-meta">
-        {isLive  && <span className="sh-live-badge">🔴 LIVE</span>}
-        {isLobby && <span className="sh-lobby-badge">🟡 Open</span>}
+        {isLive  && <span className="sh-live-badge">{tr("🔴 LIVE")}</span>}
+        {isLobby && <span className="sh-lobby-badge">{tr("🟡 Open")}</span>}
         {!isLive && !isLobby && startIn !== null && (
-          <span className="sh-soon-badge">⏰ {startIn < 1 ? 'Starting…' : `in ${startIn}m`}</span>
+          <span className="sh-soon-badge">⏰ {startIn < 1 ? 'Starting…' : tr("in {startIn}m", { startIn: startIn })}</span>
         )}
-        <span style={{ color: 'var(--color-text-faint)', fontSize: 12 }}> · {event.participantCount} players</span>
+        <span style={{ color: 'var(--color-text-faint)', fontSize: 'var(--fs-small)' }}> · {event.participantCount} {tr("players")}</span>
       </div>
       <button
         className="sh-btn-join"
         onClick={() => navigate('/arenatournament/join')}
       >
-        {isLive || isLobby ? 'Join Now →' : 'View →'}
+        {isLive || isLobby ? tr('Join Now →') : tr('View →')}
       </button>
     </div>
   );
@@ -140,8 +143,8 @@ function FeedTab({ user }) {
       {onlineFriends.length > 0 && (
         <div className="sh-card sh-online-bar">
           <div className="sh-section-title" style={{ marginBottom: 14 }}>
-            🟢 Online Now
-            <span style={{ marginLeft: 10, fontSize: 12, fontWeight: 400, color: 'var(--color-text-faint)' }}>
+            {tr("🟢 Online Now")}
+            <span style={{ marginLeft: 10, fontSize: 'var(--fs-small)', fontWeight: 400, color: 'var(--color-text-faint)' }}>
               {onlineFriends.length} {onlineFriends.length === 1 ? 'friend' : 'friends'}
             </span>
           </div>
@@ -155,7 +158,7 @@ function FeedTab({ user }) {
                 <span className="sh-online-name"><PlayerName displayName={f.displayName} username={f.username} userId={f._id} /></span>
                 <button
                   className="sh-btn-challenge"
-                  title="Challenge to Puzzle Race"
+                  title={tr("Challenge to Puzzle Race")}
                   onClick={() => navigate('/race')}
                 >⚡</button>
               </div>
@@ -170,10 +173,10 @@ function FeedTab({ user }) {
         <div className="sh-feed-main">
           <div className="sh-card">
             <div className="sh-section-title" style={{ marginBottom: 16 }}>
-              📰 Activity Stream
+              {tr("📰 Activity Stream")}
               {networkSize === 0 && (
-                <span style={{ marginLeft: 10, fontSize: 12, fontWeight: 400, color: 'var(--color-text-faint)', textTransform: 'none' }}>
-                  (platform-wide · add friends to see their activity first)
+                <span style={{ marginLeft: 10, fontSize: 'var(--fs-small)', fontWeight: 400, color: 'var(--color-text-faint)', textTransform: 'none' }}>
+                  {tr("(platform-wide · add friends to see their activity first)")}
                 </span>
               )}
             </div>
@@ -182,9 +185,9 @@ function FeedTab({ user }) {
               <div className="sh-empty" style={{ padding: '32px 0' }}>
                 <div className="sh-empty-icon">💤</div>
                 <div className="sh-empty-text">
-                  No activity yet.<br />
-                  <button className="sh-btn-primary" style={{ marginTop: 14, fontSize: 13 }} onClick={() => navigate('/race')}>
-                    Be the first — start a race!
+                  {tr("No activity yet.")}<br />
+                  <button className="sh-btn-primary" style={{ marginTop: 14, fontSize: 'var(--fs-small)' }} onClick={() => navigate('/race')}>
+                    {tr("Be the first — start a race!")}
                   </button>
                 </div>
               </div>
@@ -199,7 +202,7 @@ function FeedTab({ user }) {
                     style={{ width: '100%', marginTop: 12 }}
                     onClick={() => setShown(n => n + 15)}
                   >
-                    Load more…
+                    {tr("Load more…")}
                   </button>
                 )}
               </>
@@ -213,7 +216,7 @@ function FeedTab({ user }) {
           {/* Top Inviters */}
           {topInviters.length > 0 && (
             <div className="sh-card">
-              <div className="sh-section-title" style={{ marginBottom: 14 }}>🎟️ Top Inviters</div>
+              <div className="sh-section-title" style={{ marginBottom: 14 }}>{tr("🎟️ Top Inviters")}</div>
               {topInviters.map((inv, i) => (
                 <div key={inv._id} className="sh-lb-item">
                   <span className={`sh-lb-rank ${i === 0 ? 'sh-lb-rank-gold' : i === 1 ? 'sh-lb-rank-silver' : i === 2 ? 'sh-lb-rank-bronze' : ''}`}>
@@ -228,12 +231,12 @@ function FeedTab({ user }) {
 
           {/* Live Events */}
           <div className="sh-card">
-            <div className="sh-section-title" style={{ marginBottom: 14 }}>⚡ Live Events</div>
+            <div className="sh-section-title" style={{ marginBottom: 14 }}>{tr("⚡ Live Events")}</div>
             {liveEvents.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '10px 0' }}>
-                <p style={{ color: 'var(--color-white-a20)', fontSize: 13, margin: '0 0 12px' }}>No live events right now.</p>
-                <button className="sh-btn-secondary" style={{ fontSize: 13 }} onClick={() => navigate('/arenatournament')}>
-                  Browse Tournaments
+                <p style={{ color: 'var(--color-white-a20)', fontSize: 'var(--fs-small)', margin: '0 0 12px' }}>{tr("No live events right now.")}</p>
+                <button className="sh-btn-secondary" style={{ fontSize: 'var(--fs-small)' }} onClick={() => navigate('/arenatournament')}>
+                  {tr("Browse Tournaments")}
                 </button>
               </div>
             ) : (
@@ -244,7 +247,7 @@ function FeedTab({ user }) {
           {/* Weekly leaderboard */}
           {weekLeaderboard.length > 0 && (
             <div className="sh-card">
-              <div className="sh-section-title" style={{ marginBottom: 14 }}>🏆 Friends This Week</div>
+              <div className="sh-section-title" style={{ marginBottom: 14 }}>{tr("🏆 Friends This Week")}</div>
               {weekLeaderboard.map((entry, i) => {
                 const isMe = entry._id?.toString() === myId;
                 return (
@@ -253,7 +256,7 @@ function FeedTab({ user }) {
                       {i < 3 ? ['🥇','🥈','🥉'][i] : i + 1}
                     </span>
                     <span className="sh-lb-name">{isMe ? 'You' : <PlayerName displayName={entry.displayName} username={entry.username} userId={entry._id} />}</span>
-                    <span className="sh-lb-score">{entry.totalScore}pts</span>
+                    <span className="sh-lb-score">{entry.totalScore}{tr("pts")}</span>
                   </div>
                 );
               })}
@@ -264,23 +267,23 @@ function FeedTab({ user }) {
           {networkSize === 0 && (
             <div className="sh-card" style={{ textAlign: 'center', padding: '24px 20px' }}>
               <div style={{ fontSize: 36, marginBottom: 8 }}>🤝</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6 }}>Add friends</div>
-              <div style={{ fontSize: 13, color: 'var(--color-text-faint)', marginBottom: 16, lineHeight: 1.5 }}>
-                See their races, challenge them, and compete on the weekly leaderboard.
+              <div style={{ fontSize: 'var(--fs-body)', fontWeight: 600, color: 'var(--color-text)', marginBottom: 6 }}>{tr("Add friends")}</div>
+              <div style={{ fontSize: 'var(--fs-small)', color: 'var(--color-text-faint)', marginBottom: 16, lineHeight: 1.5 }}>
+                {tr("See their races, challenge them, and compete on the weekly leaderboard.")}
               </div>
-              <button className="sh-btn-primary" style={{ fontSize: 13 }} onClick={() => navigate('/friends')}>
-                Find Friends →
+              <button className="sh-btn-primary" style={{ fontSize: 'var(--fs-small)' }} onClick={() => navigate('/friends')}>
+                {tr("Find Friends →")}
               </button>
             </div>
           )}
 
           {/* Quick actions */}
           <div className="sh-card">
-            <div className="sh-section-title" style={{ marginBottom: 14 }}>🎯 Quick Start</div>
+            <div className="sh-section-title" style={{ marginBottom: 14 }}>{tr("🎯 Quick Start")}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <button className="sh-btn-primary"   onClick={() => navigate('/race')}>⚡ Puzzle Race</button>
-              <button className="sh-btn-secondary" onClick={() => navigate('/timed-race')}>⏱️ Timed Race</button>
-              <button className="sh-btn-secondary" onClick={() => navigate('/arenatournament/join')}>🏆 Join Tournament</button>
+              <button className="sh-btn-primary"   onClick={() => navigate('/race')}>{tr("⚡ Puzzle Race")}</button>
+              <button className="sh-btn-secondary" onClick={() => navigate('/timed-race')}>{tr("⏱️ Timed Race")}</button>
+              <button className="sh-btn-secondary" onClick={() => navigate('/arenatournament/join')}>{tr("🏆 Join Tournament")}</button>
             </div>
           </div>
 
@@ -343,7 +346,7 @@ function PanelHead({ icon, title, subtitle, live, accent = 'cyan' }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div className="pl-phead-title">
           {title}
-          {live && <span className="pl-live">LIVE</span>}
+          {live && <span className="pl-live">{tr("LIVE")}</span>}
         </div>
         {subtitle && <div className="pl-phead-sub">{subtitle}</div>}
       </div>
@@ -359,13 +362,13 @@ function ArenaLeaderCol({ icon, title, rows, accent, showRating = false, startRa
         <span className="pl-arena-title">{title}</span>
       </div>
       {rows.length === 0 ? (
-        <div className="pl-empty">No tournaments this week</div>
+        <div className="pl-empty">{tr("No tournaments this week")}</div>
       ) : (
         rows.map((r, i) => (
           <LeaderRow
             key={r._id || i}
             rank={startRank + i + 1}
-            name={r.displayName || r.username || 'Player'}
+            name={r.displayName || r.username || tr('Player')}
             displayName={r.displayName}
             username={r.username}
             userId={r._id || r.userId}
@@ -461,7 +464,7 @@ function PlayersTab() {
       <input
         className="sh-search-input pl-search-input"
         type="text"
-        placeholder="🔍 Search players by name or @username…"
+        placeholder={tr("🔍 Search players by name or @username…")}
         value={search}
         onChange={e => setSearch(e.target.value)}
         autoComplete="off"
@@ -470,9 +473,9 @@ function PlayersTab() {
       {search.trim().length >= 2 && (
         <div className="pl-search-results">
           {searching ? (
-            <div className="pl-search-empty">Searching…</div>
+            <div className="pl-search-empty">{tr("Searching…")}</div>
           ) : results.length === 0 ? (
-            <div className="pl-search-empty">No players found.</div>
+            <div className="pl-search-empty">{tr("No players found.")}</div>
           ) : (
             results.map(u => (
               <button key={u._id} className="pl-search-row" onClick={() => openProfile(u)}>
@@ -483,7 +486,7 @@ function PlayersTab() {
                   </div>
                   <div className="pl-search-handle">@{u.username}</div>
                 </div>
-                <span className="pl-search-go">View →</span>
+                <span className="pl-search-go">{tr("View →")}</span>
               </button>
             ))
           )}
@@ -498,13 +501,13 @@ function PlayersTab() {
         <div className="pl-phead">
           <div className="pl-phead-icon pl-icon-rose">🔥</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="pl-phead-title">Most Active</div>
-            <div className="pl-phead-sub">Busiest players this week</div>
+            <div className="pl-phead-title">{tr("Most Active")}</div>
+            <div className="pl-phead-sub">{tr("Busiest players this week")}</div>
           </div>
         </div>
 
         {active.length === 0 ? (
-          <div className="pl-empty" style={{ padding: '28px 0' }}>No activity yet this week.</div>
+          <div className="pl-empty" style={{ padding: '28px 0' }}>{tr("No activity yet this week.")}</div>
         ) : (
           <div className="pl-active-list">
             {active.slice(0, 15).map((u, i) => (
@@ -517,13 +520,13 @@ function PlayersTab() {
                   </div>
                   <div className="pl-active-meta">
                     {u.isOnline
-                      ? <span className="pl-online-tag">● online</span>
-                      : <span>this week</span>}
+                      ? <span className="pl-online-tag">{tr("● online")}</span>
+                      : <span>{tr("this week")}</span>}
                   </div>
                 </div>
                 <div className="pl-active-count">
                   <span className="pl-active-count-n">{u.activityCount}</span>
-                  <span className="pl-active-count-l">actions</span>
+                  <span className="pl-active-count-l">{tr("actions")}</span>
                 </div>
               </div>
             ))}
@@ -538,13 +541,13 @@ function PlayersTab() {
         <section className="pl-panel pl-panel-cyan">
           <PanelHead
             icon="🧩"
-            title="Top Puzzle Solvers"
-            subtitle="Highest-rated real players · updates live"
+            title={tr("Top Puzzle Solvers")}
+            subtitle={tr("Highest-rated real players · updates live")}
             live
             accent="cyan"
           />
           {daily.length === 0 ? (
-            <div className="pl-empty">No solvers yet.</div>
+            <div className="pl-empty">{tr("No solvers yet.")}</div>
           ) : (
             <div className="pl-lb pl-lb-split">
               <div className="pl-lb-col">
@@ -556,7 +559,7 @@ function PlayersTab() {
                     displayName={u.displayName}
                     username={u.username}
                     userId={u._id || u.userId}
-                    sub={u.todayDelta ? `▲ +${u.todayDelta} today` : 'puzzle rating'}
+                    sub={u.todayDelta ? tr("▲ +{todayDelta} today", { todayDelta: u.todayDelta }) : tr('puzzle rating')}
                     score={u.rating}
                     accent="cyan"
                     user={u}
@@ -572,7 +575,7 @@ function PlayersTab() {
                     displayName={u.displayName}
                     username={u.username}
                     userId={u._id || u.userId}
-                    sub={u.todayDelta ? `▲ +${u.todayDelta} today` : 'puzzle rating'}
+                    sub={u.todayDelta ? tr("▲ +{todayDelta} today", { todayDelta: u.todayDelta }) : tr('puzzle rating')}
                     score={u.rating}
                     accent="cyan"
                     user={u}
@@ -585,28 +588,28 @@ function PlayersTab() {
 
         {/* Best Racers (existing component) */}
         <section className="pl-panel pl-panel-emerald">
-          <PanelHead icon="🏁" title="Best Racers" subtitle="Top scores across race formats" accent="emerald" />
+          <PanelHead icon="🏁" title={tr("Best Racers")} subtitle={tr("Top scores across race formats")} accent="emerald" />
           <div className="pl-racers-wrap">
             <BestRacers compact />
           </div>
         </section>
 
         <div className="pl-cta">
-          <button className="pl-cta-btn" onClick={() => navigate('/arenatournament')}>🏆 Browse Tournaments</button>
-          <button className="pl-cta-btn" onClick={() => navigate('/race')}>⚡ Start a Race</button>
+          <button className="pl-cta-btn" onClick={() => navigate('/arenatournament')}>{tr("🏆 Browse Tournaments")}</button>
+          <button className="pl-cta-btn" onClick={() => navigate('/race')}>{tr("⚡ Start a Race")}</button>
         </div>
 
       </main>
 
       {/* Monthly Focus — Top Players (full width) */}
       <section className="pl-panel pl-panel-amber pl-fullspan">
-        <PanelHead icon="🏆" title="Monthly Focus — Top Players" subtitle="This month's focus-challenge leaders" accent="amber" />
+        <PanelHead icon="🏆" title={tr("Monthly Focus — Top Players")} subtitle={tr("This month's focus-challenge leaders")} accent="amber" />
         <div className="pl-racers-wrap">
           <MonthlyFocusLeaderboard compact limit={5} focusId={adminFocusId} />
         </div>
         <div style={{ textAlign: 'center', marginTop: 12 }}>
           <Link to="/monthly-focus/leaderboard" className="pl-cta-btn" style={{ display: 'inline-block', textDecoration: 'none' }}>
-            View full leaderboard →
+            {tr("View full leaderboard →")}
           </Link>
         </div>
       </section>
@@ -615,17 +618,17 @@ function PlayersTab() {
       <section className="pl-panel pl-panel-violet pl-fullspan">
         <PanelHead
           icon="🏆"
-          title="Best Arena Players — This Week"
-          subtitle="Top point-scorers in this week's tournaments"
+          title={tr("Best Arena Players — This Week")}
+          subtitle={tr("Top point-scorers in this week's tournaments")}
           accent="violet"
         />
 
         {(() => {
           const ARENA_TABS = [
-            { id: 'standard', label: 'Standard Arena',        icon: '⚔️' },
-            { id: 'team',     label: 'Team Battle',           icon: '🛡️' },
-            { id: 'chess960', label: 'Chess960',              icon: '♟️' },
-            { id: 'marathon', label: 'Bullet Blitz Marathon', icon: '💥' },
+            { id: 'standard', label: tr('Standard Arena'),        icon: '⚔️' },
+            { id: 'team',     label: tr('Team Battle'),           icon: '🛡️' },
+            { id: 'chess960', label: tr('Chess960'),              icon: '♟️' },
+            { id: 'marathon', label: tr('Bullet Blitz Marathon'), icon: '💥' },
           ];
           return (
             <>
@@ -646,33 +649,33 @@ function PlayersTab() {
                 // Standard arena split into 3 time-control cards, each with its
                 // own category rating (bullet / blitz / rapid).
                 <div className="pl-arena-grid pl-arena-grid-3">
-                  <ArenaLeaderCol icon="🚀" title="Bullet Arena" rows={bullet} accent="rose"    showRating />
-                  <ArenaLeaderCol icon="⚡" title="Blitz Arena"  rows={blitz}  accent="cyan"    showRating />
-                  <ArenaLeaderCol icon="⏱️" title="Rapid Arena"  rows={rapid}  accent="emerald" showRating />
+                  <ArenaLeaderCol icon="🚀" title={tr("Bullet Arena")} rows={bullet} accent="rose"    showRating />
+                  <ArenaLeaderCol icon="⚡" title={tr("Blitz Arena")}  rows={blitz}  accent="cyan"    showRating />
+                  <ArenaLeaderCol icon="⏱️" title={tr("Rapid Arena")}  rows={rapid}  accent="emerald" showRating />
                 </div>
               )}
               {arenaTab === 'team' && (
                 // Team Battle split into 3 time-control cards, like Standard Arena.
                 <div className="pl-arena-grid pl-arena-grid-3">
-                  <ArenaLeaderCol icon="🚀" title="Bullet Team" rows={teamBullet} accent="rose"    showRating />
-                  <ArenaLeaderCol icon="⚡" title="Blitz Team"  rows={teamBlitz}  accent="cyan"    showRating />
-                  <ArenaLeaderCol icon="⏱️" title="Rapid Team"  rows={teamRapid}  accent="emerald" showRating />
+                  <ArenaLeaderCol icon="🚀" title={tr("Bullet Team")} rows={teamBullet} accent="rose"    showRating />
+                  <ArenaLeaderCol icon="⚡" title={tr("Blitz Team")}  rows={teamBlitz}  accent="cyan"    showRating />
+                  <ArenaLeaderCol icon="⏱️" title={tr("Rapid Team")}  rows={teamRapid}  accent="emerald" showRating />
                 </div>
               )}
               {arenaTab === 'chess960' && (
                 // Top 15 (users + bots), 3 cards of 5, continuous ranks. No rating.
                 <div className="pl-arena-grid pl-arena-grid-3">
-                  <ArenaLeaderCol icon="♟️" title="Top 1–5"   rows={chess960.slice(0, 5)}   accent="violet" startRank={0} />
-                  <ArenaLeaderCol icon="♟️" title="Top 6–10"  rows={chess960.slice(5, 10)}  accent="violet" startRank={5} />
-                  <ArenaLeaderCol icon="♟️" title="Top 11–15" rows={chess960.slice(10, 15)} accent="violet" startRank={10} />
+                  <ArenaLeaderCol icon="♟️" title={tr("Top 1–5")}   rows={chess960.slice(0, 5)}   accent="violet" startRank={0} />
+                  <ArenaLeaderCol icon="♟️" title={tr("Top 6–10")}  rows={chess960.slice(5, 10)}  accent="violet" startRank={5} />
+                  <ArenaLeaderCol icon="♟️" title={tr("Top 11–15")} rows={chess960.slice(10, 15)} accent="violet" startRank={10} />
                 </div>
               )}
               {arenaTab === 'marathon' && (
                 // Top 15 (users + bots), split into 3 cards of 5 with continuous ranks.
                 <div className="pl-arena-grid pl-arena-grid-3">
-                  <ArenaLeaderCol icon="💥" title="Top 1–5"   rows={marathon.slice(0, 5)}   accent="amber" startRank={0} />
-                  <ArenaLeaderCol icon="💥" title="Top 6–10"  rows={marathon.slice(5, 10)}  accent="amber" startRank={5} />
-                  <ArenaLeaderCol icon="💥" title="Top 11–15" rows={marathon.slice(10, 15)} accent="amber" startRank={10} />
+                  <ArenaLeaderCol icon="💥" title={tr("Top 1–5")}   rows={marathon.slice(0, 5)}   accent="amber" startRank={0} />
+                  <ArenaLeaderCol icon="💥" title={tr("Top 6–10")}  rows={marathon.slice(5, 10)}  accent="amber" startRank={5} />
+                  <ArenaLeaderCol icon="💥" title={tr("Top 11–15")} rows={marathon.slice(10, 15)} accent="amber" startRank={10} />
                 </div>
               )}
             </>
@@ -739,7 +742,7 @@ function InviteTab({ user }) {
       {/* ── Leaderboard Sidebar ── */}
       <aside className="sh-invite-sidebar">
         <div className="sh-card">
-          <div className="sh-lb-title">🏆 Top Inviters</div>
+          <div className="sh-lb-title">{tr("🏆 Top Inviters")}</div>
           {leaderboard.slice(0, 25).map((entry, i) => {
             const rankCls = i === 0 ? 'sh-lb-rank-gold' : i === 1 ? 'sh-lb-rank-silver' : i === 2 ? 'sh-lb-rank-bronze' : '';
             const isMe    = entry.username === user?.username;
@@ -756,8 +759,8 @@ function InviteTab({ user }) {
             );
           })}
           {leaderboard.length === 0 && (
-            <p style={{ color: 'var(--color-white-a20)', fontSize: 12, textAlign: 'center', margin: 0 }}>
-              No entries yet
+            <p style={{ color: 'var(--color-white-a20)', fontSize: 'var(--fs-small)', textAlign: 'center', margin: 0 }}>
+              {tr("No entries yet")}
             </p>
           )}
         </div>
@@ -768,15 +771,15 @@ function InviteTab({ user }) {
 
         {/* Referral Link */}
         <div className="sh-card">
-          <div className="sh-section-title">Your Invite Link</div>
+          <div className="sh-section-title">{tr("Your Invite Link")}</div>
           <div className="sh-ref-box">
             <span className="sh-ref-link">{myData?.referralLink || '—'}</span>
             <button className="sh-btn-primary" onClick={copyLink}>
-              {copied ? '✓ Copied!' : '📋 Copy'}
+              {copied ? tr('✓ Copied!') : tr('📋 Copy')}
             </button>
           </div>
-          <p style={{ fontSize: 12, color: 'var(--color-text-faint)', margin: 0 }}>
-            Share this link — when someone signs up through it and becomes active, you earn rewards.
+          <p style={{ fontSize: 'var(--fs-small)', color: 'var(--color-text-faint)', margin: 0 }}>
+            {tr("Share this link — when someone signs up through it and becomes active, you earn rewards.")}
           </p>
         </div>
 
@@ -784,26 +787,26 @@ function InviteTab({ user }) {
         <div className="sh-stat-grid">
           <div className="sh-stat-card">
             <div className="sh-stat-value">{total}</div>
-            <div className="sh-stat-label">Total Invited</div>
+            <div className="sh-stat-label">{tr("Total Invited")}</div>
           </div>
           <div className="sh-stat-card">
             <div className="sh-stat-value" style={{ color: 'var(--color-success)' }}>{active}</div>
-            <div className="sh-stat-label">Active</div>
+            <div className="sh-stat-label">{tr("Active")}</div>
           </div>
           <div className="sh-stat-card">
             <div className="sh-stat-value" style={{ color: 'var(--color-accent-2)' }}>{quality}</div>
-            <div className="sh-stat-label">Quality Score</div>
+            <div className="sh-stat-label">{tr("Quality Score")}</div>
           </div>
         </div>
 
         {/* Mentor Tier */}
         <div className="sh-card">
-          <div className="sh-section-title">Mentor Status</div>
+          <div className="sh-section-title">{tr("Mentor Status")}</div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <span className={`sh-tier-badge ${tierMeta.cls}`}>{tierMeta.label}</span>
             {nextMentorAt && (
-              <span style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>
-                {active} / {nextMentorAt} active
+              <span style={{ fontSize: 'var(--fs-small)', color: 'var(--color-text-faint)' }}>
+                {active} / {nextMentorAt} {tr("active")}
               </span>
             )}
           </div>
@@ -812,24 +815,24 @@ function InviteTab({ user }) {
               <div className="sh-progress-fill" style={{ width: `${mentorPct}%` }} />
             </div>
           ) : (
-            <p style={{ fontSize: 13, color: 'var(--color-success)', margin: 0 }}>Maximum tier reached! 🌟</p>
+            <p style={{ fontSize: 'var(--fs-small)', color: 'var(--color-success)', margin: 0 }}>{tr("Maximum tier reached! 🌟")}</p>
           )}
-          <div style={{ marginTop: 14, display: 'flex', gap: 20, fontSize: 12, color: 'var(--color-text-faint)', flexWrap: 'wrap' }}>
-            <span>⭐ Mentor → 5 active invites</span>
-            <span>🌟 Ambassador → 25 active invites</span>
+          <div style={{ marginTop: 14, display: 'flex', gap: 20, fontSize: 'var(--fs-small)', color: 'var(--color-text-faint)', flexWrap: 'wrap' }}>
+            <span>{tr("⭐ Mentor → 5 active invites")}</span>
+            <span>{tr("🌟 Ambassador → 25 active invites")}</span>
           </div>
         </div>
 
         {/* Avatar Tier */}
         <div className="sh-card">
-          <div className="sh-section-title">Avatar Unlocks</div>
+          <div className="sh-section-title">{tr("Avatar Unlocks")}</div>
           {/* Progress counter */}
           <div style={{ marginBottom: 14 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: avatarMeta.color }}>{avatarMeta.label}</span>
+              <span style={{ fontSize: 'var(--fs-body)', fontWeight: 700, color: avatarMeta.color }}>{avatarMeta.label}</span>
               {nextAvatarAt && (
-                <span style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>
-                  {total} / {nextAvatarAt} invited
+                <span style={{ fontSize: 'var(--fs-small)', color: 'var(--color-text-faint)' }}>
+                  {total} / {nextAvatarAt} {tr("invited")}
                 </span>
               )}
             </div>
@@ -838,15 +841,15 @@ function InviteTab({ user }) {
                 <div className="sh-progress-fill" style={{ width: `${avatarPct}%`, background: 'linear-gradient(90deg,var(--color-accent-2),var(--color-accent))' }} />
               </div>
             ) : (
-              <p style={{ fontSize: 13, color: 'var(--color-accent-2)', margin: 0 }}>All avatar tiers unlocked! 🎭</p>
+              <p style={{ fontSize: 'var(--fs-small)', color: 'var(--color-accent-2)', margin: 0 }}>{tr("All avatar tiers unlocked! 🎭")}</p>
             )}
           </div>
           {/* Tier list */}
           {[
-            { need: 0,  icon: '🔒', label: 'No unlock yet',   color: 'var(--color-text-faint)',  tier: 'none'   },
-            { need: 5,  icon: '🖼️', label: 'Basic',           color: 'var(--color-accent)',                tier: 'basic'  },
-            { need: 15, icon: '📷', label: 'Custom Photo',    color: 'var(--color-success)',                tier: 'custom' },
-            { need: 45, icon: '🎭', label: '3D Model',        color: 'var(--color-accent-2)',                tier: '3d'     },
+            { need: 0,  icon: '🔒', label: tr('No unlock yet'),   color: 'var(--color-text-faint)',  tier: 'none'   },
+            { need: 5,  icon: '🖼️', label: tr('Basic'),           color: 'var(--color-accent)',                tier: 'basic'  },
+            { need: 15, icon: '📷', label: tr('Custom Photo'),    color: 'var(--color-success)',                tier: 'custom' },
+            { need: 45, icon: '🎭', label: tr('3D Model'),        color: 'var(--color-accent-2)',                tier: '3d'     },
           ].map(({ need, icon, label, color, tier }) => {
             const unlocked = tier === 'none' ? avatarTier === 'none' : total >= need;
             const isCurrent = avatarTier === tier;
@@ -860,16 +863,16 @@ function InviteTab({ user }) {
               }}>
                 <span style={{ fontSize: 20, width: 28, textAlign: 'center', flexShrink: 0 }}>{icon}</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: unlocked ? color : 'var(--color-text-faint)' }}>
+                  <div style={{ fontSize: 'var(--fs-small)', fontWeight: 600, color: unlocked ? color : 'var(--color-text-faint)' }}>
                     {label}
                   </div>
                   {need > 0 && (
-                    <div style={{ fontSize: 11, color: 'var(--color-white-a20)', marginTop: 1 }}>
-                      {need} invited {unlocked && tier !== 'none' ? '✓' : ''}
+                    <div style={{ fontSize: 'var(--fs-caption)', color: 'var(--color-white-a20)', marginTop: 1 }}>
+                      {need} {tr("invited")} {unlocked && tier !== 'none' ? '✓' : ''}
                     </div>
                   )}
                 </div>
-                {isCurrent && <span style={{ fontSize: 11, color, fontWeight: 700 }}>Current</span>}
+                {isCurrent && <span style={{ fontSize: 'var(--fs-caption)', color, fontWeight: 700 }}>{tr("Current")}</span>}
               </div>
             );
           })}
@@ -877,19 +880,19 @@ function InviteTab({ user }) {
 
         {/* Invited list */}
         <div className="sh-card">
-          <div className="sh-section-title">People You Invited ({invites.length})</div>
+          <div className="sh-section-title">{tr("People You Invited (")}{invites.length})</div>
           {invites.length === 0 ? (
             <div className="sh-empty" style={{ padding: '28px 0' }}>
               <div className="sh-empty-icon">📬</div>
-              <div className="sh-empty-text">No one yet — share your link!</div>
+              <div className="sh-empty-text">{tr("No one yet — share your link!")}</div>
             </div>
           ) : (
             invites.map((inv, i) => (
               <div key={inv.id || i} className="sh-invite-item">
                 <div className="sh-avatar sh-avatar-sm">{initials(inv.user?.displayName || inv.user?.username || 'User')}</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)' }}>{inv.user ? <PlayerName displayName={inv.user.displayName} username={inv.user.username} userId={inv.user._id} /> : 'Deleted User'}</div>
-                  <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>@{inv.user?.username || 'unknown'}</div>
+                  <div style={{ fontSize: 'var(--fs-body)', fontWeight: 600, color: 'var(--color-text)' }}>{inv.user ? <PlayerName displayName={inv.user.displayName} username={inv.user.username} userId={inv.user._id} /> : 'Deleted User'}</div>
+                  <div style={{ fontSize: 'var(--fs-small)', color: 'var(--color-text-faint)' }}>@{inv.user?.username || 'unknown'}</div>
                 </div>
                 <span className={inv.status === 'active' ? 'sh-chip-active' : (inv.status === 'request_pending' ? 'sh-chip-request' : 'sh-chip-pending')}>
                   {inv.status === 'active' ? '✓ Active' : (inv.status === 'request_pending' ? '📜 Requested' : '⏳ Pending')}
@@ -901,7 +904,7 @@ function InviteTab({ user }) {
 
         {/* How It Works */}
         <div className="sh-card">
-          <div className="sh-section-title">How It Works</div>
+          <div className="sh-section-title">{tr("How It Works")}</div>
           {[
             'Copy your unique invite link and share it with friends.',
             'They sign up using your link — you see them instantly in the list above.',
@@ -972,23 +975,23 @@ function FriendsTab() {
     try {
       const res = await api.post('/api/friends/request', { userId });
       setStatusMap(prev => ({ ...prev, [userId]: { status: 'pending', iAmRequester: true, friendshipId: res.data.friendshipId } }));
-    } catch (err) { alert(err.response?.data?.message || 'Failed to send request'); }
+    } catch (err) { alert(err.response?.data?.message || tr('Failed to send request')); }
   };
 
   const acceptRequest = async (id) => {
     try { await api.post(`/api/friends/accept/${id}`); await fetchFriends(); }
-    catch (err) { alert(err.response?.data?.message || 'Failed'); }
+    catch (err) { alert(err.response?.data?.message || tr('Failed')); }
   };
 
   const declineRequest = async (id) => {
     try { await api.post(`/api/friends/decline/${id}`); setRequests(p => p.filter(r => r.friendshipId !== id)); }
-    catch (err) { alert(err.response?.data?.message || 'Failed'); }
+    catch (err) { alert(err.response?.data?.message || tr('Failed')); }
   };
 
   const unfriend = async (id) => {
-    if (!window.confirm('Remove this friend?')) return;
+    if (!window.confirm(tr('Remove this friend?'))) return;
     try { await api.delete(`/api/friends/${id}`); setFriends(p => p.filter(f => f.friendshipId !== id)); }
-    catch (err) { alert(err.response?.data?.message || 'Failed'); }
+    catch (err) { alert(err.response?.data?.message || tr('Failed')); }
   };
 
   return (
@@ -1009,7 +1012,7 @@ function FriendsTab() {
         friends.length === 0 ? (
           <div className="sh-empty">
             <div className="sh-empty-icon">👋</div>
-            <div className="sh-empty-text">No friends yet.<br />Use "Find People" to add friends!</div>
+            <div className="sh-empty-text">{tr("No friends yet.")}<br />{tr("Use \"Find People\" to add friends!")}</div>
           </div>
         ) : (
           friends.map(f => {
@@ -1021,25 +1024,25 @@ function FriendsTab() {
                   {isOnline && <span className="sh-online-dot" />}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ fontSize: 'var(--fs-body)', fontWeight: 600, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <PlayerName displayName={f.user?.displayName} username={f.user?.username} userId={f.user?._id} />
-                    {isOnline && <span style={{ fontSize: 11, color: 'var(--color-success)', fontWeight: 500 }}>● online</span>}
+                    {isOnline && <span style={{ fontSize: 'var(--fs-caption)', color: 'var(--color-success)', fontWeight: 500 }}>{tr("● online")}</span>}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>@{f.user?.username}</div>
+                  <div style={{ fontSize: 'var(--fs-small)', color: 'var(--color-text-faint)' }}>@{f.user?.username}</div>
                 </div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <button
                     className="sh-btn-challenge"
-                    title="Play a private game with this friend"
+                    title={tr("Play a private game with this friend")}
                     onClick={() => navigate('/games?friend=1')}
-                  >🔥 Play</button>
+                  >{tr("🔥 Play")}</button>
                   <button
                     className="sh-btn-secondary"
-                    style={{ padding: '6px 12px', fontSize: 13 }}
-                    title="Open chat"
+                    style={{ padding: '6px 12px', fontSize: 'var(--fs-small)' }}
+                    title={tr("Open chat")}
                     onClick={() => navigate(`/social/chat?userId=${f.user?._id}`)}
-                  >💬 Chat</button>
-                  <button className="sh-btn-danger" onClick={() => unfriend(f.friendshipId)}>Unfriend</button>
+                  >{tr("💬 Chat")}</button>
+                  <button className="sh-btn-danger" onClick={() => unfriend(f.friendshipId)}>{tr("Unfriend")}</button>
                 </div>
               </div>
             );
@@ -1052,7 +1055,7 @@ function FriendsTab() {
         requests.length === 0 ? (
           <div className="sh-empty">
             <div className="sh-empty-icon">📭</div>
-            <div className="sh-empty-text">No pending friend requests.</div>
+            <div className="sh-empty-text">{tr("No pending friend requests.")}</div>
           </div>
         ) : (
           requests.map(r => (
@@ -1061,12 +1064,12 @@ function FriendsTab() {
                 <UserAvatar user={r.user} size={42} />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)' }}><PlayerName displayName={r.user?.displayName} username={r.user?.username} userId={r.user?._id} /></div>
-                <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>@{r.user?.username}</div>
+                <div style={{ fontSize: 'var(--fs-body)', fontWeight: 600, color: 'var(--color-text)' }}><PlayerName displayName={r.user?.displayName} username={r.user?.username} userId={r.user?._id} /></div>
+                <div style={{ fontSize: 'var(--fs-small)', color: 'var(--color-text-faint)' }}>@{r.user?.username}</div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button className="sh-btn-accept"  onClick={() => acceptRequest(r.friendshipId)}>Accept</button>
-                <button className="sh-btn-decline" onClick={() => declineRequest(r.friendshipId)}>Decline</button>
+                <button className="sh-btn-accept"  onClick={() => acceptRequest(r.friendshipId)}>{tr("Accept")}</button>
+                <button className="sh-btn-decline" onClick={() => declineRequest(r.friendshipId)}>{tr("Decline")}</button>
               </div>
             </div>
           ))
@@ -1078,7 +1081,7 @@ function FriendsTab() {
         <>
           <input
             type="text"
-            placeholder="Search by username or display name…"
+            placeholder={tr("Search by username or display name…")}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="sh-search-input"
@@ -1086,7 +1089,7 @@ function FriendsTab() {
             autoFocus
           />
           {search.trim().length > 0 && search.trim().length < 2 && (
-            <p style={{ color: 'var(--color-text-faint)', fontSize: 13, marginTop: 0 }}>Type at least 2 characters…</p>
+            <p style={{ color: 'var(--color-text-faint)', fontSize: 'var(--fs-small)', marginTop: 0 }}>{tr("Type at least 2 characters…")}</p>
           )}
           {results.map(u => {
             const st = statusMap[u._id];
@@ -1096,13 +1099,13 @@ function FriendsTab() {
                   <UserAvatar user={u} size={42} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)' }}><PlayerName displayName={u.displayName} username={u.username} userId={u._id} /></div>
-                  <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>{u.friendCount || 0} friends</div>
+                  <div style={{ fontSize: 'var(--fs-body)', fontWeight: 600, color: 'var(--color-text)' }}><PlayerName displayName={u.displayName} username={u.username} userId={u._id} /></div>
+                  <div style={{ fontSize: 'var(--fs-small)', color: 'var(--color-text-faint)' }}>{u.friendCount || 0} {tr("friends")}</div>
                 </div>
                 {!st || st.status === 'none' ? (
-                  <button className="sh-btn-primary" style={{ padding: '7px 14px', fontSize: 13 }} onClick={() => sendRequest(u._id)}>+ Add</button>
+                  <button className="sh-btn-primary" style={{ padding: '7px 14px', fontSize: 'var(--fs-small)' }} onClick={() => sendRequest(u._id)}>{tr("+ Add")}</button>
                 ) : st.status === 'accepted' ? (
-                  <span className="sh-chip-friend">✓ Friends</span>
+                  <span className="sh-chip-friend">{tr("✓ Friends")}</span>
                 ) : st.status === 'pending' ? (
                   <span className="sh-chip-pending">{st.iAmRequester ? 'Sent' : 'Respond ↑'}</span>
                 ) : null}
@@ -1111,7 +1114,7 @@ function FriendsTab() {
           })}
           {search.trim().length >= 2 && results.length === 0 && (
             <div className="sh-empty" style={{ padding: '24px 0' }}>
-              <div className="sh-empty-text">No users found.</div>
+              <div className="sh-empty-text">{tr("No users found.")}</div>
             </div>
           )}
         </>
@@ -1177,7 +1180,7 @@ function ClubsTab() {
       setShowCreate(false);
       setCreateForm({ name: '', description: '', isPrivate: false });
       navigate(`/clubs/${res.data.club._id}`);
-    } catch (err) { alert(err.response?.data?.message || 'Failed to create club'); }
+    } catch (err) { alert(err.response?.data?.message || tr('Failed to create club')); }
     finally { setSubmitting(false); }
   };
 
@@ -1189,7 +1192,7 @@ function ClubsTab() {
       setShowJoin(false);
       setJoinCode('');
       navigate(`/clubs/${res.data.clubId}`);
-    } catch (err) { alert(err.response?.data?.message || 'Invalid join code'); }
+    } catch (err) { alert(err.response?.data?.message || tr('Invalid join code')); }
     finally { setSubmitting(false); }
   };
 
@@ -1199,26 +1202,26 @@ function ClubsTab() {
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 20, flexWrap: 'wrap' }}>
         <input
           type="text"
-          placeholder="Search clubs…"
+          placeholder={tr("Search clubs…")}
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="sh-search-input"
           style={{ flex: 1, minWidth: 180 }}
         />
-        <button className="sh-btn-secondary" onClick={() => setShowJoin(true)}>🔑 Join with Code</button>
-        <button className="sh-btn-primary"   onClick={() => setShowCreate(true)}>+ Create Club</button>
+        <button className="sh-btn-secondary" onClick={() => setShowJoin(true)}>{tr("🔑 Join with Code")}</button>
+        <button className="sh-btn-primary"   onClick={() => setShowCreate(true)}>{tr("+ Create Club")}</button>
       </div>
 
       {/* My Clubs */}
       {myClubs.length > 0 && (
         <>
-          <div className="sh-section-title" style={{ marginBottom: 14 }}>My Clubs</div>
+          <div className="sh-section-title" style={{ marginBottom: 14 }}>{tr("My Clubs")}</div>
           <div className="sh-clubs-grid" style={{ marginBottom: 30 }}>
             {myClubs.map(c => (
               <div key={c._id} className="sh-club-card sh-club-card-mine" onClick={() => navigate(`/clubs/${c._id}`)}>
                 <div className="sh-club-name">{c.name}</div>
                 <div className="sh-club-desc">{c.description || 'No description'}</div>
-                <div className="sh-club-meta">👥 {c.memberCount} members</div>
+                <div className="sh-club-meta">👥 {c.memberCount} {tr("members")}</div>
               </div>
             ))}
           </div>
@@ -1228,7 +1231,7 @@ function ClubsTab() {
       {/* Browse */}
       <div className="sh-section-title" style={{ marginBottom: 14 }}>
         Browse Clubs&nbsp;
-        {total > 0 && <span style={{ color: 'var(--color-text-faint)', fontSize: 12, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>({total})</span>}
+        {total > 0 && <span style={{ color: 'var(--color-text-faint)', fontSize: 'var(--fs-small)', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>({total})</span>}
       </div>
 
       {loading ? (
@@ -1237,9 +1240,9 @@ function ClubsTab() {
         <div className="sh-empty">
           <div className="sh-empty-icon">🏰</div>
           <div className="sh-empty-text">
-            No clubs found.<br />
-            <button className="sh-btn-secondary" style={{ marginTop: 14, fontSize: 13 }} onClick={() => setShowCreate(true)}>
-              Create the first one!
+            {tr("No clubs found.")}<br />
+            <button className="sh-btn-secondary" style={{ marginTop: 14, fontSize: 'var(--fs-small)' }} onClick={() => setShowCreate(true)}>
+              {tr("Create the first one!")}
             </button>
           </div>
         </div>
@@ -1250,10 +1253,10 @@ function ClubsTab() {
               <div key={c._id} className={`sh-club-card${c.isMember ? ' sh-club-card-mine' : ''}`} onClick={() => navigate(`/clubs/${c._id}`)}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 7 }}>
                   <div className="sh-club-name">{c.name}</div>
-                  {c.isMember && <span className="sh-chip-member">✓ Member</span>}
+                  {c.isMember && <span className="sh-chip-member">{tr("✓ Member")}</span>}
                 </div>
                 <div className="sh-club-desc">{c.description || 'No description'}</div>
-                <div className="sh-club-meta">👥 {c.memberCount} members</div>
+                <div className="sh-club-meta">👥 {c.memberCount} {tr("members")}</div>
               </div>
             ))}
           </div>
@@ -1271,11 +1274,11 @@ function ClubsTab() {
       {showCreate && (
         <div className="sh-modal-overlay" onClick={() => setShowCreate(false)}>
           <div className="sh-modal" onClick={e => e.stopPropagation()}>
-            <div className="sh-modal-title">Create a Club</div>
-            <div className="sh-modal-subtitle">Give your club a name and an optional description.</div>
+            <div className="sh-modal-title">{tr("Create a Club")}</div>
+            <div className="sh-modal-subtitle">{tr("Give your club a name and an optional description.")}</div>
             <form onSubmit={createClub} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <input
-                placeholder="Club name *"
+                placeholder={tr("Club name *")}
                 value={createForm.name}
                 onChange={e => setCreateForm({ ...createForm, name: e.target.value })}
                 className="sh-input-field"
@@ -1283,7 +1286,7 @@ function ClubsTab() {
                 maxLength={50}
               />
               <textarea
-                placeholder="Description (optional)"
+                placeholder={tr("Description (optional)")}
                 value={createForm.description}
                 onChange={e => setCreateForm({ ...createForm, description: e.target.value })}
                 className="sh-input-field"
@@ -1292,7 +1295,7 @@ function ClubsTab() {
               />
               {/* Visibility */}
               <div>
-                <div style={{ fontSize: 12, color: 'var(--color-text-faint)', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Visibility</div>
+                <div style={{ fontSize: 'var(--fs-caption)', color: 'var(--color-text-faint)', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>{tr("Visibility")}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                   <button
                     type="button"
@@ -1305,8 +1308,8 @@ function ClubsTab() {
                     }}
                   >
                     <div style={{ fontSize: 20, marginBottom: 4 }}>🌍</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: !createForm.isPrivate ? '#4ade80' : 'var(--color-text-muted)' }}>Public</div>
-                    <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>Anyone can find &amp; join</div>
+                    <div style={{ fontSize: 'var(--fs-small)', fontWeight: 700, color: !createForm.isPrivate ? '#4ade80' : 'var(--color-text-muted)' }}>{tr("Public")}</div>
+                    <div style={{ fontSize: 'var(--fs-caption)', color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>Anyone can find &amp; join</div>
                   </button>
                   <button
                     type="button"
@@ -1319,15 +1322,15 @@ function ClubsTab() {
                     }}
                   >
                     <div style={{ fontSize: 20, marginBottom: 4 }}>🔒</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: createForm.isPrivate ? 'var(--color-accent-2)' : 'var(--color-text-muted)' }}>Private</div>
-                    <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>Invite link only</div>
+                    <div style={{ fontSize: 'var(--fs-small)', fontWeight: 700, color: createForm.isPrivate ? 'var(--color-accent-2)' : 'var(--color-text-muted)' }}>{tr("Private")}</div>
+                    <div style={{ fontSize: 'var(--fs-caption)', color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>{tr("Invite link only")}</div>
                   </button>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
-                <button type="button" className="sh-btn-secondary" onClick={() => setShowCreate(false)}>Cancel</button>
+                <button type="button" className="sh-btn-secondary" onClick={() => setShowCreate(false)}>{tr("Cancel")}</button>
                 <button type="submit"  className="sh-btn-primary"  disabled={submitting}>
-                  {submitting ? 'Creating…' : 'Create Club'}
+                  {submitting ? tr('Creating…') : tr('Create Club')}
                 </button>
               </div>
             </form>
@@ -1339,11 +1342,11 @@ function ClubsTab() {
       {showJoin && (
         <div className="sh-modal-overlay" onClick={() => setShowJoin(false)}>
           <div className="sh-modal" onClick={e => e.stopPropagation()}>
-            <div className="sh-modal-title">Join with Code</div>
-            <div className="sh-modal-subtitle">Enter the 8-character code shared by a club member.</div>
+            <div className="sh-modal-title">{tr("Join with Code")}</div>
+            <div className="sh-modal-subtitle">{tr("Enter the 8-character code shared by a club member.")}</div>
             <form onSubmit={joinClub} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <input
-                placeholder="JOIN CODE"
+                placeholder={tr("JOIN CODE")}
                 value={joinCode}
                 onChange={e => setJoinCode(e.target.value.toUpperCase())}
                 className="sh-input-field"
@@ -1351,9 +1354,9 @@ function ClubsTab() {
                 required
               />
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
-                <button type="button" className="sh-btn-secondary" onClick={() => setShowJoin(false)}>Cancel</button>
+                <button type="button" className="sh-btn-secondary" onClick={() => setShowJoin(false)}>{tr("Cancel")}</button>
                 <button type="submit"  className="sh-btn-primary"  disabled={submitting}>
-                  {submitting ? 'Joining…' : 'Join Club'}
+                  {submitting ? tr('Joining…') : tr('Join Club')}
                 </button>
               </div>
             </form>
@@ -1397,10 +1400,10 @@ export default function SocialHubPage() {
                   : 'players'; // /social and default
 
   const TABS = [
-    { id: 'players', label: '👤 Players',           path: '/players' },
-    { id: 'invite',  label: '🔓 Invite to Unlock', path: '/invite'  },
-    { id: 'friends', label: '👥 Friends',           path: '/friends' },
-    { id: 'clubs',   label: '🏰 Clubs',             path: '/clubs'   },
+    { id: 'players', label: tr('👤 Players'),           path: '/players' },
+    { id: 'invite',  label: tr('🔓 Invite to Unlock'), path: '/invite'  },
+    { id: 'friends', label: tr('👥 Friends'),           path: '/friends' },
+    { id: 'clubs',   label: tr('🏰 Clubs'),             path: '/clubs'   },
   ];
 
   const subtitles = {
@@ -1419,21 +1422,22 @@ export default function SocialHubPage() {
       <div className="sh-page">
 
         {/* Header */}
-        <div className="sh-header">
-          <div>
-            <h1 className="sh-title" style={{ margin: 0 }}>Social Hub</h1>
-            <p className="sh-subtitle">See who's most active and the best players across the app</p>
-          </div>
-          {/* Newsletter is public (no login), so guests get the door too. */}
-          <button
-            type="button"
-            className="sh-chat-launch"
-            title="Chess Nexus news and new features"
-            onClick={() => navigate('/newsletter')}
-          >
-            <span>📰 Newsletter</span>
-          </button>
-        </div>
+        <PageHeader
+          title={tr("Social Hub")}
+          titleClassName="sh-title"
+          subtitle={tr("See who's most active and the best players across the app")}
+          actions={
+            /* Newsletter is public (no login), so guests get the door too. */
+            <button
+              type="button"
+              className="sh-chat-launch"
+              title={tr("Chess Nexus news and new features")}
+              onClick={() => navigate('/newsletter')}
+            >
+              <span>{tr("📰 Newsletter")}</span>
+            </button>
+          }
+        />
 
         {/* Sign-up banner */}
         <div className="sh-guest-banner">
@@ -1446,9 +1450,9 @@ export default function SocialHubPage() {
           </div>
           <button
             className="sh-guest-banner-btn"
-            onClick={() => navigate('/login', { state: { message: 'Create a free account to join the community.' } })}
+            onClick={() => navigate('/login', { state: { message: tr('Create a free account to join the community.') } })}
           >
-            Log In / Sign Up — It's Free
+            {tr("Log In / Sign Up — It's Free")}
           </button>
         </div>
 
@@ -1456,7 +1460,7 @@ export default function SocialHubPage() {
         <PlayersTab />
 
         <AboutFeatureCTA
-          links={[{ label: "About Social Hub", to: "/chess-community" }]}
+          links={[{ label: tr("About Social Hub"), to: "/chess-community" }]}
         />
       </div>
     );
@@ -1470,15 +1474,12 @@ export default function SocialHubPage() {
 
       {/* Header — hidden in chat-only mode */}
       {!chatOnly && (
-      <div className="sh-header">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <h1 className="sh-title" style={{ margin: 0 }}>Social Hub</h1>
-            <CoffeeCta variant="pill" style={{ padding: '5px 12px', fontSize: 12 }} />
-          </div>
-          <p className="sh-subtitle">{subtitles[activeTab]}</p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <PageHeader
+        title={tr("Social Hub")}
+        titleClassName="sh-title"
+        titleExtra={<CoffeeCta variant="pill" style={{ padding: '5px 12px', fontSize: 'var(--fs-caption)' }} />}
+        subtitle={subtitles[activeTab]}
+        actions={<>
           {/* Most-active club shortcut — left of the Chat button */}
           {topClub && (
             <button
@@ -1489,7 +1490,7 @@ export default function SocialHubPage() {
             >
               <span className="sh-topclub-trophy">🏆</span>
               <span className="sh-topclub-text">
-                <span className="sh-topclub-label">Most active club</span>
+                <span className="sh-topclub-label">{tr("Most active club")}</span>
                 <span className="sh-topclub-name">{topClub.name}</span>
               </span>
             </button>
@@ -1500,36 +1501,31 @@ export default function SocialHubPage() {
           <button
             type="button"
             className="sh-chat-launch"
-            title="Chess Nexus news and new features"
+            title={tr("Chess Nexus news and new features")}
             onClick={() => navigate('/newsletter')}
           >
-            <span>📰 Newsletter</span>
+            <span>{tr("📰 Newsletter")}</span>
           </button>
           <button
             type="button"
             className={`sh-chat-launch${activeTab === 'chat' ? ' sh-chat-launch-active' : ''}`}
             onClick={() => navigate('/social/chat')}
           >
-            <span>💬 Chat</span>
+            <span>{tr("💬 Chat")}</span>
             {unreadCount > 0 && <span className="sh-chat-launch-badge">{unreadCount}</span>}
           </button>
-        </div>
-      </div>
+        </>}
+      />
       )}
 
       {/* Top-level Tabs — hidden in chat-only mode */}
       {!chatOnly && (
-      <div className="sh-tabs">
-        {TABS.map(t => (
-          <button
-            key={t.id}
-            className={`sh-tab${activeTab === t.id ? ' sh-tab-active' : ''}`}
-            onClick={() => navigate(t.path)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        fit
+        items={TABS}
+        active={activeTab}
+        onChange={id => navigate(TABS.find(t => t.id === id).path)}
+      />
       )}
 
       {/* Content */}
@@ -1541,7 +1537,7 @@ export default function SocialHubPage() {
 
       {!chatOnly && (
       <AboutFeatureCTA
-        links={[{ label: "About Social Hub", to: "/chess-community" }]}
+        links={[{ label: tr("About Social Hub"), to: "/chess-community" }]}
       />
       )}
     </div>

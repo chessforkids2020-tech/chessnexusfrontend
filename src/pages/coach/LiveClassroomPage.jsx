@@ -22,8 +22,11 @@ import { copyText } from '../../utils/clipboard';
 import { renderFrame } from '../../lib/videoEffects';
 import CoachArenaLive from './CoachArenaLive';
 import WhiteboardOverlay, { wbToolbarSpace } from '../../components/coach/WhiteboardOverlay';
+import WhiteboardPanel from '../../components/coach/WhiteboardPanel';
+import { wbPanelWidth } from '../../components/coach/whiteboardPanelSizes';
 import VideoDebugPanel from '../../components/coach/VideoDebugPanel';
 import { createSampler, collectStudentReport } from '../../lib/videoDebug';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Zoom-style tile layout: pick the column count that maximizes each tile's area for
 // the stage shape + count (so few people → big tiles), and return that tile width so
@@ -95,7 +98,7 @@ function StarMark({ stars = 0 }) {
   const color = STAR_TIER_COLOR[Math.min(stars, 5) - 1];
   return (
     <span
-      title={`${stars} of 5 stars`}
+      title={tr("{stars} of 5 stars", { stars: stars })}
       style={{ marginLeft: 5, color, fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap' }}
     >★{stars}</span>
   );
@@ -199,11 +202,11 @@ function FxPreview({ effects, blurOn, deviceId }) {
       {/* Video = the ACTUAL blurred output (shown once the blur processor is ready). */}
       <video ref={blurVideoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)', display: blurOn && blurPreviewReady ? 'block' : 'none' }} />
       <span style={{ position: 'absolute', left: 8, bottom: 8, fontSize: 11, fontWeight: 700, background: 'rgba(0,0,0,0.55)', padding: '2px 8px', borderRadius: 'var(--radius-sm)' }}>
-        Live preview — you
+        {tr("Live preview — you")}
       </span>
       {blurOn && (
         <span style={{ position: 'absolute', right: 8, bottom: 8, fontSize: 11, background: 'rgba(6,182,212,0.85)', color: '#04222a', padding: '2px 8px', borderRadius: 'var(--radius-sm)', fontWeight: 700 }}>
-          {blurPreviewReady ? '🌫️ Blur active' : '🌫️ Starting blur…'}
+          {blurPreviewReady ? tr('🌫️ Blur active') : tr('🌫️ Starting blur…')}
         </span>
       )}
     </div>
@@ -648,7 +651,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
                 gap: 8, background: 'rgba(0,0,0,0.72)',
               }}>
                 <div style={{ fontSize: 12, color: '#facc15', fontWeight: 700, textAlign: 'center', padding: '0 8px' }}>
-                  {local ? 'Your video is not showing' : `${label || 'This student'}'s video is not showing`}
+                  {local ? tr('Your video is not showing') : tr("{v0}'s video is not showing", { v0: label || tr('This student') })}
                 </div>
                 {local && onFixVideo ? (
                   <button
@@ -659,14 +662,14 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
                       fontWeight: 800, cursor: 'pointer',
                     }}
                   >
-                    🔄 Fix my video
+                    {tr("🔄 Fix my video")}
                   </button>
                 ) : (
                   // Nothing for the viewer to press — the repair is automatic and
                   // viewer-side. Saying so stops the coach chasing a child to
                   // reload mid-lesson for something already being retried.
                   <div style={{ fontSize: 10.5, color: '#e5e7eb', opacity: 0.85 }}>
-                    Reconnecting…
+                    {tr("Reconnecting…")}
                   </div>
                 )}
               </div>
@@ -680,7 +683,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
               : <AvatarFallback name={label} speaking={speaking} />}
             {camConnecting && (
               <div style={{ fontSize: 11, color: '#facc15', fontWeight: 600 }}>
-                Camera on — connecting…
+                {tr("Camera on — connecting…")}
               </div>
             )}
             {/* The same reassurance for your OWN tile. camConnecting is
@@ -689,7 +692,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
                 previously saw nothing but a blank tile and a repair button. */}
             {local && settling && !isScreen && (
               <div style={{ fontSize: 11, color: '#facc15', fontWeight: 600 }}>
-                Starting your camera…
+                {tr("Starting your camera…")}
               </div>
             )}
             {/* Self-repair, on the student's OWN tile only.
@@ -715,7 +718,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
                   fontWeight: 800, cursor: 'pointer',
                 }}
               >
-                🔄 Fix my video
+                {tr("🔄 Fix my video")}
               </button>
             )}
           </div>
@@ -730,7 +733,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
           two agree. */}
       {micOff && !isScreen && (
         <div
-          title="Microphone off"
+          title={tr("Microphone off")}
           style={{
             position: 'absolute', top: 6, right: 6,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -767,10 +770,10 @@ function Countdown({ endsAt, onExpire, unlimited }) {
     return () => clearInterval(id);
   }, [endsAt, onExpire, hasClock]);
   if (unlimited) {
-    return <span style={{ fontWeight: 700, color: '#94a3b8', fontSize: 13 }}>∞ no time limit</span>;
+    return <span style={{ fontWeight: 700, color: '#94a3b8', fontSize: 13 }}>{tr("∞ no time limit")}</span>;
   }
   if (!hasClock) {
-    return <span style={{ fontWeight: 700, color: '#94a3b8', fontSize: 13 }}>⏸ waiting for students</span>;
+    return <span style={{ fontWeight: 700, color: '#94a3b8', fontSize: 13 }}>{tr("⏸ waiting for students")}</span>;
   }
   const m = Math.floor(left / 60000), sec = Math.floor((left % 60000) / 1000);
   const low = left <= 60000;
@@ -886,8 +889,8 @@ function MoveTreeNotation({ tree, path, onJump, canNavigate, height, collapsed, 
   return (
     <div style={{ ...nt.wrap, width: collapsed ? 150 : (width || 300), height: collapsed ? 'auto' : (height || 420) }}>
       <div style={{ ...nt.title, cursor: onToggle ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-        onClick={onToggle} title={onToggle ? (collapsed ? 'Expand moves' : 'Collapse moves — more room for videos') : ''}>
-        <span>📝 Moves</span>
+        onClick={onToggle} title={onToggle ? (collapsed ? tr('Expand moves') : tr('Collapse moves — more room for videos')) : ''}>
+        <span>{tr("📝 Moves")}</span>
         {onToggle && <span style={{ fontSize: 13 }}>{collapsed ? '▸' : '▾'}</span>}
       </div>
       {!collapsed && (
@@ -986,16 +989,16 @@ function WaitingRoom({ note, user, joinCode }) {
             <div style={{ ...wr.avatarRing, animation: 'wrPulse 2.4s infinite' }}>
               {avatar
                 ? <img src={avatar} alt="" style={{ width: 76, height: 76, borderRadius: 'var(--radius-circle)', objectFit: 'cover' }} />
-                : <img src="/logo.png" alt="Chess Nexus" style={{ width: 60, height: 60, objectFit: 'contain' }} />}
+                : <img src="/logo.png" alt={tr("Chess Nexus")} style={{ width: 60, height: 60, objectFit: 'contain' }} />}
             </div>
           </div>
 
           {/* Live status pill — makes the "you're in the lobby" state explicit (Zoom-style). */}
           <div style={wr.statusPill}>
-            <span style={wr.statusDot} />Waiting to be admitted
+            <span style={wr.statusDot} />{tr("Waiting to be admitted")}
           </div>
 
-          <h1 style={wr.hi}>Hi {name}! 👋</h1>
+          <h1 style={wr.hi}>{tr("Hi")} {name}! 👋</h1>
           <p style={wr.sub}>{note || 'Your coach will let you in any moment now.'}</p>
 
           {/* Animated "getting ready" dots */}
@@ -1011,7 +1014,7 @@ function WaitingRoom({ note, user, joinCode }) {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block', verticalAlign: '-2px', marginRight: 5 }}>
                 <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.2 1 2.5h6c0-1.3.3-1.8 1-2.5A6 6 0 0 0 12 3Z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              While you wait
+              {tr("While you wait")}
             </div>
             <div key={tip} style={{ ...wr.tipText, animation: 'wrFade 1.2s ease' }}>{CHESS_TIPS[tip]}</div>
           </div>
@@ -1024,7 +1027,7 @@ function WaitingRoom({ note, user, joinCode }) {
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block', verticalAlign: '-3px', marginRight: 6 }}>
                 <path d="M7 4h10v3a5 5 0 0 1-10 0V4ZM7 6H4.5A2.5 2.5 0 0 0 7 10.5M17 6h2.5A2.5 2.5 0 0 1 17 10.5M9.5 14.5h5M12 12v2.5M8 20h8M10 17h4v3h-4z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              Star Students
+              {tr("Star Students")}
             </div>
             {board.top.map(r => (
               <div key={r.id} style={{ ...wr.lbRow, ...(r.isMe ? wr.lbMe : {}) }}>
@@ -1033,7 +1036,7 @@ function WaitingRoom({ note, user, joinCode }) {
                   ? <img src={r.avatar} alt="" style={wr.lbAvatar} />
                   : <span style={{ ...wr.lbAvatar, ...wr.lbAvatarFallback }}>{(r.name || '?').charAt(0).toUpperCase()}</span>}
                 <span style={wr.lbName}>{r.name}{r.isMe ? ' (you)' : ''}</span>
-                <span style={wr.lbXp}>{r.xp} XP</span>
+                <span style={wr.lbXp}>{r.xp} {tr("XP")}</span>
               </div>
             ))}
             {board.me && (
@@ -1044,8 +1047,8 @@ function WaitingRoom({ note, user, joinCode }) {
                   {board.me.avatar
                     ? <img src={board.me.avatar} alt="" style={wr.lbAvatar} />
                     : <span style={{ ...wr.lbAvatar, ...wr.lbAvatarFallback }}>{(board.me.name || '?').charAt(0).toUpperCase()}</span>}
-                  <span style={wr.lbName}>{board.me.name} (you)</span>
-                  <span style={wr.lbXp}>{board.me.xp} XP</span>
+                  <span style={wr.lbName}>{board.me.name} {tr("(you)")}</span>
+                  <span style={wr.lbXp}>{board.me.xp} {tr("XP")}</span>
                 </div>
               </>
             )}
@@ -1064,7 +1067,7 @@ const wr = {
   statusPill: { display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 4, padding: '5px 13px', borderRadius: 'var(--radius-pill)',
     fontSize: 11.5, fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase',
     color: '#6ee7b7', background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(52,211,153,0.28)' },
-  statusDot: { width: 7, height: 7, borderRadius: 'var(--radius-circle)', background: '#10b981', animation: 'wrDot 1.4s infinite' },
+  statusDot: { width: 7, height: 7, borderRadius: 'var(--radius-circle)', background: '#10b981', animation: tr('wrDot 1.4s infinite') },
   floaters: { position: 'absolute', inset: 0, pointerEvents: 'none' },
   // Card + leaderboard sit side by side (wrap to stacked on narrow screens).
   row: { position: 'relative', zIndex: 1, display: 'flex', gap: 16, alignItems: 'stretch',
@@ -1130,9 +1133,9 @@ function ClockRow({ game, hasClock }) {
 // The result label for a finished game.
 function resultLabel(g) {
   if (g.status !== 'finished') return null;
-  if (!g.winnerColor) return `½–½ ${g.result || 'Draw'}`;
+  if (!g.winnerColor) return `½–½ ${g.result || tr('Draw')}`;
   const name = g.winnerColor === 'white' ? g.white?.name : g.black?.name;
-  return `${name} won · ${g.result}`;
+  return tr("{name} won · {result}", { name: name, result: g.result });
 }
 
 // A Class-vs-Computer board → PGN, so the coach can review a student's engine
@@ -1151,8 +1154,8 @@ function engineBoardToPgn(board, game) {
     movetext += `${board.moves[i]} `;
   }
   const studentIsWhite = (game?.studentColor || 'white') !== 'black';
-  const student = board.studentName || 'Student';
-  const engine = `Computer (${game?.skill || 'medium'})`;
+  const student = board.studentName || tr('Student');
+  const engine = tr("Computer ({v0})", { v0: game?.skill || 'medium' });
   // result is stored from the STUDENT's point of view ("You won" / "You lost").
   const r = String(board.result || '').toLowerCase();
   const studentWon = r.includes('won') || r.includes('win');
@@ -1201,8 +1204,8 @@ function classGameToPgn(game) {
   const tags =
     `[Event "Play in class"]\n` +
     `[Date "${new Date().toISOString().slice(0, 10).replace(/-/g, '.')}"]\n` +
-    `[White "${game.white?.name || 'White'}"]\n` +
-    `[Black "${game.black?.name || 'Black'}"]\n` +
+    `[White "${game.white?.name || tr('White')}"]\n` +
+    `[Black "${game.black?.name || tr('Black')}"]\n` +
     `[Result "${res}"]\n` +
     (game.result ? `[Termination "${game.result}"]\n` : '') +
     `\n`;
@@ -1212,14 +1215,14 @@ function classGameToPgn(game) {
 // Build the student's result popup from their colour + the game outcome.
 // outcome: 'win' | 'loss' | 'draw'. reason is the how (Checkmate/Timeout/…).
 function buildGameOverPopup(myColor, result, winnerColor) {
-  const reason = result || 'Game over';
+  const reason = result || tr('Game over');
   if (!winnerColor) {
-    return { outcome: 'draw', emoji: '🤝', title: "It's a draw!", reason };
+    return { outcome: 'draw', emoji: '🤝', title: tr("It's a draw!"), reason };
   }
   const iWon = winnerColor === myColor;
   return iWon
-    ? { outcome: 'win', emoji: '🎉', title: 'You won!', reason }
-    : { outcome: 'loss', emoji: '😔', title: 'You lost', reason };
+    ? { outcome: 'win', emoji: '🎉', title: tr('You won!'), reason }
+    : { outcome: 'loss', emoji: '😔', title: tr('You lost'), reason };
 }
 
 // ── ♟ Play in class (coach): pair the admitted class into games, then watch all
@@ -1227,7 +1230,7 @@ function buildGameOverPopup(myColor, result, winnerColor) {
 function ClassPlaySection({ participants = [], classGames = [], classSpotlightId, classHasClock, onStartGames, onSpotlight, onEndGames, onReview, playEnded = false }) {
   const admitted = React.useMemo(
     () => (participants || []).filter(p => p.state === 'admitted' && p.studentId)
-      .map(p => ({ id: String(p.studentId), name: p.name || p.username || 'Student' })),
+      .map(p => ({ id: String(p.studentId), name: p.name || p.username || tr('Student') })),
     [participants]
   );
   const [tc, setTc] = useState('5+0');
@@ -1290,22 +1293,22 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
       <div style={cg.section}>
         <div style={cg.secHead}>
           <div style={{ fontSize: 15, fontWeight: 800 }}>
-            {playEnded ? '♟ Games to review' : '♟ Games in play'}
+            {playEnded ? tr('♟ Games to review') : tr('♟ Games in play')}
             <span style={{ color: '#9ca3af', fontWeight: 600 }}> ({classGames.length})</span>
           </div>
           {!playEnded ? (
-            <button style={cg.endBtn} onClick={() => { onEndGames && onEndGames(); setPairs([]); }}>■ End games</button>
+            <button style={cg.endBtn} onClick={() => { onEndGames && onEndGames(); setPairs([]); }}>{tr("■ End games")}</button>
           ) : (
             // The whole point of the fix: another round, without ending the class.
             <button style={cg.newRoundBtn} onClick={() => { setPairs([]); setSetupAgain(true); }}>
-              ♟ New round
+              {tr("♟ New round")}
             </button>
           )}
         </div>
         <div style={cg.hint}>
           {playEnded
-            ? <>Play is over. Hit <b>🔎 Review on board</b> on any game to walk through it — the whole class follows your board. Want them playing again? Hit <b>♟ New round</b> to re-pair the class.</>
-            : <>Click <b>Spotlight</b> on any board — every non-playing student watches that board.</>}
+            ? <>{tr("Play is over. Hit")} <b>{tr("🔎 Review on board")}</b> {tr("on any game to walk through it — the whole class follows your board. Want them playing again? Hit")} <b>{tr("♟ New round")}</b> {tr("to re-pair the class.")}</>
+            : <>{tr("Click")} <b>{tr("Spotlight")}</b> {tr("on any board — every non-playing student watches that board.")}</>}
         </div>
         <div style={cg.grid}>
           {classGames.map(g => {
@@ -1324,14 +1327,14 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
                 <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
                   {g.status !== 'finished' && (
                     <button style={{ ...cg.spotBtn, ...(spot ? cg.spotBtnOn : {}) }} onClick={() => onSpotlight && onSpotlight(g.id)}>
-                      {spot ? '★ Spotlighted' : '☆ Spotlight'}
+                      {spot ? tr('★ Spotlighted') : tr('☆ Spotlight')}
                     </button>
                   )}
                   {/* Push this game's moves onto the shared teaching board to analyze
                       it with the class (works for finished OR in-progress games). */}
                   {(g.moves?.length > 0) && (
-                    <button style={cg.reviewBtn} onClick={() => onReview && onReview(g)} title="Load this game on the teaching board to analyze">
-                      🔎 Review on board
+                    <button style={cg.reviewBtn} onClick={() => onReview && onReview(g)} title={tr("Load this game on the teaching board to analyze")}>
+                      {tr("🔎 Review on board")}
                     </button>
                   )}
                   {/* Take the game out of the class — paste into a study, an
@@ -1340,7 +1343,7 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
                     <button
                       style={cg.reviewBtn}
                       onClick={() => copyGamePgn(g)}
-                      title="Copy this game's PGN to the clipboard"
+                      title={tr("Copy this game's PGN to the clipboard")}
                     >
                       {copiedId === g.id ? '✓ Copied' : '📋 Copy PGN'}
                     </button>
@@ -1359,28 +1362,28 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
     <div style={cg.section}>
       <div style={cg.secHead}>
         <div style={{ fontSize: 15, fontWeight: 800 }}>
-          {setupAgain ? '♟ New round — pair the class again' : '♟ Play in class'}
+          {setupAgain ? tr('♟ New round — pair the class again') : tr('♟ Play in class')}
         </div>
         {/* The previous round's games are still held for review; don't strand the
             coach in the setup form if they only wanted to look. */}
         {setupAgain && classGames.length > 0 && (
-          <button style={cg.backBtn} onClick={() => setSetupAgain(false)}>← Back to the games</button>
+          <button style={cg.backBtn} onClick={() => setSetupAgain(false)}>{tr("← Back to the games")}</button>
         )}
       </div>
       {admitted.length < 2 ? (
-        <div style={as.empty}>Admit at least 2 students to start games. Currently admitted: {admitted.length}.</div>
+        <div style={as.empty}>{tr("Admit at least 2 students to start games. Currently admitted:")} {admitted.length}.</div>
       ) : (
         <>
           <div style={cg.hint}>Pair students into games — the whole class can play at once. Each plays their own board; you watch them all.</div>
           <div style={cg.controls}>
-            <label style={cg.lbl}>Time
+            <label style={cg.lbl}>{tr("Time")}
               <select value={tc} onChange={e => setTc(e.target.value)} style={cg.select}>
                 <option value="3+2">3 + 2</option>
                 <option value="5+0">5 + 0</option>
                 <option value="10+0">10 + 0</option>
                 <option value="15+10">15 + 10</option>
-                <option value="none">No clock</option>
-                <option value="custom">Custom…</option>
+                <option value="none">{tr("No clock")}</option>
+                <option value="custom">{tr("Custom…")}</option>
               </select>
             </label>
             {tc === 'custom' && (
@@ -1392,35 +1395,35 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
                   onChange={e => setCustomInc(e.target.value)} style={{ ...cg.select, width: 58 }} /> sec
               </span>
             )}
-            <button style={cg.ghostBtn} onClick={autoPair}>⚡ Auto-pair all</button>
-            <button style={cg.ghostBtn} onClick={addGame}>＋ Add game</button>
+            <button style={cg.ghostBtn} onClick={autoPair}>{tr("⚡ Auto-pair all")}</button>
+            <button style={cg.ghostBtn} onClick={addGame}>{tr("＋ Add game")}</button>
           </div>
           {pairs.length === 0 ? (
-            <div style={{ ...as.empty, marginTop: 8 }}>No games yet — click <b>Auto-pair all</b> or <b>Add game</b>.</div>
+            <div style={{ ...as.empty, marginTop: 8 }}>{tr("No games yet — click")} <b>{tr("Auto-pair all")}</b> {tr("or")} <b>{tr("Add game")}</b>.</div>
           ) : (
             <div style={cg.pairList}>
               {pairs.map((p, i) => (
                 <div key={i} style={cg.pairRow}>
-                  <span style={cg.pairNo}>Game {i + 1}</span>
+                  <span style={cg.pairNo}>{tr("Game")} {i + 1}</span>
                   <select value={p.whiteId} onChange={e => setSide(i, 'whiteId', e.target.value)} style={cg.select}>
-                    <option value="">♙ White…</option>
+                    <option value="">{tr("♙ White…")}</option>
                     {admitted.filter(a => a.id === p.whiteId || !usedIds.has(a.id)).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                   </select>
-                  <span style={{ color: '#9ca3af' }}>vs</span>
+                  <span style={{ color: '#9ca3af' }}>{tr("vs")}</span>
                   <select value={p.blackId} onChange={e => setSide(i, 'blackId', e.target.value)} style={cg.select}>
-                    <option value="">♟ Black…</option>
+                    <option value="">{tr("♟ Black…")}</option>
                     {admitted.filter(a => a.id === p.blackId || !usedIds.has(a.id)).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                   </select>
-                  <button style={cg.rmBtn} title="Remove game" onClick={() => removeGame(i)}>✕</button>
+                  <button style={cg.rmBtn} title={tr("Remove game")} onClick={() => removeGame(i)}>✕</button>
                 </div>
               ))}
             </div>
           )}
           {freeStudents.length > 0 && (
-            <div style={cg.free}>Not yet paired: {freeStudents.map(a => a.name).join(', ')}</div>
+            <div style={cg.free}>{tr("Not yet paired:")} {freeStudents.map(a => a.name).join(', ')}</div>
           )}
           <button style={cg.startBtn} onClick={start} disabled={pairs.every(p => !(p.whiteId && p.blackId && p.whiteId !== p.blackId))}>
-            ▶ Start games
+            {tr("▶ Start games")}
           </button>
         </>
       )}
@@ -1473,7 +1476,7 @@ function MoveNotation({ moves = [], viewPly, onJump }) {
     <div style={{ flex: 1, minHeight: 120, maxHeight: 300, overflowY: 'auto', width: '100%',
       background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-md)', padding: '8px 6px' }}>
       {rows.length === 0
-        ? <div style={{ color: '#6b7280', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>No moves yet</div>
+        ? <div style={{ color: '#6b7280', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>{tr("No moves yet")}</div>
         : rows.map(r => (
           <div key={r.n} style={{ display: 'flex', fontSize: 14, fontVariantNumeric: 'tabular-nums', lineHeight: 1.7 }}>
             <span style={{ width: 34, color: '#6b7280', textAlign: 'right', paddingRight: 8 }}>{r.n}.</span>
@@ -1553,7 +1556,7 @@ function ClassGameStudentStage({ myGame, myColor, spotlightGame, hasClock, board
                                 finishedMyGame = false, watchableGames = [], onWatch }) {
   const game = myGame || spotlightGame;
   const nav = useMoveNav(game?.moves || [], game?.fen); // hook before any early return
-  if (!game) return <div style={as.empty}>Waiting for the coach to start a game…</div>;
+  if (!game) return <div style={as.empty}>{tr("Waiting for the coach to start a game…")}</div>;
   const iAmPlayer = !!myGame;
   // Only move on the LIVE position (not while reviewing) and on my turn.
   const myTurn = iAmPlayer && game.status === 'active' && game.turn === myColor && nav.atLive;
@@ -1586,7 +1589,7 @@ function ClassGameStudentStage({ myGame, myColor, spotlightGame, hasClock, board
       {/* MIDDLE — top clock, notation, nav, bottom clock + names + status */}
       <div style={{ flex: '1 1 240px', minWidth: 240, maxWidth: 340, display: 'flex', flexDirection: 'column', gap: 8, alignSelf: 'stretch' }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#9ca3af' }}>
-          {iAmPlayer ? '♟ Your game' : `👀 Watching ${game.white?.name} vs ${game.black?.name}`}
+          {iAmPlayer ? tr('♟ Your game') : tr("👀 Watching {name} vs {v1}", { name: game.white?.name, v1: game.black?.name })}
         </div>
         <PlayerClock name={nameOf(topColor)} color={topColor} game={game} hasClock={hasClock}
           active={game.status === 'active' && game.turn === topColor} />
@@ -1601,7 +1604,7 @@ function ClassGameStudentStage({ myGame, myColor, spotlightGame, hasClock, board
                 <span style={{ color: myTurn ? '#6ee7b7' : '#9ca3af', fontSize: 13, fontWeight: 700 }}>
                   {game.turn === myColor ? (nav.atLive ? 'Your move' : 'Reviewing — go to Latest to move') : 'Waiting for opponent…'}
                 </span>
-                <button style={cg.rmBtn2} onClick={() => onResign && onResign(game.id)}>Resign</button>
+                <button style={cg.rmBtn2} onClick={() => onResign && onResign(game.id)}>{tr("Resign")}</button>
               </div>
             : <div style={{ color: '#9ca3af', fontSize: 13 }}>
                 {finishedMyGame
@@ -1617,7 +1620,7 @@ function ClassGameStudentStage({ myGame, myColor, spotlightGame, hasClock, board
                 key={g.id}
                 style={{ ...cg.rmBtn2, ...(g.id === game.id ? { borderColor: '#06b6d4', color: '#67e8f9' } : {}) }}
                 onClick={() => onWatch && onWatch(g.id)}
-                title={`Watch ${g.white?.name} vs ${g.black?.name}`}
+                title={tr("Watch {name} vs {v1}", { name: g.white?.name, v1: g.black?.name })}
               >
                 {g.white?.name} v {g.black?.name}
               </button>
@@ -1634,7 +1637,7 @@ function ClassGameStudentStage({ myGame, myColor, spotlightGame, hasClock, board
 function SimulCoachStage({ simul, activeBoard, boardWidth, onMove, onFocus, onEnd }) {
   // Move nav for the CURRENTLY-focused board (notation of the active chessboard).
   const nav = useMoveNav(activeBoard?.moves || [], activeBoard?.fen);
-  if (!simul || !activeBoard) return <div style={as.empty}>Starting the simul…</div>;
+  if (!simul || !activeBoard) return <div style={as.empty}>{tr("Starting the simul…")}</div>;
   const coachColor = simul.coachColor;
   // Move only on the live position + coach's turn (not while reviewing history).
   const coachTurn = activeBoard.status === 'active' && activeBoard.turn === coachColor && nav.atLive;
@@ -1650,12 +1653,12 @@ function SimulCoachStage({ simul, activeBoard, boardWidth, onMove, onFocus, onEn
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 10, flexWrap: 'wrap' }}>
         <div style={{ fontSize: 14, fontWeight: 800, color: '#e2e8f0' }}>
-          ♟ Simul — you play <b style={{ color: '#67e8f9' }}>{coachColor}</b> · vs {activeBoard.studentName}
+          {tr("♟ Simul — you play")} <b style={{ color: '#67e8f9' }}>{coachColor}</b> {tr("· vs")} {activeBoard.studentName}
         </div>
-        <button style={cg.endBtn} onClick={() => onEnd && onEnd()}>■ End simul</button>
+        <button style={cg.endBtn} onClick={() => onEnd && onEnd()}>{tr("■ End simul")}</button>
       </div>
       {waiting > 0 && (
-        <div style={{ fontSize: 12.5, color: '#fcd34d' }}>{waiting} board{waiting === 1 ? '' : 's'} waiting for your move — click one below to play it.</div>
+        <div style={{ fontSize: 12.5, color: '#fcd34d' }}>{waiting} {tr("board")}{waiting === 1 ? '' : 's'} {tr("waiting for your move — click one below to play it.")}</div>
       )}
       {/* Big active board LEFT + notation/nav on the RIGHT (of the board). */}
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
@@ -1664,14 +1667,14 @@ function SimulCoachStage({ simul, activeBoard, boardWidth, onMove, onFocus, onEn
             draggable={coachTurn} onDrop={onDrop} orientation={coachColor} />
         </div>
         <div style={{ flex: '1 1 220px', minWidth: 220, maxWidth: 320, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#9ca3af' }}>vs {activeBoard.studentName}</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#9ca3af' }}>{tr("vs")} {activeBoard.studentName}</div>
           <MoveNotation moves={activeBoard.moves} viewPly={nav.ply} onJump={nav.jumpTo} />
           <NavControls nav={nav} />
           <div style={{ textAlign: 'center', fontSize: 13, fontWeight: 700,
             color: activeBoard.status === 'finished' ? '#6ee7b7' : coachTurn ? '#6ee7b7' : '#9ca3af' }}>
             {activeBoard.status === 'finished' ? `🏁 ${resultLabel(activeBoard)}`
               : activeBoard.turn === coachColor ? (nav.atLive ? 'Your move' : 'Reviewing — go to Latest to move')
-              : `${activeBoard.studentName} to move`}
+              : tr("{studentName} to move", { studentName: activeBoard.studentName })}
           </div>
         </div>
       </div>
@@ -1681,7 +1684,7 @@ function SimulCoachStage({ simul, activeBoard, boardWidth, onMove, onFocus, onEn
           const isActive = b.id === activeBoard.id;
           const yourTurn = b.status === 'active' && b.turn === coachColor;
           return (
-            <button key={b.id} onClick={() => onFocus && onFocus(b.id)} title={`Play ${b.studentName}`}
+            <button key={b.id} onClick={() => onFocus && onFocus(b.id)} title={tr("Play {studentName}", { studentName: b.studentName })}
               style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', position: 'relative' }}>
               <div style={{ borderRadius: 'var(--radius-sm)', padding: 2, border: isActive ? '2px solid #22c55e' : '2px solid transparent',
                 boxShadow: isActive ? '0 0 0 2px rgba(34,197,94,0.25)' : 'none' }}>
@@ -1704,7 +1707,7 @@ function SimulCoachStage({ simul, activeBoard, boardWidth, onMove, onFocus, onEn
 function SimulStudentStage({ myBoard, myColor, activeBoard, boardWidth, onMove, onResign }) {
   const board = myBoard || activeBoard;
   const nav = useMoveNav(board?.moves || [], board?.fen);
-  if (!board) return <div style={as.empty}>Waiting for the coach's simul…</div>;
+  if (!board) return <div style={as.empty}>{tr("Waiting for the coach's simul…")}</div>;
   const iAmPlayer = !!myBoard;
   // Can only move on the LIVE position (not while reviewing history) and on my turn.
   const myTurn = iAmPlayer && board.status === 'active' && board.turn === myColor && nav.atLive;
@@ -1717,7 +1720,7 @@ function SimulStudentStage({ myBoard, myColor, activeBoard, boardWidth, onMove, 
   };
   const topName = orient === 'white' ? board.black?.studentName : board.white?.studentName;
   // In a simul the opponent is always "the coach" for a player; for a spectator show the student's name.
-  const oppLabel = iAmPlayer ? 'your coach' : board.studentName;
+  const oppLabel = iAmPlayer ? tr('your coach') : board.studentName;
   return (
     <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap', width: '100%', justifyContent: 'center' }}>
       {/* LEFT — the board */}
@@ -1729,7 +1732,7 @@ function SimulStudentStage({ myBoard, myColor, activeBoard, boardWidth, onMove, 
       <div style={{ flex: '1 1 240px', minWidth: 240, maxWidth: 340, display: 'flex', flexDirection: 'column', gap: 8, alignSelf: 'stretch' }}>
         <div style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0' }}>
           {iAmPlayer
-            ? <>♟ You are <b style={{ color: myColor === 'white' ? '#f1f5f9' : '#93c5fd' }}>{myColor}</b> vs your coach</>
+            ? <>{tr("♟ You are")} <b style={{ color: myColor === 'white' ? '#f1f5f9' : '#93c5fd' }}>{myColor}</b> {tr("vs your coach")}</>
             : <>👀 Watching the coach play {board.studentName}</>}
         </div>
         <MoveNotation moves={board.moves} viewPly={nav.ply} onJump={nav.jumpTo} />
@@ -1741,9 +1744,9 @@ function SimulStudentStage({ myBoard, myColor, activeBoard, boardWidth, onMove, 
                 <span style={{ color: myTurn ? '#6ee7b7' : '#9ca3af', fontSize: 13, fontWeight: 700 }}>
                   {board.turn === myColor ? (nav.atLive ? 'Your move' : 'Reviewing — go to Latest to move') : 'Waiting for your coach…'}
                 </span>
-                <button style={cg.rmBtn2} onClick={() => onResign && onResign(board.id)}>Resign</button>
+                <button style={cg.rmBtn2} onClick={() => onResign && onResign(board.id)}>{tr("Resign")}</button>
               </div>
-            : <div style={{ color: '#9ca3af', fontSize: 13 }}>Your coach chooses which board everyone watches.</div>}
+            : <div style={{ color: '#9ca3af', fontSize: 13 }}>{tr("Your coach chooses which board everyone watches.")}</div>}
       </div>
     </div>
   );
@@ -1753,16 +1756,16 @@ function SimulStudentStage({ myBoard, myColor, activeBoard, boardWidth, onMove, 
 function SimulSetupSection({ participants = [], simul, onCreate, onStart, onEnd }) {
   const [color, setColor] = useState('white');
   const admitted = (participants || []).filter(p => p.state === 'admitted' && p.studentId)
-    .map(p => ({ id: String(p.studentId), name: p.name || p.username || 'Student' }));
+    .map(p => ({ id: String(p.studentId), name: p.name || p.username || tr('Student') }));
   const status = simul?.status;
 
   // Active simul → a compact note (the play surface is on the stage, not here).
   if (status === 'active') {
     return (
       <div style={cg.section}>
-        <div style={cg.secHead}><div style={{ fontSize: 15, fontWeight: 800 }}>♟ Simul in progress</div>
-          <button style={cg.endBtn} onClick={() => onEnd && onEnd()}>■ End simul</button></div>
-        <div style={cg.hint}>Your simul boards are live on the stage.</div>
+        <div style={cg.secHead}><div style={{ fontSize: 15, fontWeight: 800 }}>{tr("♟ Simul in progress")}</div>
+          <button style={cg.endBtn} onClick={() => onEnd && onEnd()}>{tr("■ End simul")}</button></div>
+        <div style={cg.hint}>{tr("Your simul boards are live on the stage.")}</div>
       </div>
     );
   }
@@ -1773,22 +1776,22 @@ function SimulSetupSection({ participants = [], simul, onCreate, onStart, onEnd 
     const nJoined = admitted.filter(a => joined.has(a.id)).length;
     return (
       <div style={cg.section}>
-        <div style={cg.secHead}><div style={{ fontSize: 15, fontWeight: 800 }}>♟ Simul lobby</div>
-          <button style={cg.endBtn} onClick={() => onEnd && onEnd()}>Cancel</button></div>
-        <div style={cg.hint}>Request sent to the class. Students who accept appear as <b style={{ color: '#6ee7b7' }}>Joined</b>. Start when ready.</div>
+        <div style={cg.secHead}><div style={{ fontSize: 15, fontWeight: 800 }}>{tr("♟ Simul lobby")}</div>
+          <button style={cg.endBtn} onClick={() => onEnd && onEnd()}>{tr("Cancel")}</button></div>
+        <div style={cg.hint}>{tr("Request sent to the class. Students who accept appear as")} <b style={{ color: '#6ee7b7' }}>{tr("Joined")}</b>{tr(". Start when ready.")}</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
           {admitted.map(a => (
             <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, padding: '4px 0' }}>
               <span style={{ color: '#e2e8f0' }}>{a.name}</span>
               {joined.has(a.id)
-                ? <span style={{ color: '#6ee7b7', fontWeight: 700 }}>✓ Joined</span>
-                : <span style={{ color: '#9ca3af' }}>… waiting</span>}
+                ? <span style={{ color: '#6ee7b7', fontWeight: 700 }}>{tr("✓ Joined")}</span>
+                : <span style={{ color: '#9ca3af' }}>{tr("… waiting")}</span>}
             </div>
           ))}
         </div>
         <button style={{ ...cg.startBtn, ...(nJoined === 0 ? { opacity: 0.5, cursor: 'not-allowed' } : {}) }}
           disabled={nJoined === 0} onClick={() => onStart && onStart()}>
-          ▶ Start simul ({nJoined} joined)
+          {tr("▶ Start simul (")}{nJoined} {tr("joined)")}
         </button>
       </div>
     );
@@ -1797,20 +1800,20 @@ function SimulSetupSection({ participants = [], simul, onCreate, onStart, onEnd 
   // Not created yet → create card.
   return (
     <div style={cg.section}>
-      <div style={cg.secHead}><div style={{ fontSize: 15, fontWeight: 800 }}>♟ Simul (play the whole class)</div></div>
+      <div style={cg.secHead}><div style={{ fontSize: 15, fontWeight: 800 }}>{tr("♟ Simul (play the whole class)")}</div></div>
       {admitted.length < 1 ? (
-        <div style={as.empty}>Admit at least 1 student to run a simul.</div>
+        <div style={as.empty}>{tr("Admit at least 1 student to run a simul.")}</div>
       ) : (
         <>
-          <div style={cg.hint}>You play every student at once. Pick your colour, send the request, then start once students join.</div>
+          <div style={cg.hint}>{tr("You play every student at once. Pick your colour, send the request, then start once students join.")}</div>
           <div style={cg.controls}>
-            <label style={cg.lbl}>You play
+            <label style={cg.lbl}>{tr("You play")}
               <select value={color} onChange={e => setColor(e.target.value)} style={cg.select}>
-                <option value="white">White on all boards</option>
-                <option value="black">Black on all boards</option>
+                <option value="white">{tr("White on all boards")}</option>
+                <option value="black">{tr("Black on all boards")}</option>
               </select>
             </label>
-            <button style={cg.startBtn} onClick={() => onCreate && onCreate(color)}>Send simul request →</button>
+            <button style={cg.startBtn} onClick={() => onCreate && onCreate(color)}>{tr("Send simul request →")}</button>
           </div>
         </>
       )}
@@ -1831,21 +1834,21 @@ function EngineSetup({ currentFen, onCreate }) {
   return (
     <div style={as.lobbyBox}>
       <div style={as.setupRow}>
-        <span style={as.setupLabel}>Students play</span>
+        <span style={as.setupLabel}>{tr("Students play")}</span>
         <select style={as.select} value={studentColor} onChange={e => setStudentColor(e.target.value)}>
-          <option value="white">White</option>
-          <option value="black">Black</option>
+          <option value="white">{tr("White")}</option>
+          <option value="black">{tr("Black")}</option>
         </select>
-        <span style={as.setupLabel}>Computer</span>
+        <span style={as.setupLabel}>{tr("Computer")}</span>
         <select style={as.select} value={skill} onChange={e => setSkill(e.target.value)}>
-          <option value="easy">Easy</option>
-          <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
+          <option value="easy">{tr("Easy")}</option>
+          <option value="medium">{tr("Medium")}</option>
+          <option value="hard">{tr("Hard")}</option>
         </select>
       </div>
       <button type="button" style={as.primaryBtn}
         onClick={() => onCreate?.(currentFen, studentColor, skill)}>
-        Send this position to the class
+        {tr("Send this position to the class")}
       </button>
     </div>
   );
@@ -1887,22 +1890,22 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
   // Tabs so Play in class / Simul / Arena aren't stacked in one long scroll — the
   // coach picks one and sees only it (Simul was hidden way at the bottom before).
   const TABS = [
-    { id: 'play', label: '♟ Play in class' },
-    { id: 'simul', label: '♟ Simul' },
-    { id: 'engine', label: '🤖 Vs Computer' },
-    { id: 'arena', label: '🏁 Races & Tournaments' },
+    { id: 'play', label: tr('♟ Play in class') },
+    { id: 'simul', label: tr('♟ Simul') },
+    { id: 'engine', label: tr('🤖 Vs Computer') },
+    { id: 'arena', label: tr('🏁 Races & Tournaments') },
   ];
 
   return (
     <div style={as.wrap}>
       <div style={as.head}>
-        <div style={{ fontSize: 18, fontWeight: 800 }}>🎯 Class activities</div>
+        <div style={{ fontSize: 18, fontWeight: 800 }}>{tr("🎯 Class activities")}</div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button style={as.ghost} onClick={onReload}>↻ Refresh</button>
+          <button style={as.ghost} onClick={onReload}>{tr("↻ Refresh")}</button>
           {/* Only CREATE leaves the class (new tab) — everything else stays here. */}
-          <a style={as.create} href="/arena/create?coach=1" target="_blank" rel="noopener noreferrer">＋ Create Race ↗</a>
-          <a style={as.create} href="/arenatournament/create?coach=1" target="_blank" rel="noopener noreferrer">＋ Tournament ↗</a>
-          <button style={as.ghost} onClick={onClose}>✕ Close</button>
+          <a style={as.create} href="/arena/create?coach=1" target="_blank" rel="noopener noreferrer">{tr("＋ Create Race ↗")}</a>
+          <a style={as.create} href="/arenatournament/create?coach=1" target="_blank" rel="noopener noreferrer">{tr("＋ Tournament ↗")}</a>
+          <button style={as.ghost} onClick={onClose}>{tr("✕ Close")}</button>
         </div>
       </div>
 
@@ -1931,7 +1934,7 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
 
       {actTab === 'engine' && (
         <div style={as.pane}>
-          <div style={as.paneHead}>🤖 Whole class vs Computer</div>
+          <div style={as.paneHead}>{tr("🤖 Whole class vs Computer")}</div>
           <div style={as.paneNote}>
             Set a position on the teaching board, then send it to the class — every
             student plays it against the computer on their own device. You just watch.
@@ -1946,16 +1949,16 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
               </div>
               <button type="button" style={as.primaryBtn}
                 onClick={onEngineStart} disabled={!(engineGame.joined?.length)}>
-                Start — everyone plays
+                {tr("Start — everyone plays")}
               </button>
-              <button type="button" style={as.ghostBtn} onClick={onEngineEnd}>Cancel</button>
+              <button type="button" style={as.ghostBtn} onClick={onEngineEnd}>{tr("Cancel")}</button>
             </div>
           ) : (
             <div style={as.lobbyBox}>
               <div style={as.lobbyLine}>
-                Running · {engineGame.boards?.length || 0} boards
+                {tr("Running ·")} {engineGame.boards?.length || 0} {tr("boards")}
               </div>
-              <button type="button" style={as.ghostBtn} onClick={onEngineEnd}>End activity</button>
+              <button type="button" style={as.ghostBtn} onClick={onEngineEnd}>{tr("End activity")}</button>
             </div>
           )}
         </div>
@@ -1973,16 +1976,16 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
 
       {actTab === 'arena' && (
         loading ? (
-          <div style={as.empty}>Loading your activities…</div>
+          <div style={as.empty}>{tr("Loading your activities…")}</div>
         ) : (races.length === 0 && tournaments.length === 0) ? (
-          <div style={as.empty}>No activities yet. Click <b>＋ Create Race</b> — it opens in a new tab; once created it shows here.</div>
+          <div style={as.empty}>{tr("No activities yet. Click")} <b>{tr("＋ Create Race")}</b> — it opens in a new tab; once created it shows here.</div>
         ) : (
           <div style={as.grid}>
             {races.map(r => (
               <div key={r._id} style={as.card}>
                 <div style={as.cardName}>🏁 {r.name || 'Race'}</div>
-                <div style={as.cardMeta}>{r.topic} · {r.timeLimit} min · {chip(r.status)}</div>
-                <div style={as.cardSub}>{r.joined ?? 0}/{r.invited ?? 0} students joined</div>
+                <div style={as.cardMeta}>{r.topic} · {r.timeLimit} {tr("min ·")} {chip(r.status)}</div>
+                <div style={as.cardSub}>{r.joined ?? 0}/{r.invited ?? 0} {tr("students joined")}</div>
                 <button style={as.watch} onClick={() => setWatch({ kind: 'race', roomId: r.roomId })}>
                   {r.status === 'completed' ? '📊 Results' : '👀 Watch live'}
                 </button>
@@ -1991,7 +1994,7 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
             {tournaments.map(t => (
               <div key={t._id} style={as.card}>
                 <div style={as.cardName}>🏆 {t.name || 'Tournament'}</div>
-                <div style={as.cardMeta}>{chip(t.status)} · {t.participantCount || 0} joined</div>
+                <div style={as.cardMeta}>{chip(t.status)} · {t.participantCount || 0} {tr("joined")}</div>
                 {/* Tournament live view stays a route for now — opens in a new tab. */}
                 <a style={as.watch} href={`/coach/arena-tournament/${t._id}`} target="_blank" rel="noopener noreferrer">
                   {t.status === 'finished' ? '📊 Results ↗' : '👀 Watch ↗'}
@@ -2002,7 +2005,7 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
         )
       )}
 
-      <div style={as.foot}>Students join from the link you share in class chat — they stay in this class in their own tab.</div>
+      <div style={as.foot}>{tr("Students join from the link you share in class chat — they stay in this class in their own tab.")}</div>
     </div>
   );
 }
@@ -2069,7 +2072,7 @@ const cg = {
 // "You" so the message still makes sense for an account with no name set.
 function firstName(u) {
   const full = String(u?.displayName || u?.username || '').trim();
-  return full ? full.split(/\s+/)[0] : 'You';
+  return full ? full.split(/\s+/)[0] : tr('You');
 }
 
 export default function LiveClassroomPage({ mode = 'host' }) {
@@ -2116,12 +2119,26 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // position is derived from nodeAtPath(tree, path).fen. Everyone stays in sync.
   const [tree, setTree] = useState(() => buildTreeFromPgn(''));
   const [treePath, setTreePath] = useState([]);
-  // Drawn arrows + square highlights on the board, synced to everyone.
+  // Arrows + square highlights drawn by SOMEONE ELSE (coach, or the student with
+  // control), received over the socket. Shown on every board — including the
+  // coach's and the controller's. Your own drawing lives in your board's local
+  // state, so it is never put here (it would render twice).
   const [drawArrows, setDrawArrows] = useState([]);       // [{ from, to, color }]
   const [drawHighlights, setDrawHighlights] = useState({}); // { square: color }
+  // JSON of the last drawing this client sent, so the server replaying it back
+  // (late join / reconnect sends the stored drawing) isn't shown as a 2nd copy.
+  const lastSentDrawRef = useRef('');
   const [wbActive, setWbActive] = useState(false);
   const [wbStrokes, setWbStrokes] = useState([]);
   const [wbTexts, setWbTexts] = useState([]);
+  // Side whiteboard panel (blank board beside the chessboard). Live only — not
+  // persisted, so a late joiner sees it once the coach next changes it.
+  const [wbPanel, setWbPanel] = useState({ open: false, side: 'left', size: 'M' });
+  const [pnStrokes, setPnStrokes] = useState([]);
+  const [pnTexts, setPnTexts] = useState([]);
+  // Latest of all four layers, so whichever one changes can re-send the whole
+  // whiteboard without a stale closure dropping the other.
+  const wbAllRef = useRef({ bs: [], bt: [], ps: [], pt: [], panel: { open: false, side: 'left', size: 'M' } });
   // Video debug: coach toggles it; students report only while it is on.
   const [debugOn, setDebugOn] = useState(false);
   const [debugReports, setDebugReports] = useState({}); // userId -> { report, name }
@@ -2408,15 +2425,43 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   };
 
   // Coach/controller drew arrows or highlighted squares → broadcast to everyone.
+  // Not stored in drawArrows: the drawer's board already shows its own drawing.
   const onBoardDrawing = ({ arrows, highlights }) => {
     if (!iControl) return;
-    setDrawArrows(arrows); setDrawHighlights(highlights);
+    lastSentDrawRef.current = JSON.stringify({ arrows, highlights });
     if (session) socket.emit('liveclass:draw', { sessionId: session.id, arrows, highlights });
+  };
+
+  // The server relays only { strokes, texts } for the whiteboard (no backend
+  // change for the side panel), so panel marks ride in the same two arrays tagged
+  // `layer: 'panel'`, and the panel's open/side/size travels as one tagged
+  // 'panel-state' entry in `texts`. Receivers split them apart again.
+  const sendWhiteboard = (patch) => {
+    const all = Object.assign(wbAllRef.current, patch);
+    if (!session) return;
+    socket.emit('liveclass:whiteboard', {
+      sessionId: session.id,
+      strokes: [...all.bs, ...all.ps.map(x => ({ ...x, layer: 'panel' }))],
+      texts: [
+        ...all.bt,
+        ...all.pt.map(x => ({ ...x, layer: 'panel' })),
+        { id: '__wbpanel', layer: 'panel-state', text: '', ...all.panel },
+      ],
+    });
   };
 
   const onWhiteboardUpdate = (strokes, texts) => {
     setWbStrokes(strokes); setWbTexts(texts);
-    if (session) socket.emit('liveclass:whiteboard', { sessionId: session.id, strokes, texts });
+    sendWhiteboard({ bs: strokes, bt: texts });
+  };
+  const onPanelUpdate = (strokes, texts) => {
+    setPnStrokes(strokes); setPnTexts(texts);
+    sendWhiteboard({ ps: strokes, pt: texts });
+  };
+  const changeWbPanel = (changes) => {
+    const panel = { ...wbAllRef.current.panel, ...changes };
+    setWbPanel(panel);
+    sendWhiteboard({ panel });
   };
 
   // Keep a stable handle to the LiveKit connect fn so callbacks/effects don't
@@ -2453,11 +2498,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       r = await api.post(tokenUrl);
     } catch (e) {
       const status = e.response?.status;
-      if (status === 403) { setPhase('waiting'); setNote('Waiting for the coach to let you in…'); return; }
+      if (status === 403) { setPhase('waiting'); setNote(tr('Waiting for the coach to let you in…')); return; }
       if (status === 503) {
         // SFU not set up yet — stay in the class, just no A/V.
         setPhase('live');
-        setNote('Video/audio is off — the meeting server isn\'t configured yet. The board and class still work.');
+        setNote(tr('Video/audio is off — the meeting server isn\'t configured yet. The board and class still work.'));
         return;
       }
       setPhase('error'); setNote(e.response?.data?.message || 'Could not join.');
@@ -2471,7 +2516,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     setNote('');  // clear any "waiting for the coach…" text now that we're in
     if (url && token) {
       try { await lkConnectRef.current({ url, token }); }
-      catch { setNote('Video unavailable right now. The board and class still work.'); }
+      catch { setNote(tr('Video unavailable right now. The board and class still work.')); }
     }
     // `mode` decides which token endpoint is called, so it must be a dependency
     // — with an empty array this closure would keep the mode from first render.
@@ -2482,11 +2527,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const tryJoinWaiting = useCallback(async () => {
     try {
       await api.post(`/api/coach-live/join/${params.joinCode}/wait`);
-      setPhase('waiting'); setNote('Waiting for the coach to let you in…');
+      setPhase('waiting'); setNote(tr('Waiting for the coach to let you in…'));
       return true;
     } catch (e) {
       if (e.response?.status === 409) {
-        setPhase('waiting'); setNote('Class hasn\'t started yet — hang tight, you\'ll join automatically.');
+        setPhase('waiting'); setNote(tr('Class hasn\'t started yet — hang tight, you\'ll join automatically.'));
         return false;
       }
       setPhase('error'); setNote(e.response?.data?.message || 'Could not join this class.');
@@ -2531,7 +2576,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
           if (meeting) await enterRoom(meeting.joinCode);
         } catch (e) {
-          if (alive) { setPhase('error'); setNote(e.response?.data?.message || 'Could not open the classroom.'); }
+          if (alive) { setPhase('error'); setNote(e.response?.data?.message || tr('Could not open the classroom.')); }
         }
       } else if (mode === 'trial') {
         // TRIAL GUEST. They arrive here already admitted — TrialJoinPage does the
@@ -2541,7 +2586,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         try {
           await enterRoom(params.joinCode);
         } catch (e) {
-          if (alive) { setPhase('error'); setNote(e.response?.data?.message || 'Could not join this class.'); }
+          if (alive) { setPhase('error'); setNote(e.response?.data?.message || tr('Could not join this class.')); }
         }
       } else {
         // Student via link: resolve. If not started yet, sit on the waiting screen
@@ -2552,7 +2597,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           if (r.data.isHost) { await enterRoom(params.joinCode); return; }
           await tryJoinWaiting();
         } catch (e) {
-          if (alive) { setPhase('error'); setNote(e.response?.data?.message || 'Could not join this class.'); }
+          if (alive) { setPhase('error'); setNote(e.response?.data?.message || tr('Could not join this class.')); }
         }
       }
     })();
@@ -2637,11 +2682,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       if (orientation !== 'white' && orientation !== 'black') return;
       setFlipOverride(orientation);
     };
-    // Coach's drawn arrows + square highlights — everyone follows.
+    // Arrows + highlights someone else drew — everyone follows. The host is NOT
+    // skipped any more: when a student has control, the coach must see what that
+    // student draws. The server relays with socket.to (never back to the
+    // sender); the only echo is the stored drawing replayed on (re)join.
     const onDraw = ({ arrows, highlights }) => {
-      if (hostStateRef.current.isHost) return; // host has the source of truth
-      setDrawArrows(Array.isArray(arrows) ? arrows : []);
-      setDrawHighlights(highlights && typeof highlights === 'object' ? highlights : {});
+      const a = Array.isArray(arrows) ? arrows : [];
+      const h = highlights && typeof highlights === 'object' ? highlights : {};
+      if ((a.length || Object.keys(h).length) && JSON.stringify({ arrows: a, highlights: h }) === lastSentDrawRef.current) return;
+      setDrawArrows(a);
+      setDrawHighlights(h);
     };
     // Board control — no token change needed (board moves are gated client-side
     // + via the board-sync socket, not the LiveKit token).
@@ -2653,8 +2703,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       const meWas = String(controllerRef.current || '') === String(myIdRef.current);
       if (!hostStateRef.current.isHost && meNow && !meWas) {
         setGrantToast({
-          title: `${firstName(user)}, you have the board`,
-          body: 'Your coach gave you control — make your move on the chessboard.',
+          title: tr("{v0}, you have the board", { v0: firstName(user) }),
+          body: tr('Your coach gave you control — make your move on the chessboard.'),
           icon: '♟️',
           tone: 'grant',
         });
@@ -2664,8 +2714,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         // being told you have control matters just as much as being told you
         // no longer do.
         setGrantToast({
-          title: 'Your coach has the board again',
-          body: 'Control went back to your coach — just follow along for now.',
+          title: tr('Your coach has the board again'),
+          body: tr('Control went back to your coach — just follow along for now.'),
           icon: '👀',
           tone: 'info',
         });
@@ -2681,8 +2731,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           && String(sid || '') === String(myIdRef.current)
           && String(prev || '') !== String(myIdRef.current)) {
         setGrantToast({
-          title: `${firstName(user)}, you can share your screen`,
-          body: 'Your coach gave you screen-share permission — press Share screen when you are ready.',
+          title: tr("{v0}, you can share your screen", { v0: firstName(user) }),
+          body: tr('Your coach gave you screen-share permission — press Share screen when you are ready.'),
           icon: '🖥️',
           tone: 'grant',
         });
@@ -2776,7 +2826,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         return [...s];
       });
     };
-    const onRemoved = () => { setPhase('error'); setNote('The coach didn\'t admit you to this class.'); };
+    const onRemoved = () => { setPhase('error'); setNote(tr('The coach didn\'t admit you to this class.')); };
     // Class over → the kept-for-review games go too (server drops them in the same
     // breath via clearSession in routes/coachLive.js). Nothing from the board or the
     // games is persisted.
@@ -2807,7 +2857,19 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     socket.on('liveclass:stage', onStage);
     const onPuzzleStatus = ({ status }) => { if (!hostStateRef.current.isHost) setPuzzleStatus(status || ''); };
     socket.on('liveclass:puzzleStatus', onPuzzleStatus);
-    const onWhiteboard = ({ strokes, texts }) => { if (!hostStateRef.current.isHost) { setWbStrokes(strokes || []); setWbTexts(texts || []); } };
+    // Split the relayed arrays back into the on-board layer and the side panel
+    // (see sendWhiteboard). Untagged items are the on-board whiteboard.
+    const onWhiteboard = ({ strokes, texts }) => {
+      if (hostStateRef.current.isHost) return;
+      const st = Array.isArray(strokes) ? strokes : [];
+      const tx = Array.isArray(texts) ? texts : [];
+      setWbStrokes(st.filter(x => !x?.layer));
+      setWbTexts(tx.filter(x => !x?.layer));
+      setPnStrokes(st.filter(x => x?.layer === 'panel'));
+      setPnTexts(tx.filter(x => x?.layer === 'panel'));
+      const ps = tx.find(x => x?.layer === 'panel-state');
+      if (ps) setWbPanel({ open: !!ps.open, side: ps.side === 'right' ? 'right' : 'left', size: ['S', 'M', 'L'].includes(ps.size) ? ps.size : 'M' });
+    };
     socket.on('liveclass:whiteboard', onWhiteboard);
     const onDebug = ({ on, host }) => {
       if (hostStateRef.current.isHost) return;
@@ -2877,7 +2939,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     const onCgEnded = ({ games } = {}) => {
       if (Array.isArray(games) && games.length) setClassGames(games);
       else setClassGames(prev => prev.map(g => g.status === 'active'
-        ? { ...g, status: 'finished', result: g.result || 'Stopped by coach' } : g));
+        ? { ...g, status: 'finished', result: g.result || tr('Stopped by coach') } : g));
       setClassSpotlightId(null);
       setGameOverPopup(null);
       setLeftClassGame(true);
@@ -3142,7 +3204,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // host-only columns and was making their board smaller than it needed to be.
   // The vertical reserve is also smaller for them (no content panel below the
   // board), and the ceiling is raised so a big monitor gets a genuinely big board.
-  const viewerSideCols = (movesCollapsed ? 60 : 354) + (videosDetached ? 0 : 316) + 60;
+  // Side whiteboard panel: its width + the row gap. On narrow screens the row
+  // wraps (panel stacks above/below the board), so it takes no width there.
+  const wbPanelW = wbPanel.open && !isNarrow ? wbPanelWidth(wbPanel.size, vpW) + 14 : 0;
+  const viewerSideCols = (movesCollapsed ? 60 : 354) + (videosDetached ? 0 : 316) + 60 + wbPanelW;
   // Vertical reserve: ~62px topbar + 28px body padding + ~26px caption row under
   // the board. The old 170 was over-generous and left visible dead space below.
   const viewerFit = Math.max(320, Math.min(vpH - 118, vpW - viewerSideCols, 900));
@@ -3179,6 +3244,25 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       shrunkForListRef.current = false;   // arm again for the next time it opens
     }
   }, [posListShown, iControl, vpW, sideCols]);
+  // Same one-time nudge when the side whiteboard opens or grows: shrink the
+  // coach's board only if the panel would otherwise push it onto its own line.
+  // The coach can drag the board bigger again straight away.
+  useEffect(() => {
+    if (!isHost || !wbPanelW) return;
+    const room = Math.max(320, vpW - sideCols - wbPanelW);
+    setBoardWidth(w => (w > room ? room : w));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHost, wbPanelW]);
+  // Rendered left or right of the board column (see the stage row).
+  const wbPanelEl = (
+    <WhiteboardPanel
+      isHost={isHost} size={wbPanel.size} side={wbPanel.side} vpW={vpW}
+      strokes={pnStrokes} texts={pnTexts} onUpdate={onPanelUpdate}
+      onSize={size => changeWbPanel({ size })}
+      onSide={() => changeWbPanel({ side: wbPanel.side === 'left' ? 'right' : 'left' })}
+      onClose={() => changeWbPanel({ open: false })}
+    />
+  );
   // The Chessboard reserves a coordinate gutter on the labelled sides only
   // (bottom+left), so the on-screen box is the board plus one gutter. Use this for
   // the column width and the Moves-panel height so everything lines up.
@@ -3538,7 +3622,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           String(g.black || '').toLowerCase().includes(b));
       }
       setMgList(games);
-      if (!games.length) setMgErr('No master games matched that search.');
+      if (!games.length) setMgErr(tr('No master games matched that search.'));
     } catch (e) {
       setMgErr(e.response?.data?.error || 'Could not search master games.');
     } finally { setMgLoading(false); }
@@ -3565,14 +3649,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     if (!text) return;
     const looksFen = /\//.test(text) && !/\d+\.\s/.test(text) && text.split(/\s+/).length <= 8;
     if (looksFen) {
-      if (!setBoardFen(text)) setLoadErr('That doesn’t look like a valid FEN.');
+      if (!setBoardFen(text)) setLoadErr(tr('That doesn’t look like a valid FEN.'));
       return;
     }
     try {
       const c = new Chess(); c.loadPgn(text); // validate
       loadPgnIntoTree(c.pgn());
     } catch {
-      setLoadErr('Could not read that FEN/PGN. Check and try again.');
+      setLoadErr(tr('Could not read that FEN/PGN. Check and try again.'));
     }
   };
 
@@ -3594,7 +3678,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const editorLoad = () => {
     const b = editorChess.board(); let wk = 0, bk = 0;
     for (const row of b) for (const sq of row) { if (sq?.type === 'k') { sq.color === 'w' ? wk++ : bk++; } }
-    if (wk !== 1 || bk !== 1) { setLoadErr('Each side needs exactly one king.'); return; }
+    if (wk !== 1 || bk !== 1) { setLoadErr(tr('Each side needs exactly one king.')); return; }
     setLoadErr('');
     setBoardFen(editorChess.fen());
     setEditorOpen(false);
@@ -3630,11 +3714,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // student who never joined or was removed is not included.
   const inClassStudents = (waiting || [])
     .filter(p => p.state === 'admitted' && p.studentId)
-    .map(p => ({ id: String(p.studentId), name: p.name || p.username || 'Student' }));
+    .map(p => ({ id: String(p.studentId), name: p.name || p.username || tr('Student') }));
 
   const sendHomework = async () => {
-    if (!hwPositions.length) { setHwMsg('Add at least one position first.'); return; }
-    if (!inClassStudents.length) { setHwMsg('No students are in the class right now.'); return; }
+    if (!hwPositions.length) { setHwMsg(tr('Add at least one position first.')); return; }
+    if (!inClassStudents.length) { setHwMsg(tr('No students are in the class right now.')); return; }
     setHwBusy(true); setHwMsg('');
     try {
       await api.post('/api/coach/assignments', {
@@ -3650,7 +3734,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           })),
         },
       });
-      setHwMsg(`✓ Sent to ${inClassStudents.length} student${inClassStudents.length === 1 ? '' : 's'}.`);
+      setHwMsg(tr("✓ Sent to {length} student{v1}.", { length: inClassStudents.length, v1: inClassStudents.length === 1 ? '' : 's' }));
       setHwPositions([]);
       setHwTitle('');
     } catch (e) {
@@ -3672,9 +3756,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         body.newStudyName = saveNewStudy.trim();
         body.newChapterName = saveNewChapter.trim();
       }
-      if (!body.studyId && !body.newStudyName) { setSaveMsg('Pick a study or name a new one.'); setSaveBusy(false); return; }
+      if (!body.studyId && !body.newStudyName) { setSaveMsg(tr('Pick a study or name a new one.')); setSaveBusy(false); return; }
       const r = await api.post('/api/coach-live/studies/save-position', body);
-      setSaveMsg(`✓ Saved to “${r.data.studyName} › ${r.data.chapterName}” (${r.data.count})`);
+      setSaveMsg(tr("✓ Saved to “{studyName} › {chapterName}” ({count})", { studyName: r.data.studyName, chapterName: r.data.chapterName, count: r.data.count }));
       // Refresh my-studies so the new study/chapter shows up, and stick to it for the
       // next save so a run of positions piles into the same chapter.
       const list = await api.get('/api/coach-live/studies?source=mine').then(x => x.data?.studies || []).catch(() => []);
@@ -3707,7 +3791,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       });
       const r = await api.get(`/api/coach-live/studies/mine/${pickStudy}/${pickChapter}/positions`);
       setPositions(r.data?.positions || []);
-      setQuickSaveMsg('✓ Saved');
+      setQuickSaveMsg(tr('✓ Saved'));
       setTimeout(() => setQuickSaveMsg(''), 2500);
     } catch (e) {
       setQuickSaveMsg(e.response?.data?.message || 'Could not save.');
@@ -4023,7 +4107,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     } catch { setRaisedHandIds(ids); }
   };
   const endClass = async () => {
-    if (!window.confirm('End the class for everyone?')) return;
+    if (!window.confirm(tr('End the class for everyone?'))) return;
     try { await api.post(`/api/coach-live/sessions/${session.id}/end`); } catch { /* */ }
 
     // TRIAL CLASSES: a trial link is one-time, so once the lesson is over the
@@ -4057,7 +4141,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // student must never be able to touch the session record — the class keeps
   // running for everyone else. Disconnecting from the room is the whole job.
   const leaveClass = async () => {
-    if (!window.confirm('Leave this class? Your coach and classmates stay in it, and you can rejoin with the same link.')) return;
+    if (!window.confirm(tr('Leave this class? Your coach and classmates stay in it, and you can rejoin with the same link.'))) return;
     // Lower a raised hand on the way out, so the coach isn't left looking at a
     // ✋ from someone who is no longer in the room.
     if (myHandRaised && session) {
@@ -4166,8 +4250,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         const paint = () => {
           mic.style.color = pipApi.current.micOn ? '#e2e8f0' : '#f87171';
           cam.style.color = pipApi.current.camOn ? '#e2e8f0' : '#f87171';
-          mic.innerHTML = `${micSvg(!pipApi.current.micOn)} ${pipApi.current.micOn ? 'Mic' : 'Muted'}`;
-          cam.innerHTML = `${camSvg(!pipApi.current.camOn)} ${pipApi.current.camOn ? 'Cam' : 'Off'}`;
+          mic.innerHTML = `${micSvg(!pipApi.current.micOn)} ${pipApi.current.micOn ? tr('Mic') : tr('Muted')}`;
+          cam.innerHTML = `${camSvg(!pipApi.current.camOn)} ${pipApi.current.camOn ? 'Cam' : tr('Off')}`;
         };
         paint();
         mic.onclick = async () => { await pipApi.current.toggleMic(); paint(); };
@@ -4190,13 +4274,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   useEffect(() => {
     if (!isHost || videoMode !== 'pop') { try { popWinRef.current?.close(); } catch { /* */ } popWinRef.current = null; return; }
     const dpip = window.documentPictureInPicture;
-    if (!dpip) { setNote('Pop-out needs a Chromium browser (Chrome/Edge). Videos kept in the page.'); setVideoMode('dock'); return; }
+    if (!dpip) { setNote(tr('Pop-out needs a Chromium browser (Chrome/Edge). Videos kept in the page.')); setVideoMode('dock'); return; }
 
     // Derive the people directly from LiveKit here (this hook runs before `tiles` is
     // defined, so we must NOT reference it — that caused a "before initialization" crash).
     const popTiles = (lk.connected && lk.participants.length > 0)
       ? lk.participants
-      : [{ identity: '__me__', isLocal: true, name: (user?.displayName || user?.username || 'You'), videoTrack: null, avatar: user?.profilePhotoUrl || null }];
+      : [{ identity: '__me__', isLocal: true, name: (user?.displayName || user?.username || tr('You')), videoTrack: null, avatar: user?.profilePhotoUrl || null }];
 
     let cancelled = false;
     const attached = []; // [{track, el}] to detach on teardown
@@ -4300,8 +4384,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   }, [phase, isHost, leftByChoice, nav, studentHome]);
 
   // ── Render ───────────────────────────────────────────────────────────────────
-  if (phase === 'loading') return <div style={s.center}>Loading classroom…</div>;
-  if (phase === 'error') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>🚫</div><p style={{ fontSize: 15, color: 'rgba(226,232,240,0.85)' }}>{note}</p><button style={s.ghost} onClick={() => nav(-1)}>Back</button></div></div>;
+  if (phase === 'loading') return <div style={s.center}>{tr("Loading classroom…")}</div>;
+  if (phase === 'error') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>🚫</div><p style={{ fontSize: 15, color: 'rgba(226,232,240,0.85)' }}>{note}</p><button style={s.ghost} onClick={() => nav(-1)}>{tr("Back")}</button></div></div>;
   // Two different events land here: the coach ENDED the class, or a student
   // chose to LEAVE one that is still running. Saying "Meeting ended" to the
   // student who just left is plainly false and makes them think they killed the
@@ -4311,15 +4395,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       (they have no access to the coach's meetings page) — auto-redirected after a
       moment, with a button to go now. */}
     {isHost
-      ? <button style={s.ghost} onClick={() => nav('/coach/live')}>Back to meetings</button>
+      ? <button style={s.ghost} onClick={() => nav('/coach/live')}>{tr("Back to meetings")}</button>
       : <>
           {leftByChoice && (
             <>
               <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.7)', margin: '0 0 12px' }}>
-                The class is still going without you. Left by mistake?
+                {tr("The class is still going without you. Left by mistake?")}
               </p>
               <button style={{ ...s.ghost, marginTop: 0, borderColor: 'rgba(6,182,212,0.5)', color: '#67e8f9' }} onClick={() => window.location.reload()}>
-                ↩ Rejoin the class
+                {tr("↩ Rejoin the class")}
               </button>
               <div style={{ height: 10 }} />
             </>
@@ -4327,9 +4411,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           {/* Only the auto-redirect case promises a redirect — see the effect
               above, which skips it entirely when the student left by choice. */}
           {!leftByChoice && (
-            <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.7)', margin: '0 0 14px' }}>Taking you back to {studentHomeLabel}…</p>
+            <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.7)', margin: '0 0 14px' }}>{tr("Taking you back to")} {studentHomeLabel}…</p>
           )}
-          <button style={s.ghost} onClick={() => nav(studentHome, { replace: true })}>Go to {studentHomeLabel} now</button>
+          <button style={s.ghost} onClick={() => nav(studentHome, { replace: true })}>{tr("Go to")} {studentHomeLabel} {tr("now")}</button>
         </>}
   </div></div>;
   if (phase === 'waiting') return <WaitingRoom note={note} user={user} joinCode={mode === 'join' ? params.joinCode : null} />;
@@ -4453,7 +4537,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         // video frame without boxing it in.
         <span
           onClick={isHost && !p.isLocal ? (e) => { e.stopPropagation(); lowerStudentHand(p.identity); } : undefined}
-          title={isHost && !p.isLocal ? 'Click to lower this hand' : 'Hand raised'}
+          title={isHost && !p.isLocal ? tr('Click to lower this hand') : tr('Hand raised')}
           style={{ position: 'absolute', top: 6, left: 8, zIndex: 3, fontSize: small ? 16 : 22, lineHeight: 1,
             filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.7))',
             // Only the host needs to interact — for students it stays a pure badge.
@@ -4492,9 +4576,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       {isHost && !p.isLocal && (
         <div style={s.tileCtl}>
           {coachMutedIds.map(String).includes(String(p.identity))
-            ? <button style={{ ...s.tileBtn, ...s.tileBtnAsk }} title="Ask this student to unmute"
+            ? <button style={{ ...s.tileBtn, ...s.tileBtnAsk }} title={tr("Ask this student to unmute")}
                 onClick={(e) => { e.stopPropagation(); requestUnmute(p.identity); }}>🎙️</button>
-            : <button style={s.tileBtn} title="Mute this student"
+            : <button style={s.tileBtn} title={tr("Mute this student")}
                 onClick={(e) => { e.stopPropagation(); muteStudent(p.identity); }}>
                 <MicIcon off={false} size={15} />
               </button>}
@@ -4505,7 +4589,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               was already on — the coach then nags a student who did nothing wrong. */}
           {(p.videoTrack || p.camPublished)
             ? <>
-                <button style={s.tileBtn} title="Turn this student's camera off"
+                <button style={s.tileBtn} title={tr("Turn this student's camera off")}
                   onClick={(e) => { e.stopPropagation(); cameraOffStudent(p.identity); }}>
                   <CamIcon off={false} size={15} />
                 </button>
@@ -4513,13 +4597,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     meant to be ON — that is exactly when a black tile is wrong. */}
                 <button
                   style={{ ...s.tileBtn, ...(camFixedIds.includes(String(p.identity)) ? s.tileBtnAsked : {}) }}
-                  title="Fix this student's video (no reload needed)"
+                  title={tr("Fix this student's video (no reload needed)")}
                   onClick={(e) => { e.stopPropagation(); restartCamera(p.identity); }}>
                   🔄
                 </button>
               </>
             : <button style={{ ...s.tileBtn, ...(camAskedIds.includes(String(p.identity)) ? s.tileBtnAsked : s.tileBtnAsk) }}
-                title="Ask this student to turn their camera on"
+                title={tr("Ask this student to turn their camera on")}
                 onClick={(e) => { e.stopPropagation(); requestCamera(p.identity); }}>
                 <CamIcon off size={15} />
               </button>}
@@ -4545,7 +4629,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     <div style={s.wrap}>
       {/* Top bar */}
       <div style={s.topbar}>
-        <span style={{ fontWeight: 700 }}>🔴 Live class</span>
+        <span style={{ fontWeight: 700 }}>{tr("🔴 Live class")}</span>
         {session && <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, color: '#9ca3af' }}>
           {session.durationMinutes === 0 ? '' : 'Ends in'}
           <Countdown endsAt={session.endsAt} onExpire={autoEnd} unlimited={session.durationMinutes === 0} />
@@ -4555,9 +4639,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         {isHost && (
           <button
             style={{ ...s.iconBtn, ...(boardOnStage ? { borderColor: 'rgba(6,182,212,0.5)', color: '#67e8f9' } : {}) }}
-            title={showBoard ? 'Back to video for everyone' : 'Show the teaching board to everyone'}
+            title={showBoard ? tr('Back to video for everyone') : tr('Show the teaching board to everyone')}
             onClick={toggleBoard}
-          >♟ {showBoard ? 'Video' : 'Teach on board'}</button>
+          >♟ {showBoard ? tr('Video') : tr('Teach on board')}</button>
         )}
         {/* HOST: "Activities" stage view — like the teaching board, puts the coach's
             activities (live leaderboards, finished results) on the stage IN class.
@@ -4565,30 +4649,30 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         {isHost && (
           <button
             style={{ ...s.iconBtn, ...(showActivities ? { borderColor: 'rgba(6,182,212,0.5)', color: '#67e8f9' } : {}) }}
-            title={showActivities ? 'Back to the class' : 'Show class activities & leaderboards'}
+            title={showActivities ? tr('Back to the class') : tr('Show class activities & leaderboards')}
             onClick={() => { const next = !showActivities; setShowActivities(next); if (next) loadActivities(); }}
-          >🎯 {showActivities ? 'Close' : 'Activities'}</button>
+          >🎯 {showActivities ? tr('Close') : tr('Activities')}</button>
         )}
         {iCanShare && (
           <button
             style={{ ...s.screenBtn, ...(lk.connected ? {} : s.btnOff) }}
             disabled={!lk.connected}
-            title={lk.connected ? 'Share your screen' : 'Available once the video server is connected'}
+            title={lk.connected ? tr('Share your screen') : tr('Available once the video server is connected')}
             onClick={() => lk.screenOn ? lk.toggleScreen() : setSharePrompt(true)}
-          >{lk.screenOn ? '🛑 Stop share' : '🖥️ Share screen'}</button>
+          >{lk.screenOn ? tr('🛑 Stop share') : tr('🖥️ Share screen')}</button>
         )}
         {/* Mic button + inline device picker (the ˅ opens a mic chooser, Zoom-style). */}
         <div style={s.mediaWrap}>
           <button
             style={{ ...s.mediaBtn, ...(lk.micOn ? s.mediaOn : s.mediaOff), ...((lk.connected && !iAmCoachMuted) ? {} : s.btnOff) }}
             disabled={!lk.connected || iAmCoachMuted}
-            title={iAmCoachMuted ? 'Muted by coach — the coach can let you unmute' : (lk.connected ? (lk.micOn ? 'Mute microphone' : 'Unmute microphone') : 'Available once the video server is connected')}
+            title={iAmCoachMuted ? tr('Muted by coach — the coach can let you unmute') : (lk.connected ? (lk.micOn ? tr('Mute microphone') : tr('Unmute microphone')) : tr('Available once the video server is connected'))}
             onClick={lk.toggleMic}
-          ><MicIcon off={!lk.micOn || iAmCoachMuted} size={18} /><span>{iAmCoachMuted ? '🔒 Muted' : (lk.micOn ? 'Mic' : 'Muted')}</span></button>
+          ><MicIcon off={!lk.micOn || iAmCoachMuted} size={18} /><span>{iAmCoachMuted ? tr('🔒 Muted') : (lk.micOn ? tr('Mic') : tr('Muted'))}</span></button>
           {lk.connected && (
             <button
               style={{ ...s.devCaret, ...(devMenu === 'mic' ? s.devCaretOn : {}) }}
-              title="Choose microphone"
+              title={tr("Choose microphone")}
               onClick={() => setDevMenu(m => m === 'mic' ? null : 'mic')}
             >⌄</button>
           )}
@@ -4596,8 +4680,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             <>
               <div style={s.devBackdrop} onClick={() => setDevMenu(null)} />
               <div style={s.devMenu}>
-                <div style={s.devMenuHead}>Select a microphone</div>
-                {lk.mics.length === 0 && <div style={s.devMenuEmpty}>No microphones found</div>}
+                <div style={s.devMenuHead}>{tr("Select a microphone")}</div>
+                {lk.mics.length === 0 && <div style={s.devMenuEmpty}>{tr("No microphones found")}</div>}
                 {lk.mics.map(d => (
                   <button
                     key={d.deviceId}
@@ -4618,22 +4702,22 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           <button
             style={{ ...s.mediaBtn, ...(lk.camOn ? s.mediaOn : s.mediaOff), ...(lk.connected ? {} : s.btnOff) }}
             disabled={!lk.connected}
-            title={lk.connected ? (lk.camOn ? 'Turn camera off' : 'Turn camera on') : 'Available once the video server is connected'}
+            title={lk.connected ? (lk.camOn ? tr('Turn camera off') : tr('Turn camera on')) : tr('Available once the video server is connected')}
             onClick={lk.toggleCam}
-          ><CamIcon off={!lk.camOn} size={18} /><span>{lk.camOn ? 'Camera' : 'Off'}</span></button>
+          ><CamIcon off={!lk.camOn} size={18} /><span>{lk.camOn ? tr('Camera') : tr('Off')}</span></button>
           {/* Self-view is hidden — show a one-click way back, since an invisible
               setting is otherwise hard to undo without hunting through the menu. */}
           {hideSelfView && lk.connected && (
             <button
               style={{ ...s.devCaret, width: 'auto', padding: '0 8px', fontSize: 12, color: '#fcd34d', borderColor: 'rgba(245,158,11,0.5)' }}
-              title="Your tile is hidden from your own screen (students still see you)"
+              title={tr("Your tile is hidden from your own screen (students still see you)")}
               onClick={toggleSelfView}
             >🙈</button>
           )}
           {lk.connected && (
             <button
               style={{ ...s.devCaret, ...(devMenu === 'cam' ? s.devCaretOn : {}) }}
-              title="Choose camera"
+              title={tr("Choose camera")}
               onClick={() => setDevMenu(m => m === 'cam' ? null : 'cam')}
             >⌄</button>
           )}
@@ -4646,7 +4730,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 <button
                   style={{ ...s.devItem, fontWeight: 700 }}
                   onClick={() => { toggleSelfView(); setDevMenu(null); }}
-                  title="Your camera stays on — this only changes what you see"
+                  title={tr("Your camera stays on — this only changes what you see")}
                 >
                   <span style={s.devCheck}>{hideSelfView ? '👁️' : '🙈'}</span>
                   <span style={s.devLabel}>{hideSelfView ? 'Show self view' : 'Hide self view'}</span>
@@ -4657,7 +4741,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   onClick={() => { setFxOpen(true); setDevMenu(null); }}
                 >
                   <span style={s.devCheck}>✨</span>
-                  <span style={s.devLabel}>Video effects…</span>
+                  <span style={s.devLabel}>{tr("Video effects…")}</span>
                 </button>
                 {/* Host-only camera diagnostics: what the sensor supports & is publishing. */}
                 {isHost && (
@@ -4666,7 +4750,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     onClick={() => { setCamInfoOpen(true); setDevMenu(null); }}
                   >
                     <span style={s.devCheck}>ℹ️</span>
-                    <span style={s.devLabel}>Video info (diagnostics)…</span>
+                    <span style={s.devLabel}>{tr("Video info (diagnostics)…")}</span>
                   </button>
                 )}
                 {isHost && (
@@ -4679,8 +4763,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   </button>
                 )}
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '4px 0' }} />
-                <div style={s.devMenuHead}>Select a camera</div>
-                {lk.cameras.length === 0 && <div style={s.devMenuEmpty}>No cameras found</div>}
+                <div style={s.devMenuHead}>{tr("Select a camera")}</div>
+                {lk.cameras.length === 0 && <div style={s.devMenuEmpty}>{tr("No cameras found")}</div>}
                 {lk.cameras.map(d => (
                   <button
                     key={d.deviceId}
@@ -4699,14 +4783,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         {!isHost && lk.connected && (
           <button
             style={{ ...s.iconBtn, ...(myHandRaised ? { borderColor: 'rgba(245,158,11,0.6)', color: '#fcd34d', background: 'rgba(245,158,11,0.14)' } : {}) }}
-            title={myHandRaised ? 'Lower your hand' : 'Raise your hand'}
+            title={myHandRaised ? tr('Lower your hand') : tr('Raise your hand')}
             onClick={toggleHand}
-          >✋ {myHandRaised ? 'Lower' : 'Raise'}</button>
+          >✋ {myHandRaised ? tr('Lower') : tr('Raise')}</button>
         )}
         {/* One-click Participants panel (Zoom-style). Shows a count badge + raised hands. */}
         <button
           style={{ ...s.iconBtn, ...(showParticipants ? { borderColor: 'rgba(6,182,212,0.5)', color: '#67e8f9' } : {}), position: 'relative' }}
-          title="Participants"
+          title={tr("Participants")}
           onClick={() => setShowParticipants(v => !v)}
         >
           👥 {allTiles.length}
@@ -4715,7 +4799,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           )}
           {/* ✋ badge when students have hands up (coach sees it at a glance). */}
           {isHost && raisedHandIds.length > 0 && (
-            <span style={{ position: 'absolute', bottom: -6, right: -6, background: '#f59e0b', color: '#241a05', borderRadius: 'var(--radius-pill)', fontSize: 10, fontWeight: 800, minWidth: 16, height: 16, display: 'grid', placeItems: 'center', padding: '0 4px' }} title={`${raisedHandIds.length} hand(s) up`}>✋{raisedHandIds.length}</span>
+            <span style={{ position: 'absolute', bottom: -6, right: -6, background: '#f59e0b', color: '#241a05', borderRadius: 'var(--radius-pill)', fontSize: 10, fontWeight: 800, minWidth: 16, height: 16, display: 'grid', placeItems: 'center', padding: '0 4px' }} title={tr("{length} hand(s) up", { length: raisedHandIds.length })}>✋{raisedHandIds.length}</span>
           )}
         </button>
         {/* Host: clear every raised hand in one click. Students frequently raise and
@@ -4723,7 +4807,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         {isHost && raisedHandIds.length > 0 && (
           <button
             style={{ ...s.iconBtn, borderColor: 'rgba(245,158,11,0.6)', color: '#fcd34d', background: 'rgba(245,158,11,0.14)' }}
-            title="Lower all raised hands"
+            title={tr("Lower all raised hands")}
             onClick={lowerAllHands}
           >✋ Lower all ({raisedHandIds.length})</button>
         )}
@@ -4732,7 +4816,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             The tracks never unmount; only their container changes, so students'
             faces stay up even during screen share. */}
         {isHost && (
-          <div style={s.vmodeGroup} title="Where the class videos appear">
+          <div style={s.vmodeGroup} title={tr("Where the class videos appear")}>
             {[['dock', '📌', 'Pin videos in the panel'],
               ['float', '🗗', 'Float videos over the board (drag/resize)'],
               ['pop', '⧉', 'Pop videos out to their own window (drag to a 2nd monitor)'],
@@ -4749,7 +4833,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         <button style={s.iconBtn} title={isFs ? 'Exit fullscreen' : 'Fullscreen (video if shown, else the class)'} onClick={toggleVideoFullscreen}>
           {isFs ? '🡼' : '⛶'}
         </button>
-        {isHost && <button style={s.endBtn} onClick={endClass}>End</button>}
+        {isHost && <button style={s.endBtn} onClick={endClass}>{tr("End")}</button>}
         {/* STUDENT: the way out. Students reported there was no "leave" control
             at all — because there wasn't one: the toolbar's only exit was the
             host-gated "End" above, so students resorted to closing the tab.
@@ -4757,15 +4841,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             them, and kept in red like the host's End so the eye finds it in the
             same place. */}
         {!isHost && (
-          <button style={s.leaveBtn} title="Leave this class (it keeps running for everyone else)" onClick={leaveClass}>
-            🚪 Leave
+          <button style={s.leaveBtn} title={tr("Leave this class (it keeps running for everyone else)")} onClick={leaveClass}>
+            {tr("🚪 Leave")}
           </button>
         )}
       </div>
       {note && (
         <div style={s.noteBar}>
           <span style={{ flex: 1 }}>{note}</span>
-          <button style={s.noteClose} title="Dismiss" aria-label="Dismiss" onClick={() => setNote('')}>✕</button>
+          <button style={s.noteClose} title={tr("Dismiss")} aria-label={tr("Dismiss")} onClick={() => setNote('')}>✕</button>
         </div>
       )}
 
@@ -4797,7 +4881,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           {/* An explicit OK, not just a small ×. A child who has read the
               message wants to make it go away, and a 12px close cross is not a
               target a nine-year-old reliably hits on a phone. */}
-          <button style={s.grantToastOk} onClick={() => setGrantToast(null)}>OK</button>
+          <button style={s.grantToastOk} onClick={() => setGrantToast(null)}>{"OK"}</button>
         </div>
       )}
 
@@ -4806,13 +4890,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         <div style={s.unmuteOverlay}>
           <div style={s.unmuteCard}>
             <div style={{ fontSize: 40 }}>🎙️</div>
-            <h3 style={{ margin: '8px 0 4px', fontSize: 18, fontWeight: 800 }}>Coach wants you to unmute</h3>
+            <h3 style={{ margin: '8px 0 4px', fontSize: 18, fontWeight: 800 }}>{tr("Coach wants you to unmute")}</h3>
             <p style={{ fontSize: 13.5, color: 'rgba(226,232,240,0.75)', margin: '0 0 16px' }}>
-              Your coach is asking you to turn your microphone on. You can unmute, or stay muted.
+              {tr("Your coach is asking you to turn your microphone on. You can unmute, or stay muted.")}
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-              <button style={s.unmuteYes} onClick={acceptUnmute}>🔊 Unmute</button>
-              <button style={s.unmuteNo} onClick={declineUnmute}>🔇 Stay muted</button>
+              <button style={s.unmuteYes} onClick={acceptUnmute}>{tr("🔊 Unmute")}</button>
+              <button style={s.unmuteNo} onClick={declineUnmute}>{tr("🔇 Stay muted")}</button>
             </div>
           </div>
         </div>
@@ -4824,14 +4908,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         <div style={s.unmuteOverlay}>
           <div style={s.unmuteCard}>
             <div style={{ fontSize: 40 }}>📹</div>
-            <h3 style={{ margin: '8px 0 4px', fontSize: 18, fontWeight: 800 }}>Coach wants you to turn your camera on</h3>
+            <h3 style={{ margin: '8px 0 4px', fontSize: 18, fontWeight: 800 }}>{tr("Coach wants you to turn your camera on")}</h3>
             <p style={{ fontSize: 13.5, color: 'rgba(226,232,240,0.75)', margin: '0 0 16px' }}>
-              Your coach is asking you to switch your camera on. You can turn it on, or keep it off.
+              {tr("Your coach is asking you to switch your camera on. You can turn it on, or keep it off.")}
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
               <button style={s.unmuteYes}
-                onClick={() => { setCameraRequest(false); if (!lk.camOn) lk.toggleCam(); }}>📹 Turn on</button>
-              <button style={s.unmuteNo} onClick={() => setCameraRequest(false)}>Keep it off</button>
+                onClick={() => { setCameraRequest(false); if (!lk.camOn) lk.toggleCam(); }}>{tr("📹 Turn on")}</button>
+              <button style={s.unmuteNo} onClick={() => setCameraRequest(false)}>{tr("Keep it off")}</button>
             </div>
           </div>
         </div>
@@ -4842,13 +4926,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         <div style={s.unmuteOverlay}>
           <div style={s.unmuteCard}>
             <div style={{ fontSize: 40 }}>♟</div>
-            <h3 style={{ margin: '8px 0 4px', fontSize: 18, fontWeight: 800 }}>Your coach started a simul</h3>
+            <h3 style={{ margin: '8px 0 4px', fontSize: 18, fontWeight: 800 }}>{tr("Your coach started a simul")}</h3>
             <p style={{ fontSize: 13.5, color: 'rgba(226,232,240,0.75)', margin: '0 0 16px' }}>
-              Play a game against your coach along with the rest of the class. Join?
+              {tr("Play a game against your coach along with the rest of the class. Join?")}
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-              <button style={s.unmuteYes} onClick={simulJoin}>♟ Join simul</button>
-              <button style={s.unmuteNo} onClick={() => setSimulJoinRequest(false)}>Not now</button>
+              <button style={s.unmuteYes} onClick={simulJoin}>{tr("♟ Join simul")}</button>
+              <button style={s.unmuteNo} onClick={() => setSimulJoinRequest(false)}>{tr("Not now")}</button>
             </div>
           </div>
         </div>
@@ -4877,15 +4961,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               {gameOverPopup.title}
             </h3>
             <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.75)', margin: '0 0 16px' }}>
-              Your game has ended · <b>{gameOverPopup.reason}</b>
+              {tr("Your game has ended ·")} <b>{gameOverPopup.reason}</b>
             </p>
             {canWatch ? (
               <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <button style={s.unmuteYes} onClick={watchOthers}>👀 Watch the other games</button>
-                <button style={s.unmuteNo} onClick={backToClass}>Back to class</button>
+                <button style={s.unmuteYes} onClick={watchOthers}>{tr("👀 Watch the other games")}</button>
+                <button style={s.unmuteNo} onClick={backToClass}>{tr("Back to class")}</button>
               </div>
             ) : (
-              <button style={s.unmuteYes} onClick={backToClass}>OK — back to class</button>
+              <button style={s.unmuteYes} onClick={backToClass}>{tr("OK — back to class")}</button>
             )}
           </div>
         </div>
@@ -4936,7 +5020,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               fontSize: 13, cursor: 'pointer',
             }}
           >
-            🔄 Try again
+            {tr("🔄 Try again")}
           </button>
         </div>
       )}
@@ -4953,7 +5037,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
           }}
         >
-          🔊 Tap to enable sound
+          {tr("🔊 Tap to enable sound")}
         </button>
       )}
 
@@ -4961,8 +5045,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           stay right above it (Zoom-style), instead of my screen taking over. */}
       {iAmSharing && (
         <div style={s.shareBanner}>
-          🖥️ You’re sharing your screen — students can see it.
-          <button style={s.shareStop} onClick={lk.toggleScreen}>Stop sharing</button>
+          {tr("🖥️ You’re sharing your screen — students can see it.")}
+          <button style={s.shareStop} onClick={lk.toggleScreen}>{tr("Stop sharing")}</button>
         </div>
       )}
 
@@ -5062,7 +5146,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               onWatch={setWatchGameId}
             />
           ) : remoteScreen ? (
-            <MediaTile track={remoteScreen.screenTrack} muted label={`${remoteScreen.name}'s screen`} isScreen />
+            <MediaTile track={remoteScreen.screenTrack} muted label={tr("{name}'s screen", { name: remoteScreen.name })} isScreen />
           ) : boardOnStage ? (
             // nowrap on wide screens keeps [positions | board | moves+engine] as three
             // fixed columns so collapsing Moves never drops the card to the bottom of the
@@ -5083,7 +5167,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 if (course) {
                   return (
                     <div style={s.posList}>
-                      <div style={s.posListTitle}>Lessons ({course.lessons.length})</div>
+                      <div style={s.posListTitle}>{tr("Lessons (")}{course.lessons.length})</div>
                       {course.lessons.map((l, i) => (
                         <button key={i} style={s.posItem} title={l.name} onClick={() => loadItem(l)}>
                           <b>{i + 1}.</b> {l.name}{l.kind === 'game' ? ' ♟' : l.kind === 'study' ? ' 📖' : ''}
@@ -5096,7 +5180,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 if (contentTab === 'library' && libraryItems.length > 0) {
                   return (
                     <div style={s.posList}>
-                      <div style={s.posListTitle}>Saved ({libraryItems.length})</div>
+                      <div style={s.posListTitle}>{tr("Saved (")}{libraryItems.length})</div>
                       {libraryItems.map((it, i) => (
                         <button key={i} style={s.posItem} title={it.name} onClick={() => loadItem(it)}>
                           <b>{i + 1}.</b> {it.name}{it.kind === 'game' ? ' ♟' : ''}
@@ -5115,16 +5199,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 if (contentTab === 'studies' && (positions.length > 0 || ownLoadedChapter)) {
                   return (
                     <div style={s.posList}>
-                      <div style={s.posListTitle}>Positions ({positions.length})</div>
-                      {posLoading ? <div style={{ color: '#9ca3af', fontSize: 12 }}>Loading…</div> : (<>
+                      <div style={s.posListTitle}>{tr("Positions (")}{positions.length})</div>
+                      {posLoading ? <div style={{ color: '#9ca3af', fontSize: 12 }}>{tr("Loading…")}</div> : (<>
                         {positions.map((p, i) => (
                           <button key={i} style={s.posItem} title={p.title} onClick={() => setBoardFen(p.fen)}>
-                            <b>{i + 1}.</b> {p.title || `Position ${i + 1}`}
+                            <b>{i + 1}.</b> {p.title || tr("Position {v0}", { v0: i + 1 })}
                           </button>
                         ))}
                         {positions.length === 0 && ownLoadedChapter && (
                           <div style={{ fontSize: 12, color: '#9ca3af', padding: '2px 0' }}>
-                            No positions yet — set up the board and save it here.
+                            {tr("No positions yet — set up the board and save it here.")}
                           </div>
                         )}
                         {/* Author-in-place: only for the coach's OWN loaded chapter.
@@ -5132,7 +5216,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                         {ownLoadedChapter && (
                           <>
                             <button style={s.createPosBtn} onClick={quickSaveToLoadedChapter} disabled={quickSaveBusy}>
-                              {quickSaveBusy ? 'Saving…' : '➕ Save current position here'}
+                              {quickSaveBusy ? tr('Saving…') : tr('➕ Save current position here')}
                             </button>
                             {quickSaveMsg && (
                               <div style={{ fontSize: 11.5, color: quickSaveMsg.startsWith('✓') ? '#6ee7b7' : '#fca5a5', textAlign: 'center' }}>{quickSaveMsg}</div>
@@ -5145,6 +5229,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 }
                 return null;
               })()}
+
+              {wbPanel.open && wbPanel.side === 'left' && wbPanelEl}
 
               {/* Board column — hugs the board. The old flat 560px host minimum left
                   a wide empty gap beside a smaller board (the board is centred in the
@@ -5173,8 +5259,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   <Chessboard position={curFen} lastMove={lastMove} boardWidth={shownBoardW} draggable={!!iControl && !wbActive} onDrop={onDrop}
                     orientation={boardOrientation}
                     onFlip={flipBoard}
-                    arrows={iControl ? [] : drawArrows}
-                    highlightSquares={iControl ? undefined : drawHighlights}
+                    arrows={drawArrows}
+                    syncedHighlights={drawHighlights}
+                    clearDrawingsKey={curFen}
                     onDrawingChange={iControl && !wbActive ? onBoardDrawing : undefined}
                     resizable={!!iControl}
                     onResize={iControl ? setBoardWidth : undefined}
@@ -5191,7 +5278,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 {!isHost && (
                 <div
                   role="status"
-                  aria-label={`${turnToMove === 'white' ? 'White' : 'Black'} to move`}
+                  aria-label={tr("{v0} to move", { v0: turnToMove === 'white' ? 'White' : 'Black' })}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                     marginTop: 6, padding: '6px 14px', borderRadius: 10,
@@ -5209,7 +5296,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     }}
                   />
                   <span style={{ fontSize: 13, fontWeight: 800, color: '#f1f5f9' }}>
-                    {turnToMove === 'white' ? 'White' : 'Black'} to move
+                    {turnToMove === 'white' ? 'White' : 'Black'} {tr("to move")}
                   </span>
                 </div>
                 )}
@@ -5223,17 +5310,17 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       handed to THIS student and a move is expected of them. */}
                   {(isHost || iControl) && (
                     <span style={{ color: '#9ca3af', fontSize: 12 }}>
-                      {isHost ? 'You’re teaching — everyone follows'
+                      {isHost ? tr('You’re teaching — everyone follows')
                         : 'Your coach gave you control — make your move'}
                     </span>
                   )}
                   {/* Move navigation (host/controller drives; syncs to all). */}
                   {iControl && (
                     <span style={{ display: 'flex', gap: 4 }}>
-                      <button style={s.zoomBtn} title="Start" onClick={goStart}>⏮</button>
-                      <button style={s.zoomBtn} title="Back" onClick={stepBack}>◀</button>
-                      <button style={s.zoomBtn} title="Forward" onClick={stepFwd}>▶</button>
-                      <button style={s.zoomBtn} title="End" onClick={goEnd}>⏭</button>
+                      <button style={s.zoomBtn} title={tr("Start")} onClick={goStart}>⏮</button>
+                      <button style={s.zoomBtn} title={tr("Back")} onClick={stepBack}>◀</button>
+                      <button style={s.zoomBtn} title={tr("Forward")} onClick={stepFwd}>▶</button>
+                      <button style={s.zoomBtn} title={tr("End")} onClick={goEnd}>⏭</button>
                     </span>
                   )}
                   {/* Flip. For the COACH this turns the whole class's board, so
@@ -5248,15 +5335,26 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   {isHost && (
                     <button
                       style={{ ...s.zoomBtn, ...(wbActive ? { border: '1.5px solid #06b6d4', background: 'rgba(6,182,212,0.2)', color: '#67e8f9' } : {}) }}
-                      title={wbActive ? 'Close whiteboard' : 'Whiteboard — draw & type on the board'}
+                      title={wbActive ? tr('Close whiteboard') : tr('Whiteboard — draw & type on the board')}
                       onClick={() => setWbActive(v => !v)}
                     >
                       🖊
                     </button>
                   )}
+                  {isHost && (
+                    <button
+                      style={{ ...s.zoomBtn, ...(wbPanel.open ? { border: '1.5px solid #06b6d4', background: 'rgba(6,182,212,0.2)', color: '#67e8f9' } : {}) }}
+                      title={wbPanel.open ? tr('Close side whiteboard') : tr('Side whiteboard — a blank board beside the chessboard')}
+                      onClick={() => changeWbPanel({ open: !wbPanel.open })}
+                    >
+                      📋
+                    </button>
+                  )}
                 </div>
               </div>
               {/* ── board column ends ── */}
+
+              {wbPanel.open && wbPanel.side === 'right' && wbPanelEl}
 
               {/* Host content panel. Rendered as the LAST child of the stage row with
                   `order: 1` + a full-width flex-basis, so it drops onto its own line
@@ -5291,9 +5389,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                             {Object.keys(egPremium).length > 0 && (
                               <div style={s.srcTabs}>
                                 <button style={{ ...s.srcTab, ...(egSource === 'browse' ? s.srcTabOn : {}) }}
-                                  onClick={() => setEgSource('browse')}>All endgames</button>
+                                  onClick={() => setEgSource('browse')}>{tr("All endgames")}</button>
                                 <button style={{ ...s.srcTab, ...(egSource === 'premium' ? s.srcTabOn : {}) }}
-                                  onClick={() => setEgSource('premium')}>👑 Premium</button>
+                                  onClick={() => setEgSource('premium')}>{tr("👑 Premium")}</button>
                               </div>
                             )}
 
@@ -5302,7 +5400,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                 {/* Premium: pick a TYPE first, same flow as browse. */}
                                 <select style={{ ...s.loadInput, fontFamily: 'inherit' }} value={egPremFamily}
                                   onChange={e => setEgPremFamily(e.target.value)}>
-                                  <option value="">Choose an endgame type…</option>
+                                  <option value="">{tr("Choose an endgame type…")}</option>
                                   {Object.entries(egPremium).map(([fam, picks]) => (
                                     <option key={fam} value={fam}>
                                       {EG_LABEL[fam] || fam} ({picks.length})
@@ -5314,7 +5412,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                     {(egPremium[egPremFamily] || []).map(p => (
                                       <button key={p._id} style={s.posItem} title={p.idea || p.title}
                                         onClick={() => setBoardFen(p.fen)}>
-                                        <b>👑</b> {p.title || 'Endgame'}
+                                        <b>👑</b> {p.title || tr('Endgame')}
                                         {p.goal ? ` · ${String(p.goal).replace(/_/g, ' ')}` : ''}
                                       </button>
                                     ))}
@@ -5325,22 +5423,22 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                               <>
                                 <select style={{ ...s.loadInput, fontFamily: 'inherit' }} value={egFamily}
                                   onChange={e => setEgFamily(e.target.value)}>
-                                  <option value="">Choose an endgame type…</option>
+                                  <option value="">{tr("Choose an endgame type…")}</option>
                                   {egFamilies.map(f => (
                                     <option key={f.family} value={f.family} disabled={!f.count}>
                                       {f.label} ({f.count})
                                     </option>
                                   ))}
                                 </select>
-                                {egLoading && <div style={{ fontSize: 12, color: '#9ca3af' }}>Loading positions…</div>}
+                                {egLoading && <div style={{ fontSize: 12, color: '#9ca3af' }}>{tr("Loading positions…")}</div>}
                                 {!egLoading && egFamily && (
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 260, overflowY: 'auto' }}>
-                                    {egList.length === 0 && <div style={{ fontSize: 12, color: '#9ca3af' }}>No positions found.</div>}
+                                    {egList.length === 0 && <div style={{ fontSize: 12, color: '#9ca3af' }}>{tr("No positions found.")}</div>}
                                     {egList.map((g, i) => (
                                       <button key={g.id || i} style={s.posItem}
                                         title={`${g.white} vs ${g.black}${g.year ? ` (${g.year})` : ''}`}
                                         onClick={() => setBoardFen(g.fen)}>
-                                        <b>{i + 1}.</b> {g.white} vs {g.black}
+                                        <b>{i + 1}.</b> {g.white} {tr("vs")} {g.black}
                                         {g.year ? ` · ${g.year}` : ''}
                                         {g.pieceCount ? ` · ${g.pieceCount}p` : ''}
                                       </button>
@@ -5354,13 +5452,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <select style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit' }} value={pickStudy}
                               onChange={e => { setPickStudy(e.target.value); setPickChapter(''); }}>
-                              <option value="">Choose a study…</option>
+                              <option value="">{tr("Choose a study…")}</option>
                               {studies.map(st => <option key={st.id} value={st.id}>{st.name}</option>)}
                             </select>
                             <select style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit' }} value={pickChapter}
                               disabled={!pickStudy}
                               onChange={e => setPickChapter(e.target.value)}>
-                              <option value="">Choose a chapter…</option>
+                              <option value="">{tr("Choose a chapter…")}</option>
                               {(studies.find(st => st.id === pickStudy)?.chapters || []).map(ch => (
                                 <option key={ch.id} value={ch.id}>{ch.name}{ch.count != null ? ` (${ch.count})` : ''}</option>
                               ))}
@@ -5374,7 +5472,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     {contentTab === 'courses' && (
                       <select style={{ ...s.loadInput, fontFamily: 'inherit' }} value={pickCourse}
                         onChange={e => setPickCourse(e.target.value)}>
-                        <option value="">{courses.length ? 'Choose a course…' : 'No courses yet'}</option>
+                        <option value="">{courses.length ? tr('Choose a course…') : tr('No courses yet')}</option>
                         {courses.map(c => <option key={c.id} value={c.id}>{c.title} ({c.lessons.length})</option>)}
                       </select>
                     )}
@@ -5382,7 +5480,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     {/* LIBRARY: saved positions/games become the left list */}
                     {contentTab === 'library' && (
                       <div style={{ fontSize: 12, color: '#9ca3af' }}>
-                        {libraryItems.length ? `${libraryItems.length} saved item(s) — click one on the left to load.` : 'No saved positions/games yet.'}
+                        {libraryItems.length ? tr("{length} saved item(s) — click one on the left to load.", { length: libraryItems.length }) : tr('No saved positions/games yet.')}
                       </div>
                     )}
 
@@ -5392,7 +5490,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                         {/* Row 1 — Puzzle level and Healthy Mix side by side: pick the
                             difficulty, then start straight away. */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: 12, color: '#9ca3af' }}>Puzzle level:</span>
+                          <span style={{ fontSize: 12, color: '#9ca3af' }}>{tr("Puzzle level:")}</span>
                           <select style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }}
                             value={`${ratingMin}-${ratingMax}`}
                             onChange={e => { const [a, b] = e.target.value.split('-').map(Number); setRatingMin(a); setRatingMax(b); }}>
@@ -5401,40 +5499,40 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                             ))}
                           </select>
                           <button style={{ ...s.puzCard, flex: 1, minWidth: 140 }}
-                            onClick={() => loadPuzzle('healthymix')}>🥗 Healthy Mix</button>
+                            onClick={() => loadPuzzle('healthymix')}>{tr("🥗 Healthy Mix")}</button>
                         </div>
 
                         {/* Row 2 — Theme picker + its own Load button. */}
                         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
                           <select style={{ ...s.loadInput, flex: 1, minWidth: 150, fontFamily: 'inherit' }} value={puzzleTheme}
                             onChange={e => setPuzzleTheme(e.target.value)}>
-                            <option value="">🎯 Themes — pick one…</option>
+                            <option value="">{tr("🎯 Themes — pick one…")}</option>
                             {puzzleThemes.map(t => <option key={t.key} value={t.key}>{t.label}</option>)}
                           </select>
-                          <button style={s.loadBtn} disabled={!puzzleTheme} onClick={() => loadPuzzle('theme')}>Load theme</button>
+                          <button style={s.loadBtn} disabled={!puzzleTheme} onClick={() => loadPuzzle('theme')}>{tr("Load theme")}</button>
                         </div>
 
                         {/* Row 3 — Pieces: the mode button, the count, then Load. */}
                         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
                           <button style={{ ...s.puzCard, width: 'auto', ...(puzzleMode === 'pieces' ? s.srcTabOn : {}) }}
                             onClick={() => { setContentTab('puzzles'); loadPuzzle('pieces'); }}
-                            disabled={!puzzlePieces} title={!puzzlePieces ? 'Pick a piece count first' : ''}>♟ Pieces</button>
-                          <span style={{ fontSize: 12, color: '#9ca3af' }}>Pieces on board:</span>
+                            disabled={!puzzlePieces} title={!puzzlePieces ? tr('Pick a piece count first') : ''}>{tr("♟ Pieces")}</button>
+                          <span style={{ fontSize: 12, color: '#9ca3af' }}>{tr("Pieces on board:")}</span>
                           <select style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }} value={puzzlePieces}
                             onChange={e => setPuzzlePieces(e.target.value)}>
-                            <option value="">any</option>
+                            <option value="">{tr("any")}</option>
                             {[3,4,5,6,7,8,10,12,16,20,24,32].map(n => <option key={n} value={n}>{n}</option>)}
                           </select>
-                          <button style={s.ghostSm} disabled={!puzzlePieces} onClick={() => loadPuzzle('pieces')}>Load pieces</button>
+                          <button style={s.ghostSm} disabled={!puzzlePieces} onClick={() => loadPuzzle('pieces')}>{tr("Load pieces")}</button>
                         </div>
                         {/* Active-puzzle status + Next/Exit now live in a compact bar
                             directly below the Moves card (no scrolling). */}
                         {puzzle && (
                           <div style={{ fontSize: 12, color: '#9ca3af' }}>
-                            Puzzle loaded — use <b>Next ▶</b> / <b>Exit</b> below the Moves card.
+                            {tr("Puzzle loaded — use")} <b>{tr("Next ▶")}</b> / <b>{tr("Exit")}</b> {tr("below the Moves card.")}
                           </div>
                         )}
-                        {puzzleStatus === 'none' && <div style={{ color: '#fca5a5', fontSize: 12 }}>No puzzle found for that level/topic — try a wider range.</div>}
+                        {puzzleStatus === 'none' && <div style={{ color: '#fca5a5', fontSize: 12 }}>{tr("No puzzle found for that level/topic — try a wider range.")}</div>}
                       </div>
                     )}
 
@@ -5454,8 +5552,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                               <select style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }}
                                 value={mgField} onChange={e => { setMgField(e.target.value); setMgList([]); setMgErr(''); }}>
-                                <option value="player">Player</option>
-                                <option value="opening">Opening</option>
+                                <option value="player">{tr("Player")}</option>
+                                <option value="opening">{tr("Opening")}</option>
                               </select>
                               {/* OPENING: two dropdowns, family then variation.
                                   A free-text box was the wrong control here —
@@ -5471,7 +5569,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                     value={mgFamily}
                                     onChange={e => { setMgFamily(e.target.value); setMgList([]); setMgErr(''); }}
                                   >
-                                    <option value="">Choose an opening…</option>
+                                    <option value="">{tr("Choose an opening…")}</option>
                                     {mgFamilies.map(f => <option key={f} value={f}>{f}</option>)}
                                   </select>
                                   {/* Only once a family is chosen, and only if it
@@ -5482,7 +5580,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                       value={mgVariation}
                                       onChange={e => { setMgVariation(e.target.value); setMgList([]); setMgErr(''); }}
                                     >
-                                      <option value="">All variations ({mgVariations.length})</option>
+                                      <option value="">{tr("All variations (")}{mgVariations.length})</option>
                                       {mgVariations.map(v => <option key={v} value={v}>{v}</option>)}
                                     </select>
                                   )}
@@ -5490,7 +5588,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                               ) : (
                                 <input
                                   style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit', minWidth: 140 }}
-                                  placeholder="e.g. Fischer  ·  or  Fischer vs Spassky"
+                                  placeholder={tr("e.g. Fischer  ·  or  Fischer vs Spassky")}
                                   value={mgQuery}
                                   onChange={e => setMgQuery(e.target.value)}
                                   onKeyDown={e => { if (e.key === 'Enter') searchMasterGames(); }}
@@ -5501,7 +5599,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                 onClick={searchMasterGames}
                                 disabled={mgLoading || (mgField === 'opening' ? !mgFamily : !mgQuery.trim())}
                               >
-                                {mgLoading ? 'Searching…' : 'Search'}
+                                {mgLoading ? tr('Searching…') : tr('Search')}
                               </button>
                             </div>
                             {mgErr && <div style={{ color: '#fca5a5', fontSize: 12 }}>{mgErr}</div>}
@@ -5512,7 +5610,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                     <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, lineHeight: 1.45 }}>
                                       <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#e2e8f0' }}>
                                         {g.white}{g.whiteElo ? ` (${g.whiteElo})` : ''}
-                                        <span style={{ color: '#64748b' }}> vs </span>
+                                        <span style={{ color: '#64748b' }}> {tr("vs")} </span>
                                         {g.black}{g.blackElo ? ` (${g.blackElo})` : ''}
                                       </span>
                                       <span style={{ display: 'block', color: '#94a3b8', fontSize: 11.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -5521,7 +5619,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                         {g.year ? ` · ${g.year}` : ''}
                                       </span>
                                     </span>
-                                    <button style={s.tiny} onClick={() => loadMasterGame(g._id)}>Load</button>
+                                    <button style={s.tiny} onClick={() => loadMasterGame(g._id)}>{tr("Load")}</button>
                                   </div>
                                 ))}
                               </div>
@@ -5539,11 +5637,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                           />
                           <select style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }}
                             value={gameMax} onChange={e => setGameMax(Number(e.target.value))}>
-                            <option value={5}>Last 5</option>
-                            <option value={10}>Last 10</option>
+                            <option value={5}>{"Last 5"}</option>
+                            <option value={10}>{"Last 10"}</option>
                           </select>
                           <button style={s.loadBtn} onClick={fetchStudentGames} disabled={gamesLoading || !gameUser.trim()}>
-                            {gamesLoading ? 'Fetching…' : 'Fetch'}
+                            {gamesLoading ? tr('Fetching…') : tr('Fetch')}
                           </button>
                         </div>
                         {gamesErr && <div style={{ color: '#fca5a5', fontSize: 12 }}>{gamesErr}</div>}
@@ -5555,8 +5653,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                               // Show the pairing as it sat on the board — White first —
                               // so "who vs who" reads naturally, with both ratings.
                               const isWhite = g.playerSide === 'white';
-                              const me = { name: g.playerName || gameUser || 'Student', rating: g.playerRating };
-                              const opp = { name: g.opponentName || 'Opponent', rating: g.opponentRating };
+                              const me = { name: g.playerName || gameUser || tr('Student'), rating: g.playerRating };
+                              const opp = { name: g.opponentName || tr('Opponent'), rating: g.opponentRating };
                               const white = isWhite ? me : opp;
                               const black = isWhite ? opp : me;
                               const withRating = (p) => `${p.name}${p.rating ? ` (${p.rating})` : ''}`;
@@ -5566,7 +5664,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                   <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, lineHeight: 1.45 }}>
                                     <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#e2e8f0' }}>
                                       ⚪ {withRating(white)}
-                                      <span style={{ color: '#64748b' }}> vs </span>
+                                      <span style={{ color: '#64748b' }}> {tr("vs")} </span>
                                       ⚫ {withRating(black)}
                                     </span>
                                     <span style={{ display: 'block', color: '#94a3b8', fontSize: 11.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -5574,7 +5672,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                       {g.timeClass && g.timeClass !== 'unknown' ? ` · ${g.timeClass}` : ''}
                                     </span>
                                   </span>
-                                  <button style={s.tiny} onClick={() => loadFetchedGame(g)}>Load</button>
+                                  <button style={s.tiny} onClick={() => loadFetchedGame(g)}>{tr("Load")}</button>
                                 </div>
                               );
                             })}
@@ -5590,30 +5688,30 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       <textarea
                         style={s.loadInput}
                         rows={2}
-                        placeholder="…or paste a FEN (a position) or PGN (a game)"
+                        placeholder={tr("…or paste a FEN (a position) or PGN (a game)")}
                         value={loadText}
                         onChange={e => setLoadText(e.target.value)}
                       />
                       {loadErr && <div style={{ color: '#fca5a5', fontSize: 12 }}>{loadErr}</div>}
                       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <button style={s.loadBtn} onClick={loadPosition}>Load onto board</button>
-                        <button style={s.ghostSm} onClick={resetBoard}>Reset board</button>
-                        <button style={s.ghostSm} onClick={openEditor}>🎨 Edit position</button>
+                        <button style={s.loadBtn} onClick={loadPosition}>{tr("Load onto board")}</button>
+                        <button style={s.ghostSm} onClick={resetBoard}>{tr("Reset board")}</button>
+                        <button style={s.ghostSm} onClick={openEditor}>{tr("🎨 Edit position")}</button>
                         {/* Author-while-you-teach: save the current position into one of
                             the coach's OWN studies for reuse next class. */}
                         <button style={s.ghostSm} onClick={() => (saveOpen ? setSaveOpen(false) : openSavePanel())}>
-                          💾 Save to my study
+                          {tr("💾 Save to my study")}
                         </button>
                         {/* Capture-as-you-teach: grab the board into the homework set.
                             One click, no dialog, so it doesn't interrupt the lesson. */}
                         <button style={s.ghostSm} onClick={addPositionToHomework}
-                          title="Add the position on the board to this class's homework">
-                          📌 Add to homework
+                          title={tr("Add the position on the board to this class's homework")}>
+                          {tr("📌 Add to homework")}
                         </button>
                         <button
                           style={{ ...s.ghostSm, ...(hwPositions.length ? { borderColor: 'rgba(6,182,212,0.5)', color: '#67e8f9' } : {}) }}
                           onClick={() => setHwOpen(v => !v)}
-                          title="Review and send the homework you've collected">
+                          title={tr("Review and send the homework you've collected")}>
                           📚 Homework{hwPositions.length ? ` (${hwPositions.length})` : ''}
                         </button>
                       </div>
@@ -5621,16 +5719,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       {hwOpen && (
                         <div style={s.savePanel}>
                           <div style={{ fontSize: 12.5, fontWeight: 800, color: '#67e8f9' }}>
-                            Homework — play vs Stockfish
+                            {tr("Homework — play vs Stockfish")}
                           </div>
                           <div style={{ fontSize: 11.5, color: '#9ca3af' }}>
                             Students play each position out against the engine. Add positions
-                            with <b>📌 Add to homework</b> while you teach.
+                            {tr("with")} <b>{tr("📌 Add to homework")}</b> {tr("while you teach.")}
                           </div>
 
                           {hwPositions.length === 0 ? (
                             <div style={{ fontSize: 12, color: '#9ca3af', padding: '6px 0' }}>
-                              No positions yet.
+                              {tr("No positions yet.")}
                             </div>
                           ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 200, overflowY: 'auto' }}>
@@ -5639,7 +5737,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                   <span style={{ fontSize: 11, color: '#9ca3af', width: 18 }}>{i + 1}.</span>
                                   <input
                                     style={{ ...s.loadInput, flex: 1, minWidth: 0 }}
-                                    placeholder="Label (optional) — e.g. Win the rook"
+                                    placeholder={tr("Label (optional) — e.g. Win the rook")}
                                     value={p.tag}
                                     onChange={e => updateHwPosition(i, { tag: e.target.value })}
                                   />
@@ -5647,28 +5745,28 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                     style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }}
                                     value={p.moves}
                                     onChange={e => updateHwPosition(i, { moves: Number(e.target.value) })}
-                                    title="How many good moves the student must find — or play the position out to the end (endgames)"
+                                    title={tr("How many good moves the student must find — or play the position out to the end (endgames)")}
                                   >
                                     {/* 0 = play to the end: for endgames, where a fixed
                                         move count is meaningless ("play out this rook
                                         endgame" isn't 3 moves, it's a conversion). */}
-                                    <option value={0}>♚ Play to the end</option>
+                                    <option value={0}>{tr("♚ Play to the end")}</option>
                                     {[1, 2, 3, 4, 5, 6, 8, 10, 12].map(n => (
-                                      <option key={n} value={n}>{n} move{n === 1 ? '' : 's'}</option>
+                                      <option key={n} value={n}>{n} {tr("move")}{n === 1 ? '' : 's'}</option>
                                     ))}
                                   </select>
-                                  <button style={s.ghostSm} onClick={() => removeHwPosition(i)} title="Remove">✕</button>
+                                  <button style={s.ghostSm} onClick={() => removeHwPosition(i)} title={tr("Remove")}>✕</button>
                                 </div>
                               ))}
                             </div>
                           )}
 
-                          <input style={s.loadInput} placeholder="Homework title (optional)"
+                          <input style={s.loadInput} placeholder={tr("Homework title (optional)")}
                             value={hwTitle} onChange={e => setHwTitle(e.target.value)} />
 
                           <div style={{ fontSize: 11.5, color: '#9ca3af' }}>
                             {inClassStudents.length
-                              ? `Will be sent to ${inClassStudents.length} student${inClassStudents.length === 1 ? '' : 's'} in this class: ${inClassStudents.map(s2 => s2.name).join(', ')}`
+                              ? tr("Will be sent to {length} student{v1} in this class: {v2}", { length: inClassStudents.length, v1: inClassStudents.length === 1 ? '' : 's', v2: inClassStudents.map(s2 => s2.name).join(', ') })
                               : 'No students are in the class right now.'}
                           </div>
 
@@ -5678,9 +5776,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                           <div style={{ display: 'flex', gap: 8 }}>
                             <button style={s.loadBtn} onClick={sendHomework}
                               disabled={hwBusy || !hwPositions.length || !inClassStudents.length}>
-                              {hwBusy ? 'Sending…' : `📤 Send homework${hwPositions.length ? ` (${hwPositions.length})` : ''}`}
+                              {hwBusy ? tr('Sending…') : `📤 Send homework${hwPositions.length ? ` (${hwPositions.length})` : ''}`}
                             </button>
-                            <button style={s.ghostSm} onClick={() => setHwOpen(false)}>Close</button>
+                            <button style={s.ghostSm} onClick={() => setHwOpen(false)}>{tr("Close")}</button>
                           </div>
                         </div>
                       )}
@@ -5688,40 +5786,40 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       {saveOpen && (
                         <div style={s.savePanel}>
                           <div style={{ fontSize: 12.5, fontWeight: 800, color: '#67e8f9' }}>
-                            Save this position to your study
+                            {tr("Save this position to your study")}
                           </div>
                           <div style={{ fontSize: 11.5, color: '#9ca3af' }}>
-                            Saved into <b>your own studies</b> only — reuse it in your next class from the “My studies” tab.
+                            {tr("Saved into")} <b>{tr("your own studies")}</b> {tr("only — reuse it in your next class from the “My studies” tab.")}
                           </div>
 
-                          <label style={s.saveLbl}>Study
+                          <label style={s.saveLbl}>{tr("Study")}
                             <select style={{ ...s.loadInput, fontFamily: 'inherit' }} value={saveStudyId}
                               onChange={e => { setSaveStudyId(e.target.value); setSaveChapterId(''); }}>
-                              <option value="">➕ New study…</option>
+                              <option value="">{tr("➕ New study…")}</option>
                               {myStudies.map(st => <option key={st.id} value={st.id}>{st.name}</option>)}
                             </select>
                           </label>
                           {!saveStudyId && (
-                            <input style={s.loadInput} placeholder="New study name" value={saveNewStudy}
+                            <input style={s.loadInput} placeholder={tr("New study name")} value={saveNewStudy}
                               onChange={e => setSaveNewStudy(e.target.value)} />
                           )}
 
-                          <label style={s.saveLbl}>Chapter
+                          <label style={s.saveLbl}>{tr("Chapter")}
                             {saveStudyId ? (
                               <select style={{ ...s.loadInput, fontFamily: 'inherit' }} value={saveChapterId}
                                 onChange={e => setSaveChapterId(e.target.value)}>
-                                <option value="">➕ New chapter…</option>
+                                <option value="">{tr("➕ New chapter…")}</option>
                                 {(myStudies.find(st => st.id === saveStudyId)?.chapters || [])
                                   .map(ch => <option key={ch.id} value={ch.id}>{ch.name}{ch.count != null ? ` (${ch.count})` : ''}</option>)}
                               </select>
                             ) : null}
                           </label>
                           {!saveChapterId && (
-                            <input style={s.loadInput} placeholder="New chapter name (default: Class positions)"
+                            <input style={s.loadInput} placeholder={tr("New chapter name (default: Class positions)")}
                               value={saveNewChapter} onChange={e => setSaveNewChapter(e.target.value)} />
                           )}
 
-                          <input style={s.loadInput} placeholder="Position label (optional)"
+                          <input style={s.loadInput} placeholder={tr("Position label (optional)")}
                             value={saveTitle} onChange={e => setSaveTitle(e.target.value)} />
 
                           {saveMsg && (
@@ -5729,9 +5827,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                           )}
                           <div style={{ display: 'flex', gap: 8 }}>
                             <button style={s.loadBtn} onClick={saveCurrentPosition} disabled={saveBusy}>
-                              {saveBusy ? 'Saving…' : '💾 Save position'}
+                              {saveBusy ? tr('Saving…') : tr('💾 Save position')}
                             </button>
-                            <button style={s.ghostSm} onClick={() => setSaveOpen(false)}>Close</button>
+                            <button style={s.ghostSm} onClick={() => setSaveOpen(false)}>{tr("Close")}</button>
                           </div>
                         </div>
                       )}
@@ -5799,8 +5897,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       color: puzzleStatus === 'wrong' ? '#fca5a5' : puzzleStatus === 'solved' ? '#6ee7b7' : puzzleStatus === 'correct' ? '#67e8f9' : '#9ca3af' }}>
                       {puzzleStatus === 'wrong' ? '✗ Try again' : puzzleDone ? '✓ Solved! Board is free — explore any move' : puzzleStatus === 'correct' ? '✓ Keep going' : '🧩 Best move?'}
                     </span>
-                    <button style={{ ...s.loadBtn, flex: '0 0 auto', marginLeft: 'auto' }} onClick={() => loadPuzzle(puzzleMode)}>Next ▶</button>
-                    <button style={s.ghostSm} onClick={exitPuzzle}>Exit</button>
+                    <button style={{ ...s.loadBtn, flex: '0 0 auto', marginLeft: 'auto' }} onClick={() => loadPuzzle(puzzleMode)}>{tr("Next ▶")}</button>
+                    <button style={s.ghostSm} onClick={exitPuzzle}>{tr("Exit")}</button>
                   </div>
                 )}
               </div>
@@ -5814,10 +5912,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             // the stage invites teaching instead of sitting empty.
             <div style={s.stagePlaceholder}>
               <div style={{ fontSize: 42 }}>♟</div>
-              <div style={{ fontWeight: 700, marginTop: 8 }}>Ready to teach</div>
+              <div style={{ fontWeight: 700, marginTop: 8 }}>{tr("Ready to teach")}</div>
               <div style={{ fontSize: 13, color: '#9ca3af', marginTop: 4, maxWidth: 320, textAlign: 'center' }}>
-                Tap <b style={{ color: '#67e8f9' }}>♟ Teach on board</b> above, or load a study / puzzle from below.
-                Your students’ videos are {videosHidden ? 'hidden' : videosPopped ? 'in their own window' : 'floating'} — bring them back any time with the video buttons.
+                {tr("Tap")} <b style={{ color: '#67e8f9' }}>{tr("♟ Teach on board")}</b> {tr("above, or load a study / puzzle from below.")}
+                {tr("Your students’ videos are")} {videosHidden ? 'hidden' : videosPopped ? tr('in their own window') : 'floating'} {tr("— bring them back any time with the video buttons.")}
               </div>
             </div>
           )}
@@ -5847,19 +5945,19 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginBottom: waitingCollapsed ? 0 : 8 }}
                   >
                     <span style={{ fontSize: 12, color: '#9ca3af' }}>{waitingCollapsed ? '▸' : '▾'}</span>
-                    ⏳ Waiting room
+                    {tr("⏳ Waiting room")}
                     {waitingNow.length > 0 && <span style={s.waitBadge}>{waitingNow.length}</span>}
                   </div>
 
                   {!waitingCollapsed && (<>
                     {waitingNow.length === 0
-                      ? <div style={{ color: '#6b7280', fontSize: 13 }}>No one waiting.</div>
+                      ? <div style={{ color: '#6b7280', fontSize: 13 }}>{tr("No one waiting.")}</div>
                       : waitingNow.map(w => (
                         <div key={w.studentId} style={s.waitRow}>
                           <span style={{ flex: 1, fontSize: 14 }}>{w.name || w.username || 'Student'}<StarMark stars={w.stars} /></span>
-                          <button style={s.present} onClick={() => admit(w.studentId, 'Present')}>Present</button>
-                          <button style={s.catchup} onClick={() => admit(w.studentId, 'Catch-up')}>Catch up</button>
-                          <button style={s.remove} onClick={() => removeStu(w.studentId)}>Remove</button>
+                          <button style={s.present} onClick={() => admit(w.studentId, 'Present')}>{tr("Present")}</button>
+                          <button style={s.catchup} onClick={() => admit(w.studentId, 'Catch-up')}>{tr("Catch up")}</button>
+                          <button style={s.remove} onClick={() => removeStu(w.studentId)}>{tr("Remove")}</button>
                         </div>
                       ))
                     }
@@ -5872,13 +5970,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       {waitingNow.slice(0, 2).map(w => (
                         <div key={w.studentId} style={s.waitRow}>
                           <span style={{ flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{w.name || w.username || 'Student'}<StarMark stars={w.stars} /></span>
-                          <button style={s.present} onClick={() => admit(w.studentId, 'Present')}>Present</button>
-                          <button style={s.catchup} onClick={() => admit(w.studentId, 'Catch-up')}>Catch up</button>
+                          <button style={s.present} onClick={() => admit(w.studentId, 'Present')}>{tr("Present")}</button>
+                          <button style={s.catchup} onClick={() => admit(w.studentId, 'Catch-up')}>{tr("Catch up")}</button>
                         </div>
                       ))}
                       {waitingNow.length > 2 && (
                         <div style={{ fontSize: 12, color: '#9ca3af', cursor: 'pointer' }} onClick={() => setWaitingCollapsed(false)}>
-                          +{waitingNow.length - 2} more — expand
+                          +{waitingNow.length - 2} {tr("more — expand")}
                         </div>
                       )}
                     </div>
@@ -5893,7 +5991,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               {(
                 <div>
                   <div style={{ fontWeight: 700, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    👥 In the class <span style={s.waitBadge}>{allTiles.length}</span>
+                    {tr("👥 In the class")} <span style={s.waitBadge}>{allTiles.length}</span>
                   </div>
 
                   {/* Column headings for the icon buttons below. Without these the
@@ -5904,9 +6002,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       <span style={{ flex: 1, minWidth: 0 }} />
                       <span style={s.partHeadIcons}>Mic&nbsp;·&nbsp;Cam</span>
                       <span style={s.ctrlCell}>
-                        <span style={s.ctrlHead}>Mute</span>
-                        <span style={s.ctrlHead}>Board</span>
-                        <span style={s.ctrlHead}>Screen</span>
+                        <span style={s.ctrlHead}>{tr("Mute")}</span>
+                        <span style={s.ctrlHead}>{tr("Board")}</span>
+                        <span style={s.ctrlHead}>{tr("Screen")}</span>
                       </span>
                     </div>
                   )}
@@ -5927,13 +6025,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                               // just an indicator.
                               isHost && !p.isLocal
                                 ? <button
-                                    title="Click to lower this hand"
+                                    title={tr("Click to lower this hand")}
                                     onClick={(e) => { e.stopPropagation(); lowerStudentHand(p.identity); }}
                                     style={{ marginRight: 3, background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 14, lineHeight: 1 }}
                                   >✋</button>
-                                : <span title="Hand raised" style={{ marginRight: 3 }}>✋</span>
+                                : <span title={tr("Hand raised")} style={{ marginRight: 3 }}>✋</span>
                             )}
-                            {p.name}{p.isLocal ? ' (you)' : ''}{controlling ? ' • presenting' : ''}
+                            {p.name}{p.isLocal ? ' (you)' : ''}{controlling ? tr(' • presenting') : ''}
                           </span>
                         </span>
                         {/* mic / cam status icons */}
@@ -5954,14 +6052,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                         {isHost && !p.isLocal && (
                           <span style={s.ctrlCell}>
                             {coachMutedIds.map(String).includes(String(p.identity))
-                              ? <button style={{ ...s.ctrlBtn, ...s.ctrlBtnOn }} onClick={() => requestUnmute(p.identity)} title={`Ask ${p.name} to unmute`}>🎙️</button>
-                              : <button style={s.ctrlBtn} onClick={() => muteStudent(p.identity)} title={`Mute ${p.name} (they can't unmute until you ask)`}>🔇</button>}
+                              ? <button style={{ ...s.ctrlBtn, ...s.ctrlBtnOn }} onClick={() => requestUnmute(p.identity)} title={tr("Ask {name} to unmute", { name: p.name })}>🎙️</button>
+                              : <button style={s.ctrlBtn} onClick={() => muteStudent(p.identity)} title={tr("Mute {name} (they can't unmute until you ask)", { name: p.name })}>🔇</button>}
                             {controlling
-                              ? <button style={{ ...s.ctrlBtn, ...s.ctrlBtnOn }} onClick={revoke} title={`Take board control back from ${p.name}`}>🎯</button>
-                              : <button style={s.ctrlBtn} onClick={() => grant(p.identity)} title={`Let ${p.name} move the board`}>🎯</button>}
+                              ? <button style={{ ...s.ctrlBtn, ...s.ctrlBtnOn }} onClick={revoke} title={tr("Take board control back from {name}", { name: p.name })}>🎯</button>
+                              : <button style={s.ctrlBtn} onClick={() => grant(p.identity)} title={tr("Let {name} move the board", { name: p.name })}>🎯</button>}
                             {sharing
-                              ? <button style={{ ...s.ctrlBtn, ...s.ctrlBtnOn }} onClick={revokeShare} title={`Stop ${p.name} sharing`}>🖥️</button>
-                              : <button style={s.ctrlBtn} onClick={() => grantShare(p.identity)} title={`Let ${p.name} share their screen`}>🖥️</button>}
+                              ? <button style={{ ...s.ctrlBtn, ...s.ctrlBtnOn }} onClick={revokeShare} title={tr("Stop {name} sharing", { name: p.name })}>🖥️</button>
+                              : <button style={s.ctrlBtn} onClick={() => grantShare(p.identity)} title={tr("Let {name} share their screen", { name: p.name })}>🖥️</button>}
                           </span>
                         )}
                       </div>
@@ -5995,14 +6093,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         <div style={s.shareOverlay} onMouseDown={(e) => { if (e.target === e.currentTarget) setSharePrompt(false); }}>
           <div style={s.shareModal}>
             <div style={{ fontSize: 40, marginBottom: 6 }}>🖥️</div>
-            <h2 style={{ margin: '0 0 6px', fontSize: 20, fontWeight: 800 }}>Share your screen</h2>
+            <h2 style={{ margin: '0 0 6px', fontSize: 20, fontWeight: 800 }}>{tr("Share your screen")}</h2>
             <p style={{ margin: '0 0 18px', color: '#9fb4c4', fontSize: 14, lineHeight: 1.5 }}>
-              You’ll be asked to pick a <b>window</b>, a <b>tab</b>, or your <b>whole screen</b>.
+              {tr("You’ll be asked to pick a")} <b>{tr("window")}</b>, a <b>{tr("tab")}</b>{tr(", or your")} <b>{tr("whole screen")}</b>.
               Everyone in the class will see it.
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-              <button style={s.shareCancel} onClick={() => setSharePrompt(false)}>Cancel</button>
-              <button style={s.shareGo} onClick={() => { setSharePrompt(false); lk.toggleScreen(); }}>Choose what to share</button>
+              <button style={s.shareCancel} onClick={() => setSharePrompt(false)}>{tr("Cancel")}</button>
+              <button style={s.shareGo} onClick={() => { setSharePrompt(false); lk.toggleScreen(); }}>{tr("Choose what to share")}</button>
             </div>
           </div>
         </div>
@@ -6014,8 +6112,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         <div style={s.editorOverlay} onMouseDown={(e) => { if (e.target === e.currentTarget) setEditorOpen(false); }}>
           <div style={s.editorModal}>
             <div style={s.editorHead}>
-              <span>🎨 Set up a position — drag pieces, then load it onto the class board.</span>
-              <button style={s.editorX} onClick={() => setEditorOpen(false)} title="Close">✕</button>
+              <span>{tr("🎨 Set up a position — drag pieces, then load it onto the class board.")}</span>
+              <button style={s.editorX} onClick={() => setEditorOpen(false)} title={tr("Close")}>✕</button>
             </div>
             <div style={s.editorBody}>
               <div style={{ flexShrink: 0 }}>
@@ -6030,10 +6128,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <PieceSelector selectedPiece={editorPiece} onSelectPiece={setEditorPiece} />
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  <button style={s.ghostSm} onClick={editorStart}>Start position</button>
-                  <button style={s.ghostSm} onClick={editorClear}>Clear board</button>
-                  <button style={s.ghostSm} onClick={() => setEditorFlip(v => !v)} title="Flip the editor board">
-                    ⇅ Flip board
+                  <button style={s.ghostSm} onClick={editorStart}>{tr("Start position")}</button>
+                  <button style={s.ghostSm} onClick={editorClear}>{tr("Clear board")}</button>
+                  <button style={s.ghostSm} onClick={() => setEditorFlip(v => !v)} title={tr("Flip the editor board")}>
+                    {tr("⇅ Flip board")}
                   </button>
                 </div>
 
@@ -6048,8 +6146,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-              <button style={s.loadBtn} onClick={editorLoad}>Load onto board</button>
-              <button style={s.ghostSm} onClick={() => setEditorOpen(false)}>Cancel</button>
+              <button style={s.loadBtn} onClick={editorLoad}>{tr("Load onto board")}</button>
+              <button style={s.ghostSm} onClick={() => setEditorOpen(false)}>{tr("Cancel")}</button>
             </div>
           </div>
         </div>
@@ -6083,11 +6181,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               window.addEventListener('pointerup', up);
             }}
           >
-            <span style={s.vFloatTitle}>📹 Class video <span style={{ color: '#6b7280', fontWeight: 600 }}>· {allTiles.length}</span></span>
+            <span style={s.vFloatTitle}>{tr("📹 Class video")} <span style={{ color: '#6b7280', fontWeight: 600 }}>· {allTiles.length}</span></span>
             <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-              <button style={s.vfBtn} title="Pin videos back into the panel" onClick={() => setVideoMode('dock')}>📌</button>
-              <button style={s.vfBtn} title="Pop out to its own window" onClick={() => setVideoMode('pop')}>⧉</button>
-              <button style={s.vfBtn} title="Hide videos" onClick={() => setVideoMode('hidden')}>✕</button>
+              <button style={s.vfBtn} title={tr("Pin videos back into the panel")} onClick={() => setVideoMode('dock')}>📌</button>
+              <button style={s.vfBtn} title={tr("Pop out to its own window")} onClick={() => setVideoMode('pop')}>⧉</button>
+              <button style={s.vfBtn} title={tr("Hide videos")} onClick={() => setVideoMode('hidden')}>✕</button>
             </span>
           </div>
           <div style={s.vFloatBody}>
@@ -6119,8 +6217,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
       {/* "Show video" pill — appears when the host hid the videos, one tap restores. */}
       {isHost && videosHidden && (
-        <button style={s.showVideoPill} title="Bring the class videos back" onClick={() => setVideoMode('dock')}>
-          📹 Show video ({tiles.length})
+        <button style={s.showVideoPill} title={tr("Bring the class videos back")} onClick={() => setVideoMode('dock')}>
+          {tr("📹 Show video (")}{tiles.length})
         </button>
       )}
 
@@ -6148,8 +6246,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           <div style={s.fxOverlay} onMouseDown={(e) => { if (e.target === e.currentTarget) setCamInfoOpen(false); }}>
             <div style={s.fxPanel}>
               <div style={s.fxHead}>
-                <span>ℹ️ Video info (diagnostics)</span>
-                <button style={s.editorX} onClick={() => setCamInfoOpen(false)} title="Close">✕</button>
+                <span>{tr("ℹ️ Video info (diagnostics)")}</span>
+                <button style={s.editorX} onClick={() => setCamInfoOpen(false)} title={tr("Close")}>✕</button>
               </div>
               <p style={s.fxNote}>
                 What your camera reports it supports, and what it's publishing now. The
@@ -6157,14 +6255,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 if a row shows “not supported”, this camera lacks that hardware control.
               </p>
               {!ci ? (
-                <div style={{ color: '#9ca3af', fontSize: 13, padding: '10px 0' }}>Turn the camera on to read its capabilities…</div>
+                <div style={{ color: '#9ca3af', fontSize: 13, padding: '10px 0' }}>{tr("Turn the camera on to read its capabilities…")}</div>
               ) : (
                 <div>
-                  <Row label="Resolution" ok={(st.width || 0) >= 1280} detail={st.width ? `${st.width}×${st.height} @ ${Math.round(st.frameRate || 0)}fps` : '—'} />
-                  <Row label="Auto exposure (continuous)"      ok={supported(ci.supports?.exposureMode)}     detail={supported(ci.supports?.exposureMode) ? 'supported ✓' : 'not supported'} />
-                  <Row label="Auto white balance (continuous)" ok={supported(ci.supports?.whiteBalanceMode)} detail={supported(ci.supports?.whiteBalanceMode) ? 'supported ✓' : 'not supported'} />
-                  <Row label="Auto focus (continuous)"         ok={supported(ci.supports?.focusMode)}        detail={supported(ci.supports?.focusMode) ? 'supported ✓' : 'not supported'} />
-                  <Row label="Auto modes applied" ok={(ci.autoApplied || []).length > 0} detail={(ci.autoApplied || []).length ? ci.autoApplied.join(', ') : 'none'} />
+                  <Row label={tr("Resolution")} ok={(st.width || 0) >= 1280} detail={st.width ? tr("{width}×{height} @ {v2}fps", { width: st.width, height: st.height, v2: Math.round(st.frameRate || 0) }) : '—'} />
+                  <Row label={tr("Auto exposure (continuous)")}      ok={supported(ci.supports?.exposureMode)}     detail={supported(ci.supports?.exposureMode) ? tr('supported ✓') : tr('not supported')} />
+                  <Row label={tr("Auto white balance (continuous)")} ok={supported(ci.supports?.whiteBalanceMode)} detail={supported(ci.supports?.whiteBalanceMode) ? tr('supported ✓') : tr('not supported')} />
+                  <Row label={tr("Auto focus (continuous)")}         ok={supported(ci.supports?.focusMode)}        detail={supported(ci.supports?.focusMode) ? tr('supported ✓') : tr('not supported')} />
+                  <Row label={tr("Auto modes applied")} ok={(ci.autoApplied || []).length > 0} detail={(ci.autoApplied || []).length ? ci.autoApplied.join(', ') : 'none'} />
                 </div>
               )}
             </div>
@@ -6176,10 +6274,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         <div style={s.fxOverlay} onMouseDown={(e) => { if (e.target === e.currentTarget) setFxOpen(false); }}>
           <div style={s.fxPanel}>
             <div style={s.fxHead}>
-              <span>✨ Video effects</span>
-              <button style={s.editorX} onClick={() => setFxOpen(false)} title="Close">✕</button>
+              <span>{tr("✨ Video effects")}</span>
+              <button style={s.editorX} onClick={() => setFxOpen(false)} title={tr("Close")}>✕</button>
             </div>
-            <p style={s.fxNote}>Adjust while watching the live preview — changes save and apply every class. Everyone sees your adjusted video.</p>
+            <p style={s.fxNote}>{tr("Adjust while watching the live preview — changes save and apply every class. Everyone sees your adjusted video.")}</p>
 
             {/* Live self-preview — see the effect as you drag the sliders (Zoom-style). */}
             <FxPreview effects={lk.effects} blurOn={lk.blurOn} deviceId={lk.activeCameraId} />
@@ -6199,46 +6297,46 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             {lk.effects.enabled && (
               <div style={s.fxSliders}>
                 <div style={s.fxSlider}>
-                  <span>Brightness (low-light boost)</span>
+                  <span>{tr("Brightness (low-light boost)")}</span>
                   <input type="range" min="0.6" max="1.8" step="0.02"
                     value={lk.effects.brightness}
                     onChange={e => lk.updateEffects({ brightness: parseFloat(e.target.value) })} />
                 </div>
                 <div style={s.fxSlider}>
-                  <span>☀️ White light (bright clean look)</span>
+                  <span>{tr("☀️ White light (bright clean look)")}</span>
                   <input type="range" min="0" max="0.4" step="0.02"
                     value={lk.effects.whiten ?? 0}
                     onChange={e => lk.updateEffects({ whiten: parseFloat(e.target.value) })} />
                 </div>
                 <div style={s.fxSlider}>
-                  <span>Contrast</span>
+                  <span>{tr("Contrast")}</span>
                   <input type="range" min="0.8" max="1.3" step="0.02"
                     value={lk.effects.contrast}
                     onChange={e => lk.updateEffects({ contrast: parseFloat(e.target.value) })} />
                 </div>
                 <div style={s.fxSlider}>
-                  <span>Colour richness</span>
+                  <span>{tr("Colour richness")}</span>
                   <input type="range" min="0.8" max="1.4" step="0.02"
                     value={lk.effects.saturation ?? 1}
                     onChange={e => lk.updateEffects({ saturation: parseFloat(e.target.value) })} />
                 </div>
                 <div style={s.fxSlider}>
-                  <span>Warmth</span>
+                  <span>{tr("Warmth")}</span>
                   <input type="range" min="-20" max="20" step="1"
                     value={lk.effects.warmth}
                     onChange={e => lk.updateEffects({ warmth: parseInt(e.target.value, 10) })} />
                 </div>
                 <div style={s.fxSlider}>
-                  <span>✨ Touch up my appearance (smooth skin)</span>
+                  <span>{tr("✨ Touch up my appearance (smooth skin)")}</span>
                   <input type="range" min="0" max="1" step="0.05"
                     value={lk.effects.touchUp}
                     onChange={e => lk.updateEffects({ touchUp: parseFloat(e.target.value) })} />
-                  <span style={{ fontSize: 11, color: '#6b7280' }}>Evens out skin — watch the preview above as you drag.</span>
+                  <span style={{ fontSize: 11, color: '#6b7280' }}>{tr("Evens out skin — watch the preview above as you drag.")}</span>
                 </div>
                 <button
                   style={{ ...s.ghostSm, alignSelf: 'flex-start', marginTop: 2 }}
                   onClick={() => lk.updateEffects({ brightness: 1.16, contrast: 1.0, saturation: 0.94, whiten: 0.18, warmth: 0, touchUp: 0.25 })}
-                >↺ Reset to recommended</button>
+                >{tr("↺ Reset to recommended")}</button>
               </div>
             )}
 
@@ -6246,7 +6344,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
             {/* Background blur — mutually exclusive with light/appearance (one processor per track). */}
             <label style={s.fxRow}>
-              <span style={s.fxLabel}>🌫️ Blur background</span>
+              <span style={s.fxLabel}>{tr("🌫️ Blur background")}</span>
               <input
                 type="checkbox"
                 checked={lk.blurOn}
@@ -6266,7 +6364,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
             {/* Free AI noise suppression (RNNoise) — cleans mic audio like Zoom. */}
             <label style={s.fxRow}>
-              <span style={s.fxLabel}>🎙️ Clean up background noise (AI)</span>
+              <span style={s.fxLabel}>{tr("🎙️ Clean up background noise (AI)")}</span>
               <input
                 type="checkbox"
                 checked={lk.noiseSuppression}
@@ -6279,7 +6377,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             </p>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 14 }}>
-              <button style={s.loadBtn} onClick={() => setFxOpen(false)}>Done</button>
+              <button style={s.loadBtn} onClick={() => setFxOpen(false)}>{tr("Done")}</button>
             </div>
           </div>
         </div>

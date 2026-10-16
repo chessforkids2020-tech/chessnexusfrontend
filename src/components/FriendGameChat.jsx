@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './FriendGameChat.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 /**
  * Room-scoped chat for Play-with-a-Friend. Guest-friendly (no login required).
@@ -81,9 +82,9 @@ export default function FriendGameChat({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           maxLength={100}
-          placeholder="Type a message…"
+          placeholder={tr("Type a message…")}
         />
-        <button className="fgc-send" type="submit">Send</button>
+        <button className="fgc-send" type="submit">{tr("Send")}</button>
       </form>
     </div>
   );

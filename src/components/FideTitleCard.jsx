@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { TITLES, formatPlayerName } from '../utils/playerName';
+import { t as tr } from '../i18n/LanguageContext';
 
 const CARD = {
   background: 'linear-gradient(135deg, rgba(180,83,9,0.12), rgba(234,179,8,0.07))',
@@ -50,10 +51,10 @@ export default function FideTitleCard() {
           <div style={{ fontSize: '28px' }}>🏅</div>
           <div>
             <div style={{ color: 'var(--color-warning)', fontWeight: 700, fontSize: '15px' }}>
-              {state.chessTitle} — title verified
+              {state.chessTitle} {tr("— title verified")}
             </div>
             <div style={{ color: 'var(--color-text-muted)', fontSize: '13px', marginTop: '2px' }}>
-              You appear as <strong style={{ color: 'var(--color-warning)' }}>{formatPlayerName({ ...user, chessTitle: state.chessTitle })}</strong> everywhere in ChessNexus.
+              {tr("You appear as")} <strong style={{ color: 'var(--color-warning)' }}>{formatPlayerName({ ...user, chessTitle: state.chessTitle })}</strong> {tr("everywhere in ChessNexus.")}
             </div>
           </div>
         </div>
@@ -69,11 +70,11 @@ export default function FideTitleCard() {
           <div style={{ fontSize: '28px' }}>⏳</div>
           <div>
             <div style={{ color: 'var(--color-warning)', fontWeight: 600, fontSize: '15px' }}>
-              Your title proof is uploaded
+              {tr("Your title proof is uploaded")}
             </div>
             <div style={{ color: 'var(--color-text-muted)', fontSize: '13px', marginTop: '3px' }}>
-              Waiting for the ChessNexus team to verify and approve your{' '}
-              <strong>{state.claim.claimedTitle}</strong> title. We'll approve shortly.
+              {tr("Waiting for the ChessNexus team to verify and approve your")}{' '}
+              <strong>{state.claim.claimedTitle}</strong> {tr("title. We'll approve shortly.")}
             </div>
           </div>
         </div>
@@ -84,7 +85,7 @@ export default function FideTitleCard() {
   const submit = async (e) => {
     e.preventDefault();
     setError(''); setDone('');
-    if (!file) return setError('Please attach your FIDE title certificate.');
+    if (!file) return setError(tr('Please attach your FIDE title certificate.'));
     setBusy(true);
     try {
       const fd = new FormData();
@@ -111,9 +112,9 @@ export default function FideTitleCard() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
         <div style={{ fontSize: '28px' }}>🏅</div>
         <div>
-          <div style={{ color: 'var(--color-warning)', fontWeight: 600, fontSize: '15px' }}>Are you a titled player?</div>
+          <div style={{ color: 'var(--color-warning)', fontWeight: 600, fontSize: '15px' }}>{tr("Are you a titled player?")}</div>
           <div style={{ color: 'var(--color-text-muted)', fontSize: '13px', marginTop: '2px' }}>
-            Carry your FIDE title with you — it will appear before your name everywhere.
+            {tr("Carry your FIDE title with you — it will appear before your name everywhere.")}
           </div>
         </div>
       </div>
@@ -131,7 +132,7 @@ export default function FideTitleCard() {
       <form onSubmit={submit}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
           <div>
-            <label style={LABEL}>FIDE ID</label>
+            <label style={LABEL}>{tr("FIDE ID")}</label>
             <input
               style={INPUT} inputMode="numeric" placeholder="e.g. 1503014" required
               value={form.fideId}
@@ -139,34 +140,34 @@ export default function FideTitleCard() {
             />
           </div>
           <div>
-            <label style={LABEL}>Full name (as on FIDE)</label>
+            <label style={LABEL}>{tr("Full name (as on FIDE)")}</label>
             <input
-              style={INPUT} placeholder="Surname, Given name" required
+              style={INPUT} placeholder={tr("Surname, Given name")} required
               value={form.fideName}
               onChange={e => setForm({ ...form, fideName: e.target.value })}
             />
           </div>
           <div>
-            <label style={LABEL}>Title</label>
+            <label style={LABEL}>{tr("Title")}</label>
             <select
               style={INPUT} required value={form.claimedTitle}
               onChange={e => setForm({ ...form, claimedTitle: e.target.value })}
             >
-              <option value="">Select…</option>
+              <option value="">{tr("Select…")}</option>
               {TITLES.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
         </div>
 
         <div style={{ marginTop: '12px' }}>
-          <label style={LABEL}>FIDE title certificate (image or PDF)</label>
+          <label style={LABEL}>{tr("FIDE title certificate (image or PDF)")}</label>
           <input
             type="file" accept="image/png,image/jpeg,image/webp,application/pdf"
             onChange={e => setFile(e.target.files?.[0] || null)}
             style={{ ...INPUT, padding: '7px 10px' }}
           />
           <div style={{ color: 'var(--color-text-faint)', fontSize: '11.5px', marginTop: '5px' }}>
-            Only used to verify your title. Deleted as soon as your claim is reviewed.
+            {tr("Only used to verify your title. Deleted as soon as your claim is reviewed.")}
           </div>
         </div>
 
@@ -182,7 +183,7 @@ export default function FideTitleCard() {
             cursor: busy ? 'default' : 'pointer',
           }}
         >
-          {busy ? 'Submitting…' : 'Submit for verification'}
+          {busy ? tr('Submitting…') : tr('Submit for verification')}
         </button>
       </form>
     </div>

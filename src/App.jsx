@@ -198,6 +198,7 @@ import PuzzlesHub from './pages/PuzzlesHub';
 import BlunderHunt from './pages/BlunderHunt';
 import Training from './pages/Training';
 import MyMoments from './pages/MyMoments';
+import { t as tr } from './i18n/LanguageContext';
 import HealthyMix from './pages/HealthyMix';
 import PuzzleDashboard from './pages/PuzzleDashboard';
 import ThemesPicker from './pages/ThemesPicker';
@@ -231,6 +232,7 @@ import { SupporterProvider } from './context/SupporterContext';
 import { BoardThemeProvider } from './contexts/BoardThemeContext';
 import { PieceThemeProvider } from './contexts/PieceThemeContext';
 import { GamePrefsProvider } from './contexts/GamePrefsContext';
+import { LanguageProvider } from './i18n/LanguageContext';
 import { UiThemeProvider } from './contexts/UiThemeContext';
 import SettingsPage from './pages/SettingsPage';
 // Study Sparring + Position Creator
@@ -257,17 +259,17 @@ function ProtectedRoute({ children, requiredRole, noGuest, allowCoach }) {
     const showDebug = window.location.search.includes('debug=1');
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
-        <div>Loading authentication...</div>
+        <div>{tr("Loading authentication...")}</div>
         <div style={{ marginTop: '20px', fontSize: '14px', color: 'var(--color-text-faint)' }}>
-          If this takes too long, try refreshing the page or <a href="/login">logging in again</a>
+          If this takes too long, try refreshing the page or <a href="/login">{tr("logging in again")}</a>
         </div>
         {showDebug && (
           <div style={{ marginTop: 20, padding: 12, border: '1px solid #eee', display: 'inline-block', textAlign: 'left' }}>
-            <div><strong>DEBUG</strong></div>
-            <div>loading: {String(loading)}</div>
-            <div>token present: {String(!!localStorage.getItem('authToken'))}</div>
-            <div>API_URL: {import.meta.env.VITE_API_URL}</div>
-            <div style={{ marginTop: 8, fontSize: 12, color: '#999' }}>(Add ?debug=1 to URL to see this)</div>
+            <div><strong>{tr("DEBUG")}</strong></div>
+            <div>{tr("loading:")} {String(loading)}</div>
+            <div>{tr("token present:")} {String(!!localStorage.getItem('authToken'))}</div>
+            <div>{tr("API_URL:")} {import.meta.env.VITE_API_URL}</div>
+            <div style={{ marginTop: 8, fontSize: 12, color: '#999' }}>{tr("(Add ?debug=1 to URL to see this)")}</div>
           </div>
         )}
       </div>
@@ -279,7 +281,7 @@ function ProtectedRoute({ children, requiredRole, noGuest, allowCoach }) {
   }
 
   if (noGuest && (user.role === 'guest' || user.isGuest)) {
-    return <Navigate to="/login" state={{ message: 'Please log in or create a free account to access this feature.' }} replace />;
+    return <Navigate to="/login" state={{ message: tr('Please log in or create a free account to access this feature.') }} replace />;
   }
 
   if (requiredRole) {
@@ -348,13 +350,13 @@ function CoachRoute({ children }) {
     return () => { alive = false; };
   }, [user, inCoachArea]);
 
-  if (loading) return <div style={{ textAlign: 'center', padding: 50 }}>Loading…</div>;
+  if (loading) return <div style={{ textAlign: 'center', padding: 50 }}>{tr("Loading…")}</div>;
   if (!user) return <Navigate to="/login" replace />;
   if (user.role === 'guest' || user.isGuest) {
-    return <Navigate to="/login" state={{ message: 'Please log in to access coach tools.' }} replace />;
+    return <Navigate to="/login" state={{ message: tr('Please log in to access coach tools.') }} replace />;
   }
   // Hold until the fresh status resolves — prevents redirecting on stale data.
-  if (!checked) return <div style={{ textAlign: 'center', padding: 50 }}>Loading…</div>;
+  if (!checked) return <div style={{ textAlign: 'center', padding: 50 }}>{tr("Loading…")}</div>;
   if (!state.isCoach && user.role !== 'admin') return <Navigate to="/coach/onboarding" replace />;
   if (state.noToolsOwner) return <Navigate to="/academy/overview" replace />;
   return children;
@@ -374,7 +376,7 @@ function AcademyGate({ children, allowUnpaid = false }) {
     return () => { alive = false; };
   }, []);
 
-  if (loading || me === undefined) return <div style={{ textAlign: 'center', padding: 50 }}>Loading…</div>;
+  if (loading || me === undefined) return <div style={{ textAlign: 'center', padding: 50 }}>{tr("Loading…")}</div>;
   if (!user) return <Navigate to="/login" replace />;
   // Not an academy owner at all → shouldn't be here; send to coach dashboard.
   if (!me?.academy || !me?.isOwner) return <Navigate to="/coach/dashboard" replace />;
@@ -404,7 +406,7 @@ function AcademyMemberGate({ children }) {
     return () => { alive = false; };
   }, []);
 
-  if (loading || me === undefined) return <div style={{ textAlign: 'center', padding: 50 }}>Loading…</div>;
+  if (loading || me === undefined) return <div style={{ textAlign: 'center', padding: 50 }}>{tr("Loading…")}</div>;
   if (!user) return <Navigate to="/login" replace />;
   // Must be an ACTIVE member (a pending 'requested' membership is not yet in).
   if (!me?.academy || me?.status !== 'active') return <Navigate to="/coach/dashboard" replace />;
@@ -427,18 +429,18 @@ function GuestAllowedRoute({ children }) {
     if (creatingGuest) return;
     setCreatingGuest(true);
     loginAsGuest()
-      .catch(err => setGuestError(err?.message || 'Failed to create guest'))
+      .catch(err => setGuestError(err?.message || tr('Failed to create guest')))
       .finally(() => setCreatingGuest(false));
   }, [user, loading, creatingGuest, loginAsGuest]);
 
   if (loading || creatingGuest || (!user && !guestError)) {
-    return <div style={{ textAlign: 'center', padding: 50 }}>Setting up guest session…</div>;
+    return <div style={{ textAlign: 'center', padding: 50 }}>{tr("Setting up guest session…")}</div>;
   }
   if (guestError && !user) {
     return (
       <div style={{ textAlign: 'center', padding: 50 }}>
-        <div style={{ marginBottom: 12, color: 'var(--color-danger)' }}>Could not create guest session.</div>
-        <a href="/login" style={{ color: 'var(--color-accent)' }}>Log in instead →</a>
+        <div style={{ marginBottom: 12, color: 'var(--color-danger)' }}>{tr("Could not create guest session.")}</div>
+        <a href="/login" style={{ color: 'var(--color-accent)' }}>{tr("Log in instead →")}</a>
       </div>
     );
   }
@@ -493,7 +495,9 @@ function AppWithTheme({ children }) {
       <BoardThemeProvider userId={userId}>
         <PieceThemeProvider userId={userId}>
           <GamePrefsProvider userId={userId}>
-            {children}
+            <LanguageProvider userId={userId}>
+              {children}
+            </LanguageProvider>
           </GamePrefsProvider>
         </PieceThemeProvider>
       </BoardThemeProvider>

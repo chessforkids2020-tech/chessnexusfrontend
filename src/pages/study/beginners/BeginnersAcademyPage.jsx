@@ -5,6 +5,15 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { ACADEMY_CARDS, moodEmoji } from './academyCards';
 import PieceMovements from './lessons/PieceMovements';
 import './beginners.css';
+import { t as tr } from '../../../i18n/LanguageContext';
+
+// A card may carry a `titleKey` when its English title is ambiguous out of context
+// ("Check" the chess move vs "Check" = verify). English still shows the plain title.
+const cardTitle = (card) => {
+  if (!card.titleKey) return tr(card.title);
+  const translated = tr(card.titleKey);
+  return translated === card.titleKey ? card.title : translated;
+};
 
 // The Beginners Academy in Study: a grid of 10 locked lesson cards unlocked one by one,
 // with reward points (xpWallet) + a mood emoji up top. Phase 1 has the Piece Movements
@@ -48,11 +57,11 @@ export default function BeginnersAcademyPage() {
     const card = ACADEMY_CARDS.find(c => c.id === open);
     return (
       <div className="ba-wrap">
-        <button type="button" className="ba-back" onClick={() => setOpen(null)}>← Back to Academy</button>
+        <button type="button" className="ba-back" onClick={() => setOpen(null)}>{tr("← Back to Academy")}</button>
         <div style={{ textAlign: 'center', marginTop: 60 }}>
           <div style={{ fontSize: 54 }}>{card?.emoji}</div>
-          <h2 className="ba-title" style={{ fontSize: 24 }}>{card?.title}</h2>
-          <p className="ba-sub">This lesson is coming soon! Finish the earlier lessons while you wait. 🙂</p>
+          <h2 className="ba-title" style={{ fontSize: 24 }}>{card ? cardTitle(card) : ''}</h2>
+          <p className="ba-sub">{tr("This lesson is coming soon! Finish the earlier lessons while you wait. 🙂")}</p>
         </div>
       </div>
     );
@@ -63,14 +72,14 @@ export default function BeginnersAcademyPage() {
     <div className="ba-wrap">
       <div className="ba-head">
         <div>
-          <div className="ba-title">🎓 Beginners Academy</div>
-          <div className="ba-sub">Brand new to chess? Learn everything, step by step, with your Nexus Coach.</div>
+          <div className="ba-title">{tr("🎓 Beginners Academy")}</div>
+          <div className="ba-sub">{tr("Brand new to chess? Learn everything, step by step, with your Nexus Coach.")}</div>
         </div>
         <div className="ba-stats">
-          <span className="ba-mood" title="Your progress">{moodEmoji(completedCount, ACADEMY_CARDS.length)}</span>
+          <span className="ba-mood" title={tr("Your progress")}>{moodEmoji(completedCount, ACADEMY_CARDS.length)}</span>
           <div className="ba-points">
-            <span className="ba-points-val">{points} XP</span>
-            <span className="ba-points-lbl">Reward points</span>
+            <span className="ba-points-val">{points} {tr("XP")}</span>
+            <span className="ba-points-lbl">{tr("Reward points")}</span>
           </div>
         </div>
       </div>
@@ -89,10 +98,10 @@ export default function BeginnersAcademyPage() {
               {!unlocked && <span className="ba-lock">🔒</span>}
               {completed && <span className="ba-check">✅</span>}
               <div className="ba-card-emoji">{card.emoji}</div>
-              <div className="ba-card-title" style={{ color: unlocked ? card.color : undefined }}>{card.title}</div>
+              <div className="ba-card-title" style={{ color: unlocked ? card.color : undefined }}>{cardTitle(card)}</div>
               {completed && <div className="ba-card-badge">{st.badge || '🏅'} Finished!</div>}
-              <div className="ba-card-desc">{card.desc}</div>
-              {unlocked && !card.ready && <div className="ba-card-soon">Coming soon</div>}
+              <div className="ba-card-desc">{tr(card.desc)}</div>
+              {unlocked && !card.ready && <div className="ba-card-soon">{tr("Coming soon")}</div>}
             </div>
           );
         })}

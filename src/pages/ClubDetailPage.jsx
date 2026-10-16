@@ -16,6 +16,7 @@ import CoachRichText from '../components/CoachRichText';
 import CoachProse from '../components/CoachProse';
 import { linkify } from '../utils/linkify';
 import './SocialHubPage.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 // Club chats allow ONLY chessnexus.in / 3darena.chessnexus.in links. This mirrors
@@ -145,8 +146,8 @@ function ClubChat({ chatId, currentUser }) {
   return (
     <div className="sh-club-chat">
       <div className="sh-club-chat-header">
-        💬 Club Chat
-        <span className="sh-club-chat-hint">members only · Enter to send</span>
+        {tr("💬 Club Chat")}
+        <span className="sh-club-chat-hint">{tr("members only · Enter to send")}</span>
       </div>
 
       <div className="sh-club-chat-messages">
@@ -157,13 +158,13 @@ function ClubChat({ chatId, currentUser }) {
         ) : messages.length === 0 ? (
           <div className="sh-club-chat-empty">
             <div style={{ fontSize: 32, marginBottom: 8 }}>👋</div>
-            <div>No messages yet. Say hello!</div>
+            <div>{tr("No messages yet. Say hello!")}</div>
           </div>
         ) : (
           messages.map((msg, i) => {
             const senderId = msg.sender?._id?.toString() || msg.sender?.toString();
             const isMe = senderId === myId;
-            const senderName = msg.sender?.displayName || msg.sender?.username || 'Unknown';
+            const senderName = msg.sender?.displayName || msg.sender?.username || tr('Unknown');
             const prevSenderId = i > 0 ? (messages[i-1]?.sender?._id?.toString() || messages[i-1]?.sender?.toString()) : null;
             const showName = !isMe && senderId !== prevSenderId;
             return (
@@ -194,7 +195,7 @@ function ClubChat({ chatId, currentUser }) {
           ref={inputRef}
           type="text"
           className="sh-club-chat-input"
-          placeholder="Type a message…"
+          placeholder={tr("Type a message…")}
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKey}
@@ -211,7 +212,7 @@ function ClubChat({ chatId, currentUser }) {
       </form>
       {hasDisallowedLink && (
         <div style={{ color: 'var(--color-danger)', fontSize: 12, marginTop: 6 }}>
-          Only chessnexus.in links are allowed in club chats.
+          {tr("Only chessnexus.in links are allowed in club chats.")}
         </div>
       )}
     </div>
@@ -378,7 +379,7 @@ export default function ClubDetailPage() {
     // Checked here too, so an owner on a slow connection is told straight away
     // rather than after uploading a file the server will reject.
     if (file.size > CLUB_PIC_MAX_BYTES) {
-      setPicError('That picture is over 2 MB. Please choose a smaller one.');
+      setPicError(tr('That picture is over 2 MB. Please choose a smaller one.'));
       return;
     }
 
@@ -440,22 +441,22 @@ export default function ClubDetailPage() {
     if (!code) return;
     setJoining(true);
     try { await api.post('/api/clubs/join', { joinCode: code }); await fetchClub(); }
-    catch (err) { alert(err.response?.data?.message || 'Failed to join'); }
+    catch (err) { alert(err.response?.data?.message || tr('Failed to join')); }
     finally { setJoining(false); }
   };
 
   const leaveClub = async () => {
-    if (!window.confirm('Leave this club?')) return;
+    if (!window.confirm(tr('Leave this club?'))) return;
     setLeaving(true);
     try { await api.post(`/api/clubs/${clubId}/leave`); navigate('/clubs'); }
-    catch (err) { alert(err.response?.data?.message || 'Failed to leave'); }
+    catch (err) { alert(err.response?.data?.message || tr('Failed to leave')); }
     finally { setLeaving(false); }
   };
 
   const deleteClub = async () => {
-    if (!window.confirm('Permanently delete this club? This cannot be undone.')) return;
+    if (!window.confirm(tr('Permanently delete this club? This cannot be undone.'))) return;
     try { await api.delete(`/api/clubs/${clubId}`); navigate('/clubs'); }
-    catch (err) { alert(err.response?.data?.message || 'Failed to delete'); }
+    catch (err) { alert(err.response?.data?.message || tr('Failed to delete')); }
   };
 
   const copyCode = async () => {
@@ -483,7 +484,7 @@ export default function ClubDetailPage() {
     <div className="sh-detail-page">
 
       <button className="sh-back-btn" onClick={() => navigate('/clubs')}>
-        ← Back to Clubs
+        {tr("← Back to Clubs")}
       </button>
 
       {/* Header */}
@@ -492,25 +493,25 @@ export default function ClubDetailPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
             <h1 className="sh-detail-title" style={{ margin: 0 }}>🏰 {club.name}</h1>
             {club.isPrivate
-              ? <span className="sh-privacy-badge sh-privacy-private">🔒 Private</span>
-              : <span className="sh-privacy-badge sh-privacy-public">🌍 Public</span>}
+              ? <span className="sh-privacy-badge sh-privacy-private">{tr("🔒 Private")}</span>
+              : <span className="sh-privacy-badge sh-privacy-public">{tr("🌍 Public")}</span>}
           </div>
           {club.description && <p className="sh-detail-desc">{club.description}</p>}
-          <span style={{ fontSize: 13, color: 'var(--color-text-faint)' }}>👥 {club.memberCount} members</span>
+          <span style={{ fontSize: 13, color: 'var(--color-text-faint)' }}>👥 {club.memberCount} {tr("members")}</span>
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-start' }}>
           {!isMember && !club.isPrivate && (
             <button className="sh-btn-primary" onClick={() => joinByCode()} disabled={joining}>
-              {joining ? 'Joining…' : '+ Join Club'}
+              {joining ? tr('Joining…') : tr('+ Join Club')}
             </button>
           )}
           {isMember && !isOwner && (
             <button className="sh-btn-secondary" onClick={leaveClub} disabled={leaving}>
-              {leaving ? 'Leaving…' : 'Leave Club'}
+              {leaving ? tr('Leaving…') : tr('Leave Club')}
             </button>
           )}
           {isOwner && (
-            <button className="sh-btn-danger" onClick={deleteClub}>🗑 Delete Club</button>
+            <button className="sh-btn-danger" onClick={deleteClub}>{tr("🗑 Delete Club")}</button>
           )}
         </div>
       </div>
@@ -522,14 +523,14 @@ export default function ClubDetailPage() {
         <div className="sh-card sh-club-members-strip">
           <div className="sh-club-members-strip-head">
             <div className="sh-section-title" style={{ margin: 0 }}>
-              Members ({club.memberCount})
+              {tr("Members (")}{club.memberCount})
             </div>
             <button
               type="button"
               className="sh-btn-secondary sh-club-members-showall"
               onClick={() => { setMemberSearch(''); setMemberPage(1); setShowMembers(true); }}
             >
-              Show all
+              {tr("Show all")}
             </button>
           </div>
 
@@ -550,7 +551,7 @@ export default function ClubDetailPage() {
                 type="button"
                 className="sh-club-face sh-club-face-more"
                 onClick={() => { setMemberSearch(''); setMemberPage(1); setShowMembers(true); }}
-                title="Show all members"
+                title={tr("Show all members")}
               >
                 +{members.length - STRIP_LIMIT}
               </button>
@@ -561,7 +562,7 @@ export default function ClubDetailPage() {
 
       {isMember && (
         <div className="sh-card sh-featured-activities-card sh-featured-activities-fullwidth">
-          <div className="sh-section-title">Featured Club Events</div>
+          <div className="sh-section-title">{tr("Featured Club Events")}</div>
 
           {activitiesLoading ? (
             <div style={{ textAlign: 'center', padding: '10px 0' }}>
@@ -569,7 +570,7 @@ export default function ClubDetailPage() {
             </div>
           ) : activities.length === 0 ? (
             <div className="sh-club-activity-empty" style={{ marginTop: 4 }}>
-              No featured events yet.
+              {tr("No featured events yet.")}
             </div>
           ) : (
             <div className="sh-featured-rail-wrap">
@@ -578,7 +579,7 @@ export default function ClubDetailPage() {
                 className="sh-featured-nav-btn sh-featured-nav-btn-left"
                 onClick={() => scrollFeatured('left')}
                 disabled={!canScrollLeft}
-                aria-label="Scroll featured events left"
+                aria-label={tr("Scroll featured events left")}
               >
                 ←
               </button>
@@ -628,7 +629,7 @@ export default function ClubDetailPage() {
 
                       {countdown ? (
                         <div className="sh-featured-activity-countdown">
-                          {activity.countdownType === 'starts_in' ? `Starts in ${countdown}` : `Ends in ${countdown}`}
+                          {activity.countdownType === 'starts_in' ? tr("Starts in {countdown}", { countdown: countdown }) : tr("Ends in {countdown}", { countdown: countdown })}
                         </div>
                       ) : (
                         <div className="sh-featured-activity-time">{fmtTime(activity.createdAt)}</div>
@@ -643,7 +644,7 @@ export default function ClubDetailPage() {
                 className="sh-featured-nav-btn sh-featured-nav-btn-right"
                 onClick={() => scrollFeatured('right')}
                 disabled={!canScrollRight}
-                aria-label="Scroll featured events right"
+                aria-label={tr("Scroll featured events right")}
               >
                 →
               </button>
@@ -660,12 +661,12 @@ export default function ClubDetailPage() {
 
           {isMember && (
             <div className="sh-card">
-              <div className="sh-section-title">Invite Others</div>
+              <div className="sh-section-title">{tr("Invite Others")}</div>
               {club.isPrivate ? (
                 // Private club: share invite link
                 <>
                   <p style={{ fontSize: 13, color: 'var(--color-text-faint)', margin: '0 0 14px', lineHeight: 1.6 }}>
-                    This is a <strong style={{ color: 'var(--color-danger)' }}>private club</strong>. Share the invite link — only people with it can find and join.
+                    {tr("This is a")} <strong style={{ color: 'var(--color-danger)' }}>{tr("private club")}</strong>{tr(". Share the invite link — only people with it can find and join.")}
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                     {showCode ? (
@@ -674,12 +675,12 @@ export default function ClubDetailPage() {
                           {`${window.location.origin}/clubs?code=${club.joinCode}`}
                         </span>
                         <button className="sh-btn-primary" onClick={copyInviteLink}>
-                          {copied ? '✓ Copied!' : '🔗 Copy Link'}
+                          {copied ? tr('✓ Copied!') : tr('🔗 Copy Link')}
                         </button>
                       </>
                     ) : (
                       <button className="sh-btn-secondary" onClick={() => setShowCode(true)}>
-                        🔗 Get Invite Link
+                        {tr("🔗 Get Invite Link")}
                       </button>
                     )}
                   </div>
@@ -688,19 +689,19 @@ export default function ClubDetailPage() {
                 // Public club: share join code
                 <>
                   <p style={{ fontSize: 13, color: 'var(--color-text-faint)', margin: '0 0 14px' }}>
-                    Share this code — anyone with it can join.
+                    {tr("Share this code — anyone with it can join.")}
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
                     {showCode ? (
                       <>
                         <span className="sh-code-display">{club.joinCode}</span>
                         <button className="sh-btn-primary" onClick={copyCode}>
-                          {copied ? '✓ Copied!' : '📋 Copy'}
+                          {copied ? tr('✓ Copied!') : tr('📋 Copy')}
                         </button>
                       </>
                     ) : (
                       <button className="sh-btn-secondary" onClick={() => setShowCode(true)}>
-                        🔑 Reveal Join Code
+                        {tr("🔑 Reveal Join Code")}
                       </button>
                     )}
                   </div>
@@ -715,10 +716,10 @@ export default function ClubDetailPage() {
           {(club.about || club.imageUrl || isOwner) && (
             <div className="sh-card sh-club-about-card">
               <div className="sh-club-about-head">
-                <div className="sh-section-title" style={{ margin: 0 }}>About This Club</div>
+                <div className="sh-section-title" style={{ margin: 0 }}>{tr("About This Club")}</div>
                 {isOwner && (
                   <button type="button" className="sh-btn-secondary" onClick={openEdit}>
-                    ✏️ Edit
+                    {tr("✏️ Edit")}
                   </button>
                 )}
               </div>
@@ -726,7 +727,7 @@ export default function ClubDetailPage() {
               {club.imageUrl && (
                 <img
                   src={resolveApiAssetUrl(club.imageUrl)}
-                  alt={`${club.name} banner`}
+                  alt={tr("{name} banner", { name: club.name })}
                   className="sh-club-about-image"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }}
                 />
@@ -752,19 +753,19 @@ export default function ClubDetailPage() {
               beside the club's other information. */}
           {isMember && (
             <div className="sh-card">
-              <div className="sh-section-title" style={{ marginBottom: 14 }}>⚡ Create Club Activity</div>
+              <div className="sh-section-title" style={{ marginBottom: 14 }}>{tr("⚡ Create Club Activity")}</div>
 
               <div className="sh-club-activity-actions">
                 <button className="sh-btn-secondary" onClick={() => navigate(`/arena/create?clubId=${clubId}`)}>
-                  + Create Arena Race
+                  {tr("+ Create Arena Race")}
                 </button>
                 <button className="sh-btn-primary" onClick={() => navigate(`/arenatournament/create?clubId=${clubId}`)}>
-                  + Create Arena Tournament
+                  {tr("+ Create Arena Tournament")}
                 </button>
               </div>
 
               <div className="sh-club-activity-empty" style={{ marginTop: 2 }}>
-                Create a race or tournament for your club. Featured events are shown above.
+                {tr("Create a race or tournament for your club. Featured events are shown above.")}
               </div>
             </div>
           )}
@@ -784,14 +785,14 @@ export default function ClubDetailPage() {
             // Private club — non-member: show code entry
             <div className="sh-card" style={{ textAlign: 'center', padding: '40px 20px' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>Private Club</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>{tr("Private Club")}</div>
               <div style={{ fontSize: 13, color: 'var(--color-text-faint)', marginBottom: 20, lineHeight: 1.6 }}>
-                You need an invite link to join this club.
+                {tr("You need an invite link to join this club.")}
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <input
                   type="text"
-                  placeholder="Enter invite code…"
+                  placeholder={tr("Enter invite code…")}
                   value={codeInput}
                   onChange={e => setCodeInput(e.target.value.toUpperCase())}
                   style={{
@@ -806,7 +807,7 @@ export default function ClubDetailPage() {
                   onClick={() => joinByCode(codeInput.trim())}
                   disabled={!codeInput.trim() || joining}
                 >
-                  {joining ? 'Joining…' : 'Join'}
+                  {joining ? tr('Joining…') : tr('Join')}
                 </button>
               </div>
             </div>
@@ -814,12 +815,12 @@ export default function ClubDetailPage() {
             // Public club — non-member: locked chat
             <div className="sh-card" style={{ textAlign: 'center', padding: '40px 20px' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>Members Only Chat</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>{tr("Members Only Chat")}</div>
               <div style={{ fontSize: 13, color: 'var(--color-text-faint)', marginBottom: 20, lineHeight: 1.6 }}>
-                Join the club to chat with its members.
+                {tr("Join the club to chat with its members.")}
               </div>
               <button className="sh-btn-primary" onClick={() => joinByCode()} disabled={joining}>
-                {joining ? 'Joining…' : '+ Join Club'}
+                {joining ? tr('Joining…') : tr('+ Join Club')}
               </button>
             </div>
           ) : null}
@@ -841,17 +842,17 @@ export default function ClubDetailPage() {
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-label="Club members"
+            aria-label={tr("Club members")}
           >
             <div className="sh-club-modal-head">
               <div className="sh-section-title" style={{ margin: 0 }}>
-                Members ({club.memberCount})
+                {tr("Members (")}{club.memberCount})
               </div>
               <button
                 type="button"
                 className="sh-club-modal-close"
                 onClick={() => setShowMembers(false)}
-                aria-label="Close"
+                aria-label={tr("Close")}
               >
                 ✕
               </button>
@@ -860,7 +861,7 @@ export default function ClubDetailPage() {
             <input
               type="text"
               className="sh-club-modal-search"
-              placeholder="Search members…"
+              placeholder={tr("Search members…")}
               value={memberSearch}
               onChange={(e) => { setMemberSearch(e.target.value); setMemberPage(1); }}
               autoFocus
@@ -869,7 +870,7 @@ export default function ClubDetailPage() {
             <div className="sh-club-modal-body">
               {filteredMembers.length === 0 ? (
                 <div className="sh-club-activity-empty" style={{ marginTop: 8 }}>
-                  No members match “{memberSearch}”.
+                  {tr("No members match “")}{memberSearch}”.
                 </div>
               ) : pagedMembers.map((m) => (
                 <div key={m.userId} className="sh-member-row">
@@ -881,7 +882,7 @@ export default function ClubDetailPage() {
                       <PlayerName linkToProfile displayName={m.displayName} username={m.username} userId={m.userId} />
                     </div>
                   </div>
-                  {m.role === 'owner' && <span className="sh-owner-badge">Owner</span>}
+                  {m.role === 'owner' && <span className="sh-owner-badge">{tr("Owner")}</span>}
                   <span style={{ fontSize: 11, color: 'var(--color-white-a20)' }}>
                     {m.joinedAt ? new Date(m.joinedAt).toLocaleDateString() : ''}
                   </span>
@@ -897,10 +898,10 @@ export default function ClubDetailPage() {
                   disabled={currentMemberPage === 1}
                   onClick={() => setMemberPage((p) => Math.max(1, p - 1))}
                 >
-                  Prev
+                  {tr("Prev")}
                 </button>
                 <span className="sh-members-page-indicator">
-                  Page {currentMemberPage} / {totalMemberPages}
+                  {tr("Page")} {currentMemberPage} / {totalMemberPages}
                 </span>
                 <button
                   type="button"
@@ -908,7 +909,7 @@ export default function ClubDetailPage() {
                   disabled={currentMemberPage === totalMemberPages}
                   onClick={() => setMemberPage((p) => Math.min(totalMemberPages, p + 1))}
                 >
-                  Next
+                  {tr("Next")}
                 </button>
               </div>
             )}
@@ -928,23 +929,23 @@ export default function ClubDetailPage() {
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-label="Edit club"
+            aria-label={tr("Edit club")}
           >
             <div className="sh-club-modal-head">
-              <div className="sh-section-title" style={{ margin: 0 }}>Edit Club</div>
+              <div className="sh-section-title" style={{ margin: 0 }}>{tr("Edit Club")}</div>
               <button
                 type="button"
                 className="sh-club-modal-close"
                 onClick={() => setEditing(false)}
                 disabled={savingEdit}
-                aria-label="Close"
+                aria-label={tr("Close")}
               >
                 ✕
               </button>
             </div>
 
             <div className="sh-club-modal-body sh-club-edit-body">
-              <label className="sh-club-edit-label">Club name</label>
+              <label className="sh-club-edit-label">{tr("Club name")}</label>
               <input
                 type="text"
                 className="sh-club-edit-input"
@@ -953,8 +954,8 @@ export default function ClubDetailPage() {
                 onChange={(e) => setEditForm(f => ({ ...f, name: e.target.value }))}
               />
 
-              <label className="sh-club-edit-label">Short description</label>
-              <div className="sh-club-edit-hint">Shown on the club card when people browse clubs.</div>
+              <label className="sh-club-edit-label">{tr("Short description")}</label>
+              <div className="sh-club-edit-hint">{tr("Shown on the club card when people browse clubs.")}</div>
               <textarea
                 className="sh-club-edit-input"
                 rows={2}
@@ -967,7 +968,7 @@ export default function ClubDetailPage() {
                   somewhere and paste a link is not a realistic ask. Saved
                   immediately on pick — it is a file on the server, so making it
                   wait for "Save changes" would be misleading. */}
-              <label className="sh-club-edit-label">Club picture</label>
+              <label className="sh-club-edit-label">{tr("Club picture")}</label>
               <div className="sh-club-edit-hint">
                 A banner or logo shown at the top of your club page. PNG, JPG,
                 WEBP or GIF, under 2 MB.
@@ -977,12 +978,12 @@ export default function ClubDetailPage() {
                 {editForm.imageUrl ? (
                   <img
                     src={resolveApiAssetUrl(editForm.imageUrl)}
-                    alt="Club picture"
+                    alt={tr("Club picture")}
                     className="sh-club-pic-preview"
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
                 ) : (
-                  <div className="sh-club-pic-empty">No picture yet</div>
+                  <div className="sh-club-pic-empty">{tr("No picture yet")}</div>
                 )}
 
                 <div className="sh-club-pic-actions">
@@ -1004,21 +1005,21 @@ export default function ClubDetailPage() {
                       className="sh-club-pic-remove"
                       onClick={removePicture}
                     >
-                      Remove
+                      {tr("Remove")}
                     </button>
                   )}
                 </div>
               </div>
               {picError && <div className="sh-club-edit-error">{picError}</div>}
 
-              <label className="sh-club-edit-label">About this club</label>
+              <label className="sh-club-edit-label">{tr("About this club")}</label>
               <div className="sh-club-edit-hint">
-                Formatting is kept. Links are removed automatically — club pages are open to kids.
+                {tr("Formatting is kept. Links are removed automatically — club pages are open to kids.")}
               </div>
               <CoachRichText
                 value={editForm.about}
                 onChange={(html) => setEditForm(f => ({ ...f, about: html }))}
-                placeholder="Who is this club for? When do you play? Any rules?"
+                placeholder={tr("Who is this club for? When do you play? Any rules?")}
               />
 
               <label className="sh-club-edit-checkbox">
@@ -1027,7 +1028,7 @@ export default function ClubDetailPage() {
                   checked={editForm.isPrivate}
                   onChange={(e) => setEditForm(f => ({ ...f, isPrivate: e.target.checked }))}
                 />
-                <span>Private club — only people with the invite link can join</span>
+                <span>{tr("Private club — only people with the invite link can join")}</span>
               </label>
 
               {editError && <div className="sh-club-edit-error">{editError}</div>}
@@ -1040,7 +1041,7 @@ export default function ClubDetailPage() {
                 onClick={() => setEditing(false)}
                 disabled={savingEdit}
               >
-                Cancel
+                {tr("Cancel")}
               </button>
               <button
                 type="button"
@@ -1048,7 +1049,7 @@ export default function ClubDetailPage() {
                 onClick={saveEdit}
                 disabled={savingEdit || !editForm.name.trim()}
               >
-                {savingEdit ? 'Saving…' : 'Save changes'}
+                {savingEdit ? tr('Saving…') : tr('Save changes')}
               </button>
             </div>
           </div>

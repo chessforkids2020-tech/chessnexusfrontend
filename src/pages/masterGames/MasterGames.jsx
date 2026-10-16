@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import api, { resolveApiAssetUrl } from '../../api';
 import GameAnalysisModal from '../../components/masterGames/GameAnalysisModal';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ── Master Games viewer ───────────────────────────────────────────────────────
 // Browse professional games with filters (Opening / Player / Year / Tournament).
@@ -113,8 +114,8 @@ export default function MasterGames() {
   return (
     <div style={st.wrap}>
      <div style={st.inner}>
-      <h1 style={st.h1}>Master Games</h1>
-      <p style={st.sub}>Browse professional games. Filter by opening, player, year or tournament, then click a game to study it on an interactive board.</p>
+      <h1 style={st.h1}>{tr("Master Games")}</h1>
+      <p style={st.sub}>{tr("Browse professional games. Filter by opening, player, year or tournament, then click a game to study it on an interactive board.")}</p>
 
       {/* ── Player header (top-left) — only when a player is selected ── */}
       {playerHeader && (
@@ -132,7 +133,7 @@ export default function MasterGames() {
             <div style={st.playerMeta}>
               {playerHeader.player?.country && <span>{playerHeader.player.country}</span>}
               {playerHeader.player?.peakRating && <span>Peak {playerHeader.player.peakRating}</span>}
-              <span>{playerHeader.gameCount} game{playerHeader.gameCount === 1 ? '' : 's'}</span>
+              <span>{playerHeader.gameCount} {tr("game")}{playerHeader.gameCount === 1 ? '' : 's'}</span>
             </div>
             {playerHeader.player?.bio && <div style={st.playerBio}>{playerHeader.player.bio}</div>}
           </div>
@@ -145,7 +146,7 @@ export default function MasterGames() {
         <div style={{ position: 'relative' }}>
           <input
             style={st.input}
-            placeholder="Search player…"
+            placeholder={tr("Search player…")}
             value={playerInput}
             onChange={e => setPlayerInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') commitPlayer(playerInput.trim()); }}
@@ -161,41 +162,41 @@ export default function MasterGames() {
 
         {/* Level 1: major opening */}
         <select style={st.select} value={family} onChange={e => setFamily(e.target.value)}>
-          <option value="">All openings</option>
+          <option value="">{tr("All openings")}</option>
           {filters.families.map(f => <option key={f} value={f}>{f}</option>)}
         </select>
 
         {/* Level 2: variation within the chosen family */}
         {family && (
           <select style={st.select} value={opening} onChange={e => setOpening(e.target.value)} disabled={!variations.length}>
-            <option value="">All {family} variations</option>
+            <option value="">{tr("All")} {family} {tr("variations")}</option>
             {variations.map(v => <option key={v} value={v}>{v}</option>)}
           </select>
         )}
 
         <select style={st.select} value={year} onChange={e => setYear(e.target.value)}>
-          <option value="">All years</option>
+          <option value="">{tr("All years")}</option>
           {filters.years.map(y => <option key={y} value={y}>{y}</option>)}
         </select>
 
         <select style={st.select} value={tournament} onChange={e => setTournament(e.target.value)}>
-          <option value="">All tournaments</option>
+          <option value="">{tr("All tournaments")}</option>
           {filters.tournaments.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
 
-        {hasAnyFilter && <button style={st.clearBtn} onClick={clearAll}>Clear</button>}
+        {hasAnyFilter && <button style={st.clearBtn} onClick={clearAll}>{tr("Clear")}</button>}
       </div>
 
       {/* ── Games list ── */}
-      <div style={st.listMeta}>{loading ? 'Loading…' : `${total} game${total === 1 ? '' : 's'}`}</div>
+      <div style={st.listMeta}>{loading ? 'Loading…' : tr("{total} game{v1}", { total: total, v1: total === 1 ? '' : 's' })}</div>
 
       <div style={st.table}>
         <div style={{ ...st.row, ...st.headRow }}>
-          <span style={st.cPlayers}>Players</span>
-          <span style={st.cResult}>Result</span>
-          <span style={st.cOpening}>Opening</span>
-          <span style={st.cEvent}>Event</span>
-          <span style={st.cYear}>Year</span>
+          <span style={st.cPlayers}>{tr("Players")}</span>
+          <span style={st.cResult}>{tr("Result")}</span>
+          <span style={st.cOpening}>{tr("Opening")}</span>
+          <span style={st.cEvent}>{tr("Event")}</span>
+          <span style={st.cYear}>{tr("Year")}</span>
         </div>
         {games.map(g => (
           <div key={g._id} style={st.row} onClick={() => setOpenGameId(g._id)}
@@ -212,16 +213,16 @@ export default function MasterGames() {
           </div>
         ))}
         {!loading && games.length === 0 && (
-          <div style={st.empty}>No games found. {hasAnyFilter ? 'Try clearing filters.' : 'Import games to get started.'}</div>
+          <div style={st.empty}>{tr("No games found.")} {hasAnyFilter ? 'Try clearing filters.' : 'Import games to get started.'}</div>
         )}
       </div>
 
       {/* ── Pagination ── */}
       {totalPages > 1 && (
         <div style={st.pager}>
-          <button style={st.pageBtn} disabled={page <= 1} onClick={() => setPage(p => p - 1)}>‹ Prev</button>
-          <span style={st.pageInfo}>Page {page} of {totalPages}</span>
-          <button style={st.pageBtn} disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next ›</button>
+          <button style={st.pageBtn} disabled={page <= 1} onClick={() => setPage(p => p - 1)}>{tr("‹ Prev")}</button>
+          <span style={st.pageInfo}>{tr("Page")} {page} {tr("of")} {totalPages}</span>
+          <button style={st.pageBtn} disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>{tr("Next ›")}</button>
         </div>
       )}
 

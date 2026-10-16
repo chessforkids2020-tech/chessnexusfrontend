@@ -26,6 +26,7 @@
 //   <PlayerName user={u} />                       // shorthand for a user object
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { t as tr } from '../i18n/LanguageContext';
 import KnightBadge from './KnightBadge';
 import FoundingBadge from './FoundingBadge';
 import {
@@ -94,7 +95,7 @@ export default function PlayerName({
       {/* Earned title first, in its own colour. */}
       {fide && (
         <>
-          <span className="chess-title" title={`FIDE title: ${fide}`}>{fide}</span>{' '}
+          <span className="chess-title" title={tr("FIDE title: {fide}", { fide: fide })}>{fide}</span>{' '}
         </>
       )}
       {/* Bought title second, themed rather than fixed gold so the two are never
@@ -135,7 +136,7 @@ export default function PlayerName({
         onClick={(e) => e.stopPropagation()}   // don't trigger a parent row's onClick
         className={className}
         style={{ display: 'inline-flex', alignItems: 'center', gap: '0.32em', color: 'inherit', textDecoration: 'none', cursor: 'pointer', ...style }}
-        title={`View ${name}'s profile`}
+        title={tr("View {name}'s profile", { name: name })}
       >
         {inner}
       </Link>

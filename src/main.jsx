@@ -20,6 +20,8 @@ import LiveNoteBanner from "./components/LiveNoteBanner";
 //   aliases : old token names (--primary-color, --obsidian-*) re-pointed at the
 //             new ones, so existing call sites keep working.
 import "./styles/tokens/layout.css";
+// Role-based type scale (--fs-page-title, --fs-body …) that resizes per device.
+import "./styles/tokens/typography.css";
 import "./styles/tokens/themes.css";
 import "./styles/tokens/aliases.css";
 // Button GEOMETRY (padding/radius/size) for every existing button convention,

@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import api from '../../api';
 import Chessboard from '../../components/Chessboard';
 import { Chess } from 'chess.js';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const UserTestResult = () => {
   const { resultId } = useParams();
@@ -28,7 +29,7 @@ const UserTestResult = () => {
         const response = await api.get(`/api/testpuzzle/result/${resultId}`);
         setResult(response.data);
       } catch (err) {
-        setError('Failed to load results');
+        setError(tr('Failed to load results'));
       } finally {
         setLoading(false);
       }
@@ -308,7 +309,7 @@ const UserTestResult = () => {
   if (loading) {
     return (
       <div style={styles.page}>
-        <div style={styles.loading}>Loading results...</div>
+        <div style={styles.loading}>{tr("Loading results...")}</div>
       </div>
     );
   }
@@ -317,7 +318,7 @@ const UserTestResult = () => {
     return (
       <div style={styles.page}>
         <div style={{ ...styles.loading, color: 'var(--color-danger)' }}>
-          {error || 'Result not found'}
+          {error || tr('Result not found')}
         </div>
       </div>
     );
@@ -329,7 +330,7 @@ const UserTestResult = () => {
     <div style={styles.page}>
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.title}>🎯 Test Complete!</h1>
+          <h1 style={styles.title}>{tr("🎯 Test Complete!")}</h1>
           <p style={styles.subtitle}>
             {result.studyTitle} - {result.chapterTitle}
           </p>
@@ -342,10 +343,10 @@ const UserTestResult = () => {
             {gradeInfo.grade}
           </div>
           <div style={styles.percentage}>
-            {result.percentage}% Accuracy
+            {result.percentage}{tr("% Accuracy")}
           </div>
           <div style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginTop: '8px' }}>
-            {result.puzzlesSolved} correct out of {result.puzzlesAttempted || result.puzzlesSolved} attempted
+            {result.puzzlesSolved} {tr("correct out of")} {result.puzzlesAttempted || result.puzzlesSolved} {tr("attempted")}
           </div>
         </div>
 
@@ -355,21 +356,21 @@ const UserTestResult = () => {
             <div style={{ ...styles.statValue, color: 'var(--color-success)' }}>
               {result.totalPoints}/{result.maxPoints}
             </div>
-            <div style={styles.statLabel}>Score</div>
+            <div style={styles.statLabel}>{tr("Score")}</div>
           </div>
           <div style={styles.statCard}>
             <div style={styles.statValue}>{result.puzzlesAttempted || result.puzzlesSolved}/{result.totalPuzzles}</div>
-            <div style={styles.statLabel}>Puzzles Attempted</div>
+            <div style={styles.statLabel}>{tr("Puzzles Attempted")}</div>
           </div>
           <div style={styles.statCard}>
             <div style={styles.statValue}>
               {result.puzzlesSolved}
             </div>
-            <div style={styles.statLabel}>Puzzles Solved</div>
+            <div style={styles.statLabel}>{tr("Puzzles Solved")}</div>
           </div>
           <div style={styles.statCard}>
             <div style={styles.statValue}>{formatTime(result.totalTime)}</div>
-            <div style={styles.statLabel}>Time Taken</div>
+            <div style={styles.statLabel}>{tr("Time Taken")}</div>
           </div>
         </div>
 
@@ -388,7 +389,7 @@ const UserTestResult = () => {
           : (n > 0 ? attemptsAll.slice(0, n) : attemptsAll);
         return (
         <div style={styles.puzzlesCard}>
-          <div style={styles.cardTitle}>📋 Puzzle Review (Click to view details)</div>
+          <div style={styles.cardTitle}>{tr("📋 Puzzle Review (Click to view details)")}</div>
           <div style={styles.puzzlesList}>
             {reviewList.map((attempt, index) => (
               <div
@@ -404,7 +405,7 @@ const UserTestResult = () => {
                   ...styles.puzzlePoints,
                   color: attempt.solved ? '#86efac' : 'var(--color-danger)'
                 }}>
-                  {attempt.solved ? '+2 pts' : '0 pts'}
+                  {attempt.solved ? tr('+2 pts') : tr('0 pts')}
                 </div>
               </div>
             ))}
@@ -425,13 +426,13 @@ const UserTestResult = () => {
                   `/test/play/${aStudyId || result.studyId}/${aChapterId || result.chapterId}?time=${aTime || result.timeLimit}&assignment=${assignmentId}`
                 )}
               >
-                🔄 Try Again
+                {tr("🔄 Try Again")}
               </button>
               <button
                 style={{ ...styles.button, ...styles.secondaryBtn }}
                 onClick={() => navigate('/my-coach')}
               >
-                📋 Back to Assignments
+                {tr("📋 Back to Assignments")}
               </button>
             </>
           ) : (
@@ -440,13 +441,13 @@ const UserTestResult = () => {
                 style={{ ...styles.button, ...styles.primaryBtn }}
                 onClick={() => navigate(`/test/time/${result.studyId}/${result.chapterId}`)}
               >
-                🔄 Try Again
+                {tr("🔄 Try Again")}
               </button>
               <button
                 style={{ ...styles.button, ...styles.secondaryBtn }}
                 onClick={() => navigate('/test')}
               >
-                📚 Choose Different Study
+                {tr("📚 Choose Different Study")}
               </button>
             </>
           )}
@@ -458,7 +459,7 @@ const UserTestResult = () => {
             <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
               <div style={styles.modalTitle}>
                 <span>
-                  Puzzle #{selectedPuzzle.puzzleNumber} 
+                  {tr("Puzzle #")}{selectedPuzzle.puzzleNumber} 
                   {selectedPuzzle.solved ? ' ✓' : ' ✗'}
                 </span>
                 <button 
@@ -502,7 +503,7 @@ const UserTestResult = () => {
                       e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.4)';
                     }}
                   >
-                    ⇅ Flip Board ({boardOrientation === 'white' ? 'White' : 'Black'} view)
+                    {tr("⇅ Flip Board (")}{boardOrientation === 'white' ? 'White' : 'Black'} {tr("view)")}
                   </button>
                   <button
                     style={{
@@ -528,7 +529,7 @@ const UserTestResult = () => {
                       e.currentTarget.style.borderColor = 'var(--color-accent-a40)';
                     }}
                   >
-                    🔄 Reset Position
+                    {tr("🔄 Reset Position")}
                   </button>
                 </div>
                 <div style={{ flex: 1 }}>
@@ -541,35 +542,35 @@ const UserTestResult = () => {
                       <>
                         <div style={styles.moveSection}>
                           <div style={{ ...styles.moveLabel, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ background: 'var(--color-danger-a20)', color: 'var(--color-danger)', borderRadius: 'var(--radius-sm)', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>OPENING</span>
-                            Opening Move:
+                            <span style={{ background: 'var(--color-danger-a20)', color: 'var(--color-danger)', borderRadius: 'var(--radius-sm)', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>{tr("OPENING")}</span>
+                            {tr("Opening Move:")}
                           </div>
                           <div style={{ ...styles.moveCode, color: 'var(--color-danger)' }}>{botMove}</div>
                         </div>
                         <div style={styles.moveSection}>
                           <div style={{ ...styles.moveLabel, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ background: 'rgba(34,197,94,0.2)', color: '#86efac', borderRadius: 'var(--radius-sm)', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>YOU</span>
-                            Correct Solution:
+                            <span style={{ background: 'rgba(34,197,94,0.2)', color: '#86efac', borderRadius: 'var(--radius-sm)', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>{"YOU"}</span>
+                            {tr("Correct Solution:")}
                           </div>
                           <div style={{ ...styles.moveCode, color: '#86efac' }}>{userSolution}</div>
                         </div>
                         <div style={styles.moveSection}>
-                          <div style={styles.moveLabel}>Your Moves (UCI):</div>
+                          <div style={styles.moveLabel}>{tr("Your Moves (UCI):")}</div>
                           <div style={styles.moveCode}>
-                            {selectedPuzzle.userMovesUCI || 'No moves made'}
+                            {selectedPuzzle.userMovesUCI || tr('No moves made')}
                           </div>
                         </div>
                       </>
                     );
                   })()}
                   <div style={styles.moveSection}>
-                    <div style={styles.moveLabel}>Time Spent:</div>
+                    <div style={styles.moveLabel}>{tr("Time Spent:")}</div>
                     <div style={{ color: 'var(--color-text)', fontSize: '18px' }}>
                       {formatTime(selectedPuzzle.timeSpent)}
                     </div>
                   </div>
                   <div style={styles.moveSection}>
-                    <div style={styles.moveLabel}>Points:</div>
+                    <div style={styles.moveLabel}>{tr("Points:")}</div>
                     <div style={{ 
                       color: selectedPuzzle.solved ? 'var(--color-success)' : 'var(--color-danger)', 
                       fontSize: '24px',

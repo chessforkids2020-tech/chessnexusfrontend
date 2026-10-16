@@ -4,6 +4,7 @@ import socket from '../../socket';
 import { useAuth } from '../../contexts/AuthContext';
 import CoachChat from './CoachChat';
 import './CoachChatFab.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 /**
  * Floating "Message" button for coach pages (dashboard / assignments / attendance).
@@ -92,18 +93,18 @@ export default function CoachChatFab() {
       <button
         className="ccfab"
         onClick={() => { setOpenThreadId(null); setOpen(true); }}
-        aria-label="Messages"
-        title="Message students"
+        aria-label={tr("Messages")}
+        title={tr("Message students")}
       >
         <span className="ccfab-icon">💬</span>
-        <span className="ccfab-label">Message</span>
+        <span className="ccfab-label">{tr("Message")}</span>
         {unread > 0 && <span className="ccfab-badge">{unread > 99 ? '99+' : unread}</span>}
       </button>
 
       {open && (
         <div className="ccfab-overlay" onClick={e => { if (e.target === e.currentTarget) closePopup(); }}>
           <div className="ccfab-popup">
-            <button className="ccfab-close" onClick={closePopup} aria-label="Close">✕</button>
+            <button className="ccfab-close" onClick={closePopup} aria-label={tr("Close")}>✕</button>
             <div className="ccfab-popup-body">
               <CoachChat mode="coach" openThreadId={openThreadId} />
             </div>

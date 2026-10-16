@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const UserTestStudySelection = () => {
   const [studies, setStudies] = useState([]);
@@ -14,7 +15,7 @@ const UserTestStudySelection = () => {
         const response = await api.get('/api/testpuzzle/studies');
         setStudies(response.data);
       } catch (err) {
-        setError('Failed to load studies');
+        setError(tr('Failed to load studies'));
       } finally {
         setLoading(false);
       }
@@ -124,7 +125,7 @@ const UserTestStudySelection = () => {
     return (
       <div style={styles.page}>
         <div style={styles.container}>
-          <div style={styles.loading}>Loading studies...</div>
+          <div style={styles.loading}>{tr("Loading studies...")}</div>
         </div>
       </div>
     );
@@ -134,13 +135,13 @@ const UserTestStudySelection = () => {
     <div style={styles.page}>
       <div style={styles.container}>
         <button style={styles.backButton} onClick={() => navigate('/puzzles')}>
-          ← Back to Puzzles
+          {tr("← Back to Puzzles")}
         </button>
 
         <div style={styles.header}>
-          <h1 style={styles.title}>🧩 Test Your Skills</h1>
+          <h1 style={styles.title}>{tr("🧩 Test Your Skills")}</h1>
           <p style={styles.subtitle}>
-            Choose a study to test your chess knowledge. Solve puzzles against Stockfish!
+            {tr("Choose a study to test your chess knowledge. Solve puzzles against Stockfish!")}
           </p>
         </div>
 
@@ -152,8 +153,8 @@ const UserTestStudySelection = () => {
 
         {studies.length === 0 ? (
           <div style={styles.empty}>
-            <p style={{ fontSize: '18px', marginBottom: '10px' }}>No studies available yet</p>
-            <p>Check back later for new test materials!</p>
+            <p style={{ fontSize: '18px', marginBottom: '10px' }}>{tr("No studies available yet")}</p>
+            <p>{tr("Check back later for new test materials!")}</p>
           </div>
         ) : (
           <div style={styles.grid}>
@@ -173,7 +174,7 @@ const UserTestStudySelection = () => {
                 </div>
                 <div style={styles.cardTitle}>{study.title}</div>
                 <div style={styles.cardDesc}>
-                  {study.description || 'Test your skills with these challenging puzzles!'}
+                  {study.description || tr('Test your skills with these challenging puzzles!')}
                 </div>
                 <div style={{
                   ...styles.cardArrow,

@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function ChooseTopicDemo() {
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -323,12 +324,12 @@ export default function ChooseTopicDemo() {
   };
 
   const timeOptions = [
-    { value: 1, label: '1 minute' },
-    { value: 3, label: '3 minutes' },
-    { value: 5, label: '5 minutes' },
-    { value: 10, label: '10 minutes' },
-    { value: 15, label: '15 minutes' },
-    { value: 20, label: '20 minutes' },
+    { value: 1, label: tr('1 minute') },
+    { value: 3, label: tr('3 minutes') },
+    { value: 5, label: tr('5 minutes') },
+    { value: 10, label: tr('10 minutes') },
+    { value: 15, label: tr('15 minutes') },
+    { value: 20, label: tr('20 minutes') },
   ];
 
   return (
@@ -337,24 +338,24 @@ export default function ChooseTopicDemo() {
       
       <div style={styles.content}>
         <div style={styles.header}>
-          <h1 style={styles.title}>Choose Your Topic</h1>
-          <p style={styles.subtitle}>Select a chess topic to focus your timed race practice</p>
+          <h1 style={styles.title}>{tr("Choose Your Topic")}</h1>
+          <p style={styles.subtitle}>{tr("Select a chess topic to focus your timed race practice")}</p>
         </div>
 
         {loading ? (
           <div style={styles.loadingContainer}>
             <div style={styles.loadingIcon}>⏳</div>
-            <h2 style={styles.loadingTitle}>Loading Topics</h2>
+            <h2 style={styles.loadingTitle}>{tr("Loading Topics")}</h2>
             <p style={styles.loadingText}>
-              Fetching available puzzle topics...
+              {tr("Fetching available puzzle topics...")}
             </p>
           </div>
         ) : topics.length === 0 ? (
           <div style={styles.loadingContainer}>
             <div style={styles.loadingIcon}>🔍</div>
-            <h2 style={styles.loadingTitle}>No Topics Available</h2>
+            <h2 style={styles.loadingTitle}>{tr("No Topics Available")}</h2>
             <p style={styles.loadingText}>
-              No puzzle topics found in the database.
+              {tr("No puzzle topics found in the database.")}
             </p>
           </div>
         ) : (
@@ -387,7 +388,7 @@ export default function ChooseTopicDemo() {
                     {topic.difficulty}
                   </span>
                   <span style={styles.puzzleCount}>
-                    {topic.puzzles} puzzles
+                    {topic.puzzles} {tr("puzzles")}
                   </span>
                 </div>
               </motion.div>
@@ -409,7 +410,7 @@ export default function ChooseTopicDemo() {
               {selectedTopic.icon} {selectedTopic.title}
             </h2>
             <p style={styles.modalSubtitle}>
-              Choose how long you want to race for
+              {tr("Choose how long you want to race for")}
             </p>
 
             <div style={styles.timeOptions}>
@@ -456,7 +457,7 @@ export default function ChooseTopicDemo() {
                 }}
                 transition={{ duration: 0.2 }}
               >
-                Cancel
+                {tr("Cancel")}
               </motion.button>
               <motion.button 
                 style={styles.startButton} 
@@ -467,7 +468,7 @@ export default function ChooseTopicDemo() {
                 }}
                 transition={{ duration: 0.2 }}
               >
-                Start {selectedTime} Minute Race
+                {tr("Start")} {selectedTime} {tr("Minute Race")}
               </motion.button>
             </div>
           </motion.div>

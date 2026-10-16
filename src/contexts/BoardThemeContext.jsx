@@ -1,29 +1,30 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 // 16 board themes — index 0 is the default (current green)
 export const BOARD_THEMES = [
-  { id: 'green',        name: 'Classic Green',    light: '#EEEED2', dark: '#769656' },
-  { id: 'brown',        name: 'Standard Brown',    light: '#F0D9B5', dark: '#B58863' },
-  { id: 'ocean',        name: 'Blue Ocean',       light: '#C8D4E3', dark: '#6E8BAA' },
-  { id: 'slate',        name: 'Gray Slate',       light: '#D0D3D6', dark: '#7A8288' },
-  { id: 'wood',         name: 'Wood Tournament',  light: '#E2C39B', dark: '#A66D3B' },
-  { id: 'purple',       name: 'Purple Royal',     light: '#C9B7D6', dark: '#6D537F' },
-  { id: 'mahogany',     name: 'Red Mahogany',     light: '#D7B08A', dark: '#8B3A3A' },
-  { id: 'dark',         name: 'Dark Tournament',  light: '#645F58', dark: '#3F3A33' },
-  { id: 'marble',       name: 'Marble Stone',     light: '#E8E8E8', dark: '#B8B8BB' },
-  { id: 'darkgold',     name: 'Dark Gold',        light: '#A2895B', dark: '#3F3A33' },
-  { id: 'tan',          name: 'Tan Coral',        light: '#EBCFAC', dark: '#9D6756' },
-  { id: 'gray',         name: 'Gray Board',       light: '#8B8A89', dark: '#696867' },
-  { id: 'blue',         name: 'Blue Board',       light: '#F2F6FA', dark: '#5596F2' },
-  { id: 'wood1',        name: 'Wood Board',       light: '#BC9E7B', dark: '#73533C' },
-  { id: 'emerald',      name: 'Emerald Green',    light: '#DCE8D8', dark: '#4C8C5A' },
-  { id: 'hunter',       name: 'Hunter Green',     light: '#D7E0D0', dark: '#355E3B' },
+  { id: 'green',        name: tr('Classic Green'),    light: '#EEEED2', dark: '#769656' },
+  { id: 'brown',        name: tr('Standard Brown'),    light: '#F0D9B5', dark: '#B58863' },
+  { id: 'ocean',        name: tr('Blue Ocean'),       light: '#C8D4E3', dark: '#6E8BAA' },
+  { id: 'slate',        name: tr('Gray Slate'),       light: '#D0D3D6', dark: '#7A8288' },
+  { id: 'wood',         name: tr('Wood Tournament'),  light: '#E2C39B', dark: '#A66D3B' },
+  { id: 'purple',       name: tr('Purple Royal'),     light: '#C9B7D6', dark: '#6D537F' },
+  { id: 'mahogany',     name: tr('Red Mahogany'),     light: '#D7B08A', dark: '#8B3A3A' },
+  { id: 'dark',         name: tr('Dark Tournament'),  light: '#645F58', dark: '#3F3A33' },
+  { id: 'marble',       name: tr('Marble Stone'),     light: '#E8E8E8', dark: '#B8B8BB' },
+  { id: 'darkgold',     name: tr('Dark Gold'),        light: '#A2895B', dark: '#3F3A33' },
+  { id: 'tan',          name: tr('Tan Coral'),        light: '#EBCFAC', dark: '#9D6756' },
+  { id: 'gray',         name: tr('Gray Board'),       light: '#8B8A89', dark: '#696867' },
+  { id: 'blue',         name: tr('Blue Board'),       light: '#F2F6FA', dark: '#5596F2' },
+  { id: 'wood1',        name: tr('Wood Board'),       light: '#BC9E7B', dark: '#73533C' },
+  { id: 'emerald',      name: tr('Emerald Green'),    light: '#DCE8D8', dark: '#4C8C5A' },
+  { id: 'hunter',       name: tr('Hunter Green'),     light: '#D7E0D0', dark: '#355E3B' },
   // Added for the Royal Violet app theme. Purple Royal was the closest existing
   // board (18° of hue away) but is a soft lilac, where Royal Violet is a deep
   // saturated violet — pairing them left the board looking washed out beside
   // the UI. Contrast is 5.25:1, inside the range the other 16 already span.
-  { id: 'violetroyale', name: 'Violet Royale',    light: '#D6CCEB', dark: '#5B4485' },
+  { id: 'violetroyale', name: tr('Violet Royale'),    light: '#D6CCEB', dark: '#5B4485' },
 ];
 
 export const DEFAULT_THEME = BOARD_THEMES[0];
@@ -246,7 +247,7 @@ export function BoardThemeProvider({ children, userId }) {
           boardThemeAuto: serverAuto,
         } = res.data || {};
         const custom = unlocked && light && dark
-          ? { id: CUSTOM_THEME_ID, name: 'My colours', light, dark }
+          ? { id: CUSTOM_THEME_ID, name: tr('My colours'), light, dark }
           : null;
         setCustomThemeState(custom);
 
@@ -339,7 +340,7 @@ export function BoardThemeProvider({ children, userId }) {
   // Called by the picker after a successful save, so every board on screen
   // updates immediately without a reload.
   const setCustomTheme = useCallback(({ light, dark }) => {
-    const custom = { id: CUSTOM_THEME_ID, name: 'My colours', light, dark };
+    const custom = { id: CUSTOM_THEME_ID, name: tr('My colours'), light, dark };
     setCustomThemeState(custom);
     setTheme(custom);
     persistLocal(userId, CUSTOM_THEME_ID);

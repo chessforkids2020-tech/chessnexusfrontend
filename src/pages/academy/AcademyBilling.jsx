@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api';
 import './AcademyDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 function loadRazorpayScript() {
   return new Promise((resolve) => {
@@ -20,10 +21,10 @@ const fmt = (minor, c) => `${curSym(c)}${((minor || 0) / 100).toLocaleString(und
 // Per-coach live-class line. meetingsPerDay === -1 means Unlimited (wire form).
 function liveLine(lc) {
   if (!lc) return 'Live classes included';
-  const per = lc.meetingsPerDay === -1 ? 'Unlimited live classes' : `${lc.meetingsPerDay} live class${lc.meetingsPerDay === 1 ? '' : 'es'}/day`;
-  const room = lc.maxStudents === -1 ? 'unlimited students' : `up to ${lc.maxStudents} students (+ coach)`;
-  const len = lc.meetingsPerDay === -1 ? `up to ${lc.durationMin} min or unlimited` : `up to ${lc.durationMin} min`;
-  return `${per} · ${len} · ${room} each`;
+  const per = lc.meetingsPerDay === -1 ? 'Unlimited live classes' : tr("{meetingsPerDay} live class{v1}/day", { meetingsPerDay: lc.meetingsPerDay, v1: lc.meetingsPerDay === 1 ? '' : 'es' });
+  const room = lc.maxStudents === -1 ? 'unlimited students' : tr("up to {maxStudents} students (+ coach)", { maxStudents: lc.maxStudents });
+  const len = lc.meetingsPerDay === -1 ? tr("up to {durationMin} min or unlimited", { durationMin: lc.durationMin }) : tr("up to {durationMin} min", { durationMin: lc.durationMin });
+  return tr("{per} · {len} · {room} each", { per: per, len: len, room: room });
 }
 
 export default function AcademyBilling() {
@@ -53,7 +54,7 @@ export default function AcademyBilling() {
       const d = orderRes.data;
       if (d.devMode) {
         await api.post('/api/academy/billing/dev-activate', { paymentRecordId: d.paymentRecordId });
-        setMsg('✅ Academy plan activated (dev mode). All your coaches are now covered.');
+        setMsg(tr('✅ Academy plan activated (dev mode). All your coaches are now covered.'));
         await load();
         return;
       }
@@ -61,7 +62,7 @@ export default function AcademyBilling() {
       if (!ok) throw new Error('Could not load the payment SDK.');
       const rzp = new window.Razorpay({
         key: d.keyId, amount: d.amount, currency: d.currency, order_id: d.orderId,
-        name: 'Chess Academy', description: `${d.academyPlan} · ${months} month(s) · ${d.coaches} coaches`,
+        name: tr('Chess Academy'), description: tr("{academyPlan} · {months} month(s) · {coaches} coaches", { academyPlan: d.academyPlan, months: months, coaches: d.coaches }),
         theme: { color: 'var(--color-accent)' },
         handler: async (r) => {
           try {
@@ -71,9 +72,9 @@ export default function AcademyBilling() {
               razorpay_signature: r.razorpay_signature,
               paymentRecordId: d.paymentRecordId,
             });
-            setMsg('✅ Payment successful — your academy plan is active and all coaches are covered.');
+            setMsg(tr('✅ Payment successful — your academy plan is active and all coaches are covered.'));
             await load();
-          } catch (e) { setErr(e.response?.data?.message || 'Verification failed.'); }
+          } catch (e) { setErr(e.response?.data?.message || tr('Verification failed.')); }
         },
         modal: { ondismiss: () => setBusy('') },
       });
@@ -85,24 +86,24 @@ export default function AcademyBilling() {
     }
   };
 
-  if (!data) return <div className="acad-wrap"><div className="acad-empty">Loading billing…</div></div>;
+  if (!data) return <div className="acad-wrap"><div className="acad-empty">{tr("Loading billing…")}</div></div>;
 
   const fam = (data.families || []).find(f => f.key === family) || data.families?.[0];
   const shown = (fam?.order || []).map(id => ({ id, ...data.plans[id] })).filter(p => p.name);
 
   return (
     <div className="acad-wrap">
-      <h1 style={{ color: 'var(--color-text)', marginBottom: 6 }}>💳 Academy billing</h1>
+      <h1 style={{ color: 'var(--color-text)', marginBottom: 6 }}>{tr("💳 Academy billing")}</h1>
       <p className="acad-muted" style={{ marginBottom: 18 }}>
-        Your academy buys ONE plan that covers all your coaches. You currently have{' '}
-        <strong>{data.coachCount}</strong> coach{data.coachCount === 1 ? '' : 'es'}.
-        {data.currentPlan && <> Current plan: <strong style={{ color: 'var(--color-accent)' }}>{data.plans[data.currentPlan]?.name || data.currentPlan}</strong>.</>}
+        {tr("Your academy buys ONE plan that covers all your coaches. You currently have")}{' '}
+        <strong>{data.coachCount}</strong> {tr("coach")}{data.coachCount === 1 ? '' : 'es'}.
+        {data.currentPlan && <> {tr("Current plan:")} <strong style={{ color: 'var(--color-accent)' }}>{data.plans[data.currentPlan]?.name || data.currentPlan}</strong>.</>}
       </p>
 
       {!data.currentPlan && (
         <div className="acad-req" style={{ borderColor: 'var(--color-warning-a30)', background: 'var(--color-warning-a12)' }}>
           <div style={{ fontSize: 14, color: 'var(--color-warning)', fontWeight: 600 }}>
-            🔒 Buy a plan to unlock your academy — add coaches, share your join link, and see your dashboard. Your academy pays for its coaches.
+            {tr("🔒 Buy a plan to unlock your academy — add coaches, share your join link, and see your dashboard. Your academy pays for its coaches.")}
           </div>
         </div>
       )}
@@ -110,8 +111,8 @@ export default function AcademyBilling() {
       {err && <div className="acad-error">⚠️ {err}</div>}
 
       <div className="acad-billing-controls">
-        <span className="acad-muted">Prices in <strong>{currency}</strong> (based on your country)</span>
-        <label>Duration
+        <span className="acad-muted">{tr("Prices in")} <strong>{currency}</strong> {tr("(based on your country)")}</span>
+        <label>{tr("Duration")}
           <select value={months} onChange={e => { const m = Number(e.target.value); setMonths(m); load(m); }}>
             {[1, 3].map(m => <option key={m} value={m}>{m} month{m === 1 ? '' : 's'}{m === 3 ? ' (save 10%)' : ''}</option>)}
           </select>
@@ -136,40 +137,40 @@ export default function AcademyBilling() {
           return (
             <div key={p.id} className={`acad-plan-card ${isCurrent ? 'is-current' : ''}`}>
               <div className="acad-plan-name">{p.name}</div>
-              <div className="acad-plan-price">{fmt(p.price, currency)}<span> / {months}mo</span></div>
+              <div className="acad-plan-price">{fmt(p.price, currency)}<span> / {months}{tr("mo")}</span></div>
 
               {/* Academy-level: how many coaches this ONE price covers */}
               <div className="acad-plan-coaches">
                 {unlimitedCoaches
-                  ? <>Covers <strong>unlimited coaches</strong> · one price</>
-                  : <>Covers up to <strong>{p.maxCoaches} coaches</strong> · one price</>}
+                  ? <>{tr("Covers")} <strong>{tr("unlimited coaches")}</strong> {tr("· one price")}</>
+                  : <>{tr("Covers up to")} <strong>{p.maxCoaches} coaches</strong> {tr("· one price")}</>}
               </div>
 
               {/* Per-coach entitlements — the differentiator: EVERY coach gets the full thing */}
               <div className="acad-plan-percoach">
-                <div className="acad-plan-percoach-head">✨ Every coach gets:</div>
+                <div className="acad-plan-percoach-head">{tr("✨ Every coach gets:")}</div>
                 <ul className="acad-plan-feats">
-                  <li>👥 Up to <strong>{p.studentsPerCoach} students</strong> — each</li>
+                  <li>{tr("👥 Up to")} <strong>{p.studentsPerCoach} {tr("students")}</strong> {tr("— each")}</li>
                   <li>🎥 {liveLine(p.liveClass)}</li>
                   {(p.features || []).map(f => <li key={f}>✓ {f}</li>)}
                 </ul>
               </div>
               <div className="acad-plan-total">
                 {unlimitedCoaches
-                  ? <>= unlimited coaches × {p.studentsPerCoach} students = <strong>no cap</strong> on your academy</>
+                  ? <>= unlimited coaches × {p.studentsPerCoach} students = <strong>{tr("no cap")}</strong> {tr("on your academy")}</>
                   : <>= {p.maxCoaches} coaches × {p.studentsPerCoach} students = up to{' '}
-                      <strong>{(p.maxCoaches * p.studentsPerCoach).toLocaleString()} students</strong> across your academy</>}
+                      <strong>{(p.maxCoaches * p.studentsPerCoach).toLocaleString()} {tr("students")}</strong> {tr("across your academy")}</>}
               </div>
 
               {isCurrent ? (
-                <button className="btn-ghost" disabled>Current plan</button>
+                <button className="btn-ghost" disabled>{tr("Current plan")}</button>
               ) : (
                 <button
                   className="btn-primary"
                   disabled={busy === p.id || tooManyCoaches}
                   onClick={() => buy(p.id)}
                 >
-                  {busy === p.id ? 'Processing…' : tooManyCoaches ? `Max ${p.maxCoaches} coaches` : `Buy ${p.name}`}
+                  {busy === p.id ? 'Processing…' : tooManyCoaches ? tr("Max {maxCoaches} coaches", { maxCoaches: p.maxCoaches }) : tr("Buy {name}", { name: p.name })}
                   {/* tooManyCoaches can never be true on the unlimited plan, so
                       the -1 label above is unreachable there. */}
                 </button>

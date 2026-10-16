@@ -9,6 +9,7 @@ import soundManager from '../utils/soundManager';
 import { trackEvent } from '../lib/analytics';
 import PuzzleReviewPanel from '../components/PuzzleReviewPanel';
 import './Puzzles.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const API = import.meta.env.VITE_API_URL || '';
 
@@ -178,7 +179,7 @@ export default function Puzzles() {
         }
         setStockfishReady(true);
       } catch (err) {
-        setMessage('Engine failed to load. Please refresh.');
+        setMessage(tr('Engine failed to load. Please refresh.'));
       }
     };
     initEngine();
@@ -281,14 +282,14 @@ export default function Puzzles() {
       if (doneSoFar >= GUEST_PUZZLE_LIMIT) {
         setShowGuestLoginPopup(true);
         setDailyStatus('locked');
-        setMessage('Guest limit reached.');
+        setMessage(tr('Guest limit reached.'));
         return;
       }
       try {
-        setMessage('Loading Daily Puzzles...');
+        setMessage(tr('Loading Daily Puzzles...'));
         const res = await api.get('/api/public/training/guest-puzzles');
         const puzzles = (res.data.puzzles || []).map(p => ({ ...p, isSolved: false, isCorrect: false }));
-        if (!puzzles.length) { setMessage('No puzzles available.'); setDailyStatus('locked'); return; }
+        if (!puzzles.length) { setMessage(tr('No puzzles available.')); setDailyStatus('locked'); return; }
         setDailyBatch(puzzles);
         setDailyStats({ correct: 0, wrong: 0 });
         const startIdx = doneSoFar;
@@ -301,14 +302,14 @@ export default function Puzzles() {
           loadPuzzle(puzzles[startIdx]);
         }
       } catch (err) {
-        setMessage('Error loading puzzles');
+        setMessage(tr('Error loading puzzles'));
       }
       return;
     }
 
     // ── Logged-in user path ───────────────────────────────────────────────────
     try {
-      setMessage('Loading Daily Puzzles...');
+      setMessage(tr('Loading Daily Puzzles...'));
       const res = await api.get(`/api/public/training/puzzles`);
       
       if (res.data.dailyLimitReached) {
@@ -317,12 +318,12 @@ export default function Puzzles() {
         if (res.data.puzzles && res.data.puzzles.length > 0) {
           setDailyBatch(res.data.puzzles);
         }
-        setMessage('All daily puzzles completed!');
+        setMessage(tr('All daily puzzles completed!'));
         return;
       }
 
       if (res.data.completedAll) {
-        setMessage('No more puzzles available!');
+        setMessage(tr('No more puzzles available!'));
         setDailyStatus('locked');
         return;
       }
@@ -354,9 +355,9 @@ export default function Puzzles() {
       if (err.response && err.response.status === 403) {
         setDailyStatus('locked');
         setDailyStats(err.response.data.stats);
-        setMessage('All daily puzzles completed!');
+        setMessage(tr('All daily puzzles completed!'));
       } else {
-        setMessage('Error loading daily puzzles');
+        setMessage(tr('Error loading daily puzzles'));
       }
     }
   };
@@ -397,7 +398,7 @@ export default function Puzzles() {
     if (sol.length === 0) {
     }
     
-    setMessage('Your Turn');
+    setMessage(tr('Your Turn'));
   };
 
   const handlePuzzleCompletion = async (isCorrect, pointsToSave) => {
@@ -421,7 +422,7 @@ export default function Puzzles() {
     // If we already submitted a failure for this puzzle, don't submit again
     if (puzzleAlreadyFailedRef.current) {
       if (isCorrect) {
-        setMessage("Puzzle Solved (Practice)");
+        setMessage(tr("Puzzle Solved (Practice)"));
         if (soundEnabled) playSound('complete');
       } else {
         if (soundEnabled) playSound('wrong');
@@ -618,11 +619,11 @@ export default function Puzzles() {
       }
       
       setTurn('user');
-      setMessage('Your Turn');
+      setMessage(tr('Your Turn'));
       return;
     }
 
-    setMessage('Opponent is thinking...');
+    setMessage(tr('Opponent is thinking...'));
     
     try {
       let move = null;
@@ -686,7 +687,7 @@ export default function Puzzles() {
 
           const cleanSuccess = !failedStepRef.current;
           const messageText = cleanSuccess 
-            ? `Perfect Solve! +${finalPoints} points`
+            ? tr("Perfect Solve! +{finalPoints} points", { finalPoints: finalPoints })
             : `Puzzle Solved (with retries) ${finalPoints > 0 ? `+${finalPoints} points` : ''}`;
           
           setMessage(messageText);
@@ -708,7 +709,7 @@ export default function Puzzles() {
 
           const cleanSuccess = !failedStepRef.current;
           const messageText = cleanSuccess 
-            ? `Perfect Solve! +${finalPoints} points`
+            ? tr("Perfect Solve! +{finalPoints} points", { finalPoints: finalPoints })
             : `Puzzle Solved (with retries) ${finalPoints > 0 ? `+${finalPoints} points` : ''}`;
             
           setMessage(messageText);
@@ -717,12 +718,12 @@ export default function Puzzles() {
         }
         
         setTurn('user');
-        setMessage('Your Turn');
+        setMessage(tr('Your Turn'));
       } else {
-        setMessage("Couldn’t reply.");
+        setMessage(tr("Couldn’t reply."));
       }
     } catch (err) {
-      setMessage('Couldn’t reply');
+      setMessage(tr('Couldn’t reply'));
     }
   };
 
@@ -770,7 +771,7 @@ export default function Puzzles() {
     const currentMoveIndex = moveIndexRef.current;
     
     const evaluateMove = async () => {
-      setMessage('Verifying move...');
+      setMessage(tr('Verifying move...'));
       
       // Helper function to normalize move notation by removing check (+) and checkmate (#) symbols
       const normalizeMove = (move) => {
@@ -875,11 +876,11 @@ export default function Puzzles() {
         // Play wrong sound
         if (soundEnabled) playSound('wrong');
         
-        setMessage(`Wrong move: ${attemptedMove.san}. Try again! (Penalty: ${penaltyPoints} points)`);
+        setMessage(tr("Wrong move: {san}. Try again! (Penalty: {penaltyPoints} points)", { san: attemptedMove.san, penaltyPoints: penaltyPoints }));
       } else {
         // For subsequent wrong moves in same puzzle, just play sound
         if (soundEnabled) playSound('wrong');
-        setMessage(`Wrong move: ${attemptedMove.san}. Try again!`);
+        setMessage(tr("Wrong move: {san}. Try again!", { san: attemptedMove.san }));
       }
       
       // Reset wrong move flag after a delay
@@ -941,8 +942,8 @@ export default function Puzzles() {
       const cleanSuccess = !failedStepRef.current;
       
       const messageText = cleanSuccess 
-        ? `Perfect Solve! +${finalPoints} points`
-        : `Puzzle Solved (with retries) ${finalPoints > 0 ? `+${finalPoints} points` : 'No points for retries'}`;
+        ? tr("Perfect Solve! +{finalPoints} points", { finalPoints: finalPoints })
+        : `Puzzle Solved (with retries) ${finalPoints > 0 ? `+${finalPoints} points` : tr('No points for retries')}`;
       
       setMessage(messageText);
       
@@ -961,7 +962,7 @@ export default function Puzzles() {
     } else {
       // Puzzle not complete - bot's turn
       setTurn('bot');
-      setMessage('Opponent thinking...');
+      setMessage(tr('Opponent thinking...'));
     }
     
     processingRef.current = false;
@@ -970,7 +971,7 @@ export default function Puzzles() {
 
   // Reset daily training (for debugging)
   const handleResetDaily = async () => {
-    if (window.confirm('Reset daily training? This will clear your progress for today.')) {
+    if (window.confirm(tr('Reset daily training? This will clear your progress for today.'))) {
       try {
         // Clear local storage
         sessionStorage.clear();
@@ -981,7 +982,7 @@ export default function Puzzles() {
         // Refresh the page
         window.location.reload();
       } catch (err) {
-        alert('Reset failed. Please contact support.');
+        alert(tr('Reset failed. Please contact support.'));
       }
     }
   };
@@ -1125,53 +1126,53 @@ export default function Puzzles() {
         <div style={{ position: 'fixed', inset: 0, background: 'var(--color-black-a65)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ background: 'var(--color-surface-2)', borderRadius: 'var(--radius-2xl)', padding: '36px 32px', maxWidth: 420, width: '90%', textAlign: 'center', boxShadow: '0 24px 60px var(--color-black-a50)', border: '1px solid var(--color-white-a07)' }}>
             <div style={{ fontSize: 52, marginBottom: 12 }}>🏆</div>
-            <h2 style={{ color: 'var(--color-text)', fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Amazing! You solved 5 puzzles!</h2>
+            <h2 style={{ color: 'var(--color-text)', fontSize: 22, fontWeight: 800, marginBottom: 10 }}>{tr("Amazing! You solved 5 puzzles!")}</h2>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.6 }}>
-              Want to keep improving? Login to <strong style={{ color: 'var(--color-accent-2)' }}>ChessNexus</strong> to unlock unlimited daily puzzles, track your rating, and compete on leaderboards!
+              {tr("Want to keep improving? Login to")} <strong style={{ color: 'var(--color-accent-2)' }}>{tr("ChessNexus")}</strong> {tr("to unlock unlimited daily puzzles, track your rating, and compete on leaderboards!")}
             </p>
             <a
               href="/login"
               style={{ display: 'block', background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))', color: 'var(--color-text)', padding: '14px 28px', borderRadius: 'var(--radius-lg)', fontWeight: 700, textDecoration: 'none', fontSize: 16, marginBottom: 14, boxShadow: '0 4px 15px rgba(59,130,246,0.4)' }}
             >
-              Login to ChessNexus 🚀
+              {tr("Login to ChessNexus 🚀")}
             </a>
             <a
               href="/register"
               style={{ display: 'block', background: 'var(--color-white-a07)', color: 'var(--color-text-muted)', padding: '12px 28px', borderRadius: 'var(--radius-lg)', fontWeight: 600, textDecoration: 'none', fontSize: 15, marginBottom: 14, border: '1px solid var(--color-white-a10)' }}
             >
-              Create Free Account
+              {tr("Create Free Account")}
             </a>
             <button
               onClick={() => setShowGuestLoginPopup(false)}
               style={{ background: 'none', border: 'none', color: 'var(--color-text-faint)', cursor: 'pointer', fontSize: 13 }}
             >
-              Maybe later
+              {tr("Maybe later")}
             </button>
           </div>
         </div>
       )}
 
       <SEO
-        title="Daily Chess Puzzles — Practice Tactics Online"
-        description="Solve daily chess puzzles on Chess Nexus. Improve your tactics, earn rating points, and track your progress. Free interactive chess puzzles for all levels."
+        title={tr("Daily Chess Puzzles — Practice Tactics Online")}
+        description={tr("Solve daily chess puzzles on Chess Nexus. Improve your tactics, earn rating points, and track your progress. Free interactive chess puzzles for all levels.")}
         keywords="daily chess puzzles, chess tactics online, free chess puzzles, chess nexus puzzles, improve chess tactics"
         canonical="/puzzles"
       />
       {showSkipConfirm && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalContent}>
-            <div style={styles.modalTitle}>Skip Puzzle?</div>
+            <div style={styles.modalTitle}>{tr("Skip Puzzle?")}</div>
             <div style={styles.modalMessage}>
               {puzzle && (
                 <div>
-                  <p><strong style={{ color: 'var(--color-danger)' }}>⚠️ Skipping = WRONG Puzzle</strong></p>
-                  <p>This puzzle is <strong>not completed</strong>. Skipping will:</p>
+                  <p><strong style={{ color: 'var(--color-danger)' }}>{tr("⚠️ Skipping = WRONG Puzzle")}</strong></p>
+                  <p>{tr("This puzzle is")} <strong>{tr("not completed")}</strong>{tr(". Skipping will:")}</p>
                   <ul style={{ margin: '10px 0', paddingLeft: '20px', color: 'var(--color-text-faint)' }}>
-                    <li><strong>Mark it as WRONG</strong></li>
-                    <li>Apply a rating penalty of <strong>{calculatePenalty(puzzle?.rating || 1200)} points</strong></li>
-                    <li>Count as 1 wrong puzzle in your daily stats</li>
+                    <li><strong>{tr("Mark it as WRONG")}</strong></li>
+                    <li>{tr("Apply a rating penalty of")} <strong>{calculatePenalty(puzzle?.rating || 1200)} {tr("points")}</strong></li>
+                    <li>{tr("Count as 1 wrong puzzle in your daily stats")}</li>
                   </ul>
-                  <p>Do you want to continue?</p>
+                  <p>{tr("Do you want to continue?")}</p>
                 </div>
               )}
             </div>
@@ -1182,7 +1183,7 @@ export default function Puzzles() {
                 onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-text-muted)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-text)'}
               >
-                Cancel
+                {tr("Cancel")}
               </button>
               <button 
                 style={styles.modalConfirmBtn}
@@ -1190,7 +1191,7 @@ export default function Puzzles() {
                 onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-danger)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-danger)'}
               >
-                Skip (Mark as Wrong)
+                {tr("Skip (Mark as Wrong)")}
               </button>
             </div>
           </div>
@@ -1204,7 +1205,7 @@ export default function Puzzles() {
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
             className={`lp-sound-btn ${soundEnabled ? 'on' : 'off'}`}
-            title={soundEnabled ? 'Mute sounds' : 'Enable sounds'}
+            title={soundEnabled ? tr('Mute sounds') : tr('Enable sounds')}
           >
             {soundEnabled ? '🔊' : '🔇'}
           </button>
@@ -1224,16 +1225,16 @@ export default function Puzzles() {
               : message.toLowerCase().includes('correct') || message.toLowerCase().includes('perfect') || message.toLowerCase().includes('best') ? 'good'
               : ''
             }`}>
-              {gameOver ? 'Puzzle Complete!' : `${orientation === 'white' ? 'White' : 'Black'} to move`}
+              {gameOver ? 'Puzzle Complete!' : tr("{v0} to move", { v0: orientation === 'white' ? 'White' : 'Black' })}
             </span>
           </div>
         )}
 
         {/* ── Hero rating block ── */}
         <div className="lp-hero">
-          <div className="lp-hero-label">Your Rating</div>
+          <div className="lp-hero-label">{tr("Your Rating")}</div>
           <div className="lp-hero-rating">{totalPoints || '—'}</div>
-          <div className="lp-hero-tag">Puzzle Rating</div>
+          <div className="lp-hero-tag">{tr("Puzzle Rating")}</div>
         </div>
 
         {/* ── From the game ── */}
@@ -1241,7 +1242,7 @@ export default function Puzzles() {
           <div className="lp-from-game">
             <span className="lp-from-icon">♟</span>
             <div>
-              <div className="lp-from-label">From the game</div>
+              <div className="lp-from-label">{tr("From the game")}</div>
               <div className="lp-from-value">{puzzle.whoPlayed}</div>
             </div>
           </div>
@@ -1250,9 +1251,9 @@ export default function Puzzles() {
         {/* ── Puzzle difficulty badge (if puzzle.rating exists) ── */}
         {dailyStatus === 'active' && puzzle && puzzle.rating && (
           <div className="lp-difficulty">
-            <span className="lp-diff-label">Puzzle Difficulty</span>
+            <span className="lp-diff-label">{tr("Puzzle Difficulty")}</span>
             <span className={`lp-diff-badge ${puzzle.rating >= 1800 ? 'hard' : puzzle.rating >= 1400 ? 'medium' : 'easy'}`}>
-              {puzzle.rating >= 1800 ? '🔥 Hard' : puzzle.rating >= 1400 ? '⚡ Medium' : '🌱 Easy'}
+              {puzzle.rating >= 1800 ? tr('🔥 Hard') : puzzle.rating >= 1400 ? tr('⚡ Medium') : tr('🌱 Easy')}
             </span>
           </div>
         )}
@@ -1260,7 +1261,7 @@ export default function Puzzles() {
         {/* ── 5-dot progress track ── */}
         <div className="lp-progress">
           <div className="lp-progress-header">
-            <span className="lp-progress-label">Today's Puzzles</span>
+            <span className="lp-progress-label">{tr("Today's Puzzles")}</span>
             <span className="lp-progress-frac">
               <strong>{sessionStats.correct + sessionStats.wrong}</strong> / 5
             </span>
@@ -1299,7 +1300,7 @@ export default function Puzzles() {
         {/* ── CTA button ── */}
         {dailyStatus === 'active' && (
           <button className={`lp-cta ${gameOver ? 'next' : 'skip'}`} onClick={handleSkipClick}>
-            {gameOver ? <>Next Puzzle <span>→</span></> : <>Skip <span style={{ opacity: 0.7 }}>→</span></>}
+            {gameOver ? <>{tr("Next Puzzle")} <span>→</span></> : <>{tr("Skip")} <span style={{ opacity: 0.7 }}>→</span></>}
           </button>
         )}
       </div>
@@ -1323,13 +1324,13 @@ export default function Puzzles() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <img
                   src="/images/dailypuzzles.png"
-                  alt="Daily Puzzles"
+                  alt={tr("Daily Puzzles")}
                   style={{ width: 56, height: 56, borderRadius: 'var(--radius-lg)', objectFit: 'cover', marginTop: -16 }}
                 />
                 <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-text)' }}>Training Complete! 🎉</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-text)' }}>{tr("Training Complete! 🎉")}</div>
                   <div style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 2 }}>
-                    You finished today's {dailyBatch.length} puzzles
+                    {tr("You finished today's")} {dailyBatch.length} {tr("puzzles")}
                   </div>
                 </div>
               </div>
@@ -1341,7 +1342,7 @@ export default function Puzzles() {
                 borderRadius: 'var(--radius-lg)', padding: '8px 24px',
               }}>
                 <span style={{ fontSize: 26, fontWeight: 900, color: 'var(--color-accent-2)' }}>{totalPoints || '—'}</span>
-                <span style={{ fontSize: 11, color: '#93c5fd', fontWeight: 600 }}>Rating</span>
+                <span style={{ fontSize: 11, color: '#93c5fd', fontWeight: 600 }}>{tr("Rating")}</span>
               </div>
             </div>
 
@@ -1355,7 +1356,7 @@ export default function Puzzles() {
           <div style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>
             <div style={{ fontSize: '48px', marginBottom: '20px', animation: 'spin 1s infinite linear' }}>♞</div>
             <div style={{ fontSize: '18px', fontWeight: '500' }}>
-              Preparing Daily Puzzles...
+              {tr("Preparing Daily Puzzles...")}
             </div>
             <style>{`
               @keyframes spin {
@@ -1384,13 +1385,13 @@ export default function Puzzles() {
               <div style={styles.gameOverlay}>
                 <div style={styles.overlayContent}>
                   <div style={{ fontSize: '24px', color: '#166534', marginBottom: '10px' }}>
-                    ✓ Puzzle Complete!
+                    {tr("✓ Puzzle Complete!")}
                   </div>
                   <div style={{ fontSize: '18px', color: 'var(--color-text-faint)', marginBottom: '15px' }}>
-                    {points > 0 ? `+${points} points` : 'Penalty applied'}
+                    {points > 0 ? tr("+{points} points", { points: points }) : tr('Penalty applied')}
                   </div>
                   <div style={{ color: 'var(--color-text-faint)', fontSize: '14px', marginBottom: '20px' }}>
-                    {failedStepRef.current ? 'Solved with retries' : 'Perfect solve!'}
+                    {failedStepRef.current ? tr('Solved with retries') : tr('Perfect solve!')}
                   </div>
                   <button
                     onClick={handleNextDailyPuzzle}
@@ -1408,7 +1409,7 @@ export default function Puzzles() {
                     onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-success)'}
                     onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-success)'}
                   >
-                    Next Puzzle →
+                    {tr("Next Puzzle →")}
                   </button>
                 </div>
               </div>
@@ -1439,7 +1440,7 @@ export default function Puzzles() {
                   borderRadius: 'var(--radius-circle)',
                   animation: 'spin 1s linear infinite'
                 }}></div>
-                <div>Opponent is thinking...</div>
+                <div>{tr("Opponent is thinking...")}</div>
               </div>
             )}
             

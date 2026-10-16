@@ -17,7 +17,7 @@ export default function CoachBatches() {
   const [error, setError] = useState('');
 
   const studentId = (s) => String(s.studentId?._id || s.studentId || '');
-  const studentLabel = (s) => s.studentName || s.studentId?.displayName || s.studentId?.username || 'Student';
+  const studentLabel = (s) => s.studentName || s.studentId?.displayName || s.studentId?.username || tr('Student');
 
   // Names of the students in a batch. The batch card used to show only a count,
   // so a coach had to open Edit and read a checkbox list to remember who was
@@ -67,7 +67,7 @@ export default function CoachBatches() {
   };
 
   const deleteGroup = async (groupId) => {
-    if (!window.confirm('Delete this batch? (Students and their enrollments are unaffected.)')) return;
+    if (!window.confirm(tr('Delete this batch? (Students and their enrollments are unaffected.)'))) return;
     try {
       await api.delete(`/api/coach/groups/${groupId}`);
       if (editing?._id === groupId) setEditing(null);
@@ -94,44 +94,44 @@ export default function CoachBatches() {
     }
   };
 
-  if (loading) return <div className="coach-dash"><p>Loading…</p></div>;
+  if (loading) return <div className="coach-dash"><p>{tr("Loading…")}</p></div>;
 
   return (
     <div className="coach-dash">
       <div className="coach-dash-header">
         <div>
-          <h1>👥 Batches</h1>
-          <p className="coach-dash-sub">Group your students into batches. Use them to enroll a whole batch into a course or assign homework in one click.</p>
+          <h1>{tr("👥 Batches")}</h1>
+          <p className="coach-dash-sub">{tr("Group your students into batches. Use them to enroll a whole batch into a course or assign homework in one click.")}</p>
         </div>
-        <Link to="/coach/dashboard" className="btn-ghost">← Dashboard</Link>
+        <Link to="/coach/dashboard" className="btn-ghost">{tr("← Dashboard")}</Link>
       </div>
 
       {error && <div className="cb-error">{error}</div>}
 
       <div className="cb-card">
-        <h3>➕ New batch</h3>
+        <h3>{tr("➕ New batch")}</h3>
         <div className="cb-row" style={{ alignItems: 'center' }}>
-          <input className="cb-input" style={{ marginBottom: 0 }} placeholder="Batch name (e.g. Beginners · Batch A)"
+          <input className="cb-input" style={{ marginBottom: 0 }} placeholder={tr("Batch name (e.g. Beginners · Batch A)")}
             value={newGroupName} onChange={e => setNewGroupName(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') createGroup(); }} />
-          <button className="btn-primary" onClick={createGroup} disabled={!newGroupName.trim()} style={{ flex: '0 0 auto' }}>Add batch</button>
+          <button className="btn-primary" onClick={createGroup} disabled={!newGroupName.trim()} style={{ flex: '0 0 auto' }}>{tr("Add batch")}</button>
         </div>
         {students.length === 0 && (
           <p className="cb-muted" style={{ marginTop: 8 }}>
-            Add students on the <Link to="/coach/dashboard">Coach Dashboard</Link> first, then group them here.
+            {tr("Add students on the")} <Link to="/coach/dashboard">{tr("Coach Dashboard")}</Link> {tr("first, then group them here.")}
           </p>
         )}
       </div>
 
       <div className="cb-card">
-        <h3>Your batches</h3>
+        <h3>{tr("Your batches")}</h3>
         {groups.length === 0 ? (
-          <p className="cb-muted">No batches yet. Create your first above.</p>
+          <p className="cb-muted">{tr("No batches yet. Create your first above.")}</p>
         ) : groups.map(g => (
           <div key={g._id} className="cb-group">
             <div className="cb-group-head">
               <span className="cb-group-name">{g.name}</span>
-              <span className="cb-group-count">{g.memberCount} student{g.memberCount === 1 ? '' : 's'}</span>
+              <span className="cb-group-count">{g.memberCount} {tr("student")}{g.memberCount === 1 ? '' : 's'}</span>
               <button className="cb-icon-btn" onClick={() => setEditing(editing?._id === g._id ? null : { ...g, studentIds: (g.studentIds || []).map(String) })}>
                 {editing?._id === g._id ? 'Done' : 'Edit'}
               </button>
@@ -149,7 +149,7 @@ export default function CoachBatches() {
                 </div>
               ) : (
                 <p className="cb-muted cb-group-empty">
-                  No students yet — press <strong>Edit</strong> to add some.
+                  {tr("No students yet — press")} <strong>{tr("Edit")}</strong> {tr("to add some.")}
                 </p>
               )
             )}
@@ -157,7 +157,7 @@ export default function CoachBatches() {
             {editing?._id === g._id && (
               <div className="cb-group-members">
                 {students.length === 0 ? (
-                  <p className="cb-muted">No students to add yet.</p>
+                  <p className="cb-muted">{tr("No students to add yet.")}</p>
                 ) : students.map(s => {
                   const sid = studentId(s);
                   const checked = editing.studentIds.some(x => String(x) === sid);
@@ -168,7 +168,7 @@ export default function CoachBatches() {
                     </label>
                   );
                 })}
-                <button className="btn-primary" style={{ marginTop: 8 }} onClick={saveMembers}>Save members</button>
+                <button className="btn-primary" style={{ marginTop: 8 }} onClick={saveMembers}>{tr("Save members")}</button>
               </div>
             )}
           </div>
@@ -177,3 +177,5 @@ export default function CoachBatches() {
     </div>
   );
 }
+
+import { t as tr } from '../../i18n/LanguageContext';

@@ -16,6 +16,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const DURATIONS = [10, 20, 30, 40, 60, 120];
 
@@ -41,9 +42,9 @@ const IconClock = (p) => <Ic {...p} d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 
 const buildTrialLink = (code) => `${window.location.origin}/trial/${code}`;
 
 const STATE_META = {
-  unused:   { label: 'Ready to send',  color: C.green, hint: 'Not used yet — share it whenever you like.' },
-  consumed: { label: 'In use',         color: C.amber, hint: 'Someone has joined with this link. No one new can use it.' },
-  closed:   { label: 'Closed',         color: C.dim,   hint: 'Finished. This link no longer works.' },
+  unused:   { label: tr('Ready to send'),  color: C.green, hint: tr('Not used yet — share it whenever you like.') },
+  consumed: { label: tr('In use'),         color: C.amber, hint: tr('Someone has joined with this link. No one new can use it.') },
+  closed:   { label: tr('Closed'),         color: C.dim,   hint: tr('Finished. This link no longer works.') },
 };
 
 // `embedded` = rendered as a TAB inside the Classroom page (the normal case).
@@ -85,7 +86,7 @@ export default function TrialClassesPage({ embedded = false }) {
       });
       setLinks(prev => [r.data.link, ...prev]);
       setLabel('');
-      setMsg('Trial link created — copy it and send it to the parent.');
+      setMsg(tr('Trial link created — copy it and send it to the parent.'));
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not create the trial link.');
     } finally {
@@ -102,7 +103,7 @@ export default function TrialClassesPage({ embedded = false }) {
       const r = await api.post(`/api/coach-live/meetings/${row.id}/start`);
       const sid = r.data?.session?.id || r.data?.sessionId;
       if (sid) nav(`/coach/live/session/${sid}`);
-      else setErr('Could not open the classroom.');
+      else setErr(tr('Could not open the classroom.'));
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not start the trial class.');
     }
@@ -127,7 +128,7 @@ export default function TrialClassesPage({ embedded = false }) {
   };
 
   const cancel = async (row) => {
-    if (!window.confirm('Cancel this trial link? Anyone holding it will no longer be able to join.')) return;
+    if (!window.confirm(tr('Cancel this trial link? Anyone holding it will no longer be able to join.'))) return;
     try {
       await api.post(`/api/trial-class/links/${row.id}/cancel`);
       setLinks(prev => prev.filter(l => l.id !== row.id));
@@ -139,14 +140,14 @@ export default function TrialClassesPage({ embedded = false }) {
   return (
     <div style={{ maxWidth: embedded ? '100%' : 860, margin: '0 auto', padding: embedded ? 0 : '18px 14px 40px', color: C.text }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: embedded ? 14 : 6 }}>
-        {!embedded && <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>Trial classes</h1>}
-        {embedded && <div style={{ fontSize: 15, fontWeight: 800 }}>Trial classroom</div>}
+        {!embedded && <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{tr("Trial classes")}</h1>}
+        {embedded && <div style={{ fontSize: 15, fontWeight: 800 }}>{tr("Trial classroom")}</div>}
         {/* The "?" — everything a coach needs to know about trials, on demand. */}
         <button
           onClick={() => setShowHelp(v => !v)}
           aria-expanded={showHelp}
-          aria-label="What is a trial class?"
-          title="What is a trial class?"
+          aria-label={tr("What is a trial class?")}
+          title={tr("What is a trial class?")}
           style={{
             width: 20, height: 20, borderRadius: '50%', cursor: 'pointer', flex: 'none',
             border: `1px solid ${showHelp ? C.cyan : 'rgba(255,255,255,0.28)'}`,
@@ -164,14 +165,14 @@ export default function TrialClassesPage({ embedded = false }) {
           borderRadius: 12, fontSize: 12.5, lineHeight: 1.6, color: 'rgba(226,232,240,0.85)',
         }}>
           <p style={{ margin: '0 0 10px' }}>
-            Teach someone who is <strong>not your student yet</strong>. Create a link, send it on
-            WhatsApp, and they join with <strong>no account and no signup</strong> — they just type
+            {tr("Teach someone who is")} <strong>{tr("not your student yet")}</strong>{tr(". Create a link, send it on")}
+            {tr("WhatsApp, and they join with")} <strong>{tr("no account and no signup")}</strong> {tr("— they just type")}
             their name and knock. You let them in exactly like a normal class.
           </p>
           <div style={{ display: 'grid', gap: 7 }}>
-            <div>🎟️ <strong>One link, one trial.</strong> It is used up when someone actually joins — if nobody turns up, the link still works next time.</div>
-            <div>📋 <strong>No attendance is recorded.</strong> They are not on your roster, so nothing touches your register or your reports.</div>
-            <div>⏱️ <strong>The clock starts when they arrive</strong>, not when you open the room — so you can set up early.</div>
+            <div>🎟️ <strong>{tr("One link, one trial.")}</strong> {tr("It is used up when someone actually joins — if nobody turns up, the link still works next time.")}</div>
+            <div>📋 <strong>{tr("No attendance is recorded.")}</strong> {tr("They are not on your roster, so nothing touches your register or your reports.")}</div>
+            <div>⏱️ <strong>{tr("The clock starts when they arrive")}</strong>{tr(", not when you open the room — so you can set up early.")}</div>
           </div>
         </div>
       )}
@@ -181,7 +182,7 @@ export default function TrialClassesPage({ embedded = false }) {
         background: C.panel, border: `1px solid ${C.border}`, borderRadius: 14,
         padding: 16, marginBottom: 22,
       }}>
-        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>New trial link</div>
+        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>{tr("New trial link")}</div>
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <label style={{ flex: '1 1 220px', minWidth: 0 }}>
@@ -191,7 +192,7 @@ export default function TrialClassesPage({ embedded = false }) {
             <input
               value={label}
               onChange={e => setLabel(e.target.value)}
-              placeholder="e.g. Aarav — trial Tuesday"
+              placeholder={tr("e.g. Aarav — trial Tuesday")}
               maxLength={80}
               style={{
                 width: '100%', padding: '9px 11px', borderRadius: 9, fontSize: 13.5,
@@ -201,7 +202,7 @@ export default function TrialClassesPage({ embedded = false }) {
           </label>
 
           <label>
-            <span style={{ display: 'block', fontSize: 12, color: C.dim, marginBottom: 5 }}>Length</span>
+            <span style={{ display: 'block', fontSize: 12, color: C.dim, marginBottom: 5 }}>{tr("Length")}</span>
             <select
               value={duration}
               onChange={e => setDuration(Number(e.target.value))}
@@ -224,12 +225,12 @@ export default function TrialClassesPage({ embedded = false }) {
               opacity: creating ? 0.65 : 1,
             }}
           >
-            <IconPlus size={16} /> {creating ? 'Creating…' : 'Create link'}
+            <IconPlus size={16} /> {creating ? tr('Creating…') : tr('Create link')}
           </button>
         </div>
 
         <div style={{ fontSize: 11.5, color: C.dim, marginTop: 9 }}>
-          A trial uses one of your daily live classes, the same as any other class.
+          {tr("A trial uses one of your daily live classes, the same as any other class.")}
         </div>
       </div>
 
@@ -238,14 +239,14 @@ export default function TrialClassesPage({ embedded = false }) {
 
       {/* ── The links ── */}
       {loading ? (
-        <div style={{ color: C.dim, fontSize: 13.5 }}>Loading…</div>
+        <div style={{ color: C.dim, fontSize: 13.5 }}>{tr("Loading…")}</div>
       ) : links.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: '30px 16px', color: C.dim, fontSize: 13.5,
           border: `1px dashed ${C.border}`, borderRadius: 14, lineHeight: 1.6,
         }}>
-          No trial links yet.<br />
-          Create one above and send it to a parent who wants to try a class.
+          {tr("No trial links yet.")}<br />
+          {tr("Create one above and send it to a parent who wants to try a class.")}
         </div>
       ) : (
         <div style={{ display: 'grid', gap: 10 }}>
@@ -257,7 +258,7 @@ export default function TrialClassesPage({ embedded = false }) {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   <strong style={{ fontSize: 14.5, flex: '1 1 auto', minWidth: 0 }}>
-                    {row.label || 'Trial class'}
+                    {row.label || tr('Trial class')}
                   </strong>
                   <span style={{
                     fontSize: 11, fontWeight: 800, padding: '3px 9px', borderRadius: 999,
@@ -273,7 +274,7 @@ export default function TrialClassesPage({ embedded = false }) {
                   fontSize: 12, color: C.dim, marginTop: 6,
                 }}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                    <IconClock size={13} /> {row.durationMinutes} min
+                    <IconClock size={13} /> {row.durationMinutes} {tr("min")}
                   </span>
                   {row.guestName && <span>👤 {row.guestName}</span>}
                 </div>
@@ -291,7 +292,7 @@ export default function TrialClassesPage({ embedded = false }) {
                         fontSize: 12.5, fontWeight: 800,
                       }}
                     >
-                      ▶ Start class
+                      {tr("▶ Start class")}
                     </button>
 
                     <button
@@ -304,7 +305,7 @@ export default function TrialClassesPage({ embedded = false }) {
                         color: copied === row.id ? C.green : C.text, fontSize: 12.5, fontWeight: 700,
                       }}
                     >
-                      {copied === row.id ? <><IconCheck size={14} /> Copied</> : <><IconCopy size={14} /> Copy link</>}
+                      {copied === row.id ? <><IconCheck size={14} /> {tr("Copied")}</> : <><IconCopy size={14} /> {tr("Copy link")}</>}
                     </button>
 
                     {/* Cancel is offered only on an UNUSED link. A trial already in
@@ -320,7 +321,7 @@ export default function TrialClassesPage({ embedded = false }) {
                           color: C.red, fontSize: 12.5, fontWeight: 700,
                         }}
                       >
-                        <IconTrash size={14} /> Cancel
+                        <IconTrash size={14} /> {tr("Cancel")}
                       </button>
                     )}
                   </div>

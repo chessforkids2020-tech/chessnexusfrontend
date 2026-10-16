@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import SEO from "../../components/SEO";
+import { getLanguage } from '../../i18n/LanguageContext';
 import "../../components/marketing/marketing.css";
 
 const CANONICAL = "/refund-policy";
@@ -42,6 +43,13 @@ export default function RefundPolicyPage() {
         <header className="mkt-hero">
           <img src="/logo.png" alt="Chess Nexus logo" className="mkt-hero-logo" />
           <h1>Refund &amp; Cancellation Policy</h1>
+          {/* Legal text is kept in English on purpose: a machine translation of a
+              legal document could change its meaning. Spanish readers are told so. */}
+          {getLanguage() === 'es' && (
+            <p style={{ color: "#fbbf24", fontSize: 14, marginTop: 8 }} lang="es">
+              Este documento legal solo está disponible en inglés.
+            </p>
+          )}
           <p className="mkt-hero-sub">
             This policy explains how refunds and cancellations work for payments made
             on Chess Nexus. Please read it before you pay.

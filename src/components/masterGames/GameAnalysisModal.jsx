@@ -7,6 +7,7 @@ import {
   firstNode, nextNode, prevNode, lastNode, fenAt, lastMoveAt,
   rehydrateTree, hasVariations
 } from './moveTree';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Variations the user adds are kept in the browser only (localStorage), never the
 // DB. Key is per game so each game restores its own exploration on refresh.
@@ -25,9 +26,9 @@ const lsKey = (gameId) => `mg.analysis.${gameId}`;
 
 // Colours mirror the ChessNexus GameReplay scheme.
 const CLASS_META = {
-  blunder:    { symbol: '??', color: 'var(--color-danger)', icon: '⁉️', label: 'Blunder', desc: 'A blunder was played here — a serious error.' },
-  mistake:    { symbol: '?',  color: 'var(--color-warning)', icon: '?',  label: 'Mistake', desc: 'A mistake — this move loses ground.' },
-  inaccuracy: { symbol: '?!', color: 'var(--color-warning)', icon: '?!', label: 'Inaccuracy', desc: 'An inaccuracy — a slightly imprecise move.' }
+  blunder:    { symbol: '??', color: 'var(--color-danger)', icon: '⁉️', label: tr('Blunder'), desc: tr('A blunder was played here — a serious error.') },
+  mistake:    { symbol: '?',  color: 'var(--color-warning)', icon: '?',  label: tr('Mistake'), desc: tr('A mistake — this move loses ground.') },
+  inaccuracy: { symbol: '?!', color: 'var(--color-warning)', icon: '?!', label: tr('Inaccuracy'), desc: tr('An inaccuracy — a slightly imprecise move.') }
 };
 
 export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
@@ -79,7 +80,7 @@ export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
         setCurrentId(nodeAtPly(activeTree, initialPly));
         hydratedRef.current = true;
       })
-      .catch(() => alive && setError('Could not load this game.'))
+      .catch(() => alive && setError(tr('Could not load this game.')))
       .finally(() => alive && setLoading(false));
     return () => { alive = false; };
   }, [gameId, initialPly]);
@@ -163,11 +164,11 @@ export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
       const status = e?.response?.status;
       const detail = e?.response?.data?.detail;
       if (status === 429) {
-        setAnalyzeError('The analysis engine is busy right now. Please try again in a moment.');
+        setAnalyzeError(tr('The analysis engine is busy right now. Please try again in a moment.'));
       } else if (status === 500) {
         setAnalyzeError(`Analysis failed on the server${detail ? ` (${detail})` : ''}. Please try again later.`);
       } else {
-        setAnalyzeError('Analysis failed. Please try again.');
+        setAnalyzeError(tr('Analysis failed. Please try again.'));
       }
     } finally {
       clearInterval(ticker);
@@ -248,9 +249,9 @@ export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
   return (
     <div style={st.backdrop} onClick={onClose}>
       <div style={st.modal} onClick={e => e.stopPropagation()}>
-        {(loading || error) && <button style={st.close} onClick={onClose} aria-label="Close">×</button>}
+        {(loading || error) && <button style={st.close} onClick={onClose} aria-label={tr("Close")}>×</button>}
 
-        {loading && <div style={st.center}>Loading game…</div>}
+        {loading && <div style={st.center}>{tr("Loading game…")}</div>}
         {error && <div style={st.center}>{error}</div>}
 
         {game && tree && (
@@ -301,15 +302,15 @@ export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
 
               {/* Footer: navigation + move counter + play (Arena-style). */}
               <div style={st.footer}>
-                <button style={st.ctrl} onClick={goStart} title="Start (↑)">⏮</button>
-                <button style={st.ctrl} onClick={goPrev} title="Previous (←)">◀</button>
+                <button style={st.ctrl} onClick={goStart} title={tr("Start (↑)")}>⏮</button>
+                <button style={st.ctrl} onClick={goPrev} title={tr("Previous (←)")}>◀</button>
                 <div style={st.counter}>
                   <span style={st.counterCur}>{currentPly}</span>
                   <span style={st.counterSep}>/</span>
                   <span style={st.counterTot}>{totalPlies}</span>
                 </div>
                 <button style={st.playBtn} onClick={togglePlay} title={playing ? 'Pause' : 'Play'}>{playing ? '⏸' : '▶'}</button>
-                <button style={st.ctrl} onClick={goEnd} title="End (↓)">⏭</button>
+                <button style={st.ctrl} onClick={goEnd} title={tr("End (↓)")}>⏭</button>
               </div>
             </div>
             </div>
@@ -408,7 +409,7 @@ function GameHeader({ game, tree, analyzed, analyzing, progress, onAnalyze, onCl
   const r = { '1-0': '1–0', '0-1': '0–1', '1/2-1/2': '½–½', '*': '*' }[game.result] || game.result;
   return (
     <div style={st.header}>
-      <button style={st.close} onClick={onClose} aria-label="Close">×</button>
+      <button style={st.close} onClick={onClose} aria-label={tr("Close")}>×</button>
       <div style={st.matchup}>
         <span><strong>{displayName(game.white)}</strong>{game.whiteElo ? ` (${game.whiteElo})` : ''}</span>
         <span style={st.vs}>{r}</span>
@@ -420,7 +421,7 @@ function GameHeader({ game, tree, analyzed, analyzing, progress, onAnalyze, onCl
           ? <ClassTally tree={tree} />
           : analyzing
             ? <span style={st.analyzeLabel}>Analyzing… {Math.round(progress * 100)}%</span>
-            : <button style={st.analyzeBtnSm} onClick={onAnalyze} title="Find blunders, mistakes & inaccuracies">⚙ Analyze</button>}
+            : <button style={st.analyzeBtnSm} onClick={onAnalyze} title={tr("Find blunders, mistakes & inaccuracies")}>{tr("⚙ Analyze")}</button>}
       </div>
     </div>
   );
@@ -470,7 +471,7 @@ function Notation({ tree, currentId, activePath, onGo }) {
   };
 
   const first = root.children[0];
-  if (!first) return <div style={st.empty}>No moves.</div>;
+  if (!first) return <div style={st.empty}>{tr("No moves.")}</div>;
   return <div>{renderLine(first, 0)}</div>;
 }
 

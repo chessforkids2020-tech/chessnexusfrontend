@@ -9,6 +9,7 @@ import ClassLeaderboard from '../components/coach/ClassLeaderboard';
 import AskCoachPanel from '../components/AskCoachPanel';
 import { DAY_NAMES, DAY_FULL, localTimeLabel, localDow, soonestClass, classesOnLocalDate } from '../utils/istSchedule';
 import './MyCoachPortal.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -19,16 +20,16 @@ function curSym(c) { return c === 'USD' ? '$' : c === 'EUR' ? '€' : '₹'; }
 // mobile ☰ menu both render from this, so a tab can never exist in one and be
 // missing from the other.
 const MCP_TABS = [
-  { id: 'overview',    icon: '📊', text: 'Overview' },
-  { id: 'schedule',    icon: '📅', text: 'Schedule' },
-  { id: 'activities',  icon: '🎯', text: 'Activities' },
-  { id: 'leaderboard', icon: '🏆', text: 'Leaderboard' },
-  { id: 'messages',    icon: '💬', text: 'Messages' },
-  { id: 'courses',     icon: '📚', text: 'My Syllabus' },
-  { id: 'assignments', icon: '📋', text: 'Assignments' },
-  { id: 'player',      icon: '👤', text: 'Player' },
-  { id: 'attendance',  icon: '📝', text: 'Attendance' },
-  { id: 'payments',    icon: '💰', text: 'Payments' },
+  { id: 'overview',    icon: '📊', text: tr('Overview') },
+  { id: 'schedule',    icon: '📅', text: tr('Schedule') },
+  { id: 'activities',  icon: '🎯', text: tr('Activities') },
+  { id: 'leaderboard', icon: '🏆', text: tr('Leaderboard') },
+  { id: 'messages',    icon: '💬', text: tr('Messages') },
+  { id: 'courses',     icon: '📚', text: tr('My Syllabus') },
+  { id: 'assignments', icon: '📋', text: tr('Assignments') },
+  { id: 'player',      icon: '👤', text: tr('Player') },
+  { id: 'attendance',  icon: '📝', text: tr('Attendance') },
+  { id: 'payments',    icon: '💰', text: tr('Payments') },
 ];
 
 export default function MyCoachPortal() {
@@ -47,7 +48,7 @@ export default function MyCoachPortal() {
   const [payments, setPayments] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [classes, setClasses] = useState([]);
-  const [holidays, setHolidays] = useState([]); // [{ date:"YYYY-MM-DD", labels:[] }]
+  const [holidays, setHolidays] = useState([]); // [{ date:tr("YYYY-MM-DD"), labels:[] }]
   const [cursor, setCursor] = useState(new Date());
   // Month shown in the Schedule tab calendar (independent of attendance cursor).
   const [schedMonth, setSchedMonth] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
@@ -72,7 +73,7 @@ export default function MyCoachPortal() {
 
   const submitFees = async (coach) => {
     setPayError(''); setPayNotice('');
-    if (!payForm.amount || Number(payForm.amount) <= 0) { setPayError('Enter the amount you paid.'); return; }
+    if (!payForm.amount || Number(payForm.amount) <= 0) { setPayError(tr('Enter the amount you paid.')); return; }
     setPaySubmitting(true);
     try {
       await api.post('/api/coach-attendance/requests', {
@@ -84,7 +85,7 @@ export default function MyCoachPortal() {
         fromDate: payForm.fromDate || undefined,
         untilDate: payForm.untilDate || undefined,
       });
-      setPayNotice(`Sent to ${coach.coachName}. Your coach will review it.`);
+      setPayNotice(tr("Sent to {coachName}. Your coach will review it.", { coachName: coach.coachName }));
       setPayForm({ paidDate: '', fromDate: '', untilDate: '', amount: '' });
     } catch (e) {
       setPayError(e.response?.data?.error || 'Could not submit your fees. Try again.');
@@ -123,7 +124,7 @@ export default function MyCoachPortal() {
       // A failed BACKGROUND refresh keeps the data already on screen — showing
       // an error banner over content that is still perfectly usable would be
       // worse than silently trying again on the next event.
-      if (aliveRef.current && !quiet) setError('Could not load your coach records.');
+      if (aliveRef.current && !quiet) setError(tr('Could not load your coach records.'));
     } finally {
       if (aliveRef.current && !quiet) setLoading(false);
     }
@@ -310,14 +311,14 @@ export default function MyCoachPortal() {
       <div className="mcp-page">
         <div className="mcp-empty">
           <div className="mcp-empty-icon">🎓</div>
-          <h2 className="mcp-empty-title">No coach linked yet</h2>
+          <h2 className="mcp-empty-title">{tr("No coach linked yet")}</h2>
           <p className="mcp-empty-desc">
-            When your coach adds you and marks your attendance, it will appear here.
+            {tr("When your coach adds you and marks your attendance, it will appear here.")}
           </p>
           {/* Until now this was a dead end: it named the outcome but gave the
               student no way to reach it. They can now ask their coach directly. */}
           <AskCoachPanel />
-          <Link to="/dashboard" className="mcp-empty-btn">← Back to Dashboard</Link>
+          <Link to="/dashboard" className="mcp-empty-btn">{tr("← Back to Dashboard")}</Link>
         </div>
       </div>
     );
@@ -326,7 +327,7 @@ export default function MyCoachPortal() {
   if (loading) {
     return (
       <div className="mcp-page">
-        <div className="mcp-loading">Loading your coach records…</div>
+        <div className="mcp-loading">{tr("Loading your coach records…")}</div>
       </div>
     );
   }
@@ -346,13 +347,13 @@ export default function MyCoachPortal() {
         {studentAcademy?.logoUrl && (
           <img
             src={resolveApiAssetUrl(studentAcademy.logoUrl)}
-            alt={studentAcademy.name || 'Academy'}
-            title={studentAcademy.name || 'Academy'}
+            alt={studentAcademy.name || tr('Academy')}
+            title={studentAcademy.name || tr('Academy')}
             className="mcp-academy-logo"
           />
         )}
         <div className="mcp-header-text">
-          <h1 className="mcp-title">🎓 My Coach</h1>
+          <h1 className="mcp-title">{tr("🎓 My Coach")}</h1>
           <p className="mcp-subtitle">Attendance & payments recorded by your coach</p>
         </div>
         {/* The desktop sidebar is hidden on this page, so this is the student's
@@ -363,7 +364,7 @@ export default function MyCoachPortal() {
           className="mcp-back-btn"
           onClick={() => navigate('/dashboard')}
         >
-          ← Back to dashboard
+          {tr("← Back to dashboard")}
         </button>
       </div>
 
@@ -382,9 +383,9 @@ export default function MyCoachPortal() {
           type="button"
           className="mcp-appmenu-btn"
           onClick={() => window.dispatchEvent(new Event('open-app-sidebar'))}
-          aria-label="Open site menu"
+          aria-label={tr("Open site menu")}
         >
-          ☰ <span className="mcp-appmenu-text">Menu</span>
+          ☰ <span className="mcp-appmenu-text">{tr("Menu")}</span>
         </button>
 
         <span className="mcp-mobilebar-sep" aria-hidden="true" />
@@ -393,7 +394,7 @@ export default function MyCoachPortal() {
           type="button"
           className="mcp-mobilebar-burger"
           onClick={() => setTabMenuOpen(true)}
-          aria-label="Open coach sections"
+          aria-label={tr("Open coach sections")}
         >
           <span className="mcp-mobilebar-current">
             {(MCP_TABS.find(t => t.id === tab) || MCP_TABS[0]).icon}{' '}
@@ -403,16 +404,16 @@ export default function MyCoachPortal() {
         </button>
 
         {(msgUnread > 0 || activityUnseen > 0) && (
-          <span className="mcp-mobilebar-dot" aria-label="Unread items" />
+          <span className="mcp-mobilebar-dot" aria-label={tr("Unread items")} />
         )}
       </div>
 
       {tabMenuOpen && (
         <div className="mcp-sheet-overlay" onClick={() => setTabMenuOpen(false)}>
-          <div className="mcp-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Coach sections">
+          <div className="mcp-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={tr("Coach sections")}>
             <div className="mcp-sheet-head">
-              <span className="mcp-sheet-title">My Coach</span>
-              <button className="mcp-sheet-close" onClick={() => setTabMenuOpen(false)} aria-label="Close">×</button>
+              <span className="mcp-sheet-title">{tr("My Coach")}</span>
+              <button className="mcp-sheet-close" onClick={() => setTabMenuOpen(false)} aria-label={tr("Close")}>×</button>
             </div>
             <div className="mcp-sheet-grid">
               {MCP_TABS.map(t => (
@@ -461,8 +462,8 @@ export default function MyCoachPortal() {
           {activities.length === 0 ? (
             <div className="mcp-empty" style={{ padding: '32px 20px' }}>
               <div className="mcp-empty-icon">🎯</div>
-              <h2 className="mcp-empty-title">No activities right now</h2>
-              <p className="mcp-empty-desc">When your coach starts a class race, it shows up here for you to join.</p>
+              <h2 className="mcp-empty-title">{tr("No activities right now")}</h2>
+              <p className="mcp-empty-desc">{tr("When your coach starts a class race, it shows up here for you to join.")}</p>
             </div>
           ) : (
             <div className="mcp-class-grid">
@@ -492,7 +493,7 @@ export default function MyCoachPortal() {
                         is how they tell them apart — without it "Friday Blitz"
                         gives no clue who is running it. */}
                     {a.academy && (
-                      <div className="mcp-academy-badge" title={`Run by ${a.academy.name}`}>
+                      <div className="mcp-academy-badge" title={tr("Run by {name}", { name: a.academy.name })}>
                         {a.academy.logoUrl
                           ? <img src={resolveApiAssetUrl(a.academy.logoUrl)} alt="" />
                           : <span>🏛️</span>}
@@ -500,19 +501,19 @@ export default function MyCoachPortal() {
                       </div>
                     )}
                     <div className="mcp-class-title">{isTournament ? '🏆' : '🏁'} {a.name || (isTournament ? 'Class Tournament' : 'Class Race')}</div>
-                    <div className="mcp-class-coach">{isTournament ? 'Arena Tournament' : `${a.topic} · ${a.timeLimit} min`}</div>
+                    <div className="mcp-class-coach">{isTournament ? 'Arena Tournament' : tr("{topic} · {timeLimit} min", { topic: a.topic, timeLimit: a.timeLimit })}</div>
                     <div className="mcp-class-time" style={{ marginTop: 6 }}>
                       {live
-                        ? <span style={{ color: 'var(--color-danger)', fontWeight: 700 }}>🔴 Live now</span>
-                        : <span style={{ color: 'var(--color-warning)', fontWeight: 700 }}>⏳ Waiting to start</span>}
-                      {!a.seen && <span className="mcp-class-daychip" style={{ marginLeft: 8 }}>NEW</span>}
+                        ? <span style={{ color: 'var(--color-danger)', fontWeight: 700 }}>{tr("🔴 Live now")}</span>
+                        : <span style={{ color: 'var(--color-warning)', fontWeight: 700 }}>{tr("⏳ Waiting to start")}</span>}
+                      {!a.seen && <span className="mcp-class-daychip" style={{ marginLeft: 8 }}>{"NEW"}</span>}
                     </div>
                     <button
                       className="mcp-join-btn"
                       style={{ marginTop: 10 }}
                       onClick={isTournament ? joinTournament : joinRace}
                     >
-                      {live ? 'Join now' : 'Enter lobby'}
+                      {live ? tr('Join now') : tr('Enter lobby')}
                     </button>
                   </div>
                 );
@@ -528,8 +529,8 @@ export default function MyCoachPortal() {
           {classes.length === 0 && holidays.length === 0 ? (
             <div className="mcp-empty" style={{ padding: '32px 20px' }}>
               <div className="mcp-empty-icon">📅</div>
-              <h2 className="mcp-empty-title">No classes scheduled yet</h2>
-              <p className="mcp-empty-desc">When your coach sets your class days and times, they'll show up here.</p>
+              <h2 className="mcp-empty-title">{tr("No classes scheduled yet")}</h2>
+              <p className="mcp-empty-desc">{tr("When your coach sets your class days and times, they'll show up here.")}</p>
             </div>
           ) : (
             <>
@@ -540,12 +541,12 @@ export default function MyCoachPortal() {
                 return (
                   <div className="mcp-nextclass">
                     <div>
-                      <div className="mcp-nextclass-label">⏰ Next class</div>
+                      <div className="mcp-nextclass-label">{tr("⏰ Next class")}</div>
                       <div className="mcp-nextclass-when">{when} — {next.item.title} · {next.item.coachName}</div>
                     </div>
                     {next.item.meetingLink && (
                       <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer" className="mcp-join-btn">
-                        Join
+                        {tr("Join")}
                       </a>
                     )}
                   </div>
@@ -570,9 +571,9 @@ export default function MyCoachPortal() {
                 return (
                   <div className="mcp-cal">
                     <div className="mcp-cal-head">
-                      <button className="mcp-cal-nav" onClick={() => setSchedMonth(new Date(y, m - 1, 1))} aria-label="Previous month">‹</button>
+                      <button className="mcp-cal-nav" onClick={() => setSchedMonth(new Date(y, m - 1, 1))} aria-label={tr("Previous month")}>‹</button>
                       <div className="mcp-cal-title">{MONTHS[m]} {y}</div>
-                      <button className="mcp-cal-nav" onClick={() => setSchedMonth(new Date(y, m + 1, 1))} aria-label="Next month">›</button>
+                      <button className="mcp-cal-nav" onClick={() => setSchedMonth(new Date(y, m + 1, 1))} aria-label={tr("Next month")}>›</button>
                     </div>
                     <div className="mcp-cal-grid">
                       {DAY_NAMES.map(dn => <div key={dn} className="mcp-cal-dow">{dn}</div>)}
@@ -591,7 +592,7 @@ export default function MyCoachPortal() {
                           <>
                             <div className="mcp-cal-date">{d}</div>
                             {holiday ? (
-                              <div className="mcp-cal-holtag">🎉 Holiday</div>
+                              <div className="mcp-cal-holtag">{tr("🎉 Holiday")}</div>
                             ) : (
                               <>
                                 {dayClasses.slice(0, 2).map((dc, j) => (
@@ -612,8 +613,8 @@ export default function MyCoachPortal() {
                       })}
                     </div>
                     <div className="mcp-cal-legend">
-                      <span className="mcp-cal-legend-item"><span className="mcp-cal-swatch mcp-cal-swatch-class" /> Class day</span>
-                      <span className="mcp-cal-legend-item"><span className="mcp-cal-swatch mcp-cal-swatch-holiday" /> Holiday (no class)</span>
+                      <span className="mcp-cal-legend-item"><span className="mcp-cal-swatch mcp-cal-swatch-class" /> {tr("Class day")}</span>
+                      <span className="mcp-cal-legend-item"><span className="mcp-cal-swatch mcp-cal-swatch-holiday" /> {tr("Holiday (no class)")}</span>
                     </div>
                   </div>
                 );
@@ -625,12 +626,12 @@ export default function MyCoachPortal() {
                   <div className="mcp-daypop" onClick={e => e.stopPropagation()}>
                     <div className="mcp-daypop-head">
                       <div className="mcp-daypop-date">{dayDetail.dateLabel}</div>
-                      <button className="mcp-daypop-x" onClick={() => setDayDetail(null)} aria-label="Close">✕</button>
+                      <button className="mcp-daypop-x" onClick={() => setDayDetail(null)} aria-label={tr("Close")}>✕</button>
                     </div>
                     {dayDetail.holiday ? (
                       <div className="mcp-daypop-holiday">
                         <div className="mcp-daypop-holicon">🎉</div>
-                        <div className="mcp-daypop-holtitle">Holiday — no class</div>
+                        <div className="mcp-daypop-holtitle">{tr("Holiday — no class")}</div>
                         {(dayDetail.holiday.labels || []).length > 0 && (
                           <div className="mcp-daypop-hollabels">
                             {dayDetail.holiday.labels.map((l, j) => <div key={j}>{l}</div>)}
@@ -644,15 +645,15 @@ export default function MyCoachPortal() {
                             <div className="mcp-daypop-class-main">
                               <div className="mcp-daypop-class-title">{dc.cls.title}</div>
                               <div className="mcp-daypop-class-meta">
-                                {dc.cls.coachName} · 🕒 {dc.time} · {dc.cls.durationMinutes} min
+                                {dc.cls.coachName} · 🕒 {dc.time} · {dc.cls.durationMinutes} {tr("min")}
                               </div>
                             </div>
                             {dc.cls.meetingLink ? (
                               <a href={dc.cls.meetingLink} target="_blank" rel="noopener noreferrer" className="mcp-join-btn">
-                                Join
+                                {tr("Join")}
                               </a>
                             ) : (
-                              <span className="mcp-daypop-nolink">No link</span>
+                              <span className="mcp-daypop-nolink">{tr("No link")}</span>
                             )}
                           </div>
                         ))}
@@ -673,20 +674,20 @@ export default function MyCoachPortal() {
                       ))}
                     </div>
                     <div className="mcp-class-time">
-                      🕒 {localTimeLabel((c.days || [])[0] ?? 1, c.timeUTC)} <span className="mcp-class-tz">your time</span>
-                      <span className="mcp-class-dur"> · {c.durationMinutes} min</span>
+                      🕒 {localTimeLabel((c.days || [])[0] ?? 1, c.timeUTC)} <span className="mcp-class-tz">{tr("your time")}</span>
+                      <span className="mcp-class-dur"> · {c.durationMinutes} {tr("min")}</span>
                     </div>
                     {c.meetingLink ? (
                       <a href={c.meetingLink} target="_blank" rel="noopener noreferrer" className="mcp-join-btn" style={{ marginTop: 10 }}>
-                        🔗 Join class
+                        {tr("🔗 Join class")}
                       </a>
                     ) : (
-                      <div className="mcp-class-nolink">No meeting link yet</div>
+                      <div className="mcp-class-nolink">{tr("No meeting link yet")}</div>
                     )}
                   </div>
                 ))}
               </div>
-              <p className="mcp-class-foot">All times shown in your local timezone.</p>
+              <p className="mcp-class-foot">{tr("All times shown in your local timezone.")}</p>
             </>
           )}
         </div>
@@ -710,12 +711,12 @@ export default function MyCoachPortal() {
                 <div className="mcp-player-hero-text">
                   <div className="mcp-player-coach">{c.coachName}</div>
                   <div className="mcp-player-sub">
-                    {c.studentName || 'Student'}
-                    {c.onBreak && <span className="mcp-break-tag" style={{ marginLeft: 8 }}>On Break</span>}
+                    {c.studentName || tr('Student')}
+                    {c.onBreak && <span className="mcp-break-tag" style={{ marginLeft: 8 }}>{tr("On Break")}</span>}
                   </div>
                 </div>
                 <div className="mcp-player-code">
-                  <span className="mcp-player-code-label">CODE</span>
+                  <span className="mcp-player-code-label">{tr("CODE")}</span>
                   <span className="mcp-player-code-val">{c.coachCode || '—'}</span>
                 </div>
               </div>
@@ -724,22 +725,22 @@ export default function MyCoachPortal() {
               <div className="mcp-player-rows">
                 <div className="mcp-player-row">
                   <span className="mcp-player-row-ic">📅</span>
-                  <span className="mcp-player-row-label">Classes / month</span>
+                  <span className="mcp-player-row-label">{tr("Classes / month")}</span>
                   <span className="mcp-player-row-val">{c.classesPerMonth || 0}</span>
                 </div>
                 <div className="mcp-player-row">
                   <span className="mcp-player-row-ic">💸</span>
-                  <span className="mcp-player-row-label">Monthly fees</span>
+                  <span className="mcp-player-row-label">{tr("Monthly fees")}</span>
                   <span className="mcp-player-row-val">{curSym(c.currency)}{c.fees || 0}</span>
                 </div>
                 <div className="mcp-player-row">
                   <span className="mcp-player-row-ic">👥</span>
-                  <span className="mcp-player-row-label">Class type</span>
+                  <span className="mcp-player-row-label">{tr("Class type")}</span>
                   <span className="mcp-player-row-val">{c.classType || 'Private'}</span>
                 </div>
                 <div className="mcp-player-row">
                   <span className="mcp-player-row-ic">🗓️</span>
-                  <span className="mcp-player-row-label">Joined</span>
+                  <span className="mcp-player-row-label">{tr("Joined")}</span>
                   <span className="mcp-player-row-val">{c.enrollmentDate ? fmtDate(c.enrollmentDate) : '—'}</span>
                 </div>
               </div>
@@ -770,7 +771,7 @@ export default function MyCoachPortal() {
         <div className="mcp-section">
           {coaches.length === 0 ? (
             <p style={{ color: 'var(--color-text-faint)' }}>
-              You are not linked to a coach yet, so there is no class leaderboard.
+              {tr("You are not linked to a coach yet, so there is no class leaderboard.")}
             </p>
           ) : (
             <>
@@ -782,7 +783,7 @@ export default function MyCoachPortal() {
                       className={`mcp-tab ${lbCoachId === c.coachId ? 'mcp-tab-active' : ''}`}
                       onClick={() => setLbCoachId(c.coachId)}
                     >
-                      {c.coachName || 'Coach'}
+                      {c.coachName || tr('Coach')}
                     </button>
                   ))}
                 </div>
@@ -812,15 +813,15 @@ export default function MyCoachPortal() {
             return (
               <div className="mcp-nextclass" style={{ marginBottom: 20 }}>
                 <div>
-                  <div className="mcp-nextclass-label">⏰ Next class</div>
+                  <div className="mcp-nextclass-label">{tr("⏰ Next class")}</div>
                   <div className="mcp-nextclass-when">{when} — {next.item.title} · {next.item.coachName}</div>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {next.item.meetingLink && (
-                    <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer" className="mcp-join-btn">Join</a>
+                    <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer" className="mcp-join-btn">{tr("Join")}</a>
                   )}
                   <button className="mcp-join-btn" style={{ background: 'transparent', border: '1px solid rgba(139,92,246,0.5)', color: 'var(--color-accent-2)' }} onClick={() => setTab('schedule')}>
-                    Full schedule
+                    {tr("Full schedule")}
                   </button>
                 </div>
               </div>
@@ -853,11 +854,11 @@ export default function MyCoachPortal() {
               <div className="mcp-stat-row" style={{ marginBottom: 20 }}>
                 <div className="mcp-stat">
                   <span className="mcp-stat-num">📋 {finishedThisMonth}</span>
-                  <span className="mcp-stat-label">Assignments finished</span>
+                  <span className="mcp-stat-label">{tr("Assignments finished")}</span>
                 </div>
                 <div className="mcp-stat">
                   <span className="mcp-stat-num">⏳ {pending}</span>
-                  <span className="mcp-stat-label">Pending assignments</span>
+                  <span className="mcp-stat-label">{tr("Pending assignments")}</span>
                 </div>
                 {/* Hidden on mobile (see .mcp-stat--accuracy): five tiles in a
                     two-column grid left a single tile alone on the last row.
@@ -866,7 +867,7 @@ export default function MyCoachPortal() {
                     the other four are direct facts about the month. */}
                 <div className="mcp-stat mcp-stat--accuracy">
                   <span className="mcp-stat-num">🎯 {avgAccuracy}%</span>
-                  <span className="mcp-stat-label">Accuracy</span>
+                  <span className="mcp-stat-label">{tr("Accuracy")}</span>
                 </div>
                 {/* Classes + Fees used to sit in a SECOND .mcp-stat-row below the
                     assignments list, which put five equivalent stats on two
@@ -876,7 +877,7 @@ export default function MyCoachPortal() {
                   <span className="mcp-stat-num">
                     ✅ {attendance.stats ? attendance.stats.present + attendance.stats.catchUp : 0}
                   </span>
-                  <span className="mcp-stat-label">Classes attended</span>
+                  <span className="mcp-stat-label">{tr("Classes attended")}</span>
                 </div>
                 {/* Fees STATUS for the month being viewed, not a lifetime count of
                     records. A CoachPaymentRecord has no status field — the record
@@ -895,9 +896,9 @@ export default function MyCoachPortal() {
                   return (
                     <div className="mcp-stat">
                       <span className={`mcp-stat-num ${covering ? 'mcp-paid' : 'mcp-pending'}`}>
-                        {covering ? '✅ Paid' : '⏳ Pending'}
+                        {covering ? tr('✅ Paid') : tr('⏳ Pending')}
                       </span>
-                      <span className="mcp-stat-label">Fees</span>
+                      <span className="mcp-stat-label">{tr("Fees")}</span>
                     </div>
                   );
                 })()}
@@ -935,13 +936,13 @@ export default function MyCoachPortal() {
                       <div className="mcp-current-assign-title">{a.title}</div>
                       <div className="mcp-current-assign-row">
                         {isTest
-                          ? <span>Timed test{a.targetGrade > 0 ? <> · goal <strong>{a.targetGrade}%</strong></> : null}</span>
+                          ? <span>Timed test{a.targetGrade > 0 ? <> {tr("· goal")} <strong>{a.targetGrade}%</strong></> : null}</span>
                           : isRush
-                            ? <span>⚡ {a.rushTopicLabel || a.rushTopic || 'Mixed'} · {a.rushMinutes || 5} min{a.rushTargetSolved > 0 ? <> · goal <strong>{a.rushTargetSolved}</strong></> : null}</span>
+                            ? <span>⚡ {a.rushTopicLabel || a.rushTopic || tr('Mixed')} · {a.rushMinutes || 5} min{a.rushTargetSolved > 0 ? <> {tr("· goal")} <strong>{a.rushTargetSolved}</strong></> : null}</span>
                             : isArena
-                              ? <span>🏆 Arena tournament{a.arenaTournamentCode ? <> · code <strong>{a.arenaTournamentCode}</strong></> : null}</span>
-                              : <span>Your progress: <strong>{cur}/{tot}{isPgn ? ' found' : ''}</strong></span>}
-                        <span>Students done: <strong>{a.completedStudents}/{a.totalStudents}</strong></span>
+                              ? <span>🏆 Arena tournament{a.arenaTournamentCode ? <> {tr("· code")} <strong>{a.arenaTournamentCode}</strong></> : null}</span>
+                              : <span>{tr("Your progress:")} <strong>{cur}/{tot}{isPgn ? ' found' : ''}</strong></span>}
+                        <span>{tr("Students done:")} <strong>{a.completedStudents}/{a.totalStudents}</strong></span>
                       </div>
                       {!isTest && !isRush && !isArena && <div className="mcp-assign-bar" style={{ marginTop: 8 }}><div style={{ width: `${pct}%` }} /></div>}
                       {canStart && (
@@ -971,9 +972,9 @@ export default function MyCoachPortal() {
       {tab === 'attendance' && (
         <div className="mcp-section">
           <div className="mcp-month-nav">
-            <button className="mcp-nav-btn" onClick={() => shiftMonth(-1)}>← Prev</button>
+            <button className="mcp-nav-btn" onClick={() => shiftMonth(-1)}>{tr("← Prev")}</button>
             <span className="mcp-month-label">{MONTHS[cursor.getMonth()]} {cursor.getFullYear()}</span>
-            <button className="mcp-nav-btn" onClick={() => shiftMonth(1)}>Next →</button>
+            <button className="mcp-nav-btn" onClick={() => shiftMonth(1)}>{tr("Next →")}</button>
           </div>
 
           <div className="mcp-table-wrap">
@@ -982,7 +983,7 @@ export default function MyCoachPortal() {
                 {/* Class column removed (it was always "Class 1" for most
                     students and told them nothing). Order per request:
                     Date · Marked · Coach · Status. */}
-                <tr><th>Date</th><th>Marked</th><th>Coach</th><th>Status</th></tr>
+                <tr><th>{tr("Date")}</th><th>{tr("Marked")}</th><th>{tr("Coach")}</th><th>{tr("Status")}</th></tr>
               </thead>
               <tbody>
                 {attendance.records.map((r, i) => (
@@ -994,7 +995,7 @@ export default function MyCoachPortal() {
                   </tr>
                 ))}
                 {attendance.records.length === 0 && (
-                  <tr><td colSpan="4" className="mcp-empty-row">No attendance recorded for this month</td></tr>
+                  <tr><td colSpan="4" className="mcp-empty-row">{tr("No attendance recorded for this month")}</td></tr>
                 )}
               </tbody>
             </table>
@@ -1008,28 +1009,28 @@ export default function MyCoachPortal() {
           {/* Class Payment request form */}
           {coaches.map(c => (
             <div key={c.linkId} className="mcp-coach-card" style={{ display: 'block', marginBottom: 18 }}>
-              <div style={{ fontWeight: 700, color: 'var(--color-text)', marginBottom: 10 }}>💰 Class Payment — {c.coachName}</div>
+              <div style={{ fontWeight: 700, color: 'var(--color-text)', marginBottom: 10 }}>{tr("💰 Class Payment —")} {c.coachName}</div>
               {payNotice && <div className="mcp-ok" style={{ color: 'var(--color-success)', marginBottom: 8 }}>✓ {payNotice}</div>}
               {payError && <div className="mcp-error" style={{ marginBottom: 8 }}>{payError}</div>}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10 }}>
                 <label className="mcp-pay-field">
-                  <span>Student name</span>
+                  <span>{tr("Student name")}</span>
                   <input type="text" value={c.studentName || ''} readOnly style={{ opacity: 0.7 }} />
                 </label>
                 <label className="mcp-pay-field">
-                  <span>Paid date</span>
+                  <span>{tr("Paid date")}</span>
                   <input type="date" value={payForm.paidDate} onChange={e => setPayForm(f => ({ ...f, paidDate: e.target.value }))} />
                 </label>
                 <label className="mcp-pay-field">
-                  <span>Payment from</span>
+                  <span>{tr("Payment from")}</span>
                   <input type="date" value={payForm.fromDate} onChange={e => setPayForm(f => ({ ...f, fromDate: e.target.value }))} />
                 </label>
                 <label className="mcp-pay-field">
-                  <span>Payment till</span>
+                  <span>{tr("Payment till")}</span>
                   <input type="date" value={payForm.untilDate} onChange={e => setPayForm(f => ({ ...f, untilDate: e.target.value }))} />
                 </label>
                 <label className="mcp-pay-field">
-                  <span>Amount ({curSym(c.currency)})</span>
+                  <span>{tr("Amount (")}{curSym(c.currency)})</span>
                   <input type="number" min="1" value={payForm.amount} placeholder={String(c.fees || '')} onChange={e => setPayForm(f => ({ ...f, amount: e.target.value }))} />
                 </label>
               </div>
@@ -1039,7 +1040,7 @@ export default function MyCoachPortal() {
                 disabled={paySubmitting}
                 onClick={() => submitFees(c)}
               >
-                {paySubmitting ? 'Submitting…' : 'Submit my fees'}
+                {paySubmitting ? tr('Submitting…') : tr('Submit my fees')}
               </button>
             </div>
           ))}
@@ -1047,7 +1048,7 @@ export default function MyCoachPortal() {
           <div className="mcp-table-wrap">
             <table className="mcp-table">
               <thead>
-                <tr><th>Period</th><th>Coach</th><th>Amount</th><th>Paid On</th></tr>
+                <tr><th>{tr("Period")}</th><th>{tr("Coach")}</th><th>{tr("Amount")}</th><th>{tr("Paid On")}</th></tr>
               </thead>
               <tbody>
                 {payments.map((p, i) => (
@@ -1059,7 +1060,7 @@ export default function MyCoachPortal() {
                   </tr>
                 ))}
                 {payments.length === 0 && (
-                  <tr><td colSpan="4" className="mcp-empty-row">No payment records yet</td></tr>
+                  <tr><td colSpan="4" className="mcp-empty-row">{tr("No payment records yet")}</td></tr>
                 )}
               </tbody>
             </table>

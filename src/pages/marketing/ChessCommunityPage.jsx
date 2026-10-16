@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-community";
 
@@ -25,7 +26,7 @@ export default function ChessCommunityPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
   const webPageSchema = {
@@ -41,7 +42,7 @@ export default function ChessCommunityPage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "Chess Community — Friends, Clubs & Leaderboards",
+        title: tr("Chess Community — Friends, Clubs & Leaderboards"),
         description:
           "Join the Chess Nexus community. Add friends, join chess clubs, chat, follow a live activity feed and climb weekly leaderboards — a friendly, free, ad-free chess community.",
         keywords:
@@ -52,18 +53,18 @@ export default function ChessCommunityPage() {
       hero={{
         icon: "🤝",
         h1: "Join the Chess Nexus Community",
-        sub: "Chess is better with people. Add friends, join clubs, chat, follow a live activity feed and climb weekly leaderboards in a friendly, growing community — free, no ads.",
-        primary: { label: "Open the Social Hub", to: "/social" },
-        secondary: { label: "Browse all features", to: "/features" },
+        sub: tr("Chess is better with people. Add friends, join clubs, chat, follow a live activity feed and climb weekly leaderboards in a friendly, growing community — free, no ads."),
+        primary: { label: tr("Open the Social Hub"), to: "/social" },
+        secondary: { label: tr("Browse all features"), to: "/features" },
       }}
     >
       <section className="mkt-section">
         <div className="mkt-split mkt-split-reverse">
           <div className="mkt-split-media">
-            <img src="/features/clubs.png" alt="Chess Community — friends, clubs and leaderboards" loading="lazy" width="220" height="220" />
+            <img src="/features/clubs.png" alt={tr("Chess Community — friends, clubs and leaderboards")} loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
-            <h2>Ways to connect</h2>
+            <h2>{tr("Ways to connect")}</h2>
             <p>
               Friends, clubs, chat and recognition — everything that makes playing
               here feel like a community.
@@ -73,40 +74,40 @@ export default function ChessCommunityPage() {
                 <span className="mkt-feat-ic" aria-hidden="true">👋</span>
                 <span className="mkt-feat-tx">
                   <strong>Friends &amp; live activity feed</strong>
-                  <span>See who's online, follow friends, and watch race finishes, podium results and personal bests happen live across the community.</span>
+                  <span>{tr("See who's online, follow friends, and watch race finishes, podium results and personal bests happen live across the community.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🏛️</span>
                 <span className="mkt-feat-tx">
-                  <strong>Clubs</strong>
-                  <span>Play, learn and compete alongside players who share your interests — build your own club or find one that fits you.</span>
+                  <strong>{tr("Clubs")}</strong>
+                  <span>{tr("Play, learn and compete alongside players who share your interests — build your own club or find one that fits you.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">💬</span>
                 <span className="mkt-feat-tx">
-                  <strong>Social hub chat</strong>
-                  <span>Message friends and talk chess between games.</span>
+                  <strong>{tr("Social hub chat")}</strong>
+                  <span>{tr("Message friends and talk chess between games.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🏆</span>
                 <span className="mkt-feat-tx">
                   <strong>Leaderboards &amp; recognition</strong>
-                  <span>Climb weekly leaderboards, get recognised as a top racer or top inviter, and earn community tiers like Mentor and Ambassador.</span>
+                  <span>{tr("Climb weekly leaderboards, get recognised as a top racer or top inviter, and earn community tiers like Mentor and Ambassador.")}</span>
                 </span>
               </li>
             </ul>
             <Link to="/social" className="mkt-card-cta">
-              Open the social hub →
+              {tr("Open the social hub →")}
             </Link>
           </div>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Why community matters</h2>
+        <h2>{tr("Why community matters")}</h2>
         <p className="mkt-section-lead">
           Players who feel part of a community stick with chess and improve faster.
           Friends to challenge, clubs to belong to and leaderboards to chase keep
@@ -115,16 +116,16 @@ export default function ChessCommunityPage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <Link to="/social" className="mkt-btn mkt-btn-primary">
-            Join the community
+            {tr("Join the community")}
           </Link>
           <Link to="/clubs" className="mkt-btn mkt-btn-ghost">
-            Find a club
+            {tr("Find a club")}
           </Link>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

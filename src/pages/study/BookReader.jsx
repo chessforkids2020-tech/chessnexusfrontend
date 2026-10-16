@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import api from '../../api';
 import Chessboard from '../../components/Chessboard';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // One interactive board block: shows the authored position, lets the user play
 // any legal move (free exploration); "Reset" restores the diagram. Each board
@@ -37,7 +38,7 @@ function BoardBlock({ block }) {
         orientation={block.orientation || 'white'}
       />
       {block.caption && <div style={styles.caption}>{block.caption}</div>}
-      <button style={styles.resetBtn} onClick={reset}>↺ Reset position</button>
+      <button style={styles.resetBtn} onClick={reset}>{tr("↺ Reset position")}</button>
     </div>
   );
 }
@@ -61,7 +62,7 @@ const BookReader = () => {
         setPageIdx(0);
       } catch (err) {
         if (err.response?.status === 403) setLocked(true);
-        else setError('Could not load this section');
+        else setError(tr('Could not load this section'));
       }
     })();
   }, [id, nodeId]);
@@ -75,31 +76,31 @@ const BookReader = () => {
   if (locked) {
     return (
       <div style={styles.container}>
-        <button style={styles.backButton} onClick={() => navigate(`/study/books/${id}`)}>← Contents</button>
+        <button style={styles.backButton} onClick={() => navigate(`/study/books/${id}`)}>{tr("← Contents")}</button>
         <div style={styles.paywall}>
           <div style={{ fontSize: 48 }}>🔒</div>
-          <h2 style={{ color: 'var(--color-success)', margin: '12px 0 6px' }}>This chapter is locked</h2>
+          <h2 style={{ color: 'var(--color-success)', margin: '12px 0 6px' }}>{tr("This chapter is locked")}</h2>
           <p style={{ color: 'var(--color-text-muted)', maxWidth: 460, textAlign: 'center' }}>
-            Chapter 1 is free for everyone. To read the rest, <strong>unlock the whole book with your XP</strong>,
+            Chapter 1 is free for everyone. To read the rest, <strong>{tr("unlock the whole book with your XP")}</strong>,
             or get it free as a supporter, verified coach, or elite member.
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 4 }}>
-            <button style={styles.xpBtn} onClick={() => navigate(`/study/books/${id}`)}>👛 Unlock with XP</button>
-            <button style={styles.supportBtn} onClick={() => navigate('/nexus-supporter')}>♞ Become a supporter</button>
+            <button style={styles.xpBtn} onClick={() => navigate(`/study/books/${id}`)}>{tr("👛 Unlock with XP")}</button>
+            <button style={styles.supportBtn} onClick={() => navigate('/nexus-supporter')}>{tr("♞ Become a supporter")}</button>
           </div>
         </div>
       </div>
     );
   }
   if (error) return <div style={styles.container}><div style={styles.error}>{error}</div></div>;
-  if (!node) return <div style={styles.container}>Loading…</div>;
+  if (!node) return <div style={styles.container}>{tr("Loading…")}</div>;
 
   if (pages.length === 0) {
     return (
       <div style={styles.container}>
-        <button style={styles.backButton} onClick={() => navigate(`/study/books/${id}`)}>← Contents</button>
+        <button style={styles.backButton} onClick={() => navigate(`/study/books/${id}`)}>{tr("← Contents")}</button>
         <h1 style={styles.title}>{node.title}</h1>
-        <p style={{ color: 'var(--color-text-muted)' }}>This section has sub-topics — open them from the contents page.</p>
+        <p style={{ color: 'var(--color-text-muted)' }}>{tr("This section has sub-topics — open them from the contents page.")}</p>
       </div>
     );
   }
@@ -107,9 +108,9 @@ const BookReader = () => {
   return (
     <div style={styles.container}>
       <div style={styles.topBar}>
-        <button style={styles.backButton} onClick={() => navigate(`/study/books/${id}`)}>← Contents</button>
+        <button style={styles.backButton} onClick={() => navigate(`/study/books/${id}`)}>{tr("← Contents")}</button>
         <div style={styles.nodeTitle}>{node.title}</div>
-        <div style={styles.pageInfo}>Page {pageIdx + 1} / {pages.length}</div>
+        <div style={styles.pageInfo}>{tr("Page")} {pageIdx + 1} / {pages.length}</div>
       </div>
 
       {/* The page: blocks rendered top-to-bottom, like a real book page. */}
@@ -119,13 +120,13 @@ const BookReader = () => {
             ? <BoardBlock key={block._id} block={block} />
             : <div key={block._id} style={styles.prose} dangerouslySetInnerHTML={{ __html: block.contentHtml }} />
         ))}
-        {(page.blocks || []).length === 0 && <div style={{ color: 'var(--color-text-muted)' }}>This page is empty.</div>}
+        {(page.blocks || []).length === 0 && <div style={{ color: 'var(--color-text-muted)' }}>{tr("This page is empty.")}</div>}
       </div>
 
       <div style={styles.nav}>
-        <button style={styles.navBtn} onClick={() => setPageIdx(i => Math.max(0, i - 1))} disabled={pageIdx <= 0}>← Previous</button>
+        <button style={styles.navBtn} onClick={() => setPageIdx(i => Math.max(0, i - 1))} disabled={pageIdx <= 0}>{tr("← Previous")}</button>
         <span style={styles.pageInfo}>{pageIdx + 1} / {pages.length}</span>
-        <button style={styles.navBtn} onClick={() => setPageIdx(i => Math.min(pages.length - 1, i + 1))} disabled={pageIdx >= pages.length - 1}>Next →</button>
+        <button style={styles.navBtn} onClick={() => setPageIdx(i => Math.min(pages.length - 1, i + 1))} disabled={pageIdx >= pages.length - 1}>{tr("Next →")}</button>
       </div>
     </div>
   );

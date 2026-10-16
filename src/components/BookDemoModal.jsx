@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../api';
 import '../pages/EventRegistration.css';
 import './BookDemoModal.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 // Two-hour windows (IST) the coach team runs demos in.
@@ -52,16 +53,16 @@ export default function BookDemoModal({ open, onClose }) {
     e.preventDefault();
     setError('');
 
-    if (!form.name.trim())        return setError('Please enter your name');
-    if (!form.email.trim())       return setError('Please enter your email');
+    if (!form.name.trim())        return setError(tr('Please enter your name'));
+    if (!form.email.trim())       return setError(tr('Please enter your email'));
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
-      return setError('Please enter a valid email address');
-    if (!form.academyName.trim()) return setError('Please enter your academy name');
-    if (!form.country.trim())     return setError('Please enter your country');
+      return setError(tr('Please enter a valid email address'));
+    if (!form.academyName.trim()) return setError(tr('Please enter your academy name'));
+    if (!form.country.trim())     return setError(tr('Please enter your country'));
 
     const chosen = slots.filter(s => s.day && s.time);
     if (chosen.length < 3)
-      return setError('Please choose 3 preferred day & time slots so we can find one that fits.');
+      return setError(tr('Please choose 3 preferred day & time slots so we can find one that fits.'));
 
     setSubmitting(true);
     try {
@@ -84,25 +85,25 @@ export default function BookDemoModal({ open, onClose }) {
 
   return (
     <div className="bdm-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bdm-modal" role="dialog" aria-modal="true" aria-label="Book a free demo">
-        <button className="bdm-close" onClick={onClose} aria-label="Close">×</button>
+      <div className="bdm-modal" role="dialog" aria-modal="true" aria-label={tr("Book a free demo")}>
+        <button className="bdm-close" onClick={onClose} aria-label={tr("Close")}>×</button>
 
         {done ? (
           <div className="bdm-success">
             <div className="bdm-success-icon">✅</div>
-            <h2>Demo request received!</h2>
+            <h2>{tr("Demo request received!")}</h2>
             <p>
-              Thanks, <b>{form.name.trim()}</b>. Our team will review your preferred slots and
-              email <b>{form.email.trim()}</b> with your <b>confirmed day, time and Zoom link</b>.
+              {tr("Thanks,")} <b>{form.name.trim()}</b>{tr(". Our team will review your preferred slots and")}
+              {tr("email")} <b>{form.email.trim()}</b> {tr("with your")} <b>{tr("confirmed day, time and Zoom link")}</b>.
             </p>
-            <button className="submit-button" onClick={onClose}>Done</button>
+            <button className="submit-button" onClick={onClose}>{tr("Done")}</button>
           </div>
         ) : (
           <>
             <div className="bdm-head">
               <div className="event-icon" style={{ margin: 0 }}>🎓</div>
               <div>
-                <h1 className="bdm-title">Book your free demo</h1>
+                <h1 className="bdm-title">{tr("Book your free demo")}</h1>
                 <p className="bdm-subtitle">
                   Tell us about your academy and pick 3 slots that suit you. We'll email your
                   confirmed time and Zoom link.
@@ -114,48 +115,48 @@ export default function BookDemoModal({ open, onClose }) {
               {error && <div className="error-message">⚠️ {error}</div>}
 
               <div className="form-group">
-                <label htmlFor="bdm-name">Your name *</label>
+                <label htmlFor="bdm-name">{tr("Your name *")}</label>
                 <input id="bdm-name" type="text" value={form.name} disabled={submitting}
-                  placeholder="e.g. Priya Sharma"
+                  placeholder={tr("e.g. Priya Sharma")}
                   onChange={(e) => setForm({ ...form, name: e.target.value })} />
               </div>
 
               <div className="form-group">
-                <label htmlFor="bdm-email">Email *</label>
+                <label htmlFor="bdm-email">{tr("Email *")}</label>
                 <input id="bdm-email" type="email" value={form.email} disabled={submitting}
-                  placeholder="you@example.com"
+                  placeholder={tr("you@example.com")}
                   onChange={(e) => setForm({ ...form, email: e.target.value })} />
               </div>
 
               <div className="form-group">
-                <label htmlFor="bdm-academy">Academy name *</label>
+                <label htmlFor="bdm-academy">{tr("Academy name *")}</label>
                 <input id="bdm-academy" type="text" value={form.academyName} disabled={submitting}
-                  placeholder="e.g. Knight School Chess Academy"
+                  placeholder={tr("e.g. Knight School Chess Academy")}
                   onChange={(e) => setForm({ ...form, academyName: e.target.value })} />
               </div>
 
               <div className="form-group">
-                <label htmlFor="bdm-country">Country *</label>
+                <label htmlFor="bdm-country">{tr("Country *")}</label>
                 <input id="bdm-country" type="text" value={form.country} disabled={submitting}
-                  placeholder="e.g. India, USA, UK…"
+                  placeholder={tr("e.g. India, USA, UK…")}
                   onChange={(e) => setForm({ ...form, country: e.target.value })} />
               </div>
 
               <div className="bdm-slots">
                 <div className="bdm-slots-label">
-                  Choose <b>3 preferred slots</b> <span>(times shown in IST)</span>
+                  {tr("Choose")} <b>{tr("3 preferred slots")}</b> <span>{tr("(times shown in IST)")}</span>
                 </div>
                 {slots.map((slot, i) => (
                   <div className="bdm-slot-row" key={i}>
                     <span className="bdm-slot-n">{i + 1}</span>
                     <select className="bdm-select" value={slot.day} disabled={submitting}
                       onChange={(e) => setSlot(i, { day: e.target.value })}>
-                      <option value="">Day…</option>
+                      <option value="">{tr("Day…")}</option>
                       {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
                     <select className="bdm-select" value={slot.time} disabled={submitting}
                       onChange={(e) => setSlot(i, { time: e.target.value })}>
-                      <option value="">Time…</option>
+                      <option value="">{tr("Time…")}</option>
                       {TIME_SLOTS.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
@@ -163,7 +164,7 @@ export default function BookDemoModal({ open, onClose }) {
               </div>
 
               <button type="submit" className="submit-button" disabled={submitting}>
-                {submitting ? 'Sending…' : '🚀 Request my demo'}
+                {submitting ? tr('Sending…') : tr('🚀 Request my demo')}
               </button>
             </form>
           </>

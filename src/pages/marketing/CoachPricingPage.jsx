@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import api from "../../api";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 import AudienceSplit from "../../components/marketing/AudienceSplit";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-coach-pricing";
 
@@ -95,7 +96,7 @@ export default function CoachPricingPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
@@ -106,7 +107,7 @@ export default function CoachPricingPage() {
   return (
     <FeaturePageLayout
       seo={{
-        title: "Chess Coach Pricing — Free for 30 Students",
+        title: tr("Chess Coach Pricing — Free for 30 Students"),
         description:
           "Chess Nexus coach pricing. Free forever for up to 30 students, including the built-in live classroom. Pro ($19/mo, 70 students) and Coach ($33/mo, 150 students) unlock unlimited live classes with unlimited students in the room.",
         keywords:
@@ -118,26 +119,26 @@ export default function CoachPricingPage() {
         h1: "Coach pricing",
         sub:
           "Free forever for up to 30 students — including the live classroom. Three plans, all with the classroom; the paid two unlock it completely and raise how many students you can teach.",
-        primary: { to: "/coach/onboarding", label: "Start coaching free" },
-        secondary: { to: "/chess-coach-guide", label: "See what's included" },
+        primary: { to: "/coach/onboarding", label: tr("Start coaching free") },
+        secondary: { to: "/chess-coach-guide", label: tr("See what's included") },
       }}
       jsonLd={faqSchema}
       excludeSlug={CANONICAL}
     >
       {/* Two different products — say so before the price list, or a school with
           several coaches reads solo pricing and never finds the academy tier. */}
-      <section className="mkt-section" aria-label="Coach or academy">
-        <h2>First — are you one coach, or an academy?</h2>
+      <section className="mkt-section" aria-label={tr("Coach or academy")}>
+        <h2>{tr("First — are you one coach, or an academy?")}</h2>
         <p className="mkt-section-lead">
-          Chess Nexus is sold two ways. This page covers <strong>individual coaches</strong>.
+          {tr("Chess Nexus is sold two ways. This page covers")} <strong>{tr("individual coaches")}</strong>.
           If several coaches teach under one name, an academy plan pays for all of them on
           one bill and adds a dashboard over all of them.
         </p>
         <AudienceSplit current="solo" />
       </section>
 
-      <section className="mkt-section" aria-label="Plans">
-        <h2>Plans for individual coaches</h2>
+      <section className="mkt-section" aria-label={tr("Plans")}>
+        <h2>{tr("Plans for individual coaches")}</h2>
         {/* One list, three plans. This used to describe two families ("without"
             and "with" the live classroom), which asked a coach to choose between
             features before they had used either. The classroom is in every plan
@@ -148,12 +149,12 @@ export default function CoachPricingPage() {
           completely and raise how many students you can teach.
         </p>
         <p className="mkt-p">
-          ⭐ <strong>Both paid plans are elite coach plans</strong>{" "}
+          ⭐ <strong>{tr("Both paid plans are elite coach plans")}</strong>{" "}
           — unlimited Team Race events and unlimited Monthly Focus challenges, on Pro and Coach alike.
         </p>
         <p className="mkt-p">
-          Plans are bought by the month or in a 3-month term. Paying for{" "}
-          <strong>3 months up front takes 10% off</strong> — Pro ₹3507 / $51 and Coach
+          {tr("Plans are bought by the month or in a 3-month term. Paying for")}{" "}
+          <strong>{tr("3 months up front takes 10% off")}</strong> {tr("— Pro ₹3507 / $51 and Coach")}
           ₹6599 / $89 for the term.
         </p>
 
@@ -184,24 +185,24 @@ export default function CoachPricingPage() {
             <table className="mkt-table">
               <thead>
                 <tr>
-                  <th>Plan</th><th>Price (USD/mo)</th><th>Students</th><th>Live classes</th>
+                  <th>{tr("Plan")}</th><th>{tr("Price (USD/mo)")}</th><th>{tr("Students")}</th><th>{tr("Live classes")}</th>
                 </tr>
               </thead>
               {/* The Live Basic / Live Pro / Live Coach rows are gone: those
                   plans no longer exist in config/coachPlans.js. Their unlimited
                   classroom moved INTO Pro and Coach, so there are three rows. */}
               <tbody>
-                <tr><td>Free</td><td>$0 — free forever</td><td>30</td><td>1/day · 40 min · 4 (+coach)</td></tr>
-                <tr><td>Pro</td><td>$19</td><td>70</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
-                <tr><td>Coach</td><td>$33</td><td>150</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
+                <tr><td>{tr("Free")}</td><td>{tr("$0 — free forever")}</td><td>30</td><td>{tr("1/day · 40 min · 4 (+coach)")}</td></tr>
+                <tr><td>{tr("Pro")}</td><td>$19</td><td>70</td><td>{tr("Unlimited · up to 120 min or no limit · Unlimited students")}</td></tr>
+                <tr><td>{tr("Coach")}</td><td>$33</td><td>150</td><td>{tr("Unlimited · up to 120 min or no limit · Unlimited students")}</td></tr>
               </tbody>
             </table>
             <p className="mkt-p">
-              The Free plan is <strong>free forever for up to 30 students</strong> — not a
+              {tr("The Free plan is")} <strong>{tr("free forever for up to 30 students")}</strong> {tr("— not a")}
               trial, and no card is required. It includes assignments, courses, the class
               schedule, attendance, fee tracking, parent progress reports and the built-in
-              live classroom. See{" "}
-              <Link to="/free-chess-coaching-software">everything included in the free plan</Link>.
+              {tr("live classroom. See")}{" "}
+              <Link to="/free-chess-coaching-software">{tr("everything included in the free plan")}</Link>.
             </p>
           </div>
         )}
@@ -211,10 +212,10 @@ export default function CoachPricingPage() {
             <table className="mkt-table">
               <thead>
                 <tr>
-                  <th>Plan</th>
-                  <th>Per month (USD)</th>
-                  <th>Students</th>
-                  <th>Live classes</th>
+                  <th>{tr("Plan")}</th>
+                  <th>{tr("Per month (USD)")}</th>
+                  <th>{tr("Students")}</th>
+                  <th>{tr("Live classes")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -258,8 +259,8 @@ export default function CoachPricingPage() {
         )}
       </section>
 
-      <section className="mkt-section" aria-label="FAQ">
-        <h2>Pricing FAQ</h2>
+      <section className="mkt-section" aria-label={"FAQ"}>
+        <h2>{tr("Pricing FAQ")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div key={q} className="mkt-faq-item">
@@ -270,40 +271,40 @@ export default function CoachPricingPage() {
         </div>
       </section>
 
-      <section className="mkt-section" aria-label="Academies">
+      <section className="mkt-section" aria-label={tr("Academies")}>
         <div className="mkt-callout">
           <div className="mkt-callout-icon" aria-hidden="true">🏫</div>
           <div>
-            <h2>More than one coach? Look at academy plans</h2>
+            <h2>{tr("More than one coach? Look at academy plans")}</h2>
             <p>
               If you run a chess academy, school or institute with several coaches, you
-              don't buy a plan each. One academy plan covers <strong>5, 10 or unlimited
-              coaches</strong> from $89/month, giving every one of them 100 students and an
+              {tr("don't buy a plan each. One academy plan covers")} <strong>{tr("5, 10 or unlimited")}
+              {tr("coaches")}</strong> {tr("from $89/month, giving every one of them 100 students and an")}
               unlimited live classroom on a single bill, with one dashboard over every coach
               and student. The head of the academy still keeps their own students and teaches
-              like any other coach.{" "}
-              <Link to="/chess-academy-pricing">See academy pricing</Link> or read{" "}
-              <Link to="/chess-academy-software">how academies work</Link>.
+              {tr("like any other coach.")}{" "}
+              <Link to="/chess-academy-pricing">{tr("See academy pricing")}</Link> {tr("or read")}{" "}
+              <Link to="/chess-academy-software">{tr("how academies work")}</Link>.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="mkt-section" aria-label="Referral program">
-        <h2>Lower your cost — refer a coach</h2>
+      <section className="mkt-section" aria-label={tr("Referral program")}>
+        <h2>{tr("Lower your cost — refer a coach")}</h2>
         <p className="mkt-p">
-          Refer another coach and earn <strong>25%</strong> of their first paid
+          {tr("Refer another coach and earn")} <strong>25%</strong> {tr("of their first paid")}
           subscription as wallet credit toward your own plan — in your own currency,
-          with no limit on referrals. See how the{" "}
-          <Link to="/chess-coach-referral">coach referral program</Link> works.
+          {tr("with no limit on referrals. See how the")}{" "}
+          <Link to="/chess-coach-referral">{tr("coach referral program")}</Link> {tr("works.")}
         </p>
       </section>
 
-      <section className="mkt-section mkt-cta-section" aria-label="Start">
-        <h2>Start free, upgrade only if you outgrow it</h2>
-        <p className="mkt-section-lead">Up to 30 students, no card required.</p>
+      <section className="mkt-section mkt-cta-section" aria-label={tr("Start")}>
+        <h2>{tr("Start free, upgrade only if you outgrow it")}</h2>
+        <p className="mkt-section-lead">{tr("Up to 30 students, no card required.")}</p>
         <div className="mkt-cta-row">
-          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Start coaching free</Link>
+          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">{tr("Start coaching free")}</Link>
           <Link to="/chess-coach-referral" className="mkt-btn">Refer & earn</Link>
         </div>
       </section>

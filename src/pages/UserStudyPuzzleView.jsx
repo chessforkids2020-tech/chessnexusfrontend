@@ -14,6 +14,7 @@ import { useAnalysisTree } from '../hooks/useAnalysisTree';
 import StudyMovesCard from '../components/StudyMovesCard';
 import SolutionText from '../components/SolutionText';
 import { parseSolutionTree, formatSolutionTree } from '../utils/solutionLine';
+import { t as tr } from '../i18n/LanguageContext';
 
 // `tree` with a node that playMove just created (its state update hasn't landed yet).
 const withNode = (tree, node) => {
@@ -229,7 +230,7 @@ const UserStudyPuzzleView = () => {
         creatorRef.current = !!uid && !!study.userId && String(study.userId) === String(uid);
         setStudyType(study.studyType || 'basics');
         const chapter = study.chapters.find(c => c._id?.toString() === chapterId?.toString());
-        if (!chapter) { setError('Chapter not found'); setLoading(false); return; }
+        if (!chapter) { setError(tr('Chapter not found')); setLoading(false); return; }
         setChapterName(chapter.name);
         const list = chapter.puzzles || [];
         setPuzzles(list);
@@ -237,7 +238,7 @@ const UserStudyPuzzleView = () => {
 
         api.post('/api/study/view', { studyId: id, chapterId }).catch(() => {});
       } catch {
-        setError('Failed to load study');
+        setError(tr('Failed to load study'));
       } finally {
         setLoading(false);
       }
@@ -611,8 +612,8 @@ const UserStudyPuzzleView = () => {
 
   const handleDeletePosition = async (puzzle, index) => {
     if (!puzzle?._id) return;
-    const label = puzzle.title || `Position ${index + 1}`;
-    if (!window.confirm(`Delete "${label}"? This cannot be undone.`)) return;
+    const label = puzzle.title || tr("Position {v0}", { v0: index + 1 });
+    if (!window.confirm(tr("Delete \"{label}\"? This cannot be undone.", { label: label }))) return;
     try {
       await api.delete(`/api/user-studies/${id}/chapters/${chapterId}/puzzles/${puzzle._id}`);
       const res = await api.get(`/api/user-studies/${id}`);
@@ -638,7 +639,7 @@ const UserStudyPuzzleView = () => {
   const clearRecording = () => {
     const p = puzzles[currentPuzzleIndex];
     if (!p) return;
-    if (!window.confirm('Delete all moves for this position?')) return;
+    if (!window.confirm(tr('Delete all moves for this position?'))) return;
     const t = analysis.load(p.fen, null);
     recordedRef.current = new Set([t.rootId]);
     recordSolution(p, '');
@@ -648,7 +649,7 @@ const UserStudyPuzzleView = () => {
   const deleteFromHere = () => {
     const nid = analysis.tree.currentId;
     if (nid === analysis.tree.rootId) return;
-    if (!window.confirm('Delete this move and everything after it?')) return;
+    if (!window.confirm(tr('Delete this move and everything after it?'))) return;
     const wasSaved = recordedRef.current.has(nid);
     const t = analysis.deleteFrom(nid);
     if (!t) return;
@@ -661,7 +662,7 @@ const UserStudyPuzzleView = () => {
   const replaceWithBoardLine = () => {
     const p = puzzles[currentPuzzleIndex];
     if (!p) return;
-    if (!window.confirm('Replace the written notes with the moves on the board?')) return;
+    if (!window.confirm(tr('Replace the written notes with the moves on the board?'))) return;
     recordedRef.current = new Set(Object.keys(analysis.tree.nodes));
     saveTree(analysis.tree);
   };
@@ -750,7 +751,7 @@ const UserStudyPuzzleView = () => {
 
   if (loading) return (
     <div style={st.page}><div style={st.bg}/><div style={st.grid}/>
-      <div style={st.container}><div style={st.loading}>Loading puzzles...</div></div>
+      <div style={st.container}><div style={st.loading}>{tr("Loading puzzles...")}</div></div>
     </div>
   );
 
@@ -766,7 +767,7 @@ const UserStudyPuzzleView = () => {
       <div style={{ background: '#111827', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 'var(--radius-2xl)', width: '100%', maxWidth: 980, margin: 'auto', boxShadow: '0 24px 64px var(--color-black-a65)' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderBottom: '1px solid var(--color-white-a07)' }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-accent-2)' }}>♟️ Create New Position</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-accent-2)' }}>{tr("♟️ Create New Position")}</div>
           <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: 22, cursor: 'pointer', lineHeight: 1, padding: '2px 10px', borderRadius: 'var(--radius-md)', transition: 'color 0.15s' }}>✕</button>
         </div>
         {/* Body */}
@@ -782,9 +783,9 @@ const UserStudyPuzzleView = () => {
             />
             <FenBar fen={editorChess.fen()} onFenChange={handleEditorFenChange} />
             <div style={{ display: 'flex', gap: 6 }}>
-              <button onClick={() => handleEditorFenChange('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Start</button>
-              <button onClick={() => handleEditorFenChange('8/8/8/8/8/8/8/8 w - - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Empty</button>
-              <button onClick={() => setEditorOrientation(o => o === 'white' ? 'black' : 'white')} style={{ flex: 1, padding: '7px 0', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 'var(--radius-md)', color: 'var(--color-accent-2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>⇅ Flip</button>
+              <button onClick={() => handleEditorFenChange('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>{tr("Start")}</button>
+              <button onClick={() => handleEditorFenChange('8/8/8/8/8/8/8/8 w - - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>{tr("Empty")}</button>
+              <button onClick={() => setEditorOrientation(o => o === 'white' ? 'black' : 'white')} style={{ flex: 1, padding: '7px 0', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 'var(--radius-md)', color: 'var(--color-accent-2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>{tr("⇅ Flip")}</button>
             </div>
           </div>
           {/* Right: Piece selector + Setup controls + Form */}
@@ -792,15 +793,15 @@ const UserStudyPuzzleView = () => {
             <PieceSelector selectedPiece={editorSelectedPiece} onSelectPiece={setEditorSelectedPiece} />
             <SetupControls chess={editorChess} onFenChange={handleEditorFenChange} orientation={editorOrientation} onFlipOrientation={() => setEditorOrientation(o => o === 'white' ? 'black' : 'white')} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, paddingBottom: 8, borderBottom: '1px solid var(--color-white-a07)' }}>Position Info</div>
+              <div style={{ fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, paddingBottom: 8, borderBottom: '1px solid var(--color-white-a07)' }}>{tr("Position Info")}</div>
               <input
-                placeholder="Title (optional)"
+                placeholder={tr("Title (optional)")}
                 value={posTitle}
                 onChange={e => setPosTitle(e.target.value)}
                 style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }}
               />
               <input
-                placeholder="Moves (optional — or just play them on the board after creating)"
+                placeholder={tr("Moves (optional — or just play them on the board after creating)")}
                 value={posSolution}
                 onChange={e => setPosSolution(e.target.value)}
                 style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, fontFamily: 'monospace', outline: 'none', width: '100%', boxSizing: 'border-box' }}
@@ -815,12 +816,12 @@ const UserStudyPuzzleView = () => {
             {posError && <div style={{ color: 'var(--color-danger)', fontSize: 13, fontWeight: 600, marginTop: 4 }}>❌ {posError}</div>}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => setShowCreateModal(false)} style={{ padding: '10px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-lg)', color: 'var(--color-text-muted)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+            <button onClick={() => setShowCreateModal(false)} style={{ padding: '10px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-lg)', color: 'var(--color-text-muted)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{tr("Cancel")}</button>
             <button
               onClick={handleCreatePosition}
               disabled={!!editorValidErr || posCreating}
               style={{ padding: '10px 28px', background: editorValidErr ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.85)', border: '1px solid rgba(99,102,241,0.5)', borderRadius: 'var(--radius-lg)', color: 'var(--color-text)', fontSize: 14, fontWeight: 700, cursor: editorValidErr || posCreating ? 'not-allowed' : 'pointer', opacity: editorValidErr ? 0.6 : 1, transition: 'all 0.2s' }}
-            >{posCreating ? '⏳ Creating...' : '✓ Create this position'}</button>
+            >{posCreating ? tr('⏳ Creating...') : tr('✓ Create this position')}</button>
           </div>
         </div>
       </div>
@@ -830,7 +831,7 @@ const UserStudyPuzzleView = () => {
   if (error) return (
     <div style={st.page}><div style={st.bg}/><div style={st.grid}/>
       <div style={st.container}>
-        <button style={{ ...st.btn, ...st.navBtn, marginBottom: 20 }} onClick={() => navigate(`/public-studies/${id}`)}>← Back to Chapters</button>
+        <button style={{ ...st.btn, ...st.navBtn, marginBottom: 20 }} onClick={() => navigate(`/public-studies/${id}`)}>{tr("← Back to Chapters")}</button>
         <div style={st.error}>{error}</div>
       </div>
     </div>
@@ -839,8 +840,8 @@ const UserStudyPuzzleView = () => {
   if (puzzles.length === 0 && !isCreator) return (
     <div style={st.page}><div style={st.bg}/><div style={st.grid}/>
       <div style={st.container}>
-        <button style={{ ...st.btn, ...st.navBtn, marginBottom: 20 }} onClick={() => navigate(`/public-studies/${id}`)}>← Back to Chapters</button>
-        <div style={st.error}>No puzzles in this chapter yet</div>
+        <button style={{ ...st.btn, ...st.navBtn, marginBottom: 20 }} onClick={() => navigate(`/public-studies/${id}`)}>{tr("← Back to Chapters")}</button>
+        <div style={st.error}>{tr("No puzzles in this chapter yet")}</div>
       </div>
     </div>
   );
@@ -852,15 +853,15 @@ const UserStudyPuzzleView = () => {
           style={{ ...st.btn, ...st.navBtn, marginBottom: 20 }}
           onClick={() => navigate(`/public-studies/${id}`)}
           whileHover={{ x: -4, background: currentColor.accentColor }}
-        >← Back to Chapters</motion.button>
+        >{tr("← Back to Chapters")}</motion.button>
         <div style={{ ...st.error, color: 'var(--color-accent-2)', borderColor: 'rgba(99,102,241,0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
           <div style={{ fontSize: 52 }}>♟️</div>
-          <div>This chapter has no positions yet.</div>
+          <div>{tr("This chapter has no positions yet.")}</div>
           <motion.button
             onClick={openCreateModal}
             style={{ padding: '14px 36px', background: 'rgba(99,102,241,0.8)', border: '1px solid rgba(99,102,241,0.5)', borderRadius: 'var(--radius-lg)', color: 'var(--color-text)', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}
             whileHover={{ scale: 1.05, background: '#6366f1' }}
-          >➕ Create First Position</motion.button>
+          >{tr("➕ Create First Position")}</motion.button>
         </div>
       </div>
       {createModal}
@@ -870,7 +871,7 @@ const UserStudyPuzzleView = () => {
   if (error || puzzles.length === 0) return (
     <div style={st.page}><div style={st.bg}/><div style={st.grid}/>
       <div style={st.container}>
-        <button style={{ ...st.btn, ...st.navBtn, marginBottom: 20 }} onClick={() => navigate(`/public-studies/${id}`)}>← Back to Chapters</button>
+        <button style={{ ...st.btn, ...st.navBtn, marginBottom: 20 }} onClick={() => navigate(`/public-studies/${id}`)}>{tr("← Back to Chapters")}</button>
         <div style={st.error}>{error || 'No puzzles in this chapter yet'}</div>
       </div>
     </div>
@@ -891,7 +892,7 @@ const UserStudyPuzzleView = () => {
               onClick={() => navigate(`/public-studies/${id}`)}
               initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.4 }}
               whileHover={{ x: -4, background: currentColor.accentColor, borderColor: currentColor.color + '40', boxShadow: `0 8px 32px ${currentColor.accentColor}` }}
-            >← Back to Chapters</motion.button>
+            >{tr("← Back to Chapters")}</motion.button>
           )}
 
           {isMobile && (
@@ -901,7 +902,7 @@ const UserStudyPuzzleView = () => {
               initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.4 }}
               whileHover={{ x: 4, background: currentColor.accentColor, borderColor: currentColor.color + '40' }}
             >
-              {showPuzzleList ? 'Hide List' : 'Show List'}
+              {showPuzzleList ? tr('Hide List') : tr('Show List')}
             </motion.button>
           )}
         </div>
@@ -917,9 +918,9 @@ const UserStudyPuzzleView = () => {
                 <button
                   style={{ ...st.backButton, ...st.navBtn }}
                   onClick={() => navigate(`/public-studies/${id}`)}
-                >← Back to Chapters</button>
+                >{tr("← Back to Chapters")}</button>
               )}
-              <div style={{ fontSize: 13, fontWeight: 700, color: currentColor.color, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 14, flexShrink: 0 }}>Positions</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: currentColor.color, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 14, flexShrink: 0 }}>{tr("Positions")}</div>
               {/* The list is the flexible, scrolling part of the column so the
                   Back button and the "Positions" heading stay pinned. */}
               <div style={{ overflowX: 'auto', overflowY: 'auto', flex: isMobile ? 'none' : 1, minHeight: 0 }}>
@@ -927,8 +928,8 @@ const UserStudyPuzzleView = () => {
                   <thead>
                     <tr style={st.tableHeaderRow}>
                       <th style={st.tableHeader}>#</th>
-                      <th style={{ ...st.tableHeader, textAlign: 'left' }}>Title</th>
-                      {isCreator && <th style={st.tableHeader} aria-label="Delete"></th>}
+                      <th style={{ ...st.tableHeader, textAlign: 'left' }}>{tr("Title")}</th>
+                      {isCreator && <th style={st.tableHeader} aria-label={tr("Delete")}></th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -940,13 +941,13 @@ const UserStudyPuzzleView = () => {
                         whileHover={{ backgroundColor: currentColor.accentColor }}
                       >
                         <td style={st.tableCell}>{i + 1}</td>
-                        <td style={st.tableCellName}>{puzzle.title || `Position ${i + 1}`}</td>
+                        <td style={st.tableCellName}>{puzzle.title || tr("Position {v0}", { v0: i + 1 })}</td>
                         {isCreator && (
                           <td style={{ ...st.tableCell, textAlign: 'center', padding: '4px' }}>
                             <button
                               onClick={(e) => { e.stopPropagation(); handleDeletePosition(puzzle, i); }}
-                              title="Delete position"
-                              aria-label="Delete position"
+                              title={tr("Delete position")}
+                              aria-label={tr("Delete position")}
                               style={{
                                 background: 'var(--color-danger-a12)',
                                 border: '1px solid var(--color-danger-a30)',
@@ -976,7 +977,7 @@ const UserStudyPuzzleView = () => {
                     style={{ width: '100%', padding: '11px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 'var(--radius-lg)', color: 'var(--color-accent-2)', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}
                     whileHover={{ background: 'rgba(99,102,241,0.25)', scale: 1.02 }}
                   >
-                    ➕ Create Position
+                    {tr("➕ Create Position")}
                   </motion.button>
                 </div>
               )}
@@ -1009,12 +1010,12 @@ const UserStudyPuzzleView = () => {
                 const canFwd = currentNode.children.length > 0;
                 return (
                   <>
-                    <motion.button style={{ ...st.btn, ...(!canBack ? st.navBtnDisabled : st.navBtn) }} onClick={moveBackward} disabled={!canBack} whileHover={canBack ? { scale: 1.05, background: currentColor.accentColor } : {}}>← Back</motion.button>
-                    <motion.button style={{ ...st.btn, ...(!canFwd ? st.navBtnDisabled : st.navBtn) }} onClick={moveForward} disabled={!canFwd} whileHover={canFwd ? { scale: 1.05, background: currentColor.accentColor } : {}}>Forward →</motion.button>
+                    <motion.button style={{ ...st.btn, ...(!canBack ? st.navBtnDisabled : st.navBtn) }} onClick={moveBackward} disabled={!canBack} whileHover={canBack ? { scale: 1.05, background: currentColor.accentColor } : {}}>{tr("← Back")}</motion.button>
+                    <motion.button style={{ ...st.btn, ...(!canFwd ? st.navBtnDisabled : st.navBtn) }} onClick={moveForward} disabled={!canFwd} whileHover={canFwd ? { scale: 1.05, background: currentColor.accentColor } : {}}>{tr("Forward →")}</motion.button>
                   </>
                 );
               })()}
-              <motion.button style={{ ...st.btn, ...st.resetBtn }} onClick={resetPosition} whileHover={{ scale: 1.05, background: 'rgba(156,163,175,0.2)' }}>↺ Reset</motion.button>
+              <motion.button style={{ ...st.btn, ...st.resetBtn }} onClick={resetPosition} whileHover={{ scale: 1.05, background: 'rgba(156,163,175,0.2)' }}>{tr("↺ Reset")}</motion.button>
             </div>
           </div>
 
@@ -1026,22 +1027,22 @@ const UserStudyPuzzleView = () => {
               <button
                 data-testid="sf-analysis-toggle"
                 onClick={toggleAnalysis}
-                title={anMode ? 'Turn the engine evaluation off' : 'Show the engine evaluation for this position'}
+                title={anMode ? tr('Turn the engine evaluation off') : tr('Show the engine evaluation for this position')}
                 style={{ flex: 1, padding: '8px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap', background: anMode ? 'rgba(56,189,248,0.16)' : 'var(--color-white-a04)', color: anMode ? '#38bdf8' : 'var(--color-text-muted)', border: `1px solid ${anMode ? 'rgba(56,189,248,0.45)' : 'var(--color-white-a10)'}`, transition: 'all 0.2s' }}
               >
-                🔍 Stockfish {anMode ? 'On' : 'Off'}
+                {tr("🔍 Stockfish")} {anMode ? tr('On') : tr('Off')}
                 {anMode && anDepth ? <span style={{ fontWeight: 500, opacity: 0.75 }}> · d{anDepth}</span> : null}
               </button>
               <button
                 data-testid="sf-play-toggle"
                 onClick={toggleSfMode}
                 style={{ flex: 1, padding: '8px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap', background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
-              >{sfMode ? (sfReady ? '■ Stop vs Stockfish' : 'Loading…') : '🤖 vs Stockfish'}</button>
+              >{sfMode ? (sfReady ? tr('■ Stop vs Stockfish') : tr('Loading…')) : tr('🤖 vs Stockfish')}</button>
             </div>
             {anMode && (
               <div data-testid="sf-lines" style={{ marginBottom: 14, padding: '6px 12px 10px', borderRadius: 'var(--radius-md)', background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
                 {!anLines[1] && (
-                  <div style={{ marginTop: 4, fontSize: 11.5, color: 'var(--color-text-faint)' }}>Thinking…</div>
+                  <div style={{ marginTop: 4, fontSize: 11.5, color: 'var(--color-text-faint)' }}>{tr("Thinking…")}</div>
                 )}
                 {/* Top 3 engine lines (no separate headline score). Rendered in
                     MultiPV order: line 1 is the engine's best, 2–3 the next-best. */}
@@ -1072,8 +1073,8 @@ const UserStudyPuzzleView = () => {
                   ))}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginBottom: 14, textAlign: 'center' }}>
-                  You play <span style={{ color: 'var(--color-accent-2)' }}>{humanColor}</span> · Stockfish plays <span style={{ color: 'var(--color-danger)' }}>{humanColor === 'white' ? 'black' : 'white'}</span>
-                  {sfThinking && <span style={{ marginLeft: 8, color: 'var(--color-warning)' }}>● thinking</span>}
+                  {tr("You play")} <span style={{ color: 'var(--color-accent-2)' }}>{humanColor}</span> {tr("· Stockfish plays")} <span style={{ color: 'var(--color-danger)' }}>{humanColor === 'white' ? 'black' : 'white'}</span>
+                  {sfThinking && <span style={{ marginLeft: 8, color: 'var(--color-warning)' }}>{tr("● thinking")}</span>}
                 </div>
               </>
             )}
@@ -1084,7 +1085,7 @@ const UserStudyPuzzleView = () => {
                 stay clickable. The creator can swap it for the board's moves. */}
             {puzzles[currentPuzzleIndex]?.solution && !recordable && (
               <div data-testid="rec-prose" style={{ ...st.descContainer, padding: 14, marginBottom: 12 }}>
-                <h3 style={{ ...st.sectionTitle, fontSize: 13, marginBottom: 8 }}>Notes</h3>
+                <h3 style={{ ...st.sectionTitle, fontSize: 13, marginBottom: 8 }}>{tr("Notes")}</h3>
                 <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.8 }}>
                   <SolutionText
                     text={puzzles[currentPuzzleIndex].solution}
@@ -1095,9 +1096,9 @@ const UserStudyPuzzleView = () => {
                 </div>
                 {isCreator && (
                   <div style={{ marginTop: 10, fontSize: 11.5, color: 'var(--color-text-faint)', lineHeight: 1.5 }}>
-                    Because these are written notes, your board moves aren't saved automatically here.
+                    {tr("Because these are written notes, your board moves aren't saved automatically here.")}
                     <button onClick={replaceWithBoardLine} style={{ display: 'block', marginTop: 6, padding: '4px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a07)', color: 'var(--color-text-muted)', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}>
-                      Replace with the moves on the board
+                      {tr("Replace with the moves on the board")}
                     </button>
                   </div>
                 )}
@@ -1120,7 +1121,7 @@ const UserStudyPuzzleView = () => {
                 headExtra={isCreator && recordable ? (
                   <span data-testid="rec-strip" style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                     <span style={{ fontSize: 10.5, color: recStatus === 'error' ? 'var(--color-danger)' : 'var(--color-text-faint)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {sfMode ? 'Not saving vs Stockfish'
+                      {sfMode ? tr('Not saving vs Stockfish')
                         : !recOn ? 'Not saving'
                         : recStatus === 'saving' ? 'Saving…'
                         : recStatus === 'saved' ? 'Saved ✓'
@@ -1129,11 +1130,11 @@ const UserStudyPuzzleView = () => {
                     </span>
                     <button
                       onClick={() => setRecOn(v => !v)}
-                      title={recOn ? 'Pause saving your moves' : 'Resume saving your moves'}
+                      title={recOn ? tr('Pause saving your moves') : tr('Resume saving your moves')}
                       style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 'var(--radius-2xl)', cursor: 'pointer', fontSize: 10.5, fontWeight: 800, letterSpacing: 0.5, background: recOn && !sfMode ? 'var(--color-danger-a12)' : 'var(--color-white-a04)', color: recOn && !sfMode ? 'var(--color-danger)' : 'var(--color-text-faint)', border: `1px solid ${recOn && !sfMode ? 'var(--color-danger-a30)' : 'var(--color-white-a07)'}` }}
                     >
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />
-                      {recOn && !sfMode ? 'REC' : 'PAUSED'}
+                      {recOn && !sfMode ? 'REC' : tr('PAUSED')}
                     </button>
                   </span>
                 ) : null}
@@ -1142,17 +1143,17 @@ const UserStudyPuzzleView = () => {
                     <span style={{ display: 'flex', gap: 8 }}>
                       {analysis.tree.currentId !== analysis.tree.rootId && (
                         <button onClick={deleteFromHere} style={{ padding: '3px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'transparent', color: 'var(--color-text-faint)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
-                          Delete from here
+                          {tr("Delete from here")}
                         </button>
                       )}
                       <button onClick={clearRecording} style={{ padding: '3px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'transparent', color: 'var(--color-text-faint)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
-                        Clear all
+                        {tr("Clear all")}
                       </button>
                     </span>
                   )
                 ) : !isCreator ? (
                   <span style={{ fontSize: 10.5, color: 'var(--color-text-faint)', textAlign: 'center' }}>
-                    Play your own moves to explore — they aren't saved.
+                    {tr("Play your own moves to explore — they aren't saved.")}
                   </span>
                 ) : null}
               />
@@ -1164,31 +1165,31 @@ const UserStudyPuzzleView = () => {
                 {commentFor && analysis.tree.nodes[commentFor] ? (
                   <>
                     <div style={{ fontSize: 12, color: 'var(--color-text-faint)', marginBottom: 6 }}>
-                      Comment after <strong style={{ color: 'var(--color-text-muted)' }}>{moveLabel(commentFor)}</strong>
+                      {tr("Comment after")} <strong style={{ color: 'var(--color-text-muted)' }}>{moveLabel(commentFor)}</strong>
                     </div>
                     <textarea
                       autoFocus
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveComment(); }}
-                      placeholder="e.g. White takes the centre."
+                      placeholder={tr("e.g. White takes the centre.")}
                       rows={3}
                       style={metaInputStyle}
                     />
                     <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                      <button onClick={saveComment} style={metaBtnStyle(true, false)}>✓ Save</button>
-                      <button onClick={() => setCommentFor(null)} style={metaBtnStyle(false, false)}>Cancel</button>
+                      <button onClick={saveComment} style={metaBtnStyle(true, false)}>{tr("✓ Save")}</button>
+                      <button onClick={() => setCommentFor(null)} style={metaBtnStyle(false, false)}>{tr("Cancel")}</button>
                     </div>
                   </>
                 ) : analysis.tree.currentId === analysis.tree.rootId && !analysis.current?.comment ? (
                   // At the start nothing is selected — commenting here used to
                   // put every comment at the top. Point at the moves instead.
                   <div style={{ fontSize: 12, color: 'var(--color-text-faint)', lineHeight: 1.5 }}>
-                    💬 To add a comment, click a move in the list (or play one) — the comment appears right after that move.
+                    {tr("💬 To add a comment, click a move in the list (or play one) — the comment appears right after that move.")}
                   </div>
                 ) : (
                   <button onClick={() => startComment()} style={metaBtnStyle(false, false)}>
-                    💬 {analysis.current?.comment ? 'Edit comment' : 'Comment'} on {moveLabel(analysis.tree.currentId)}
+                    💬 {analysis.current?.comment ? tr('Edit comment') : tr('Comment')} {tr("on")} {moveLabel(analysis.tree.currentId)}
                   </button>
                 )}
               </div>

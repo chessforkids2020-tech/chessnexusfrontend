@@ -5,6 +5,7 @@ import Chessboard from '../../components/Chessboard';
 import { useAuth } from '../../contexts/AuthContext';
 import { trackEvent } from '../../lib/analytics';
 import io from 'socket.io-client';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function LiveGame() {
   const { gameId } = useParams();
@@ -119,7 +120,7 @@ export default function LiveGame() {
 
       // If game is already finished, enter analysis mode automatically
       if (data.status === 'finished') {
-        setStatus('Game Over');
+        setStatus(tr('Game Over'));
         setAnalysisMode(true);
         setAnalysisGame(new Chess(data.fen));
       }
@@ -166,7 +167,7 @@ export default function LiveGame() {
     });
 
     newSocket.on('game_finished', ({ result, winner }) => {
-      setStatus(`Game Over: ${result}`);
+      setStatus(tr("Game Over: {result}", { result: result }));
       setWinner(winner);
       trackEvent('game_finished', { result, winner, mode: 'live', durationMs: gameStartTimeRef.current ? Date.now() - gameStartTimeRef.current : 0 });
       // Enable analysis mode automatically when game ends
@@ -279,7 +280,7 @@ export default function LiveGame() {
   };
 
   if (!gameData) {
-    return <div style={{ padding: '50px', textAlign: 'center' }}>Loading game...</div>;
+    return <div style={{ padding: '50px', textAlign: 'center' }}>{tr("Loading game...")}</div>;
   }
 
   const isMyTurn = (game.turn() === 'w' && orientation === 'white') || (game.turn() === 'b' && orientation === 'black');
@@ -305,7 +306,7 @@ export default function LiveGame() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
       <div style={{ marginBottom: '20px', textAlign: 'center' }}>
-        <h2>{gameData.timeControl} {category.charAt(0).toUpperCase() + category.slice(1)} Game</h2>
+        <h2>{gameData.timeControl} {category.charAt(0).toUpperCase() + category.slice(1)} {tr("Game")}</h2>
         
         {/* Clocks and Players */}
         <div style={{ display: 'flex', gap: '40px', alignItems: 'center', margin: '20px 0' }}>
@@ -317,7 +318,7 @@ export default function LiveGame() {
             border: `2px solid ${game.turn() !== orientation[0] ? '#3498db' : '#eee'}`,
             width: '200px'
           }}>
-            <div style={{ fontSize: '14px', color: 'var(--color-text-faint)' }}>Opponent</div>
+            <div style={{ fontSize: '14px', color: 'var(--color-text-faint)' }}>{tr("Opponent")}</div>
             <div style={{ fontWeight: 'bold', fontSize: '18px' }}>
               {orientation === 'white' ? (gameData.players.black.displayName || gameData.players.black.username) : (gameData.players.white.displayName || gameData.players.white.username)}
             </div>
@@ -326,7 +327,7 @@ export default function LiveGame() {
             </div>
           </div>
 
-          <div style={{ fontSize: '24px', fontWeight: 'bold' }}>VS</div>
+          <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{"VS"}</div>
 
           {/* User Block */}
           <div style={{ 
@@ -336,7 +337,7 @@ export default function LiveGame() {
             border: `2px solid ${game.turn() === orientation[0] ? '#3498db' : '#eee'}`,
             width: '200px'
           }}>
-            <div style={{ fontSize: '14px', color: 'var(--color-text-faint)' }}>You</div>
+            <div style={{ fontSize: '14px', color: 'var(--color-text-faint)' }}>{tr("You")}</div>
             <div style={{ fontWeight: 'bold', fontSize: '18px' }}>
               {user.displayName}
             </div>
@@ -372,7 +373,7 @@ export default function LiveGame() {
         {analysisMode ? (
           // Analysis Mode
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <h3 style={{ marginBottom: '15px', color: 'var(--color-text)' }}>Game Analysis</h3>
+            <h3 style={{ marginBottom: '15px', color: 'var(--color-text)' }}>{tr("Game Analysis")}</h3>
             
             {/* Analysis Controls */}
             <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -389,7 +390,7 @@ export default function LiveGame() {
                   fontSize: '14px'
                 }}
               >
-                ⏮️ Start
+                {tr("⏮️ Start")}
               </button>
               <button 
                 onClick={goToPreviousMove}
@@ -404,7 +405,7 @@ export default function LiveGame() {
                   fontSize: '14px'
                 }}
               >
-                ⏪ Prev
+                {tr("⏪ Prev")}
               </button>
               <span style={{ 
                 padding: '8px 12px', 
@@ -415,7 +416,7 @@ export default function LiveGame() {
                 minWidth: '80px',
                 textAlign: 'center'
               }}>
-                {currentMoveIndex === 0 ? 'Start' : `Move ${Math.ceil(currentMoveIndex / 2)}${currentMoveIndex % 2 === 1 ? ' Black' : ' White'}`}
+                {currentMoveIndex === 0 ? 'Start' : tr("Move {v0}{v1}", { v0: Math.ceil(currentMoveIndex / 2), v1: currentMoveIndex % 2 === 1 ? ' Black' : ' White' })}
               </span>
               <button 
                 onClick={goToNextMove}
@@ -430,7 +431,7 @@ export default function LiveGame() {
                   fontSize: '14px'
                 }}
               >
-                Next ⏩
+                {tr("Next ⏩")}
               </button>
               <button 
                 onClick={goToEnd}
@@ -445,7 +446,7 @@ export default function LiveGame() {
                   fontSize: '14px'
                 }}
               >
-                End ⏭️
+                {tr("End ⏭️")}
               </button>
             </div>
 
@@ -457,7 +458,7 @@ export default function LiveGame() {
               marginBottom: '15px',
               textAlign: 'center'
             }}>
-              💡 In analysis mode, you can play both sides to explore different moves
+              {tr("💡 In analysis mode, you can play both sides to explore different moves")}
             </div>
 
             <Chessboard 
@@ -490,14 +491,14 @@ export default function LiveGame() {
           overflowY: 'auto'
         }}>
           <h3 style={{ margin: '0 0 15px 0', textAlign: 'center', color: 'var(--color-text)' }}>
-            {analysisMode ? 'Analysis Notation' : 'Game Notation'}
+            {analysisMode ? tr('Analysis Notation') : tr('Game Notation')}
           </h3>
           
           {/* Header */}
           <div style={{ display: 'flex', padding: '8px', borderBottom: '2px solid var(--color-text)', backgroundColor: 'var(--color-surface)', fontWeight: 'bold' }}>
             <span style={{ width: '30px' }}>#</span>
-            <span style={{ width: '60px' }}>White</span>
-            <span style={{ width: '60px' }}>Black</span>
+            <span style={{ width: '60px' }}>{tr("White")}</span>
+            <span style={{ width: '60px' }}>{tr("Black")}</span>
           </div>
           
           {/* Moves */}
@@ -521,7 +522,7 @@ export default function LiveGame() {
               fontSize: '16px'
             }}
           >
-            Exit Analysis
+            {tr("Exit Analysis")}
           </button>
         </div>
       )}

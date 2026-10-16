@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PlayerName from '../components/PlayerName';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 const TABS = ['Friends', 'Requests', 'Find'];
 
@@ -63,27 +64,27 @@ export default function FriendsPage() {
     try {
       await api.post(`/api/friends/accept/${friendshipId}`);
       await fetchFriends();
-    } catch (err) { alert(err.response?.data?.message || 'Failed'); }
+    } catch (err) { alert(err.response?.data?.message || tr('Failed')); }
   };
 
   const declineRequest = async (friendshipId) => {
     try {
       await api.post(`/api/friends/decline/${friendshipId}`);
       setRequests(prev => prev.filter(r => r.friendshipId !== friendshipId));
-    } catch (err) { alert(err.response?.data?.message || 'Failed'); }
+    } catch (err) { alert(err.response?.data?.message || tr('Failed')); }
   };
 
   const unfriend = async (friendshipId) => {
-    if (!window.confirm('Remove this friend?')) return;
+    if (!window.confirm(tr('Remove this friend?'))) return;
     try {
       await api.delete(`/api/friends/${friendshipId}`);
       setFriends(prev => prev.filter(f => f.friendshipId !== friendshipId));
-    } catch (err) { alert(err.response?.data?.message || 'Failed'); }
+    } catch (err) { alert(err.response?.data?.message || tr('Failed')); }
   };
 
   return (
     <div style={s.page}>
-      <h1 style={s.title}>👥 Friends</h1>
+      <h1 style={s.title}>{tr("👥 Friends")}</h1>
 
       {/* Tabs */}
       <div style={s.tabs}>
@@ -107,7 +108,7 @@ export default function FriendsPage() {
           {friends.length === 0 ? (
             <div style={s.empty}>
               <div style={{ fontSize: 48, marginBottom: 12 }}>👋</div>
-              <p>No friends yet. Use the <strong>Find</strong> tab to add friends!</p>
+              <p>{tr("No friends yet. Use the")} <strong>{tr("Find")}</strong> {tr("tab to add friends!")}</p>
             </div>
           ) : (
             <div style={s.list}>
@@ -118,7 +119,7 @@ export default function FriendsPage() {
                     <div style={s.cardName}><PlayerName displayName={f.user?.displayName} username={f.user?.username} /></div>
                     <div style={s.cardSub}>@{f.user?.username}</div>
                   </div>
-                  <button style={s.btnDanger} onClick={() => unfriend(f.friendshipId)}>Unfriend</button>
+                  <button style={s.btnDanger} onClick={() => unfriend(f.friendshipId)}>{tr("Unfriend")}</button>
                 </div>
               ))}
             </div>
@@ -131,7 +132,7 @@ export default function FriendsPage() {
         <div>
           {requests.length === 0 ? (
             <div style={s.empty}>
-              <p>No pending friend requests.</p>
+              <p>{tr("No pending friend requests.")}</p>
             </div>
           ) : (
             <div style={s.list}>
@@ -143,8 +144,8 @@ export default function FriendsPage() {
                     <div style={s.cardSub}>@{r.user?.username}</div>
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button style={s.btnAccept} onClick={() => acceptRequest(r.friendshipId)}>Accept</button>
-                    <button style={s.btnDecline} onClick={() => declineRequest(r.friendshipId)}>Decline</button>
+                    <button style={s.btnAccept} onClick={() => acceptRequest(r.friendshipId)}>{tr("Accept")}</button>
+                    <button style={s.btnDecline} onClick={() => declineRequest(r.friendshipId)}>{tr("Decline")}</button>
                   </div>
                 </div>
               ))}
@@ -158,14 +159,14 @@ export default function FriendsPage() {
         <div>
           <input
             type="text"
-            placeholder="Search by username or display name…"
+            placeholder={tr("Search by username or display name…")}
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={s.searchInput}
             autoFocus
           />
           {search.trim().length > 0 && search.trim().length < 2 && (
-            <p style={{ color: 'var(--color-text-faint)', fontSize: 13, marginTop: 8 }}>Type at least 2 characters…</p>
+            <p style={{ color: 'var(--color-text-faint)', fontSize: 13, marginTop: 8 }}>{tr("Type at least 2 characters…")}</p>
           )}
           <div style={s.list}>
             {searchResults.map(u => {
@@ -175,12 +176,12 @@ export default function FriendsPage() {
                   <div style={s.avatar}>{(u.displayName || u.username || '?')[0].toUpperCase()}</div>
                   <div style={s.cardInfo}>
                     <div style={s.cardName}><PlayerName displayName={u.displayName} username={u.username} userId={u._id} /></div>
-                    <div style={s.cardSub}>@{u.username} · {u.friendCount || 0} friends</div>
+                    <div style={s.cardSub}>@{u.username} · {u.friendCount || 0} {tr("friends")}</div>
                   </div>
                   {!st || st.status === 'none' ? (
-                    <button style={s.btnAdd} onClick={() => sendRequest(u._id)}>+ Add</button>
+                    <button style={s.btnAdd} onClick={() => sendRequest(u._id)}>{tr("+ Add")}</button>
                   ) : st.status === 'accepted' ? (
-                    <span style={s.chipFriend}>✓ Friends</span>
+                    <span style={s.chipFriend}>{tr("✓ Friends")}</span>
                   ) : st.status === 'pending' ? (
                     <span style={s.chipPending}>{st.iAmRequester ? 'Sent' : 'Respond ↑'}</span>
                   ) : null}
@@ -188,7 +189,7 @@ export default function FriendsPage() {
               );
             })}
             {search.trim().length >= 2 && searchResults.length === 0 && (
-              <p style={{ color: 'var(--color-text-faint)', fontSize: 14, textAlign: 'center', marginTop: 24 }}>No users found.</p>
+              <p style={{ color: 'var(--color-text-faint)', fontSize: 14, textAlign: 'center', marginTop: 24 }}>{tr("No users found.")}</p>
             )}
           </div>
         </div>

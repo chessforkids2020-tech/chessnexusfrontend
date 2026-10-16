@@ -17,6 +17,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import api from '../api';
 import { applyPairedBoard } from './BoardThemeContext';
+import { t as tr } from '../i18n/LanguageContext';
 
 // The nine palettes. `id` MUST match a [data-theme="..."] block in
 // styles/tokens/themes.css. `swatch` is only for the picker UI — it is a
@@ -26,7 +27,7 @@ export const UI_THEMES = [
   {
     id: 'obsidianGlass',
     name: 'Obsidian Glass',
-    description: 'Pure obsidian dark with a cyan accent.',
+    description: tr('Pure obsidian dark with a cyan accent.'),
     swatch: { bg: '#050505', surface: '#151515', accent: '#19c6d3', text: '#f2f2f2' },
   },
   {
@@ -38,19 +39,19 @@ export const UI_THEMES = [
   {
     id: 'slateBlueSteel',
     name: 'Slate Blue Steel',
-    description: 'Neutral, professional, easy on the eyes.',
+    description: tr('Neutral, professional, easy on the eyes.'),
     swatch: { bg: '#0B0C0C', surface: '#151820', accent: '#60a5fa', text: '#e5e7eb' },
   },
   {
     id: 'deepEmber',
     name: 'Deep Ember',
-    description: 'Warm, energetic, inviting dark mode.',
+    description: tr('Warm, energetic, inviting dark mode.'),
     swatch: { bg: '#0B0C0C', surface: '#1a1612', accent: '#fbbf24', text: '#e5e7eb' },
   },
   {
     id: 'purpleHaze',
     name: 'Purple Haze',
-    description: 'Premium, slightly gaming, memorable.',
+    description: tr('Premium, slightly gaming, memorable.'),
     swatch: { bg: '#0B0C0C', surface: '#161320', accent: '#a78bfa', text: '#e5e7eb' },
   },
   {
@@ -62,19 +63,19 @@ export const UI_THEMES = [
   {
     id: 'obsidianEmerald',
     name: 'Obsidian Emerald',
-    description: 'Deep black with rich emerald. Serious and premium.',
+    description: tr('Deep black with rich emerald. Serious and premium.'),
     swatch: { bg: '#0B0F0E', surface: '#121817', accent: '#10b981', text: '#e6edeb' },
   },
   {
     id: 'royalViolet',
     name: 'Royal Violet',
-    description: 'Very dark violet with refined purple. Luxury and gaming.',
+    description: tr('Very dark violet with refined purple. Luxury and gaming.'),
     swatch: { bg: '#0F0A1F', surface: '#1A1133', accent: '#8b5cf6', text: '#f0ecff' },
   },
   {
     id: 'goldSovereign',
     name: 'Gold Sovereign',
-    description: 'Black with muted gold. Prestigious and chess-like.',
+    description: tr('Black with muted gold. Prestigious and chess-like.'),
     swatch: { bg: '#0A0A0C', surface: '#111114', accent: '#c6a87c', text: '#edebe6' },
   },
 ];

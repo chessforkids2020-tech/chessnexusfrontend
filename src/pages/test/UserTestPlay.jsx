@@ -4,6 +4,7 @@ import api from '../../api';
 import Chessboard from '../../components/Chessboard';
 import { Chess } from 'chess.js';
 import useResponsiveBoardSize from '../../hooks/useResponsiveBoardSize';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const UserTestPlay = () => {
   const { studyId, chapterId } = useParams();
@@ -165,7 +166,7 @@ const UserTestPlay = () => {
 
       // Handle wrong move - backend returns the next puzzle
       if (response.data.wrongMove) {
-        setMessage('✗ Wrong move!');
+        setMessage(tr('✗ Wrong move!'));
         setWaitingForStockfish(false);
         
         // If test is completed, finish
@@ -214,7 +215,7 @@ const UserTestPlay = () => {
       // Undo move on error
       chess.undo();
       setChess(new Chess(chess.fen()));
-      setMessage('Move failed. Try again.');
+      setMessage(tr('Move failed. Try again.'));
       return false;
     }
   }, [chess, testId, isSolved, waitingForStockfish, timeLeft, testFinished, playerColor]);
@@ -235,7 +236,7 @@ const UserTestPlay = () => {
       setDisplayPuzzleNumber(response.data.currentPuzzle.puzzleNumber || response.data.puzzleIndex + 1);
       setDisplayPuzzleNumber(response.data.currentPuzzle.puzzleNumber || response.data.puzzleIndex + 1);
     } catch (err) {
-      setMessage('Error loading next puzzle');
+      setMessage(tr('Error loading next puzzle'));
     }
   };
 
@@ -253,7 +254,7 @@ const UserTestPlay = () => {
       setCurrentPuzzleIndex(response.data.puzzleIndex);
       loadPuzzle(response.data.currentPuzzle);
     } catch (err) {
-      setMessage('Error skipping puzzle');
+      setMessage(tr('Error skipping puzzle'));
     }
   };
 
@@ -285,7 +286,7 @@ const UserTestPlay = () => {
         : `/test/result/${response.data.resultId}`;
       navigate(resultUrl);
     } catch (err) {
-      setError('Failed to save results');
+      setError(tr('Failed to save results'));
     }
   };
 
@@ -460,7 +461,7 @@ const UserTestPlay = () => {
   if (loading) {
     return (
       <div style={styles.page}>
-        <div style={styles.loading}>Starting test...</div>
+        <div style={styles.loading}>{tr("Starting test...")}</div>
       </div>
     );
   }
@@ -475,7 +476,7 @@ const UserTestPlay = () => {
             onClick={() => navigate('/test')}
             style={{ ...styles.button, ...styles.finishBtn, width: 'auto', marginTop: '20px' }}
           >
-            Back to Tests
+            {tr("Back to Tests")}
           </button>
         </div>
       </div>
@@ -514,7 +515,7 @@ const UserTestPlay = () => {
           {/* Board Section */}
           <div style={styles.boardSection}>
             <div style={styles.playerTurn}>
-              {playerColor === 'white' ? '⚪' : '⚫'} You play as {playerColor}
+              {playerColor === 'white' ? '⚪' : '⚫'} {tr("You play as")} {playerColor}
             </div>
             
             {message && (
@@ -549,7 +550,7 @@ const UserTestPlay = () => {
           <div style={styles.sidebar}>
             {/* Progress Card */}
             <div style={styles.card}>
-              <div style={styles.cardTitle}>Progress</div>
+              <div style={styles.cardTitle}>{tr("Progress")}</div>
               <div style={styles.progressBar}>
                 <div 
                   style={{ 
@@ -559,26 +560,26 @@ const UserTestPlay = () => {
                 />
               </div>
               <div style={{ textAlign: 'center', color: 'var(--color-text)', fontSize: '18px' }}>
-                Puzzle {displayPuzzleNumber || (currentPuzzleIndex + 1)}
+                {tr("Puzzle")} {displayPuzzleNumber || (currentPuzzleIndex + 1)}
               </div>
             </div>
 
             {/* Stats Card */}
             <div style={styles.card}>
-              <div style={styles.cardTitle}>Stats</div>
+              <div style={styles.cardTitle}>{"Stats"}</div>
               <div style={styles.stat}>
-                <span style={styles.statLabel}>Solved</span>
+                <span style={styles.statLabel}>{tr("Solved")}</span>
                 <span style={styles.statValue}>{puzzlesSolved}</span>
               </div>
               <div style={styles.stat}>
-                <span style={styles.statLabel}>Points</span>
+                <span style={styles.statLabel}>{tr("Points")}</span>
                 <span style={{ ...styles.statValue, color: 'var(--color-success)' }}>
                   {puzzlesSolved * 2}
                 </span>
               </div>
               <div style={{ ...styles.stat, borderBottom: 'none' }}>
-                <span style={styles.statLabel}>Solution Length</span>
-                <span style={styles.statValue}>{solutionLength} moves</span>
+                <span style={styles.statLabel}>{tr("Solution Length")}</span>
+                <span style={styles.statValue}>{solutionLength} {tr("moves")}</span>
               </div>
             </div>
 
@@ -589,14 +590,14 @@ const UserTestPlay = () => {
                 onClick={skipPuzzle}
                 disabled={waitingForStockfish || testFinished}
               >
-                ⏭️ Skip Puzzle
+                {tr("⏭️ Skip Puzzle")}
               </button>
               <button
                 style={{ ...styles.button, ...styles.finishBtn }}
                 onClick={finishTest}
                 disabled={testFinished}
               >
-                🏁 Finish Test
+                {tr("🏁 Finish Test")}
               </button>
             </div>
           </div>

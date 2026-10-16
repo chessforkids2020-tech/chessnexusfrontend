@@ -4,14 +4,15 @@
 // report for parents", "track chess student progress", "chess academy reporting".
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-progress-reports";
 
 const REPORT_CONTENTS = [
-  { icon: "📈", t: "Rating over time", d: "How the child's puzzle rating has moved — the single number parents ask about most." },
-  { icon: "🧩", t: "Puzzles solved", d: "Volume and accuracy, so effort is visible even when the rating is flat." },
-  { icon: "📝", t: "Assignment completion", d: "What you set, what they finished, and how they scored on it." },
-  { icon: "📋", t: "Attendance", d: "Present, absent and catch-up classes, so there's no argument about who missed what." },
+  { icon: "📈", t: tr("Rating over time"), d: tr("How the child's puzzle rating has moved — the single number parents ask about most.") },
+  { icon: "🧩", t: tr("Puzzles solved"), d: tr("Volume and accuracy, so effort is visible even when the rating is flat.") },
+  { icon: "📝", t: tr("Assignment completion"), d: tr("What you set, what they finished, and how they scored on it.") },
+  { icon: "📋", t: tr("Attendance"), d: tr("Present, absent and catch-up classes, so there's no argument about who missed what.") },
   { icon: "♟️", t: "Recent games", d: "Games played on the platform, plus games from Lichess or Chess.com in the last 30 days — so parents see the whole picture, not just the part that happened here." },
 ];
 
@@ -41,14 +42,14 @@ export default function ProgressReportsPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
   return (
     <FeaturePageLayout
       seo={{
-        title: "Chess Progress Reports for Parents — Track Every Student",
+        title: tr("Chess Progress Reports for Parents — Track Every Student"),
         description:
           "One shareable progress link per student: rating over time, puzzles solved, assignment completion, attendance and recent games — including Lichess and Chess.com. Parents need no account.",
         keywords:
@@ -60,14 +61,14 @@ export default function ProgressReportsPage() {
         h1: "Progress reports parents actually read",
         sub:
           "One link per student. No account, no login — rating, puzzles, assignments, attendance and recent games in a page a parent understands.",
-        primary: { to: "/coach/onboarding", label: "Start coaching free" },
-        secondary: { to: "/chess-coach-guide", label: "Read the coach guide" },
+        primary: { to: "/coach/onboarding", label: tr("Start coaching free") },
+        secondary: { to: "/chess-coach-guide", label: tr("Read the coach guide") },
       }}
       jsonLd={faqSchema}
       excludeSlug={CANONICAL}
     >
-      <section className="mkt-section" aria-label="What's in a report">
-        <h2>What the parent sees</h2>
+      <section className="mkt-section" aria-label={tr("What's in a report")}>
+        <h2>{tr("What the parent sees")}</h2>
         <p className="mkt-section-lead">
           The question every coach gets is "is my child improving?" This answers it
           with evidence instead of reassurance.
@@ -85,8 +86,8 @@ export default function ProgressReportsPage() {
         </ul>
       </section>
 
-      <section className="mkt-section" aria-label="Why a link">
-        <h2>Why it's a link, not an account</h2>
+      <section className="mkt-section" aria-label={tr("Why a link")}>
+        <h2>{tr("Why it's a link, not an account")}</h2>
         <p className="mkt-p">
           Parents don't want another login. Every extra step between them and their
           child's progress is a step where they give up — so the report is a URL you
@@ -94,19 +95,19 @@ export default function ProgressReportsPage() {
         </p>
       </section>
 
-      <section className="mkt-section" aria-label="For coaches">
-        <h2>And for you</h2>
+      <section className="mkt-section" aria-label={tr("For coaches")}>
+        <h2>{tr("And for you")}</h2>
         <p className="mkt-p">
           The same data powers your own dashboard: ratings, activity, streaks and
           assignment results across the whole roster, grouped by batch. Attendance
-          feeds in automatically from the{" "}
-          <Link to="/live-chess-classroom">live classroom</Link>, and assignment
+          {tr("feeds in automatically from the")}{" "}
+          <Link to="/live-chess-classroom">{tr("live classroom")}</Link>{tr(", and assignment")}
           results from whatever you set — so the report builds itself as you teach.
         </p>
       </section>
 
-      <section className="mkt-section" aria-label="FAQ">
-        <h2>Progress reports FAQ</h2>
+      <section className="mkt-section" aria-label={"FAQ"}>
+        <h2>{tr("Progress reports FAQ")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div key={q} className="mkt-faq-item">
@@ -117,11 +118,11 @@ export default function ProgressReportsPage() {
         </div>
       </section>
 
-      <section className="mkt-section mkt-cta-section" aria-label="Start">
-        <h2>Send your first report free</h2>
+      <section className="mkt-section mkt-cta-section" aria-label={tr("Start")}>
+        <h2>{tr("Send your first report free")}</h2>
         <div className="mkt-cta-row">
-          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Start coaching free</Link>
-          <Link to="/chess-coaching" className="mkt-btn">See the coaching platform</Link>
+          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">{tr("Start coaching free")}</Link>
+          <Link to="/chess-coaching" className="mkt-btn">{tr("See the coaching platform")}</Link>
         </div>
       </section>
     </FeaturePageLayout>

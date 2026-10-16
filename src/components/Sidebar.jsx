@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api';
 import socket from '../socket';
 import { getSeenIds, markSeen } from '../utils/seenNotifications';
+import { useT } from '../i18n/LanguageContext';
 import UserAvatar from './UserAvatar';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -69,6 +70,7 @@ function getCountryFlag(country) {
 
 
 export default function Sidebar({ user, onNavigate }) {
+  const t = useT();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
@@ -775,7 +777,7 @@ export default function Sidebar({ user, onNavigate }) {
                 e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'rotate(0deg) scale(1)';
               }}
-              title="Collapse sidebar"
+              title={t('Collapse sidebar')}
             >
               ✕
             </button>
@@ -837,10 +839,10 @@ export default function Sidebar({ user, onNavigate }) {
                   e.currentTarget.style.transform = 'translateX(0)';
                   e.currentTarget.style.borderLeft = 'none';
                 }}
-                title="Resume your active game"
+                title={t('Resume your active game')}
               >
                 <span style={styles.navIcon}>🎯</span>
-                {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Resume Game</span>}
+                {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Resume Game')}</span>}
               </div>
             )}
             <div 
@@ -864,10 +866,10 @@ export default function Sidebar({ user, onNavigate }) {
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
-              title="Dashboard"
+              title={t('Dashboard')}
             >
               <span style={styles.navIcon}>🏠</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Dashboard</span>}
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Dashboard')}</span>}
             </div>
             <div 
               style={isActive('/puzzles-hub') ? styles.navItemActive : styles.navItem}
@@ -890,10 +892,10 @@ export default function Sidebar({ user, onNavigate }) {
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
-              title="Puzzles Hub"
+              title={t('Puzzles Hub')}
             >
               <span style={styles.navIcon}>🏛️</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Puzzles Hub</span>}
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Puzzles Hub')}</span>}
             </div>
 
             <div
@@ -917,10 +919,10 @@ export default function Sidebar({ user, onNavigate }) {
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
-              title="Race Hub"
+              title={t('Race Hub')}
             >
               <span style={styles.navIcon}>🏁</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Race Hub</span>}
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Race Hub')}</span>}
             </div>
 
             <div
@@ -944,10 +946,10 @@ export default function Sidebar({ user, onNavigate }) {
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
-              title="Study"
+              title={t('Study')}
             >
               <span style={styles.navIcon}>📚</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Study</span>}
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Study')}</span>}
             </div>
 
             
@@ -975,10 +977,10 @@ export default function Sidebar({ user, onNavigate }) {
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
-              title="Coach"
+              title={t('Coach')}
             >
               <span style={styles.navIcon}>🎓</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Coach</span>}
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Coach')}</span>}
             </div>
 
             <div 
@@ -1002,10 +1004,10 @@ export default function Sidebar({ user, onNavigate }) {
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
-              title="Play"
+              title={t('Play')}
             >
               <span style={styles.navIcon}>🎮</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Play</span>}
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Play')}</span>}
             </div>
 
             {/* The 3D Arena nav item moved to the Games page (/games). It is a way
@@ -1035,10 +1037,10 @@ export default function Sidebar({ user, onNavigate }) {
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
-              title="Analyse My Games"
+              title={t('Analyse My Games')}
             >
               <span style={styles.navIcon}>🔍</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Analysis</span>}
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Analysis')}</span>}
             </div>
 
             {/* Pulsing badge when analysis is running in background */}
@@ -1071,11 +1073,11 @@ export default function Sidebar({ user, onNavigate }) {
                   e.currentTarget.style.color = 'var(--color-accent)';
                   e.currentTarget.style.transform = 'translateX(0)';
                 }}
-                title={`Analysing ${analysingJob.username || 'games'}… tap to view progress`}
+                title={t('Analysing {name}… tap to view progress', { name: analysingJob.username || t('games') })}
               >
                 <span style={styles.navIcon}>⌛</span>
                 {(!(isMobile || isLandscape) || isExpanded) && (
-                  <span style={styles.navLabel}>Analysing…</span>
+                  <span style={styles.navLabel}>{t('Analysing…')}</span>
                 )}
               </div>
             )}
@@ -1097,10 +1099,10 @@ export default function Sidebar({ user, onNavigate }) {
                 e.currentTarget.style.color = socialActive ? 'var(--color-accent)' : 'var(--color-text)';
                 e.currentTarget.style.transform = 'translateX(0)';
               }}
-              title="Social Hub"
+              title={t('Social Hub')}
             >
               <span style={styles.navIcon}>🌐</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Social Hub</span>}
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Social Hub')}</span>}
             </div>
           </nav>
           
@@ -1123,7 +1125,7 @@ export default function Sidebar({ user, onNavigate }) {
                     ref={quickSearchInputRef}
                     autoFocus
                     type="text"
-                    placeholder="Search players..."
+                    placeholder={t('Search players...')}
                     value={searchQuery}
                     onChange={(e) => {
                       const val = e.target.value;
@@ -1213,7 +1215,7 @@ export default function Sidebar({ user, onNavigate }) {
                       fetchFriendUnread();       // refresh friend messages (clears once actually read in chat)
                     }
                   }}
-                  title="Notifications"
+                  title={t('Notifications')}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-a15)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = showNotifications ? 'var(--color-accent-a15)' : 'transparent';
@@ -1254,7 +1256,7 @@ export default function Sidebar({ user, onNavigate }) {
                     if ((isMobile || isLandscape) && !isExpanded) { setIsExpanded(true); }
                     else { handleNavigate('/settings'); }
                   }}
-                  title="Settings"
+                  title={t('Settings')}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-a15)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = location.pathname === '/settings' ? 'var(--color-accent-a15)' : 'transparent';
@@ -1287,7 +1289,7 @@ export default function Sidebar({ user, onNavigate }) {
                     setShowFriends(next);
                     if (next) fetchOnlineFriends(); // refresh on open
                   }}
-                  title={onlineFriends.length > 0 ? `${onlineFriends.length} friend${onlineFriends.length === 1 ? '' : 's'} online` : 'Friends online'}
+                  title={onlineFriends.length > 0 ? (onlineFriends.length === 1 ? t('1 friend online') : t('{n} friends online', { n: onlineFriends.length })) : t('Friends online')}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-success-a12)'; e.currentTarget.style.color = 'var(--color-success)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = showFriends ? 'var(--color-success-a12)' : 'transparent'; e.currentTarget.style.color = showFriends ? 'var(--color-success)' : 'var(--color-text-muted)'; }}
                 >
@@ -1321,7 +1323,7 @@ export default function Sidebar({ user, onNavigate }) {
                     color: 'var(--color-text-muted)', transition: 'background 0.2s, color 0.2s',
                   }}
                   onClick={async () => { await logout(); navigate('/', { replace: true }); }}
-                  title="Logout"
+                  title={t('Logout')}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-danger-a12)'; e.currentTarget.style.color = 'var(--color-danger)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
                 >
@@ -1346,10 +1348,10 @@ export default function Sidebar({ user, onNavigate }) {
                   onClick={() => handleNavigate('/coach/dashboard')}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-a20)'; e.currentTarget.style.color = 'var(--color-accent)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/coach') ? 'var(--color-accent-a15)' : 'var(--color-accent-a06)'; e.currentTarget.style.color = location.pathname.startsWith('/coach') ? 'var(--color-accent)' : 'var(--color-accent)'; e.currentTarget.style.transform = 'translateX(0)'; }}
-                  title="Coach Dashboard"
+                  title={t('Coach Dashboard')}
                 >
                   <span style={styles.navIcon}>🎓</span>
-                  {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Coach</span>}
+                  {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Coach')}</span>}
                 </div>
               )}
 
@@ -1381,7 +1383,7 @@ export default function Sidebar({ user, onNavigate }) {
                     setShowQuickSearch(next);
                     if (!next) { setSearchQuery(''); setSearchResults([]); setSearchOpen(false); }
                   }}
-                  title="Search Players"
+                  title={t('Search Players')}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-a15)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = showQuickSearch ? 'var(--color-accent-a15)' : 'transparent'; e.currentTarget.style.color = showQuickSearch ? 'var(--color-accent)' : 'var(--color-text-muted)'; }}
                 >
@@ -1400,7 +1402,7 @@ export default function Sidebar({ user, onNavigate }) {
                     color: 'var(--color-text-muted)', transition: 'background 0.2s, color 0.2s',
                   }}
                   onClick={() => navigate('/login')}
-                  title="Login"
+                  title={t('Login')}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-success-a12)'; e.currentTarget.style.color = 'var(--color-success)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
                 >
@@ -1421,7 +1423,7 @@ export default function Sidebar({ user, onNavigate }) {
                         color: 'var(--color-text-muted)', transition: 'background 0.2s, color 0.2s',
                       }}
                       onClick={async () => { await logout(); navigate('/', { replace: true }); }}
-                      title="Leave (end guest session)"
+                      title={t('Leave (end guest session)')}
                       onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-danger-a12)'; e.currentTarget.style.color = 'var(--color-danger)'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
                     >
@@ -1466,12 +1468,12 @@ export default function Sidebar({ user, onNavigate }) {
             >
               {searchLoading && (
                 <div style={{ padding: '12px 16px', color: 'var(--color-text-faint)', fontSize: '13px', textAlign: 'center' }}>
-                  Searching...
+                  {t('Searching...')}
                 </div>
               )}
               {!searchLoading && searchResults.length === 0 && searchQuery.trim().length >= 2 && (
                 <div style={{ padding: '12px 16px', color: 'var(--color-text-faint)', fontSize: '13px', textAlign: 'center' }}>
-                  No players found
+                  {t('No players found')}
                 </div>
               )}
               {!searchLoading && searchResults.map((player, idx) => (
@@ -1559,24 +1561,24 @@ export default function Sidebar({ user, onNavigate }) {
                 }}>
                   <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <span style={{ width: '8px', height: '8px', borderRadius: 'var(--radius-pill)', background: 'var(--color-success)', boxShadow: '0 0 6px var(--color-success)', flexShrink: 0 }} />
-                    Friends online
+                    {t('Friends online')}
                     <span style={{ color: 'var(--color-success)', fontWeight: 800 }}>{onlineFriends.length}</span>
                   </span>
                   <button
                     onClick={() => setShowFriends(false)}
                     style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '15px' }}
-                    title="Close"
+                    title={t('Close')}
                   >✕</button>
                 </div>
 
                 {onlineFriends.length === 0 ? (
                   <div style={{ color: 'var(--color-text-faint)', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
-                    None of your friends are online right now.
+                    {t('None of your friends are online right now.')}
                     <div
                       onClick={() => { handleNavigate('/social/chat'); setShowFriends(false); }}
                       style={{ fontSize: '11.5px', color: 'var(--color-success)', fontWeight: 600, marginTop: '10px', cursor: 'pointer' }}
                     >
-                      Go to Chat →
+                      {t('Go to Chat →')}
                     </div>
                   </div>
                 ) : (
@@ -1611,7 +1613,7 @@ export default function Sidebar({ user, onNavigate }) {
                             {f.displayName || f.username}
                           </div>
                           <div style={{ fontSize: '11px', color: 'var(--color-success)', fontWeight: 600 }}>
-                            ● Online
+                            {t('● Online')}
                           </div>
                         </div>
                         <span style={{ fontSize: '11px', color: 'var(--color-text-faint)', flexShrink: 0, marginLeft: '6px' }}>→</span>
@@ -1621,7 +1623,7 @@ export default function Sidebar({ user, onNavigate }) {
                       onClick={() => { handleNavigate('/social/chat'); setShowFriends(false); }}
                       style={{ fontSize: '11.5px', color: 'var(--color-success)', fontWeight: 600, textAlign: 'right', cursor: 'pointer', marginTop: '2px' }}
                     >
-                      Go to Chat →
+                      {t('Go to Chat →')}
                     </div>
                   </>
                 )}
@@ -1667,11 +1669,11 @@ export default function Sidebar({ user, onNavigate }) {
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid var(--color-white-a07)',
                 }}>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text)' }}>🔔 Notifications</span>
+                  <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text)' }}>{t('🔔 Notifications')}</span>
                   <button
                     onClick={() => setShowNotifications(false)}
                     style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '15px' }}
-                    title="Close"
+                    title={t('Close')}
                   >✕</button>
                 </div>
 
@@ -1682,7 +1684,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {(myNotifs.notifications || []).filter(n => !n.read).length > 0 && (
                   <>
                     <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent-2)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
-                      🔔 For you
+                      {t('🔔 For you')}
                     </div>
                     {(myNotifs.notifications || []).filter(n => !n.read).map(n => (
                       <div
@@ -1711,7 +1713,7 @@ export default function Sidebar({ user, onNavigate }) {
                         )}
                         {n.link && (
                           <div style={{ fontSize: '10.5px', color: 'var(--color-text-muted)', marginTop: '3px' }}>
-                            Tap to open →
+                            {t('Tap to open →')}
                           </div>
                         )}
                       </div>
@@ -1723,7 +1725,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {gameInvites.length > 0 && (
                   <>
                     <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-success)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
-                      ♟️ Game invites
+                      {t('♟️ Game invites')}
                     </div>
                     {gameInvites.map(inv => {
                       const from = inv.inviterId;
@@ -1739,17 +1741,17 @@ export default function Sidebar({ user, onNavigate }) {
                           }}
                         >
                           <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-success)' }}>
-                            ♟️ <strong>{fromName}</strong> wants to play {tc}{variant}
+                            ♟️ <strong>{fromName}</strong> {t('wants to play')} {tc}{variant}
                           </div>
                           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                             <button
                               onClick={() => respondToGameInvite(inv._id, 'accept', inv.roomCode)}
                               style={{ flex: 1, background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                            >✓ Accept</button>
+                            >{t('✓ Accept')}</button>
                             <button
                               onClick={() => respondToGameInvite(inv._id, 'decline', inv.roomCode)}
                               style={{ flex: 1, background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                            >✕ Decline</button>
+                            >{t('✕ Decline')}</button>
                           </div>
                         </div>
                       );
@@ -1761,7 +1763,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {friendRequests.length > 0 && (
                   <>
                     <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
-                      👋 Friend requests
+                      {t('👋 Friend requests')}
                     </div>
                     {friendRequests.map(r => {
                       const fromName = r.user?.displayName || r.user?.username || 'Someone';
@@ -1774,17 +1776,17 @@ export default function Sidebar({ user, onNavigate }) {
                           }}
                         >
                           <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-accent)' }}>
-                            👋 <strong>{fromName}</strong> sent you a friend request
+                            👋 <strong>{fromName}</strong> {t('sent you a friend request')}
                           </div>
                           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                             <button
                               onClick={() => respondToFriendRequest(r.friendshipId, 'accept')}
                               style={{ flex: 1, background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                            >✓ Accept</button>
+                            >{t('✓ Accept')}</button>
                             <button
                               onClick={() => respondToFriendRequest(r.friendshipId, 'decline')}
                               style={{ flex: 1, background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                            >✕ Decline</button>
+                            >{t('✕ Decline')}</button>
                           </div>
                         </div>
                       );
@@ -1793,7 +1795,7 @@ export default function Sidebar({ user, onNavigate }) {
                       onClick={() => { handleNavigate('/friends'); setShowNotifications(false); }}
                       style={{ fontSize: '11px', color: 'var(--color-accent)', cursor: 'pointer', textAlign: 'right', marginBottom: '10px' }}
                     >
-                      See all requests →
+                      {t('See all requests →')}
                     </div>
                   </>
                 )}
@@ -1802,7 +1804,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {coachRequests.length > 0 && (
                   <>
                     <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent-2)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
-                      🎓 Coach requests
+                      {t('🎓 Coach requests')}
                     </div>
                     {coachRequests.map(r => {
                       const coach = r.coachId || {};
@@ -1816,17 +1818,17 @@ export default function Sidebar({ user, onNavigate }) {
                           }}
                         >
                           <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-accent-2)' }}>
-                            🎓 Coach <strong>{coachName}</strong> wants to add you as a student
+                            🎓 {t('Coach')} <strong>{coachName}</strong> {t('wants to add you as a student')}
                           </div>
                           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                             <button
                               onClick={() => respondToCoachRequest(r._id, 'approve')}
                               style={{ flex: 1, background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                            >✓ Approve</button>
+                            >{t('✓ Approve')}</button>
                             <button
                               onClick={() => respondToCoachRequest(r._id, 'decline')}
                               style={{ flex: 1, background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                            >✕ Decline</button>
+                            >{t('✕ Decline')}</button>
                           </div>
                         </div>
                       );
@@ -1835,7 +1837,7 @@ export default function Sidebar({ user, onNavigate }) {
                       onClick={() => { handleNavigate('/coach-requests'); setShowNotifications(false); }}
                       style={{ fontSize: '11px', color: 'var(--color-accent-2)', cursor: 'pointer', textAlign: 'right', marginBottom: '10px' }}
                     >
-                      See all requests →
+                      {t('See all requests →')}
                     </div>
                   </>
                 )}
@@ -1844,7 +1846,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {reportReplies.length > 0 && (
                   <>
                     <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-warning)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
-                      🚩 Report replies
+                      {t('🚩 Report replies')}
                     </div>
                     {reportReplies.map(r => (
                       <div
@@ -1859,13 +1861,13 @@ export default function Sidebar({ user, onNavigate }) {
                         onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-warning-a20)'; e.currentTarget.style.background = 'var(--color-warning-a12)'; }}
                       >
                         <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-warning)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          ♟️ Team replied: {r.subject}
+                          ♟️ {t('Team replied:')} {r.subject}
                         </div>
                         <div style={{ fontSize: '11.5px', color: 'var(--color-text-muted)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {r.reply}
                         </div>
                         <div style={{ fontSize: '10.5px', color: 'var(--color-text-muted)', marginTop: '3px' }}>
-                          Tap to read full reply →
+                          {t('Tap to read full reply →')}
                         </div>
                       </div>
                     ))}
@@ -1876,7 +1878,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {friendMsgs.length > 0 && (
                   <>
                     <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
-                      💬 Messages
+                      {t('💬 Messages')}
                     </div>
                     <div style={{ maxHeight: '210px', overflowY: 'auto', paddingRight: '2px' }}>
                     {friendMsgs.map(m => (
@@ -1913,7 +1915,7 @@ export default function Sidebar({ user, onNavigate }) {
                     </div>
                     {appNotifications.length > 0 && (
                       <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '8px 0 6px' }}>
-                        📢 Updates
+                        {t('📢 Updates')}
                       </div>
                     )}
                   </>
@@ -1924,7 +1926,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {coachMsgs.length > 0 && (
                   <>
                     <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-success)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
-                      🎓 Coach messages
+                      {t('🎓 Coach messages')}
                     </div>
                     <div style={{ maxHeight: '210px', overflowY: 'auto', paddingRight: '2px' }}>
                     {coachMsgs.map(m => (
@@ -1975,7 +1977,7 @@ export default function Sidebar({ user, onNavigate }) {
                     above an "all caught up" panel. */}
                 {appNotifications.filter(n => visibleNotifIds.has(n.id)).length === 0 && friendMsgs.length === 0 && coachMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 && friendRequests.length === 0 && (myNotifs.notifications || []).filter(n => !n.read).length === 0 ? (
                   <div style={{ color: 'var(--color-text-faint)', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
-                    You're all caught up — no notifications.
+                    {t("You're all caught up — no notifications.")}
                   </div>
                 ) : (
                   appNotifications.filter(n => visibleNotifIds.has(n.id)).map(n => (

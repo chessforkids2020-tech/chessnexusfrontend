@@ -6,6 +6,7 @@ import socket from '../../socket';
 import PlayerName from '../../components/PlayerName';
 import { useAuth } from '../../contexts/AuthContext';
 import { getTopicTitle } from '../../utils/topicTitles';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function ArenaWaiting() {
   const { roomId } = useParams();
@@ -108,7 +109,7 @@ export default function ArenaWaiting() {
 
   useEffect(() => {
     if (!roomId) {
-      setError('Invalid room ID');
+      setError(tr('Invalid room ID'));
       setLoading(false);
       return;
     }
@@ -158,7 +159,7 @@ export default function ArenaWaiting() {
       } catch (err) {
         if (err.response && err.response.status === 404) {
           clearInterval(pollInterval);
-          setError('Room not found — it may have been deleted by the administrator');
+          setError(tr('Room not found — it may have been deleted by the administrator'));
           setTimeout(() => navigate('/arena'), 4000);
         }
       }
@@ -166,7 +167,7 @@ export default function ArenaWaiting() {
 
     const onRoomDeleted = (data) => {
       if (data && data.roomId === roomId) {
-        setError('Room has been deleted by the administrator');
+        setError(tr('Room has been deleted by the administrator'));
         clearInterval(pollInterval);
         setTimeout(() => navigate('/arena'), 3000);
       }
@@ -187,7 +188,7 @@ export default function ArenaWaiting() {
 
   const fetchRoomData = async () => {
     if (!roomId) {
-      setError('Invalid room ID');
+      setError(tr('Invalid room ID'));
       setLoading(false);
       return;
     }
@@ -252,7 +253,7 @@ export default function ArenaWaiting() {
         const countdown = roomData?.plannedStartTime ? formatCountdown(roomData.plannedStartTime) : null;
 
         const waitText = roomData?.plannedStartTime
-          ? `${isAuto ? 'Auto start' : 'Host start'} at ${plannedLabel}`
+          ? tr("{v0} at {plannedLabel}", { v0: isAuto ? tr('Auto start') : tr('Host start'), plannedLabel: plannedLabel })
           : (isAuto ? 'Auto starts when scheduled' : 'Host starts manually');
 
         // Different message for user-created races vs admin races
@@ -260,8 +261,8 @@ export default function ArenaWaiting() {
           if (isHost) {
             return {
               icon: '👑',
-              text: 'You are the Host',
-              subtext: isAuto && countdown ? `Starts in ${countdown}` : waitText,
+              text: tr('You are the Host'),
+              subtext: isAuto && countdown ? tr("Starts in {countdown}", { countdown: countdown }) : waitText,
               gradient: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, var(--color-accent-2-a15) 100%)',
               border: 'rgba(168, 85, 247, 0.3)',
               textColor: 'var(--color-accent-2)'
@@ -269,8 +270,8 @@ export default function ArenaWaiting() {
           } else {
             return {
               icon: '⏳',
-              text: 'Waiting for Host to Start',
-              subtext: isAuto && countdown ? `Starts in ${countdown}` : waitText,
+              text: tr('Waiting for Host to Start'),
+              subtext: isAuto && countdown ? tr("Starts in {countdown}", { countdown: countdown }) : waitText,
               gradient: 'linear-gradient(135deg, var(--color-warning-a20) 0%, var(--color-warning-a20) 100%)',
               border: 'var(--color-warning-a30)',
               textColor: 'var(--color-warning)'
@@ -282,8 +283,8 @@ export default function ArenaWaiting() {
         if (isAuto && roomData?.plannedStartTime) {
           return {
             icon: '⏰',
-            text: 'Chess Nexus Hosted Race',
-            subtext: `STARTS IN ${countdown}`,
+            text: tr('Chess Nexus Hosted Race'),
+            subtext: tr("STARTS IN {countdown}", { countdown: countdown }),
             gradient: 'linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-accent-2-a20) 100%)',
             border: 'var(--color-accent-a30)',
             textColor: 'var(--color-accent)'
@@ -292,7 +293,7 @@ export default function ArenaWaiting() {
 
         return {
           icon: '⏳',
-          text: 'Chess Nexus Hosted Race',
+          text: tr('Chess Nexus Hosted Race'),
           subtext: isAuto ? 'PLANNED TIME TO START' : 'Waiting for Chess Nexus to start the race',
           gradient: 'linear-gradient(135deg, var(--color-warning-a20) 0%, var(--color-warning-a20) 100%)',
           border: 'var(--color-warning-a30)',
@@ -301,7 +302,7 @@ export default function ArenaWaiting() {
       case 'active':
         return {
           icon: '🏁',
-          text: 'Race Started!',
+          text: tr('Race Started!'),
           subtext: 'Redirecting to race...',
           gradient: 'linear-gradient(135deg, var(--color-accent-2-a20) 0%, rgba(52, 211, 153, 0.2) 100%)',
           border: 'var(--color-success-a30)',
@@ -310,7 +311,7 @@ export default function ArenaWaiting() {
       default:
         return {
           icon: '❓',
-          text: 'Unknown Status',
+          text: tr('Unknown Status'),
           subtext: 'Please refresh the page',
           gradient: 'linear-gradient(135deg, var(--color-border) 0%, rgba(203, 213, 225, 0.2) 100%)',
           border: 'var(--color-border-strong)',
@@ -627,7 +628,7 @@ export default function ArenaWaiting() {
             >
               ⏳
             </motion.div>
-            <div style={styles.loadingText}>Loading room...</div>
+            <div style={styles.loadingText}>{tr("Loading room...")}</div>
           </motion.div>
         </div>
       </div>
@@ -652,7 +653,7 @@ export default function ArenaWaiting() {
               whileHover={{ y: -2, boxShadow: '0 6px 24px var(--color-accent-a40)' }}
               transition={{ duration: 0.2 }}
             >
-              Retry
+              {tr("Retry")}
             </motion.button>
           </motion.div>
         </div>
@@ -718,7 +719,7 @@ export default function ArenaWaiting() {
               alignItems: 'center',
               gap: '12px'
             }}>
-              <span style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>Room Code:</span>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>{tr("Room Code:")}</span>
               <span style={{ 
                 fontSize: '24px', 
                 fontWeight: '900', 
@@ -743,7 +744,7 @@ export default function ArenaWaiting() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {copied ? '✓ Copied!' : '📋 Copy'}
+                {copied ? tr('✓ Copied!') : tr('📋 Copy')}
               </motion.button>
             </div>
 
@@ -766,7 +767,7 @@ export default function ArenaWaiting() {
                       marginBottom: '12px',
                     }}
                   >
-                    ⚠️ Arena Race cannot start with only {roomData.playerCount ?? 0} player. At least 2 players must join.
+                    {tr("⚠️ Arena Race cannot start with only")} {roomData.playerCount ?? 0} {tr("player. At least 2 players must join.")}
                   </motion.div>
                 )}
 
@@ -786,7 +787,7 @@ export default function ArenaWaiting() {
                       marginBottom: '12px',
                     }}
                   >
-                    ❌ Arena Race can't run with one user. The scheduled start time has passed. Waiting for more players to join...
+                    {tr("❌ Arena Race can't run with one user. The scheduled start time has passed. Waiting for more players to join...")}
                   </motion.div>
                 )}
 
@@ -813,19 +814,19 @@ export default function ArenaWaiting() {
                   whileHover={(canStartRace && !startingRace) ? { scale: 1.05, boxShadow: '0 6px 30px rgba(16, 185, 129, 0.6)' } : {}}
                   whileTap={(canStartRace && !startingRace) ? { scale: 0.98 } : {}}
                 >
-                  {startingRace ? '🔄 Starting...' : '🚀 Start Race'}
+                  {startingRace ? tr('🔄 Starting...') : tr('🚀 Start Race')}
                 </motion.button>
                 <div style={{ color: 'var(--color-text-muted)', fontSize: '13px', marginTop: '8px' }}>
-                  {roomData.playerCount ?? 0} player{(roomData.playerCount ?? 0) !== 1 ? 's' : ''} joined
+                  {roomData.playerCount ?? 0} {tr("player")}{(roomData.playerCount ?? 0) !== 1 ? 's' : ''} {tr("joined")}
                   {(roomData.playerCount ?? 0) < 2 && (
-                    <span style={{ color: 'var(--color-danger)', marginLeft: '6px' }}>(need at least 2)</span>
+                    <span style={{ color: 'var(--color-danger)', marginLeft: '6px' }}>{tr("(need at least 2)")}</span>
                   )}
                 </div>
                 {roomData?.plannedStartTime && (roomData.playerCount ?? 0) >= 2 && (
                   <div style={{ color: 'var(--color-accent)', fontSize: '12px', marginTop: '6px' }}>
                     {canHostStartNow
                       ? 'Scheduled time reached. You can start now.'
-                      : `Start available in ${formatCountdown(roomData.plannedStartTime)}`}
+                      : tr("Start available in {v0}", { v0: formatCountdown(roomData.plannedStartTime) })}
                   </div>
                 )}
               </motion.div>
@@ -856,7 +857,7 @@ export default function ArenaWaiting() {
                 }}
               >
                 <div style={styles.statLabel}>
-                  <span>📚</span> Topic
+                  <span>📚</span> {tr("Topic")}
                 </div>
                 <div style={styles.statValue}>{getTopicTitle(roomData?.topic)}</div>
               </motion.div>
@@ -870,9 +871,9 @@ export default function ArenaWaiting() {
                 }}
               >
                 <div style={styles.statLabel}>
-                  <span>⏱️</span> Duration
+                  <span>⏱️</span> {tr("Duration")}
                 </div>
-                <div style={styles.statValue}>{roomData?.timeLimit} min</div>
+                <div style={styles.statValue}>{roomData?.timeLimit} {tr("min")}</div>
               </motion.div>
 
               <motion.div 
@@ -884,7 +885,7 @@ export default function ArenaWaiting() {
                 }}
               >
                 <div style={styles.statLabel}>
-                  <span>👥</span> Players
+                  <span>👥</span> {tr("Players")}
                 </div>
                 <div style={styles.statValue}>{roomData?.playerCount}</div>
               </motion.div>
@@ -898,10 +899,10 @@ export default function ArenaWaiting() {
                 }}
               >
                 <div style={styles.statLabel}>
-                  <span>🗓️</span> Planned Start
+                  <span>🗓️</span> {tr("Planned Start")}
                 </div>
                 <div style={{ ...styles.statValue, fontSize: '18px', lineHeight: 1.3 }}>
-                  {roomData?.plannedStartTime ? new Date(roomData.plannedStartTime).toLocaleString() : 'Start anytime'}
+                  {roomData?.plannedStartTime ? new Date(roomData.plannedStartTime).toLocaleString() : tr('Start anytime')}
                 </div>
                 {roomData?.plannedStartTime && roomData?.status === 'waiting' && (
                   <div style={{ color: 'var(--color-accent)', fontSize: '12px', marginTop: '6px' }}>
@@ -925,11 +926,11 @@ export default function ArenaWaiting() {
               {/* Header */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
                 <h2 style={{ ...styles.playersHeader, marginBottom: 0 }}>
-                  <span>👥</span> Players ({roomData?.playerCount ?? 0})
+                  <span>👥</span> {tr("Players (")}{roomData?.playerCount ?? 0})
                 </h2>
                 {allPlayers.length > 0 && (
                   <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                    {startIndex + 1}–{Math.min(startIndex + PAGE_SIZE, allPlayers.length)} of {allPlayers.length}
+                    {startIndex + 1}–{Math.min(startIndex + PAGE_SIZE, allPlayers.length)} {tr("of")} {allPlayers.length}
                   </span>
                 )}
               </div>
@@ -940,15 +941,15 @@ export default function ArenaWaiting() {
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--color-white-a07)' }}>
                       <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '12px', fontWeight: '700', color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em', width: '44px' }}>#</th>
-                      <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '12px', fontWeight: '700', color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Player</th>
-                      <th style={{ padding: '10px 12px', textAlign: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em', width: '100px' }}>Status</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '12px', fontWeight: '700', color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{tr("Player")}</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em', width: '100px' }}>{tr("Status")}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {pagedPlayers.length === 0 ? (
                       <tr>
                         <td colSpan={3} style={{ padding: '40px', textAlign: 'center', color: 'var(--color-text-faint)', fontSize: '15px' }}>
-                          👤 No players yet
+                          {tr("👤 No players yet")}
                         </td>
                       </tr>
                     ) : pagedPlayers.map((player, i) => {
@@ -983,7 +984,7 @@ export default function ArenaWaiting() {
                               <div style={{ minWidth: 0 }}>
                                 <div style={{ fontSize: '14px', fontWeight: '600', color: isMe ? 'var(--color-accent)' : 'var(--color-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                   <PlayerName displayName={player.displayName} username={player.username} userId={player.userId} />
-                                  {isMe && <span style={{ fontSize: '10px', background: 'var(--color-accent-a20)', color: 'var(--color-accent)', border: '1px solid var(--color-accent-a30)', borderRadius: 'var(--radius-sm)', padding: '1px 6px', fontWeight: '700' }}>You</span>}
+                                  {isMe && <span style={{ fontSize: '10px', background: 'var(--color-accent-a20)', color: 'var(--color-accent)', border: '1px solid var(--color-accent-a30)', borderRadius: 'var(--radius-sm)', padding: '1px 6px', fontWeight: '700' }}>{tr("You")}</span>}
                                 </div>
                               </div>
                             </div>
@@ -1022,7 +1023,7 @@ export default function ArenaWaiting() {
                       cursor: safePlayersPage === 0 ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    ‹ Prev
+                    {tr("‹ Prev")}
                   </button>
 
                   {Array.from({ length: totalPages }, (_, i) => (
@@ -1052,7 +1053,7 @@ export default function ArenaWaiting() {
                       cursor: safePlayersPage === totalPages - 1 ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    Next ›
+                    {tr("Next ›")}
                   </button>
                 </div>
               )}

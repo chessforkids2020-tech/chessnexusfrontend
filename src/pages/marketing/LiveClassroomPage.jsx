@@ -7,6 +7,7 @@
 // Plan limits mirror config/coachPlans.js (liveClass). Keep in step.
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/live-chess-classroom";
 
@@ -20,29 +21,29 @@ const CANONICAL = "/live-chess-classroom";
 // no longer exist. The unlimited classroom they used to sell is now simply part
 // of Pro and Coach, so the only limited row left is Free.
 const PLAN_ROWS = [
-  { plan: "Free", perDay: "1 a day", mins: "up to 40 min", students: "4" },
-  { plan: "Pro (70 students)", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
-  { plan: "Coach (150 students)", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
+  { plan: tr("Free"), perDay: tr("1 a day"), mins: tr("up to 40 min"), students: "4" },
+  { plan: tr("Pro (70 students)"), perDay: tr("Unlimited"), mins: tr("up to 120 min, or no limit"), students: tr("Unlimited") },
+  { plan: tr("Coach (150 students)"), perDay: tr("Unlimited"), mins: tr("up to 120 min, or no limit"), students: tr("Unlimited") },
 ];
 
 const FEATURES = [
-  { icon: "♾️", t: "No class-size or clock limits", d: "On either paid plan a class runs as long as you need — set 120 minutes, or no time limit at all and end it when the lesson is done. Bring your whole batch: there is no cap on how many students join the room." },
-  { icon: "📹", t: "HD video & screen share", d: "See your whole class, share your screen when you need to. Background noise suppression and video touch-up are built in, so a noisy room or a dim lamp doesn't ruin the lesson." },
-  { icon: "♟️", t: "One shared board", d: "Every student sees the same position, live. Move a piece and it moves on their screen instantly — no 'can you see my screen?'." },
-  { icon: "🖱️", t: "Give a student control", d: "Hand the board to any student so they play the move themselves in front of the class, then take it back with one click." },
-  { icon: "✏️", t: "Draw on the board", d: "Arrows and square highlights sync to everyone, so you point at the plan instead of describing it in words." },
-  { icon: "📚", t: "Load content instantly", d: "Pull your own studies, built-in Nexus studies, courses, your coach library, endgames, puzzles by theme or rating, and master games searchable by player or opening — straight onto the class board." },
-  { icon: "🤖", t: "Private engine", d: "Stockfish runs on your side only. You see the evaluation and best lines; students see just the board, so you can guide without giving the answer away." },
-  { icon: "⏳", t: "Waiting room", d: "Students wait until you admit them, so nobody wanders in halfway through an explanation." },
-  { icon: "✋", t: "Raise hand", d: "A student raises their hand and their tile jumps to the front of your grid. You can lower it for them once it's dealt with." },
+  { icon: "♾️", t: tr("No class-size or clock limits"), d: tr("On either paid plan a class runs as long as you need — set 120 minutes, or no time limit at all and end it when the lesson is done. Bring your whole batch: there is no cap on how many students join the room.") },
+  { icon: "📹", t: tr("HD video & screen share"), d: tr("See your whole class, share your screen when you need to. Background noise suppression and video touch-up are built in, so a noisy room or a dim lamp doesn't ruin the lesson.") },
+  { icon: "♟️", t: tr("One shared board"), d: tr("Every student sees the same position, live. Move a piece and it moves on their screen instantly — no 'can you see my screen?'.") },
+  { icon: "🖱️", t: tr("Give a student control"), d: tr("Hand the board to any student so they play the move themselves in front of the class, then take it back with one click.") },
+  { icon: "✏️", t: tr("Draw on the board"), d: tr("Arrows and square highlights sync to everyone, so you point at the plan instead of describing it in words.") },
+  { icon: "📚", t: tr("Load content instantly"), d: tr("Pull your own studies, built-in Nexus studies, courses, your coach library, endgames, puzzles by theme or rating, and master games searchable by player or opening — straight onto the class board.") },
+  { icon: "🤖", t: tr("Private engine"), d: "Stockfish runs on your side only. You see the evaluation and best lines; students see just the board, so you can guide without giving the answer away." },
+  { icon: "⏳", t: tr("Waiting room"), d: tr("Students wait until you admit them, so nobody wanders in halfway through an explanation.") },
+  { icon: "✋", t: tr("Raise hand"), d: tr("A student raises their hand and their tile jumps to the front of your grid. You can lower it for them once it's dealt with.") },
   { icon: "🎙️", t: "Mic & camera controls", d: "Mute a student or turn their camera off in one click from their video tile. Turning either back on is always a request the student accepts — a child's mic or camera is never forced on." },
-  { icon: "📌", t: "One-click homework", d: "Teaching a position worth practising? Hit Add to homework and the board is captured — one click, no dialog, so the lesson never stops. Collect as many positions as you like through the class, then send them all as a single assignment to exactly the students who were in the room. They play each position out against Stockfish at home." },
-  { icon: "📋", t: "Attendance writes itself", d: "Admitting a student records their attendance for that class. No separate register to fill in afterwards." },
-  { icon: "💬", t: "Class chat", d: "A chat panel for the session — good for links and quick questions without interrupting the lesson." },
-  { icon: "🎯", t: "Activities on the stage", d: "One Activities panel, right inside the class: Play in class, a coach Simul, and private Arena races & tournaments — all launched without leaving the room." },
-  { icon: "♟️", t: "Play in class", d: "Pair students into real games — the whole class can play at once, each on their own board with live clocks like a Lichess broadcast. You watch every board live, spotlight one for everyone to follow, and load any finished game onto the teaching board to review it together." },
-  { icon: "🎲", t: "Simul — play the whole class", d: "Run a simultaneous exhibition: you play every student at once. Send a join request, and once they accept you see one big active board plus a strip of all the others — click any board to swap to it and make your move, exactly like the Lichess simul page." },
-  { icon: "🏁", t: "Private races & tournaments", d: "Launch a private Arena race or tournament for your class without leaving the room — only your own students can join, results shown right on the stage." },
+  { icon: "📌", t: tr("One-click homework"), d: tr("Teaching a position worth practising? Hit Add to homework and the board is captured — one click, no dialog, so the lesson never stops. Collect as many positions as you like through the class, then send them all as a single assignment to exactly the students who were in the room. They play each position out against Stockfish at home.") },
+  { icon: "📋", t: tr("Attendance writes itself"), d: tr("Admitting a student records their attendance for that class. No separate register to fill in afterwards.") },
+  { icon: "💬", t: "Class chat", d: tr("A chat panel for the session — good for links and quick questions without interrupting the lesson.") },
+  { icon: "🎯", t: tr("Activities on the stage"), d: tr("One Activities panel, right inside the class: Play in class, a coach Simul, and private Arena races & tournaments — all launched without leaving the room.") },
+  { icon: "♟️", t: tr("Play in class"), d: tr("Pair students into real games — the whole class can play at once, each on their own board with live clocks like a Lichess broadcast. You watch every board live, spotlight one for everyone to follow, and load any finished game onto the teaching board to review it together.") },
+  { icon: "🎲", t: tr("Simul — play the whole class"), d: tr("Run a simultaneous exhibition: you play every student at once. Send a join request, and once they accept you see one big active board plus a strip of all the others — click any board to swap to it and make your move, exactly like the Lichess simul page.") },
+  { icon: "🏁", t: tr("Private races & tournaments"), d: tr("Launch a private Arena race or tournament for your class without leaving the room — only your own students can join, results shown right on the stage.") },
 ];
 
 const FAQ = [
@@ -87,14 +88,14 @@ export default function LiveClassroomMarketingPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
   return (
     <FeaturePageLayout
       seo={{
-        title: "Live Chess Classroom — Teach Chess Online Without Zoom",
+        title: tr("Live Chess Classroom — Teach Chess Online Without Zoom"),
         description:
           "Teach chess live inside Chess Nexus: HD video, screen share and one shared board every student sees. Give a student control, load studies, endgames and puzzles onto the board, and attendance marks itself. Free for every coach.",
         keywords:
@@ -106,14 +107,14 @@ export default function LiveClassroomMarketingPage() {
         h1: "Teach chess live — without Zoom",
         sub:
           "A classroom built into Chess Nexus: video, screen share and one board every student sees. Hand a student control, load any study or puzzle onto the board, and attendance marks itself.",
-        primary: { to: "/coach/onboarding", label: "Start teaching free" },
-        secondary: { to: "/chess-coach-guide", label: "Read the coach guide" },
+        primary: { to: "/coach/onboarding", label: tr("Start teaching free") },
+        secondary: { to: "/chess-coach-guide", label: tr("Read the coach guide") },
       }}
       jsonLd={faqSchema}
       excludeSlug={CANONICAL}
     >
-      <section className="mkt-section" aria-label="Why it's different">
-        <h2>The board and the video are in the same room</h2>
+      <section className="mkt-section" aria-label={tr("Why it's different")}>
+        <h2>{tr("The board and the video are in the same room")}</h2>
         <p className="mkt-section-lead">
           Most online chess lessons are a video call in one window and a chess site
           in another. You share your screen, students squint at it, and nobody can
@@ -132,8 +133,8 @@ export default function LiveClassroomMarketingPage() {
         </ul>
       </section>
 
-      <section className="mkt-section" aria-label="Plans">
-        <h2>What each plan includes</h2>
+      <section className="mkt-section" aria-label={tr("Plans")}>
+        <h2>{tr("What each plan includes")}</h2>
         <p className="mkt-section-lead">
           Every coach gets the live classroom — the free plan included. Both paid plans
           unlock it completely: unlimited classes, unlimited students in the room, and
@@ -143,10 +144,10 @@ export default function LiveClassroomMarketingPage() {
           <table className="mkt-table">
             <thead>
               <tr>
-                <th>Plan</th>
-                <th>Classes per day</th>
-                <th>Length</th>
-                <th>Students per class (+ coach)</th>
+                <th>{tr("Plan")}</th>
+                <th>{tr("Classes per day")}</th>
+                <th>{tr("Length")}</th>
+                <th>{tr("Students per class (+ coach)")}</th>
               </tr>
             </thead>
             <tbody>
@@ -163,8 +164,8 @@ export default function LiveClassroomMarketingPage() {
         </div>
       </section>
 
-      <section className="mkt-section" aria-label="FAQ">
-        <h2>Live classroom FAQ</h2>
+      <section className="mkt-section" aria-label={"FAQ"}>
+        <h2>{tr("Live classroom FAQ")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div key={q} className="mkt-faq-item">
@@ -175,14 +176,14 @@ export default function LiveClassroomMarketingPage() {
         </div>
       </section>
 
-      <section className="mkt-section mkt-cta-section" aria-label="Start">
-        <h2>Run your next class here</h2>
+      <section className="mkt-section mkt-cta-section" aria-label={tr("Start")}>
+        <h2>{tr("Run your next class here")}</h2>
         <p className="mkt-section-lead">
-          Free forever for up to 30 students. No card required.
+          {tr("Free forever for up to 30 students. No card required.")}
         </p>
         <div className="mkt-cta-row">
-          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Start teaching free</Link>
-          <Link to="/chess-coaching" className="mkt-btn">See the coaching platform</Link>
+          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">{tr("Start teaching free")}</Link>
+          <Link to="/chess-coaching" className="mkt-btn">{tr("See the coaching platform")}</Link>
         </div>
       </section>
     </FeaturePageLayout>

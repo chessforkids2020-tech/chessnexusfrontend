@@ -1,3 +1,4 @@
+import { t as tr } from '../i18n/LanguageContext';
 // data/coachVideoGuides.js
 //
 // The walkthrough recordings, in ONE place.
@@ -19,28 +20,28 @@
 export const COACH_VIDEO_GUIDES = [
   {
     id: 'onboarding',
-    title: 'How to onboard as a coach',
-    blurb: 'Signing up as a coach on chessnexus.in and getting your account ready.',
+    title: tr('How to onboard as a coach'),
+    blurb: tr('Signing up as a coach on chessnexus.in and getting your account ready.'),
     videoId: 'HWzd6DbqCZA',
-    covers: ['Coach onboarding', 'Your profile', 'Getting started'],
+    covers: [tr('Coach onboarding'), tr('Your profile'), tr('Getting started')],
     // Shown on the pre-onboarding prompt: this is the one that answers
     // "what am I signing up for?" before the decision is made.
     preOnboarding: true,
   },
   {
     id: 'setup',
-    title: 'Students, batches, schedule & assignments',
-    blurb: 'Adding students, creating batches, scheduling classes and assigning work.',
+    title: tr('Students, batches, schedule & assignments'),
+    blurb: tr('Adding students, creating batches, scheduling classes and assigning work.'),
     videoId: 'bFtB4PwwZgk',
-    covers: ['Adding students', 'Batches', 'Class schedule', 'Assignments'],
+    covers: [tr('Adding students'), tr('Batches'), tr('Class schedule'), tr('Assignments')],
     preOnboarding: true,
   },
   {
     id: 'student-view',
-    title: 'How students use the coach page',
-    blurb: 'What your students see — their classes, assignments and how they submit work.',
+    title: tr('How students use the coach page'),
+    blurb: tr('What your students see — their classes, assignments and how they submit work.'),
     videoId: 'hrk8m2cW4fY',
-    covers: ['The student view', 'Classes', 'Assignments', 'Submissions'],
+    covers: [tr('The student view'), tr('Classes'), tr('Assignments'), tr('Submissions')],
     preOnboarding: true,
   },
 ];

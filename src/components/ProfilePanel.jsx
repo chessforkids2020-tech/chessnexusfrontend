@@ -6,6 +6,7 @@ import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import CoachPromptCard from './CoachPromptCard';
 import FideTitleCard from './FideTitleCard';
+import { t as tr } from '../i18n/LanguageContext';
 
 // ── Country helpers (image flags render on Windows; Unicode flags don't) ──────
 function getCountryCode(country) {
@@ -159,7 +160,7 @@ export default function ProfilePanel() {
   const [editPasswordMsg, setEditPasswordMsg] = useState(null);
 
   if (!user) {
-    return <p style={{ color: 'var(--color-text-faint)', fontSize: 14 }}>Loading your profile…</p>;
+    return <p style={{ color: 'var(--color-text-faint)', fontSize: 14 }}>{tr("Loading your profile…")}</p>;
   }
 
   if (user.role === 'guest') {
@@ -170,10 +171,10 @@ export default function ProfilePanel() {
         borderRadius: 'var(--radius-xl)',
       }}>
         <div style={{ fontSize: 40, marginBottom: 14 }}>🔒</div>
-        <div style={{ color: 'var(--color-accent-2)', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Guest Account</div>
+        <div style={{ color: 'var(--color-accent-2)', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>{tr("Guest Account")}</div>
         <div style={{ color: 'var(--color-text-muted)', fontSize: 13, lineHeight: 1.6 }}>
-          Profile settings are not available for guest users.<br />
-          <strong style={{ color: 'var(--color-accent-2)' }}>Create a free account</strong> to personalise your profile, save progress, and access all features.
+          {tr("Profile settings are not available for guest users.")}<br />
+          <strong style={{ color: 'var(--color-accent-2)' }}>{tr("Create a free account")}</strong> {tr("to personalise your profile, save progress, and access all features.")}
         </div>
       </div>
     );
@@ -185,7 +186,7 @@ export default function ProfilePanel() {
     if (!editNameValue.trim()) return;
     setIsSavingName(true);
     try { await api.put('/api/auth/profile', { displayName: editNameValue }); await refreshUser(); setIsEditingName(false); }
-    catch { alert('Failed to update name'); }
+    catch { alert(tr('Failed to update name')); }
     finally { setIsSavingName(false); }
   };
 
@@ -201,7 +202,7 @@ export default function ProfilePanel() {
       setIsEditingLichess(false);
       await refreshUser();
     }
-    catch (e) { alert(e.response?.data?.message || 'Failed to update Lichess username'); }
+    catch (e) { alert(e.response?.data?.message || tr('Failed to update Lichess username')); }
     finally { setIsSavingLichess(false); }
   };
 
@@ -214,7 +215,7 @@ export default function ProfilePanel() {
       setIsEditingChessCom(false);
       await refreshUser();
     }
-    catch (e) { alert(e.response?.data?.message || 'Failed to update Chess.com username'); }
+    catch (e) { alert(e.response?.data?.message || tr('Failed to update Chess.com username')); }
     finally { setIsSavingChessCom(false); }
   };
 
@@ -224,8 +225,8 @@ export default function ProfilePanel() {
     setIsSavingCountry(true); setEditCountryMsg(null);
     try {
       await api.patch('/api/user/update-country', { country: editCountryValue.trim() });
-      await refreshUser(); setIsEditingCountry(false); setEditCountryMsg({ type: 'ok', text: 'Country updated!' });
-    } catch (e) { setEditCountryMsg({ type: 'err', text: e.response?.data?.message || 'Failed to update country' }); }
+      await refreshUser(); setIsEditingCountry(false); setEditCountryMsg({ type: 'ok', text: tr('Country updated!') });
+    } catch (e) { setEditCountryMsg({ type: 'err', text: e.response?.data?.message || tr('Failed to update country') }); }
     finally { setIsSavingCountry(false); }
   };
 
@@ -233,21 +234,21 @@ export default function ProfilePanel() {
   const handleSaveBio = async () => {
     setIsSavingBio(true);
     try { await api.put('/api/auth/profile', { biography: editBioValue }); await refreshUser(); setIsEditingBio(false); }
-    catch (e) { alert(e.response?.data?.message || 'Failed to update biography'); }
+    catch (e) { alert(e.response?.data?.message || tr('Failed to update biography')); }
     finally { setIsSavingBio(false); }
   };
 
   const handleSavePassword = async () => {
     setEditPasswordMsg(null);
-    if (!editCurrentPw || !editNewPw || !editConfirmPw) return setEditPasswordMsg({ type: 'err', text: 'Fill all fields.' });
-    if (editNewPw.length < 6) return setEditPasswordMsg({ type: 'err', text: 'New password must be at least 6 characters.' });
-    if (editNewPw !== editConfirmPw) return setEditPasswordMsg({ type: 'err', text: 'New passwords do not match.' });
+    if (!editCurrentPw || !editNewPw || !editConfirmPw) return setEditPasswordMsg({ type: 'err', text: tr('Fill all fields.') });
+    if (editNewPw.length < 6) return setEditPasswordMsg({ type: 'err', text: tr('New password must be at least 6 characters.') });
+    if (editNewPw !== editConfirmPw) return setEditPasswordMsg({ type: 'err', text: tr('New passwords do not match.') });
     setIsSavingPassword(true);
     try {
       await api.patch('/api/user/change-password', { currentPassword: editCurrentPw, newPassword: editNewPw });
-      setEditPasswordMsg({ type: 'ok', text: 'Password changed!' });
+      setEditPasswordMsg({ type: 'ok', text: tr('Password changed!') });
       setEditCurrentPw(''); setEditNewPw(''); setEditConfirmPw(''); setIsEditingPassword(false);
-    } catch (e) { setEditPasswordMsg({ type: 'err', text: e.response?.data?.message || 'Failed to change password' }); }
+    } catch (e) { setEditPasswordMsg({ type: 'err', text: e.response?.data?.message || tr('Failed to change password') }); }
     finally { setIsSavingPassword(false); }
   };
 
@@ -259,23 +260,23 @@ export default function ProfilePanel() {
       borderRadius: 'var(--radius-xl)',
       padding: '28px 24px',
     }}>
-      <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>👤 Your Profile</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>{tr("👤 Your Profile")}</h2>
       <p style={{ color: 'var(--color-text-faint)', fontSize: 13, marginBottom: 24 }}>
-        Manage your account details. Changes are saved to your account and apply everywhere.
+        {tr("Manage your account details. Changes are saved to your account and apply everywhere.")}
       </p>
 
       <div style={styles.grid}>
         {/* Display Name */}
         <div style={styles.infoCard}>
           <h4 style={styles.infoCardH4}>
-            👤 Display Name
-            {!isEditingName && <button onClick={handleStartEdit} style={styles.editIcon} title="Edit Display Name">✏️</button>}
+            {tr("👤 Display Name")}
+            {!isEditingName && <button onClick={handleStartEdit} style={styles.editIcon} title={tr("Edit Display Name")}>✏️</button>}
           </h4>
           {isEditingName ? (
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
               <input type="text" value={editNameValue} onChange={(e) => setEditNameValue(e.target.value)} style={styles.input} autoFocus />
-              <button onClick={handleSaveName} disabled={isSavingName} style={styles.saveBtn} title="Save">✓</button>
-              <button onClick={() => setIsEditingName(false)} style={styles.cancelBtn} title="Cancel">✕</button>
+              <button onClick={handleSaveName} disabled={isSavingName} style={styles.saveBtn} title={tr("Save")}>✓</button>
+              <button onClick={() => setIsEditingName(false)} style={styles.cancelBtn} title={tr("Cancel")}>✕</button>
             </div>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -286,35 +287,35 @@ export default function ProfilePanel() {
                   border: '1px solid rgba(251,191,36,0.55)', color: 'var(--color-warning)',
                   fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-md)',
                   whiteSpace: 'nowrap', textShadow: '0 0 8px var(--color-warning-a30)',
-                }}>💎 Elite</span>
+                }}>{tr("💎 Elite")}</span>
               )}
               <span style={{
                 background: user.isCoach ? 'var(--color-accent-a20)' : 'var(--color-success-a12)',
                 border: `1px solid ${user.isCoach ? 'var(--color-accent-a40)' : 'var(--color-success-a30)'}`,
                 color: user.isCoach ? 'var(--color-accent)' : 'var(--color-success)',
                 fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-md)', whiteSpace: 'nowrap',
-              }}>{user.isCoach ? '🎓 Coach' : '♟ Player'}</span>
+              }}>{user.isCoach ? tr('🎓 Coach') : tr('♟ Player')}</span>
             </div>
           )}
         </div>
 
         {/* Email (read-only) */}
         <div style={styles.infoCard}>
-          <h4 style={styles.infoCardH4}>📧 Email</h4>
+          <h4 style={styles.infoCardH4}>{tr("📧 Email")}</h4>
           <p style={styles.infoCardP}>{user.email || 'N/A'}</p>
         </div>
 
         {/* Lichess */}
         <div style={styles.infoCard}>
           <h4 style={styles.infoCardH4}>
-            ♟️ Lichess Username
-            {!isEditingLichess && <button onClick={handleStartEditLichess} style={styles.editIcon} title="Edit Lichess Username">✏️</button>}
+            {tr("♟️ Lichess Username")}
+            {!isEditingLichess && <button onClick={handleStartEditLichess} style={styles.editIcon} title={tr("Edit Lichess Username")}>✏️</button>}
           </h4>
           {isEditingLichess ? (
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-              <input type="text" value={editLichessValue} onChange={(e) => setEditLichessValue(e.target.value)} placeholder="e.g. my_lichess_id" style={styles.input} autoFocus />
-              <button onClick={handleSaveLichess} disabled={isSavingLichess} style={styles.saveBtn} title="Save">✓</button>
-              <button onClick={() => setIsEditingLichess(false)} style={styles.cancelBtn} title="Cancel">✕</button>
+              <input type="text" value={editLichessValue} onChange={(e) => setEditLichessValue(e.target.value)} placeholder={tr("e.g. my_lichess_id")} style={styles.input} autoFocus />
+              <button onClick={handleSaveLichess} disabled={isSavingLichess} style={styles.saveBtn} title={tr("Save")}>✓</button>
+              <button onClick={() => setIsEditingLichess(false)} style={styles.cancelBtn} title={tr("Cancel")}>✕</button>
             </div>
           ) : (
             <p style={styles.infoCardP}>{user.lichessUsername || 'Not linked'}</p>
@@ -324,14 +325,14 @@ export default function ProfilePanel() {
         {/* Chess.com */}
         <div style={styles.infoCard}>
           <h4 style={styles.infoCardH4}>
-            ♟️ Chess.com Username
-            {!isEditingChessCom && <button onClick={handleStartEditChessCom} style={styles.editIcon} title="Edit Chess.com Username">✏️</button>}
+            {tr("♟️ Chess.com Username")}
+            {!isEditingChessCom && <button onClick={handleStartEditChessCom} style={styles.editIcon} title={tr("Edit Chess.com Username")}>✏️</button>}
           </h4>
           {isEditingChessCom ? (
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-              <input type="text" value={editChessComValue} onChange={(e) => setEditChessComValue(e.target.value)} placeholder="e.g. my_chesscom_id" style={styles.input} autoFocus />
-              <button onClick={handleSaveChessCom} disabled={isSavingChessCom} style={styles.saveBtn} title="Save">✓</button>
-              <button onClick={() => setIsEditingChessCom(false)} style={styles.cancelBtn} title="Cancel">✕</button>
+              <input type="text" value={editChessComValue} onChange={(e) => setEditChessComValue(e.target.value)} placeholder={tr("e.g. my_chesscom_id")} style={styles.input} autoFocus />
+              <button onClick={handleSaveChessCom} disabled={isSavingChessCom} style={styles.saveBtn} title={tr("Save")}>✓</button>
+              <button onClick={() => setIsEditingChessCom(false)} style={styles.cancelBtn} title={tr("Cancel")}>✕</button>
             </div>
           ) : (
             <p style={styles.infoCardP}>{user.chessComUsername || 'Not linked'}</p>
@@ -341,20 +342,20 @@ export default function ProfilePanel() {
         {/* Password */}
         <div style={styles.infoCard}>
           <h4 style={styles.infoCardH4}>
-            🔒 Password
+            {tr("🔒 Password")}
             {!isEditingPassword && (
               <button
                 onClick={() => { setIsEditingPassword(true); setEditPasswordMsg(null); setEditCurrentPw(''); setEditNewPw(''); setEditConfirmPw(''); }}
-                style={styles.editIcon} title="Change Password"
+                style={styles.editIcon} title={tr("Change Password")}
               >✏️</button>
             )}
           </h4>
           {isEditingPassword ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {[
-                { label: 'Current password', val: editCurrentPw, set: setEditCurrentPw },
-                { label: 'New password', val: editNewPw, set: setEditNewPw },
-                { label: 'Confirm new password', val: editConfirmPw, set: setEditConfirmPw },
+                { label: tr('Current password'), val: editCurrentPw, set: setEditCurrentPw },
+                { label: tr('New password'), val: editNewPw, set: setEditNewPw },
+                { label: tr('Confirm new password'), val: editConfirmPw, set: setEditConfirmPw },
               ].map(({ label, val, set }) => (
                 <div key={label}>
                   <div style={{ color: 'var(--color-text-muted)', fontSize: '11px', marginBottom: '3px' }}>{label}</div>
@@ -363,7 +364,7 @@ export default function ProfilePanel() {
               ))}
               <div style={{ display: 'flex', gap: '5px' }}>
                 <button onClick={handleSavePassword} disabled={isSavingPassword} style={{ ...styles.saveBtn, background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))', flex: 1 }}>
-                  {isSavingPassword ? '...' : 'Change'}
+                  {isSavingPassword ? '...' : tr('Change')}
                 </button>
                 <button onClick={() => { setIsEditingPassword(false); setEditPasswordMsg(null); }} style={styles.cancelBtn}>✕</button>
               </div>
@@ -384,18 +385,18 @@ export default function ProfilePanel() {
         {/* Country */}
         <div style={styles.infoCard}>
           <h4 style={styles.infoCardH4}>
-            🌍 Country
-            {!isEditingCountry && <button onClick={handleStartEditCountry} style={styles.editIcon} title="Edit Country">✏️</button>}
+            {tr("🌍 Country")}
+            {!isEditingCountry && <button onClick={handleStartEditCountry} style={styles.editIcon} title={tr("Edit Country")}>✏️</button>}
           </h4>
           {isEditingCountry ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <select value={editCountryValue} onChange={(e) => setEditCountryValue(e.target.value)} style={{ ...styles.input, fontSize: '13px' }} autoFocus>
-                <option value="">— Select country —</option>
+                <option value="">{tr("— Select country —")}</option>
                 {COUNTRY_LIST.map(c => <option key={c} value={c}>{getCountryFlag(c) ? `${getCountryFlag(c)} ${c}` : c}</option>)}
               </select>
               <div style={{ display: 'flex', gap: '5px' }}>
-                <button onClick={handleSaveCountry} disabled={isSavingCountry} style={styles.saveBtn} title="Save">✓</button>
-                <button onClick={() => { setIsEditingCountry(false); setEditCountryMsg(null); }} style={styles.cancelBtn} title="Cancel">✕</button>
+                <button onClick={handleSaveCountry} disabled={isSavingCountry} style={styles.saveBtn} title={tr("Save")}>✓</button>
+                <button onClick={() => { setIsEditingCountry(false); setEditCountryMsg(null); }} style={styles.cancelBtn} title={tr("Cancel")}>✕</button>
               </div>
               {editCountryMsg && (
                 <p style={{ margin: 0, fontSize: '12px', color: editCountryMsg.type === 'ok' ? '#2dd4bf' : 'var(--color-danger)' }}>{editCountryMsg.text}</p>
@@ -421,23 +422,23 @@ export default function ProfilePanel() {
         {/* Biography — full width */}
         <div style={{ ...styles.infoCard, gridColumn: '1 / -1' }}>
           <h4 style={styles.infoCardH4}>
-            📝 Talk about yourself
-            {!isEditingBio && <button onClick={handleStartEditBio} style={styles.editIcon} title="Edit Biography">✏️</button>}
+            {tr("📝 Talk about yourself")}
+            {!isEditingBio && <button onClick={handleStartEditBio} style={styles.editIcon} title={tr("Edit Biography")}>✏️</button>}
           </h4>
           {isEditingBio ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <textarea
                 value={editBioValue}
                 onChange={(e) => setEditBioValue(e.target.value.slice(0, 150))}
-                placeholder="Share a little about yourself — your favourite opening, goals, or anything you'd like others to know."
+                placeholder={tr("Share a little about yourself — your favourite opening, goals, or anything you'd like others to know.")}
                 rows={4}
                 style={{ ...styles.input, resize: 'vertical', minHeight: '90px', lineHeight: 1.5 }}
                 autoFocus
               />
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <span style={{ color: 'var(--color-text-faint)', fontSize: '11px', marginRight: 'auto' }}>{editBioValue.length}/150</span>
-                <button onClick={handleSaveBio} disabled={isSavingBio} style={styles.saveBtn} title="Save">{isSavingBio ? '...' : '✓ Save'}</button>
-                <button onClick={() => setIsEditingBio(false)} style={styles.cancelBtn} title="Cancel">✕</button>
+                <button onClick={handleSaveBio} disabled={isSavingBio} style={styles.saveBtn} title={tr("Save")}>{isSavingBio ? '...' : '✓ Save'}</button>
+                <button onClick={() => setIsEditingBio(false)} style={styles.cancelBtn} title={tr("Cancel")}>✕</button>
               </div>
             </div>
           ) : (
@@ -449,7 +450,7 @@ export default function ProfilePanel() {
               whiteSpace: 'pre-wrap',
               color: user.biography ? 'var(--color-text)' : 'var(--color-text-faint)',
             }}>
-              {user.biography || 'Not set — tell others about yourself!'}
+              {user.biography || tr('Not set — tell others about yourself!')}
             </p>
           )}
         </div>

@@ -7,6 +7,7 @@ import io from 'socket.io-client';
 import api from '../../api';
 import PlayerName from '../../components/PlayerName';
 import './TeamRacePuzzle.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Module-level cache to persist across component remounts
 const raceCache = {
@@ -348,7 +349,7 @@ function TeamRacePuzzle() {
         setLoading(false);
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Unknown error';
+      const errorMessage = err.response?.data?.message || err.message || tr('Unknown error');
       
       // Check if race has finished - redirect to results
       if (err.response?.data?.raceFinished) {
@@ -356,7 +357,7 @@ function TeamRacePuzzle() {
         return;
       }
       
-      alert(`Failed to start race: ${errorMessage}`);
+      alert(tr("Failed to start race: {errorMessage}", { errorMessage: errorMessage }));
       
       if (err.response?.status === 404 && errorMessage === 'You are not in a team') {
         setLoading(false);
@@ -659,7 +660,7 @@ function TeamRacePuzzle() {
     return (
       <div className="loading-screen">
         <div className="loading-spinner"></div>
-        <h2>Loading race...</h2>
+        <h2>{tr("Loading race...")}</h2>
       </div>
     );
   }
@@ -667,9 +668,9 @@ function TeamRacePuzzle() {
   if (!puzzles || puzzles.length === 0) {
     return (
       <div className="error-screen">
-        <h2>No puzzles available</h2>
+        <h2>{tr("No puzzles available")}</h2>
         <button onClick={() => navigate('/team-race')} className="btn-back">
-          Back to Races
+          {tr("Back to Races")}
         </button>
       </div>
     );
@@ -694,8 +695,8 @@ function TeamRacePuzzle() {
         justifyContent: 'center'
       }}>
         <div style={{ fontSize: '48px', marginBottom: '20px' }}>♟️</div>
-        <div style={{ fontSize: '24px', marginBottom: '10px' }}>Loading puzzles...</div>
-        <div style={{ fontSize: '16px', color: '#C0C0C0' }}>Race started, waiting for puzzle data</div>
+        <div style={{ fontSize: '24px', marginBottom: '10px' }}>{tr("Loading puzzles...")}</div>
+        <div style={{ fontSize: '16px', color: '#C0C0C0' }}>{tr("Race started, waiting for puzzle data")}</div>
       </div>
     );
   }
@@ -714,8 +715,8 @@ function TeamRacePuzzle() {
         justifyContent: 'center'
       }}>
         <div style={{ fontSize: '48px', marginBottom: '20px' }}>♟️</div>
-        <div style={{ fontSize: '24px', marginBottom: '10px' }}>Starting Team Race...</div>
-        <div style={{ fontSize: '16px', color: '#C0C0C0' }}>Connecting to server and loading puzzles</div>
+        <div style={{ fontSize: '24px', marginBottom: '10px' }}>{tr("Starting Team Race...")}</div>
+        <div style={{ fontSize: '16px', color: '#C0C0C0' }}>{tr("Connecting to server and loading puzzles")}</div>
       </div>
     );
   }
@@ -727,14 +728,14 @@ function TeamRacePuzzle() {
         {/* LEFT SIDEBAR - Leaderboard */}
         <div className="left-sidebar">
           <div className="leaderboard-panel">
-            <h3 className="leaderboard-title">🏆 Team Leaderboard</h3>
+            <h3 className="leaderboard-title">{tr("🏆 Team Leaderboard")}</h3>
             <table className="lb-sidebar-table">
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Team</th>
-                  <th>Pts</th>
-                  <th>Active</th>
+                  <th>{tr("Team")}</th>
+                  <th>{tr("Pts")}</th>
+                  <th>{tr("Active")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -754,7 +755,7 @@ function TeamRacePuzzle() {
                     </tr>
                   ))}
                 {liveLeaderboard.length === 0 && (
-                  <tr><td colSpan="4" className="lb-empty">No data yet</td></tr>
+                  <tr><td colSpan="4" className="lb-empty">{tr("No data yet")}</td></tr>
                 )}
               </tbody>
             </table>
@@ -774,7 +775,7 @@ function TeamRacePuzzle() {
                     <h3 className="leaderboard-title">🎯 Top Players{playerLeaderboard.length > 0 ? ` (${playerLeaderboard.length})` : ''}</h3>
                     <table className="lb-sidebar-table">
                       <thead>
-                        <tr><th>#</th><th>Player</th><th>Pts</th></tr>
+                        <tr><th>#</th><th>{tr("Player")}</th><th>{tr("Pts")}</th></tr>
                       </thead>
                       <tbody>
                         {pagePlayers.map((player, i) => {
@@ -795,7 +796,7 @@ function TeamRacePuzzle() {
                           </tr>
                         )}
                         {playerLeaderboard.length === 0 && (
-                          <tr><td colSpan="3" className="lb-empty">No data yet</td></tr>
+                          <tr><td colSpan="3" className="lb-empty">{tr("No data yet")}</td></tr>
                         )}
                       </tbody>
                     </table>
@@ -844,17 +845,17 @@ function TeamRacePuzzle() {
               <table className="info-table">
                 <tbody>
                   <tr>
-                    <td className="info-table-label">To Move:</td>
+                    <td className="info-table-label">{tr("To Move:")}</td>
                     <td className="info-table-value">
                       {playerColor === 'white' ? '⚪ White' : '⚫ Black'}
                     </td>
                   </tr>
                   <tr>
-                    <td className="info-table-label">Your Position:</td>
+                    <td className="info-table-label">{tr("Your Position:")}</td>
                     <td className="info-table-value">#{position}</td>
                   </tr>
                   <tr>
-                    <td className="info-table-label">Your Points:</td>
+                    <td className="info-table-label">{tr("Your Points:")}</td>
                     <td className="info-table-value info-points">{score}</td>
                   </tr>
                 </tbody>
@@ -878,7 +879,7 @@ function TeamRacePuzzle() {
                   transition: 'all 0.3s'
                 }}
               >
-                ⏭️ Skip Puzzle
+                {tr("⏭️ Skip Puzzle")}
               </button>
             </div>
           </div>

@@ -1,0 +1,34 @@
+/* Dashboard Guide → weakness report card. Built on the Nexus Guide's .gip
+   panel (GameInsightsPanel.css); these are only the extra pieces. */
+.wrc-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.wrc-icon {
+  flex: 0 0 auto; width: 48px; height: 48px; border-radius: var(--radius-circle);
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+  background: var(--gip-button);
+}
+.wrc-title { margin: 2px 0 4px; font-size: 17px; font-weight: 800; color: var(--gip-text); }
+.wrc-sub { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--gip-muted); }
+
+.wrc-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.wrc-label { width: 56px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--gip-muted); }
+
+.wrc-note { font-size: 13px; color: var(--gip-muted); margin: 6px 0 12px; line-height: 1.5; }
+.wrc-note a { color: var(--gip-accent); font-weight: 700; }
+.wrc-error { font-size: 13px; color: var(--color-danger); margin: 6px 0 12px; }
+.wrc-muted { font-size: 12.5px; color: var(--gip-muted); }
+.wrc-cap { margin-left: 8px; }
+
+.wrc-progress-text { font-size: 14px; font-weight: 700; color: var(--gip-text); margin-bottom: 8px; }
+.wrc-bar { height: 8px; border-radius: var(--radius-pill); background: var(--gip-panel); overflow: hidden; margin-bottom: 8px; }
+.wrc-bar-fill { height: 100%; background: var(--gip-button); transition: width .4s; }
+
+.wrc-latest {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--gip-border);
+  font-size: 13px; color: var(--gip-muted);
+}
+.wrc-latest a { text-decoration: none; }
+
+@media (max-width: 520px) {
+  .wrc-label { width: 100%; }
+}

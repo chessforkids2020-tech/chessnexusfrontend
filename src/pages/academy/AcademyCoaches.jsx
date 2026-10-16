@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import CoachChatFab from '../../components/coach/CoachChatFab';
 import './AcademyDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CURRENCY_SYMBOL = { INR: '₹', USD: '$', EUR: '€', GBP: '£', AUD: 'A$', CAD: 'C$', AED: 'د.إ', SGD: 'S$' };
 
@@ -26,7 +27,7 @@ function fmtFees(c) {
   if (nothing) return <span className="acad-muted">—</span>;
 
   return (
-    <div className="acad-fee-cells" title={`${c.feesCount} approved payment${c.feesCount === 1 ? '' : 's'} this month`}>
+    <div className="acad-fee-cells" title={tr("{feesCount} approved payment{v1} this month", { feesCount: c.feesCount, v1: c.feesCount === 1 ? '' : 's' })}>
       {FEE_COLUMNS.map(code => (
         <div key={code} className={`acad-fee-cell ${by[code] ? '' : 'acad-fee-cell--empty'}`}>
           <span className="acad-fee-cell-cur">{code}</span>
@@ -91,9 +92,9 @@ export default function AcademyCoaches() {
   };
 
   const withdrawInvite = async (id, name) => {
-    if (!window.confirm(`Withdraw the invitation to ${name}?`)) return;
+    if (!window.confirm(tr("Withdraw the invitation to {name}?", { name: name }))) return;
     try { await api.delete(`/api/academy/invites/${id}`); loadInvites(); }
-    catch (e) { setErr(e.response?.data?.message || 'Could not withdraw the invitation.'); }
+    catch (e) { setErr(e.response?.data?.message || tr('Could not withdraw the invitation.')); }
   };
 
   const load = async () => {
@@ -115,28 +116,28 @@ export default function AcademyCoaches() {
 
   const approveRequest = async (id, name) => {
     try { await api.post(`/api/academy/requests/${id}/approve`); setMsg(`${name} approved.`); load(); }
-    catch (e) { setErr(e.response?.data?.message || 'Could not approve.'); }
+    catch (e) { setErr(e.response?.data?.message || tr('Could not approve.')); }
   };
   const messageCoach = async (coachId, name) => {
     try {
       await api.post(`/api/academy/chat/${coachId}/start`);
-      setMsg(`💬 Chat with ${name} opened — find it in your coach messages (💬 button).`);
+      setMsg(tr("💬 Chat with {name} opened — find it in your coach messages (💬 button).", { name: name }));
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not open chat.');
     }
   };
   const declineRequest = async (id) => {
     try { await api.post(`/api/academy/requests/${id}/decline`); setRequests(rs => rs.filter(r => r.id !== id)); }
-    catch (e) { setErr(e.response?.data?.message || 'Could not decline.'); }
+    catch (e) { setErr(e.response?.data?.message || tr('Could not decline.')); }
   };
   const removeCoach = async (coachId, name) => {
-    if (!window.confirm(`Remove ${name} from the academy? Their own students and data stay with them.`)) return;
+    if (!window.confirm(tr("Remove {name} from the academy? Their own students and data stay with them.", { name: name }))) return;
     try {
       await api.delete(`/api/academy/members/${coachId}`);
       setMsg(`${name} removed.`);
       if (openCoach === coachId) { setOpenCoach(null); setRoster(null); }
       load();
-    } catch (e) { setErr(e.response?.data?.message || 'Could not remove the coach.'); }
+    } catch (e) { setErr(e.response?.data?.message || tr('Could not remove the coach.')); }
   };
   const toggleRoster = async (coachId) => {
     if (openCoach === coachId) { setOpenCoach(null); setRoster(null); return; }
@@ -146,7 +147,7 @@ export default function AcademyCoaches() {
     finally { setRosterLoading(false); }
   };
 
-  if (loading && !data) return <div className="acad-wrap"><div className="acad-empty">Loading coaches…</div></div>;
+  if (loading && !data) return <div className="acad-wrap"><div className="acad-empty">{tr("Loading coaches…")}</div></div>;
   if (err && !data) return <div className="acad-wrap"><div className="acad-error">⚠️ {err}</div></div>;
   if (!data) return null;
 
@@ -156,10 +157,10 @@ export default function AcademyCoaches() {
   return (
     <div className="acad-wrap">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
-        <h1 style={{ color: 'var(--color-text)', margin: 0 }}>👨‍🏫 Coaches</h1>
+        <h1 style={{ color: 'var(--color-text)', margin: 0 }}>{tr("👨‍🏫 Coaches")}</h1>
         {isOwner && (
           <button className="btn-primary" onClick={() => { setShowInvite(true); setInviteErr(''); }}>
-            + Add coach
+            {tr("+ Add coach")}
           </button>
         )}
       </div>
@@ -176,33 +177,33 @@ export default function AcademyCoaches() {
             onClick={e => e.stopPropagation()}
             style={{ background: '#141a2a', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-lg)', padding: 22, width: 'min(420px, 94vw)', boxShadow: '0 24px 60px var(--color-black-a35)' }}
           >
-            <h3 style={{ margin: '0 0 4px', color: 'var(--color-text)' }}>➕ Add a coach</h3>
+            <h3 style={{ margin: '0 0 4px', color: 'var(--color-text)' }}>{tr("➕ Add a coach")}</h3>
             <p style={{ margin: '0 0 16px', color: '#9aa4bf', fontSize: 13, lineHeight: 1.5 }}>
-              Enter the coach's <b>Chess Nexus username</b>. They'll get an invitation
+              {tr("Enter the coach's")} <b>{tr("Chess Nexus username")}</b>{tr(". They'll get an invitation")}
               in their notifications and join once they accept.
               <br />
               <span style={{ color: '#7c8aa8' }}>
-                They need an account already — ask them to sign up first if they don't have one.
+                {tr("They need an account already — ask them to sign up first if they don't have one.")}
               </span>
             </p>
 
             <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 6 }}>
-              Coach username
+              {tr("Coach username")}
             </label>
             <input
               value={inviteName}
               onChange={e => setInviteName(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !inviteBusy) sendInvite(); }}
-              placeholder="e.g. coachqueen"
+              placeholder={tr("e.g. coachqueen")}
               autoFocus
               style={{ width: '100%', padding: '10px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', marginBottom: 12, boxSizing: 'border-box' }}
             />
             {inviteErr && <div className="acad-error" style={{ marginBottom: 12 }}>⚠️ {inviteErr}</div>}
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-              <button className="btn-ghost" onClick={() => setShowInvite(false)} disabled={inviteBusy}>Cancel</button>
+              <button className="btn-ghost" onClick={() => setShowInvite(false)} disabled={inviteBusy}>{tr("Cancel")}</button>
               <button className="btn-primary" onClick={sendInvite} disabled={inviteBusy || !inviteName.trim()}>
-                {inviteBusy ? 'Sending…' : 'Send invitation'}
+                {inviteBusy ? tr('Sending…') : tr('Send invitation')}
               </button>
             </div>
           </div>
@@ -213,29 +214,29 @@ export default function AcademyCoaches() {
         <>
           <div className="acad-joinlink">
             <div>
-              <div className="acad-joinlink-label">Share this link — coaches use it to join your academy</div>
+              <div className="acad-joinlink-label">{tr("Share this link — coaches use it to join your academy")}</div>
               <div className="acad-joinlink-url">{joinLink}</div>
             </div>
             <button onClick={() => { navigator.clipboard?.writeText(joinLink).then(() => { setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000); }); }}>
-              {linkCopied ? '✓ Copied' : 'Copy link'}
+              {linkCopied ? tr('✓ Copied') : tr('Copy link')}
             </button>
           </div>
 
           {invites.length > 0 && (
             <div className="acad-req">
-              <h3>✉️ {invites.length} invitation{invites.length === 1 ? '' : 's'} waiting to be accepted</h3>
+              <h3>✉️ {invites.length} {tr("invitation")}{invites.length === 1 ? '' : 's'} {tr("waiting to be accepted")}</h3>
               {invites.map(i => (
                 <div key={i.id} className="acad-req-row">
                   <span>
                     {i.name}{i.username ? ` · @${i.username}` : ''}
                     {!i.isCoach && (
                       <span style={{ color: 'var(--color-warning)', marginLeft: 8, fontSize: 12 }}>
-                        · will onboard as a coach when they accept
+                        {tr("· will onboard as a coach when they accept")}
                       </span>
                     )}
                   </span>
                   <div className="acad-req-btns">
-                    <button className="acad-req-decline" onClick={() => withdrawInvite(i.id, i.name)}>Withdraw</button>
+                    <button className="acad-req-decline" onClick={() => withdrawInvite(i.id, i.name)}>{tr("Withdraw")}</button>
                   </div>
                 </div>
               ))}
@@ -244,13 +245,13 @@ export default function AcademyCoaches() {
 
           {requests.length > 0 && (
             <div className="acad-req">
-              <h3>🔔 {requests.length} coach{requests.length === 1 ? '' : 'es'} requesting to join</h3>
+              <h3>🔔 {requests.length} {tr("coach")}{requests.length === 1 ? '' : 'es'} {tr("requesting to join")}</h3>
               {requests.map(r => (
                 <div key={r.id} className="acad-req-row">
                   <span>{r.name}{r.username ? ` · @${r.username}` : ''}{r.country ? ` · ${r.country}` : ''}</span>
                   <div className="acad-req-btns">
-                    <button className="acad-req-approve" onClick={() => approveRequest(r.id, r.name)}>Approve</button>
-                    <button className="acad-req-decline" onClick={() => declineRequest(r.id)}>Decline</button>
+                    <button className="acad-req-approve" onClick={() => approveRequest(r.id, r.name)}>{tr("Approve")}</button>
+                    <button className="acad-req-decline" onClick={() => declineRequest(r.id)}>{tr("Decline")}</button>
                   </div>
                 </div>
               ))}
@@ -260,17 +261,17 @@ export default function AcademyCoaches() {
       )}
 
       {coaches.length === 0 ? (
-        <p className="acad-empty-inline">No coaches yet. Share your join link above.</p>
+        <p className="acad-empty-inline">{tr("No coaches yet. Share your join link above.")}</p>
       ) : (
         <div className="acad-table-wrap">
           <table className="acad-table">
             <thead>
               <tr>
-                <th>Coach</th><th>Role</th><th>Plan</th>
-                <th>Students</th><th>Joined (period)</th>
+                <th>{tr("Coach")}</th><th>{tr("Role")}</th><th>{tr("Plan")}</th>
+                <th>{tr("Students")}</th><th>{tr("Joined (period)")}</th>
                 {/* Fees RECEIVED this calendar month (approved requests only) —
                     what the coach actually collected, not what was asked for. */}
-                <th>Fees this month</th>
+                <th>{tr("Fees this month")}</th>
                 {isOwner && <th></th>}
               </tr>
             </thead>
@@ -289,12 +290,12 @@ export default function AcademyCoaches() {
                         <div className="acad-req-btns">
                           {/* Full drill-down: profile, calendars, roster, fees. */}
                           <button className="acad-msg-btn" onClick={() => navigate(`/academy/coaches/${c.coachId}`)}>
-                            📊 View
+                            {tr("📊 View")}
                           </button>
                           {c.role !== 'head' && (
                             <>
-                              <button className="acad-msg-btn" onClick={() => messageCoach(c.coachId, c.name)}>💬 Message</button>
-                              <button className="acad-remove" onClick={() => removeCoach(c.coachId, c.name)}>Remove</button>
+                              <button className="acad-msg-btn" onClick={() => messageCoach(c.coachId, c.name)}>{tr("💬 Message")}</button>
+                              <button className="acad-remove" onClick={() => removeCoach(c.coachId, c.name)}>{tr("Remove")}</button>
                             </>
                           )}
                         </div>
@@ -304,15 +305,15 @@ export default function AcademyCoaches() {
                   {openCoach === c.coachId && (
                     <tr>
                       <td colSpan={isOwner ? 7 : 6} className="acad-roster-cell">
-                        {rosterLoading ? <span className="acad-muted">Loading students…</span>
-                          : !roster?.length ? <span className="acad-muted">No students yet.</span>
+                        {rosterLoading ? <span className="acad-muted">{tr("Loading students…")}</span>
+                          : !roster?.length ? <span className="acad-muted">{tr("No students yet.")}</span>
                           : (
                             <div className="acad-roster">
-                              <div className="acad-roster-title">{c.name}'s students ({roster.length})</div>
+                              <div className="acad-roster-title">{c.name}{tr("'s students (")}{roster.length})</div>
                               {roster.map(s => (
                                 <div key={s.id} className="acad-roster-row">
                                   <span>{s.name}{s.username ? ` · @${s.username}` : ''}{s.country ? ` · ${s.country}` : ''}</span>
-                                  <span className="acad-muted">joined {new Date(s.joinedAt).toLocaleDateString()}</span>
+                                  <span className="acad-muted">{tr("joined")} {new Date(s.joinedAt).toLocaleDateString()}</span>
                                 </div>
                               ))}
                             </div>

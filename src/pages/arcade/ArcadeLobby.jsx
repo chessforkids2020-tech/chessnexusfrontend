@@ -12,10 +12,11 @@ import {
 } from "./arcadeTheme";
 import Sidebar from "../../components/Sidebar";
 import { useAuth } from "../../contexts/AuthContext";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const GAME_META = {
-  ttt:   { icon: "⚔️", label: "Tic-Tac-Toe",  route: "/arcade/ttt", color: "#f43f5e" },
-  bingo: { icon: "🎯", label: "Chess Bingo",   route: "/arcade/bingo", color: "var(--color-accent)" },
+  ttt:   { icon: "⚔️", label: tr("Tic-Tac-Toe"),  route: "/arcade/ttt", color: "#f43f5e" },
+  bingo: { icon: "🎯", label: tr("Chess Bingo"),   route: "/arcade/bingo", color: "var(--color-accent)" },
 };
 
 export default function ArcadeLobby() {
@@ -73,11 +74,11 @@ export default function ArcadeLobby() {
     socket.on("connect_error", (err) => {
       console.error("[ArcadeLobby] socket connect_error:", err?.message);
       if (!socket.active) {
-        setError(`Unable to connect to game server (${err?.message || "unknown error"}). Please refresh.`);
+        setError(tr("Unable to connect to game server ({v0}). Please refresh.", { v0: err?.message || tr("unknown error") }));
       }
     });
     socket.on("connect_timeout", () => {
-      setError("Connection timed out. Please refresh.");
+      setError(tr("Connection timed out. Please refresh."));
     });
 
     socket.on("room_joined", ({ roomCode, playerNum, gameType: gt, boardSize }) => {
@@ -105,7 +106,7 @@ export default function ArcadeLobby() {
       });
     });
 
-    socket.on("opponent_disconnected", () => { setError("Opponent disconnected."); setScreen("home"); setRoomInfo(null); });
+    socket.on("opponent_disconnected", () => { setError(tr("Opponent disconnected.")); setScreen("home"); setRoomInfo(null); });
 
     return () => socket.disconnect();
   }, []);
@@ -113,11 +114,11 @@ export default function ArcadeLobby() {
   const handleJoinRoom = (e) => {
     e?.stopPropagation();
     console.log("[ArcadeLobby] handleJoinRoom", { joinCode, socketId: socketRef.current?.id, connected: socketRef.current?.connected });
-    if (!joinCode.trim()) return setError("Enter a room code.");
+    if (!joinCode.trim()) return setError(tr("Enter a room code."));
     setError("");
     const sock = socketRef.current;
     if (!sock?.connected) {
-      setError("Connecting to server... Please wait.");
+      setError(tr("Connecting to server... Please wait."));
       if (sock) {
         const code = joinCode.trim().toUpperCase();
         sock.once('connect', () => {
@@ -126,7 +127,7 @@ export default function ArcadeLobby() {
         });
         sock.connect();
       } else {
-        setError("Unable to connect. Please refresh the page.");
+        setError(tr("Unable to connect. Please refresh the page."));
       }
       return;
     }
@@ -157,7 +158,7 @@ export default function ArcadeLobby() {
   const goToSizePicker = (mode, e) => {
     e?.stopPropagation();
     if (!socketRef.current?.connected) {
-      setError("Connecting to server...");
+      setError(tr("Connecting to server..."));
       socketRef.current?.connect();
       const checkInterval = setInterval(() => {
         if (socketRef.current?.connected) {
@@ -169,7 +170,7 @@ export default function ArcadeLobby() {
       setTimeout(() => {
         clearInterval(checkInterval);
         if (!socketRef.current?.connected) {
-          setError("Unable to connect. Please refresh and try again.");
+          setError(tr("Unable to connect. Please refresh and try again."));
         }
       }, 5000);
       return;
@@ -256,7 +257,7 @@ export default function ArcadeLobby() {
               marginLeft: "auto",
               marginRight: "auto"
             }}>
-              Choose how you want to play
+              {tr("Choose how you want to play")}
             </p>
           </div>
 
@@ -319,7 +320,7 @@ export default function ArcadeLobby() {
                       fontWeight: 700,
                       margin: "0 0 6px"
                     }}>
-                      Quick Match
+                      {tr("Quick Match")}
                     </h3>
                     <p className="arc-lobby-desc" style={{
                       color: "var(--color-text-muted)",
@@ -327,7 +328,7 @@ export default function ArcadeLobby() {
                       margin: 0,
                       lineHeight: 1.5
                     }}>
-                      Get paired with a random opponent instantly. Pick your board size first.
+                      {tr("Get paired with a random opponent instantly. Pick your board size first.")}
                     </p>
                   </div>
 
@@ -362,7 +363,7 @@ export default function ArcadeLobby() {
                       e.currentTarget.style.transform = "scale(1)";
                     }}
                   >
-                    <span>Play</span>
+                    <span>{tr("Play")}</span>
                     <span style={{ fontSize: 18 }}>→</span>
                   </button>
                 </div>
@@ -428,7 +429,7 @@ export default function ArcadeLobby() {
                       fontWeight: 700,
                       margin: "0 0 6px"
                     }}>
-                      Play with Friend
+                      {tr("Play with Friend")}
                     </h3>
                     <p className="arc-lobby-desc" style={{
                       color: "var(--color-text-muted)",
@@ -436,7 +437,7 @@ export default function ArcadeLobby() {
                       margin: 0,
                       lineHeight: 1.5
                     }}>
-                      Create a private room, pick your board size, then share the code.
+                      {tr("Create a private room, pick your board size, then share the code.")}
                     </p>
                   </div>
 
@@ -470,7 +471,7 @@ export default function ArcadeLobby() {
                       e.currentTarget.style.background = "var(--color-white-a04)";
                     }}
                   >
-                    <span>Create</span>
+                    <span>{tr("Create")}</span>
                     <span style={{ fontSize: 18 }}>→</span>
                   </button>
                 </div>
@@ -529,7 +530,7 @@ export default function ArcadeLobby() {
                       fontWeight: 700,
                       margin: "0 0 6px"
                     }}>
-                      Join Friend's Room
+                      {tr("Join Friend's Room")}
                     </h3>
                     <p className="arc-lobby-desc" style={{
                       color: "var(--color-text-muted)",
@@ -537,7 +538,7 @@ export default function ArcadeLobby() {
                       margin: 0,
                       lineHeight: 1.5
                     }}>
-                      Have a room code? Enter it here to join your friend's game.
+                      {tr("Have a room code? Enter it here to join your friend's game.")}
                     </p>
                   </div>
 
@@ -571,7 +572,7 @@ export default function ArcadeLobby() {
                       e.currentTarget.style.background = "var(--color-white-a04)";
                     }}
                   >
-                    <span>Join</span>
+                    <span>{tr("Join")}</span>
                     <span style={{ fontSize: 18 }}>→</span>
                   </button>
                 </div>
@@ -602,7 +603,7 @@ export default function ArcadeLobby() {
                 }}
               >
                 <span>←</span>
-                <span>Back to Games</span>
+                <span>{tr("Back to Games")}</span>
               </button>
             </div>
           )}
@@ -627,11 +628,11 @@ export default function ArcadeLobby() {
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent"
               }}>
-                Enter Room Code
+                {tr("Enter Room Code")}
               </h2>
               
               <p style={{ color: "var(--color-text-muted)", fontSize: 14, marginBottom: 28 }}>
-                Your friend's 6-character code
+                {tr("Your friend's 6-character code")}
               </p>
 
               <input
@@ -683,7 +684,7 @@ export default function ArcadeLobby() {
                     e.currentTarget.style.borderColor = "var(--color-white-a10)";
                   }}
                 >
-                  ← Back
+                  {tr("← Back")}
                 </button>
                 
                 <button
@@ -716,7 +717,7 @@ export default function ArcadeLobby() {
                     }
                   }}
                 >
-                  Join Room →
+                  {tr("Join Room →")}
                 </button>
               </div>
             </div>
@@ -754,7 +755,7 @@ export default function ArcadeLobby() {
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent"
                 }}>
-                  Room {roomInfo.roomCode}
+                  {tr("Room")} {roomInfo.roomCode}
                 </h2>
                 <p style={{ color: "var(--color-text-muted)", fontSize: 15 }}>
                   {meta.label} • {roomInfo.boardSize}×{roomInfo.boardSize}
@@ -778,7 +779,7 @@ export default function ArcadeLobby() {
                     textTransform: "uppercase",
                     letterSpacing: "1px"
                   }}>
-                    Room Code
+                    {tr("Room Code")}
                   </p>
                   <div style={{
                     fontSize: 42,
@@ -822,12 +823,12 @@ export default function ArcadeLobby() {
                     {copied ? (
                       <>
                         <span>✓</span>
-                        <span>Copied!</span>
+                        <span>{tr("Copied!")}</span>
                       </>
                     ) : (
                       <>
                         <span>📋</span>
-                        <span>Copy Code</span>
+                        <span>{tr("Copy Code")}</span>
                       </>
                     )}
                   </button>
@@ -882,7 +883,7 @@ export default function ArcadeLobby() {
                         fontSize: 16,
                         marginBottom: 4
                       }}>
-                        {player ? (player.displayName || player.username) : "Waiting for player..."}
+                        {player ? (player.displayName || player.username) : tr("Waiting for player...")}
                       </div>
 
                       {/* Player tag */}
@@ -891,7 +892,7 @@ export default function ArcadeLobby() {
                         fontSize: 12,
                         marginBottom: 8
                       }}>
-                        {isMe ? "You" : `Player ${num}`}
+                        {isMe ? tr("You") : tr("Player {num}", { num: num })}
                       </div>
 
                       {/* Ready status */}
@@ -907,7 +908,7 @@ export default function ArcadeLobby() {
                           fontWeight: 600,
                           color: "var(--color-text)"
                         }}>
-                          ✓ READY
+                          {tr("✓ READY")}
                         </div>
                       )}
 
@@ -963,7 +964,7 @@ export default function ArcadeLobby() {
                       }}
                     >
                       <span>✅</span>
-                      <span>I'm Ready!</span>
+                      <span>{tr("I'm Ready!")}</span>
                     </button>
                   ) : (
                     <div style={{ marginBottom: 12 }}>
@@ -973,7 +974,7 @@ export default function ArcadeLobby() {
                         fontSize: 16,
                         marginBottom: 8
                       }}>
-                        ✅ You're ready!
+                        {tr("✅ You're ready!")}
                       </div>
                       <div style={{
                         width: "100%",
@@ -993,12 +994,12 @@ export default function ArcadeLobby() {
                     </div>
                   )}
                   <p style={{ color: "var(--color-text-faint)", fontSize: 13 }}>
-                    {readyCount}/2 players ready
+                    {readyCount}{tr("/2 players ready")}
                   </p>
                 </div>
               ) : (
                 <div style={{ textAlign: "center", color: "var(--color-text-muted)", fontSize: 15 }}>
-                  <div style={{ marginBottom: 16 }}>⏳ Waiting for opponent to join...</div>
+                  <div style={{ marginBottom: 16 }}>{tr("⏳ Waiting for opponent to join...")}</div>
                   <div style={{
                     width: 40,
                     height: 40,
@@ -1031,7 +1032,7 @@ export default function ArcadeLobby() {
                     e.currentTarget.style.color = "var(--color-text-faint)";
                   }}
                 >
-                  ← Leave Room
+                  {tr("← Leave Room")}
                 </button>
               </div>
             </div>

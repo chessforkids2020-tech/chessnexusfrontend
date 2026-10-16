@@ -1,3 +1,4 @@
+import { t as tr } from '../i18n/LanguageContext';
 // Saved Help Center conversations.
 //
 // WHY THIS EXISTS
@@ -104,9 +105,9 @@ export function conversationTitle(convo) {
 /** "today" / "3 days ago" — friendlier than a date in a list this short-lived. */
 export function relativeDay(ts) {
   const days = Math.floor((Date.now() - ts) / (24 * 60 * 60 * 1000));
-  if (days <= 0) return 'today';
-  if (days === 1) return 'yesterday';
-  return `${days} days ago`;
+  if (days <= 0) return tr('today');
+  if (days === 1) return tr('yesterday');
+  return tr('{days} days ago', { days });
 }
 
 export { TTL_DAYS };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import './EliteTeamRace.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const EliteTeamRace = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const EliteTeamRace = () => {
   const handleCreateRace = async (e) => {
     e.preventDefault();
     if (!newRace.topic) {
-      alert('Please select a topic');
+      alert(tr('Please select a topic'));
       return;
     }
     try {
@@ -73,7 +74,7 @@ const EliteTeamRace = () => {
   };
 
   const handleDeleteRace = async (raceId) => {
-    if (!window.confirm('Are you sure you want to delete this race?')) return;
+    if (!window.confirm(tr('Are you sure you want to delete this race?'))) return;
     try {
       await api.delete(`/api/admin/team-race/${raceId}`);
       setRaces(prev => prev.filter(r => r._id !== raceId));
@@ -84,7 +85,7 @@ const EliteTeamRace = () => {
 
   const statusClass = (s) => ({ created: 'created', waiting: 'waiting', running: 'running', finished: 'finished' }[s] || 'created');
 
-  if (loading) return <div className="elite-tr-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}><span style={{ color:'var(--color-text-muted)' }}>Loading…</span></div>;
+  if (loading) return <div className="elite-tr-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}><span style={{ color:'var(--color-text-muted)' }}>{tr("Loading…")}</span></div>;
 
   return (
     <div className="elite-tr-root">
@@ -92,15 +93,15 @@ const EliteTeamRace = () => {
       {/* ── Header ── */}
       <div className="elite-tr-header">
         <div>
-          <h1>💎 Elite Team Races</h1>
-          <p className="elite-tr-header-sub">Create and manage team race events for your community</p>
+          <h1>{tr("💎 Elite Team Races")}</h1>
+          <p className="elite-tr-header-sub">{tr("Create and manage team race events for your community")}</p>
         </div>
         <div className="elite-tr-header-actions">
           <button onClick={() => setShowCreateModal(true)} className="btn-elite-primary">
-            ➕ Create Race
+            {tr("➕ Create Race")}
           </button>
           <button onClick={() => navigate('/team-race')} className="btn-elite-back">
-            ← Back
+            {tr("← Back")}
           </button>
         </div>
       </div>
@@ -108,7 +109,7 @@ const EliteTeamRace = () => {
       {/* ── Race list ── */}
       <div className="elite-tr-list">
         {races.length === 0 ? (
-          <div className="elite-tr-empty">No races yet. Click <strong>Create Race</strong> to get started.</div>
+          <div className="elite-tr-empty">{tr("No races yet. Click")} <strong>{tr("Create Race")}</strong> {tr("to get started.")}</div>
         ) : races.map(race => (
           <div key={race._id} className="elite-race-card">
             <div className="elite-race-card-top">
@@ -119,19 +120,19 @@ const EliteTeamRace = () => {
             </div>
 
             <div className="elite-race-meta">
-              <div className="elite-race-meta-item"><strong>Topic:</strong> {race.topic}</div>
-              <div className="elite-race-meta-item"><strong>Duration:</strong> {Math.floor(race.duration / 60)} min</div>
-              <div className="elite-race-meta-item"><strong>Points:</strong> {race.pointsPerPuzzle}/puzzle</div>
+              <div className="elite-race-meta-item"><strong>{tr("Topic:")}</strong> {race.topic}</div>
+              <div className="elite-race-meta-item"><strong>{tr("Duration:")}</strong> {Math.floor(race.duration / 60)} {tr("min")}</div>
+              <div className="elite-race-meta-item"><strong>{tr("Points:")}</strong> {race.pointsPerPuzzle}{tr("/puzzle")}</div>
               <div className="elite-race-meta-item">
-                <strong>Puzzles:</strong>{' '}
+                <strong>{tr("Puzzles:")}</strong>{' '}
                 {race.positionPuzzleCounts && Object.keys(race.positionPuzzleCounts).length > 0
-                  ? Object.entries(race.positionPuzzleCounts).map(([p, c]) => `Pos ${p}: ${c}`).join(', ')
-                  : `${race.puzzlesPerPosition} per position`}
+                  ? Object.entries(race.positionPuzzleCounts).map(([p, c]) => tr("Pos {p}: {c}", { p: p, c: c })).join(', ')
+                  : tr("{puzzlesPerPosition} per position", { puzzlesPerPosition: race.puzzlesPerPosition })}
               </div>
-              <div className="elite-race-meta-item"><strong>Created:</strong> {new Date(race.createdAt).toLocaleDateString()}</div>
+              <div className="elite-race-meta-item"><strong>{tr("Created:")}</strong> {new Date(race.createdAt).toLocaleDateString()}</div>
               {race.scheduledStartTime && (
                 <div className="elite-race-meta-item">
-                  <strong>Scheduled:</strong>{' '}
+                  <strong>{tr("Scheduled:")}</strong>{' '}
                   {new Date(race.scheduledStartTime).toLocaleString()}
                 </div>
               )}
@@ -139,14 +140,14 @@ const EliteTeamRace = () => {
 
             <div className="elite-race-card-actions">
               <button onClick={() => navigate(`/elite/team-race/${race._id}`)} className="btn-elite-secondary">
-                ⚙️ Manage Teams
+                {tr("⚙️ Manage Teams")}
               </button>
               <button
                 onClick={() => handleDeleteRace(race._id)}
                 className="btn-elite-danger"
                 disabled={race.status === 'running'}
               >
-                🗑️ Delete
+                {tr("🗑️ Delete")}
               </button>
             </div>
           </div>
@@ -156,27 +157,27 @@ const EliteTeamRace = () => {
       {showCreateModal && (
         <div className="elite-modal-overlay" onClick={() => setShowCreateModal(false)}>
           <div className="elite-modal" onClick={e => e.stopPropagation()}>
-            <h2>✨ Create Team Race</h2>
+            <h2>{tr("✨ Create Team Race")}</h2>
             <form onSubmit={handleCreateRace}>
               <div className="elite-form-group">
-                <label>Race Name *</label>
+                <label>{tr("Race Name *")}</label>
                 <input
-                  type="text" required placeholder="e.g., Friday Night Blitz"
+                  type="text" required placeholder={tr("e.g., Friday Night Blitz")}
                   value={newRace.raceName}
                   onChange={e => setNewRace({ ...newRace, raceName: e.target.value })}
                 />
               </div>
               <div className="elite-form-group">
-                <label>Duration (seconds) *</label>
+                <label>{tr("Duration (seconds) *")}</label>
                 <input
                   type="number" required min="60" placeholder="600"
                   value={newRace.duration}
                   onChange={e => setNewRace({ ...newRace, duration: parseInt(e.target.value) })}
                 />
-                <small>{Math.floor(newRace.duration / 60)} minutes</small>
+                <small>{Math.floor(newRace.duration / 60)} {tr("minutes")}</small>
               </div>
               <div className="elite-form-group">
-                <label>Topic *</label>
+                <label>{tr("Topic *")}</label>
                 <select
                   required disabled={topics.length === 0}
                   value={newRace.topic}
@@ -184,12 +185,12 @@ const EliteTeamRace = () => {
                 >
                   <option value="">{topics.length === 0 ? 'No topics found' : 'Select Topic'}</option>
                   {topics.map(t => (
-                    <option key={t.id} value={t.id}>{t.icon} {t.title} ({t.puzzleCount} puzzles)</option>
+                    <option key={t.id} value={t.id}>{t.icon} {t.title} ({t.puzzleCount} {tr("puzzles)")}</option>
                   ))}
                 </select>
               </div>
               <div className="elite-form-group">
-                <label>Points Per Puzzle *</label>
+                <label>{tr("Points Per Puzzle *")}</label>
                 <input
                   type="number" required min="1" placeholder="10"
                   value={newRace.pointsPerPuzzle}
@@ -197,26 +198,26 @@ const EliteTeamRace = () => {
                 />
               </div>
               <div className="elite-form-group">
-                <label>Puzzles per Position *</label>
+                <label>{tr("Puzzles per Position *")}</label>
                 <input
                   type="number" required min="1" max="10000" placeholder="500"
                   value={newRace.puzzlesPerPosition}
                   onChange={e => setNewRace({ ...newRace, puzzlesPerPosition: parseInt(e.target.value) })}
                 />
-                <small>Each position gets this many unique puzzles</small>
+                <small>{tr("Each position gets this many unique puzzles")}</small>
               </div>
               <div className="elite-form-group">
-                <label>Scheduled Start Time (Optional)</label>
+                <label>{tr("Scheduled Start Time (Optional)")}</label>
                 <input
                   type="datetime-local"
                   value={newRace.scheduledStartTime}
                   onChange={e => setNewRace({ ...newRace, scheduledStartTime: e.target.value })}
                 />
-                <small>Race auto-starts at this time (your local time)</small>
+                <small>{tr("Race auto-starts at this time (your local time)")}</small>
               </div>
               <div className="elite-modal-actions">
-                <button type="submit" className="btn-elite-primary">Create Race</button>
-                <button type="button" onClick={() => setShowCreateModal(false)} className="btn-elite-back">Cancel</button>
+                <button type="submit" className="btn-elite-primary">{tr("Create Race")}</button>
+                <button type="button" onClick={() => setShowCreateModal(false)} className="btn-elite-back">{tr("Cancel")}</button>
               </div>
             </form>
           </div>

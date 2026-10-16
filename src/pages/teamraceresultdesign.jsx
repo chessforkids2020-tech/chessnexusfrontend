@@ -1,27 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { t as tr } from '../i18n/LanguageContext';
 
 function LuxuryGoldResults() {
   const canvasRef = useRef(null);
   const [showConfetti, setShowConfetti] = useState(true);
   
   const teams = [
-    { _id: '1', teamName: 'Golden Eagles', totalScore: 950, players: ['p1', 'p2', 'p3'], completionTime: new Date().toISOString() },
-    { _id: '2', teamName: 'Royal Knights', totalScore: 880, players: ['p4', 'p5'], completionTime: new Date().toISOString() },
-    { _id: '3', teamName: 'Diamond Squad', totalScore: 750, players: ['p6', 'p7', 'p8'], completionTime: new Date().toISOString() }
+    { _id: '1', teamName: tr('Golden Eagles'), totalScore: 950, players: ['p1', 'p2', 'p3'], completionTime: new Date().toISOString() },
+    { _id: '2', teamName: tr('Royal Knights'), totalScore: 880, players: ['p4', 'p5'], completionTime: new Date().toISOString() },
+    { _id: '3', teamName: tr('Diamond Squad'), totalScore: 750, players: ['p6', 'p7', 'p8'], completionTime: new Date().toISOString() }
   ];
 
   const results = [
-    { _id: 'r1', teamId: { _id: '1' }, userId: { displayName: 'Alex', username: 'alex' }, totalScore: 350, position: 1, correctPuzzles: 17, puzzles: Array(50).fill(null) },
+    { _id: 'r1', teamId: { _id: '1' }, userId: { displayName: tr('Alex'), username: 'alex' }, totalScore: 350, position: 1, correctPuzzles: 17, puzzles: Array(50).fill(null) },
     { _id: 'r2', teamId: { _id: '1' }, userId: { displayName: 'Sam', username: 'sam' }, totalScore: 320, position: 2, correctPuzzles: 16, puzzles: Array(50).fill(null) },
-    { _id: 'r3', teamId: { _id: '1' }, userId: { displayName: 'Jordan', username: 'jordan' }, totalScore: 280, position: 3, correctPuzzles: 14, puzzles: Array(50).fill(null) },
-    { _id: 'r4', teamId: { _id: '2' }, userId: { displayName: 'Taylor', username: 'taylor' }, totalScore: 450, position: 1, correctPuzzles: 22, puzzles: Array(50).fill(null) },
-    { _id: 'r5', teamId: { _id: '2' }, userId: { displayName: 'Morgan', username: 'morgan' }, totalScore: 430, position: 2, correctPuzzles: 21, puzzles: Array(50).fill(null) },
-    { _id: 'r6', teamId: { _id: '3' }, userId: { displayName: 'Casey', username: 'casey' }, totalScore: 280, position: 1, correctPuzzles: 14, puzzles: Array(50).fill(null) },
-    { _id: 'r7', teamId: { _id: '3' }, userId: { displayName: 'Riley', username: 'riley' }, totalScore: 250, position: 2, correctPuzzles: 12, puzzles: Array(50).fill(null) },
-    { _id: 'r8', teamId: { _id: '3' }, userId: { displayName: 'Drew', username: 'drew' }, totalScore: 220, position: 3, correctPuzzles: 11, puzzles: Array(50).fill(null) }
+    { _id: 'r3', teamId: { _id: '1' }, userId: { displayName: tr('Jordan'), username: 'jordan' }, totalScore: 280, position: 3, correctPuzzles: 14, puzzles: Array(50).fill(null) },
+    { _id: 'r4', teamId: { _id: '2' }, userId: { displayName: tr('Taylor'), username: 'taylor' }, totalScore: 450, position: 1, correctPuzzles: 22, puzzles: Array(50).fill(null) },
+    { _id: 'r5', teamId: { _id: '2' }, userId: { displayName: tr('Morgan'), username: 'morgan' }, totalScore: 430, position: 2, correctPuzzles: 21, puzzles: Array(50).fill(null) },
+    { _id: 'r6', teamId: { _id: '3' }, userId: { displayName: tr('Casey'), username: 'casey' }, totalScore: 280, position: 1, correctPuzzles: 14, puzzles: Array(50).fill(null) },
+    { _id: 'r7', teamId: { _id: '3' }, userId: { displayName: tr('Riley'), username: 'riley' }, totalScore: 250, position: 2, correctPuzzles: 12, puzzles: Array(50).fill(null) },
+    { _id: 'r8', teamId: { _id: '3' }, userId: { displayName: tr('Drew'), username: 'drew' }, totalScore: 220, position: 3, correctPuzzles: 11, puzzles: Array(50).fill(null) }
   ];
 
-  const race = { raceName: 'Grand Prix Finals 2024' };
+  const race = { raceName: tr('Grand Prix Finals 2024') };
 
   const getTeamPlayers = (teamId) => {
     return results.filter(r => String(r.teamId?._id || r.teamId) === String(teamId));
@@ -157,7 +158,7 @@ function LuxuryGoldResults() {
             letterSpacing: '3px',
             textShadow: '0 0 40px var(--color-warning-a30)'
           }}>
-            HALL OF FAME
+            {tr("HALL OF FAME")}
           </div>
 
           <div style={{
@@ -271,7 +272,7 @@ function LuxuryGoldResults() {
                       letterSpacing: '2px',
                       fontFamily: 'sans-serif'
                     }}>
-                      Rank #{actualRank}
+                      {tr("Rank #")}{actualRank}
                     </div>
                   </div>
 
@@ -294,7 +295,7 @@ function LuxuryGoldResults() {
                       letterSpacing: '2px',
                       fontFamily: 'sans-serif'
                     }}>
-                      Total Points
+                      {tr("Total Points")}
                     </div>
                   </div>
 
@@ -310,7 +311,7 @@ function LuxuryGoldResults() {
                       color: '#999',
                       fontFamily: 'sans-serif'
                     }}>
-                      👥 {team.players.length} Members
+                      👥 {team.players.length} {tr("Members")}
                     </div>
                   </div>
                 </div>
@@ -391,7 +392,7 @@ function LuxuryGoldResults() {
                       letterSpacing: '2px',
                       fontFamily: 'sans-serif'
                     }}>
-                      {team.players.length} Elite Members
+                      {team.players.length} {tr("Elite Members")}
                     </div>
                   </div>
                 </div>

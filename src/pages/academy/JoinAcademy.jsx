@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../../api';
 import './AcademyDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function JoinAcademy() {
   const { code } = useParams();
@@ -19,7 +20,7 @@ export default function JoinAcademy() {
     let alive = true;
     api.get(`/api/academy/by-code/${code}`)
       .then(r => { if (alive) setInfo(r.data); })
-      .catch(e => { if (alive) setErr(e.response?.data?.message || 'This academy link is not valid.'); })
+      .catch(e => { if (alive) setErr(e.response?.data?.message || tr('This academy link is not valid.')); })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
   }, [code]);
@@ -37,7 +38,7 @@ export default function JoinAcademy() {
     }
   };
 
-  if (loading) return <div className="acad-wrap"><div className="acad-empty">Loading…</div></div>;
+  if (loading) return <div className="acad-wrap"><div className="acad-empty">{tr("Loading…")}</div></div>;
 
   return (
     <div className="acad-wrap" style={{ maxWidth: 560 }}>
@@ -45,32 +46,32 @@ export default function JoinAcademy() {
         <div className="acad-join-emoji">🏛️</div>
         {err && !info ? (
           <>
-            <h1>Academy link</h1>
+            <h1>{tr("Academy link")}</h1>
             <div className="acad-error">⚠️ {err}</div>
-            <Link to="/coach/dashboard" className="btn-ghost">← Back</Link>
+            <Link to="/coach/dashboard" className="btn-ghost">{tr("← Back")}</Link>
           </>
         ) : info ? (
           <>
             <h1>{info.academy.name}</h1>
-            <p className="acad-join-sub">You've been invited to join this academy as a coach.</p>
+            <p className="acad-join-sub">{tr("You've been invited to join this academy as a coach.")}</p>
 
             {msg && <div className="acad-msg">{msg}</div>}
             {err && <div className="acad-error">⚠️ {err}</div>}
 
             {info.isOwnerOfThis ? (
               <>
-                <p className="acad-muted">This is your own academy.</p>
-                <button className="btn-primary" onClick={() => navigate('/academy/dashboard')}>Go to dashboard</button>
+                <p className="acad-muted">{tr("This is your own academy.")}</p>
+                <button className="btn-primary" onClick={() => navigate('/academy/dashboard')}>{tr("Go to dashboard")}</button>
               </>
             ) : info.myStatus === 'active' ? (
               <>
-                <p className="acad-muted">You're already a member of this academy.</p>
-                <button className="btn-primary" onClick={() => navigate('/academy/dashboard')}>Open academy</button>
+                <p className="acad-muted">{tr("You're already a member of this academy.")}</p>
+                <button className="btn-primary" onClick={() => navigate('/academy/dashboard')}>{tr("Open academy")}</button>
               </>
             ) : info.myStatus === 'requested' ? (
-              <p className="acad-muted">✓ Your request is pending. The academy head will approve you shortly.</p>
+              <p className="acad-muted">{tr("✓ Your request is pending. The academy head will approve you shortly.")}</p>
             ) : info.myStatus === 'in_other' ? (
-              <p className="acad-muted">You already belong to another academy, so you can't join this one.</p>
+              <p className="acad-muted">{tr("You already belong to another academy, so you can't join this one.")}</p>
             ) : (
               <>
                 <p className="acad-join-note">
@@ -78,7 +79,7 @@ export default function JoinAcademy() {
                   data stay yours. The academy head approves your request before you're added.
                 </p>
                 <button className="btn-primary" onClick={requestJoin} disabled={busy}>
-                  {busy ? 'Sending…' : 'Request to join'}
+                  {busy ? tr('Sending…') : tr('Request to join')}
                 </button>
               </>
             )}

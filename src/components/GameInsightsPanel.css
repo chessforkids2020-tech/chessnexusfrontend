@@ -293,3 +293,7 @@
 }
 .gip-nav-next:hover:not(:disabled) { color: #04121a; filter: brightness(1.08); }
 .gip-nav-count { font-size: 12px; color: var(--color-text-muted); font-weight: 700; }
+
+/* Free board after the moment is answered (hooks/useMomentFreePlay.js). */
+.gip-free { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--gip-border, var(--color-white-a07)); }
+.gip-free-hint { font-size: 12.5px; color: var(--gip-muted, var(--color-text-muted)); margin: 0 0 10px; }

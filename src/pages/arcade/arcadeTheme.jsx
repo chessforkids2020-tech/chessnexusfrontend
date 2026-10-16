@@ -1,5 +1,6 @@
 import React from "react";
 import './arcade.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Shared theme, layout helpers, and constants for arcade pages
 const T = {
@@ -94,9 +95,9 @@ function SectionLabel({ children }) {
 }
 
 const BOARD_SIZES = [
-  { s: 3, label: '3 × 3', tag: 'Quick', color: T.p1 },
-  { s: 4, label: '4 × 4', tag: 'Balanced', color: T.p2 },
-  { s: 5, label: '5 × 5', tag: 'Full', color: T.wrong },
+  { s: 3, label: '3 × 3', tag: tr('Quick'), color: T.p1 },
+  { s: 4, label: '4 × 4', tag: tr('Balanced'), color: T.p2 },
+  { s: 5, label: '5 × 5', tag: tr('Full'), color: T.wrong },
 ];
 
 function getUser() {
@@ -107,7 +108,7 @@ function OnlineDot({ connected, username }) {
   return (
     <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
       <div style={{ width: 10, height: 10, borderRadius: 'var(--radius-md)', background: connected ? T.correct : T.wrong }} />
-      <div style={{ color: connected ? T.correct : T.wrong, fontSize: 12 }}>{connected ? `Connected as ${username}` : 'Connecting...'}</div>
+      <div style={{ color: connected ? T.correct : T.wrong, fontSize: 12 }}>{connected ? tr("Connected as {username}", { username: username }) : 'Connecting...'}</div>
     </div>
   );
 }

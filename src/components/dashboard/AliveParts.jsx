@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import api from '../../api';
 import { questTasks } from "./aliveQuest";
 import './AliveDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const DAY_ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -40,9 +41,10 @@ function useCountUp(target, duration = 1300, delay = 300) {
   return val;
 }
 
-function CountUp({ value, delay }) {
+// plain: ratings are not quantities — show 1650, never "1,650".
+function CountUp({ value, delay, plain }) {
   const v = useCountUp(value, 1300, delay);
-  return <>{v.toLocaleString()}</>;
+  return <>{plain ? v : v.toLocaleString()}</>;
 }
 
 // ── dates ───────────────────────────────────────────────────────────────────
@@ -75,7 +77,7 @@ export function KnightJourney({ activity }) {
   const days = lastNDays(7);
   return (
     <div>
-      <div className="journey" aria-label="Your last 7 days">
+      <div className="journey" aria-label={tr("Your last 7 days")}>
         {days.map((d, i) => {
           const m = minutesOn(activity, d.key);
           const active = m == null || m > 0;
@@ -101,7 +103,7 @@ export function KnightJourney({ activity }) {
 }
 
 function greetingFor(hour) {
-  return hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  return hour < 12 ? tr('Good morning') : hour < 17 ? tr('Good afternoon') : tr('Good evening');
 }
 
 export function AliveHero({
@@ -120,13 +122,13 @@ export function AliveHero({
 
   let sub;
   if (isPublicView) {
-    sub = <>Active <b>{activeDays} of the last 7 days</b>{weekMin > 0 && <> · {weekMin} min trained this week</>}.</>;
+    sub = <>{tr("Active")} <b>{activeDays} of the last 7 days</b>{weekMin > 0 && <> · {weekMin} min trained this week</>}.</>;
   } else if (streak?.todayQualified) {
-    sub = <>Today's quest is done — your streak is safe.{streak.daysToNextReport > 0 && <> <b>{streak.daysToNextReport} more day{streak.daysToNextReport === 1 ? '' : 's'}</b> to your next weekly report.</>}</>;
+    sub = <>Today's quest is done — your streak is safe.{streak.daysToNextReport > 0 && <> <b>{streak.daysToNextReport} more day{streak.daysToNextReport === 1 ? '' : 's'}</b> {tr("to your next weekly report.")}</>}</>;
   } else if (streak) {
-    sub = <>Finish today's quest to keep the streak alive.{streak.daysToNextReport > 0 && n > 0 && <> <b>{streak.daysToNextReport} more day{streak.daysToNextReport === 1 ? '' : 's'}</b> to your next weekly report.</>}</>;
+    sub = <>Finish today's quest to keep the streak alive.{streak.daysToNextReport > 0 && n > 0 && <> <b>{streak.daysToNextReport} more day{streak.daysToNextReport === 1 ? '' : 's'}</b> {tr("to your next weekly report.")}</>}</>;
   } else {
-    sub = <>Puzzles, a game and an endgame a day keep the streak growing.</>;
+    sub = <>{tr("Puzzles, a game and an endgame a day keep the streak growing.")}</>;
   }
 
   return (
@@ -144,10 +146,10 @@ export function AliveHero({
       <div>
         <h1 className="hero-head disp">
           {n > 0
-            ? <>Day {n} of {isPublicView ? 'their' : 'your'}<br /><em>knight's journey.</em></>
+            ? <>Day {n} of {isPublicView ? 'their' : 'your'}<br /><em>{tr("knight's journey.")}</em></>
             : isPublicView
-              ? <>{first}'s<br /><em>knight's journey.</em></>
-              : <>Start your<br /><em>knight's journey today.</em></>}
+              ? <>{first}'s<br /><em>{tr("knight's journey.")}</em></>
+              : <>{tr("Start your")}<br /><em>{tr("knight's journey today.")}</em></>}
         </h1>
         <div className="hero-sub">{sub}</div>
         {user?.biography && <div className="hero-bio">“{user.biography}”</div>}
@@ -157,11 +159,11 @@ export function AliveHero({
 
       <div className="hero-actions">
         {!isPublicView && (
-          <Link to={continueTo} className="a-btn">Continue training <span className="arr">→</span></Link>
+          <Link to={continueTo} className="a-btn">{tr("Continue training")} <span className="arr">→</span></Link>
         )}
         <div className="streak-line">
           <span className="flame" aria-hidden="true">🔥</span>
-          <b className="disp">{n}</b> day streak
+          <b className="disp">{n}</b> {tr("day streak")}
           {activity?.stats?.longestStreak > 0 && <span className="faint">· best active run {activity.stats.longestStreak}</span>}
         </div>
       </div>
@@ -177,9 +179,9 @@ export function QuestCard({ streak }) {
   if (!streak) {
     return (
       <div className="a-card side quest rise" style={{ animationDelay: '.08s' }}>
-        <div className="card-title disp">Today's quest</div>
+        <div className="card-title disp">{tr("Today's quest")}</div>
         <div className="meter"><i style={{ width: '0%' }} /></div>
-        <div className="faint" style={{ fontSize: 13 }}>Loading today's tasks…</div>
+        <div className="faint" style={{ fontSize: 13 }}>{tr("Loading today's tasks…")}</div>
       </div>
     );
   }
@@ -188,8 +190,8 @@ export function QuestCard({ streak }) {
   return (
     <div className="a-card side quest rise" style={{ animationDelay: '.08s' }}>
       <div className="card-head">
-        <div className="card-title disp">Today's quest</div>
-        <div className="muted" style={{ fontSize: 13 }}><b style={{ color: 'var(--color-text)' }}>{doneCount}</b> of {tasks.length} done</div>
+        <div className="card-title disp">{tr("Today's quest")}</div>
+        <div className="muted" style={{ fontSize: 13 }}><b style={{ color: 'var(--color-text)' }}>{doneCount}</b> {tr("of")} {tasks.length} {tr("done")}</div>
       </div>
       <QuestMeter pct={(doneCount / tasks.length) * 100} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -211,8 +213,8 @@ export function QuestCard({ streak }) {
         ))}
       </div>
       {streak.todayQualified
-        ? <div className="quest-done" style={{ marginTop: 'auto' }}>✓ Quest complete — streak saved for today</div>
-        : <div className="faint" style={{ fontSize: 12, marginTop: 'auto' }}>All three keep your streak alive. Tap a task to start it.</div>}
+        ? <div className="quest-done" style={{ marginTop: 'auto' }}>{tr("✓ Quest complete — streak saved for today")}</div>
+        : <div className="faint" style={{ fontSize: 12, marginTop: 'auto' }}>{tr("All three keep your streak alive. Tap a task to start it.")}</div>}
     </div>
   );
 }
@@ -242,12 +244,12 @@ function sparkPoints(series, w = 74, h = 28) {
 // NOT repeated here — it lives in the Puzzles card with its trend lines.
 export function RatingsStrip({ ratings, deltas, replayTo }) {
   const cells = [
-    { key: 'bullet',    name: 'Bullet' },
-    { key: 'blitz',     name: 'Blitz' },
-    { key: 'rapid',     name: 'Rapid' },
-    { key: 'classical', name: 'Classical' },
+    { key: 'bullet',    name: tr('Bullet') },
+    { key: 'blitz',     name: tr('Blitz') },
+    { key: 'rapid',     name: tr('Rapid') },
+    { key: 'classical', name: tr('Classical') },
   ].map(c => ({ ...c, val: ratings?.[c.key] ?? 1200, delta: deltas?.[c.key], deltaTitle: 'Change from your last rated game' }));
-  cells.push({ key: 'replay', name: 'Replay', val: ratings?.replay ?? 0, to: replayTo, deltaTitle: '' });
+  cells.push({ key: 'replay', name: tr('Replay'), val: ratings?.replay ?? 0, to: replayTo, deltaTitle: '' });
 
   return (
     <div className="a-card ratings rise" style={{ animationDelay: '.14s' }}>
@@ -266,7 +268,7 @@ export function RatingsStrip({ ratings, deltas, replayTo }) {
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10 }}>
               <span className="rate-val disp">
-                {c.val == null ? '—' : <CountUp value={c.val} delay={300 + i * 60} />}
+                {c.val == null ? '—' : <CountUp value={c.val} delay={300 + i * 60} plain />}
               </span>
             </div>
           </Tag>
@@ -281,7 +283,7 @@ function fmtMinutes(mins) {
   if (mins <= 0) return '0 min';
   const h = Math.floor(mins / 60);
   const m = mins % 60;
-  if (h === 0) return `${m} min`;
+  if (h === 0) return tr("{m} min", { m: m });
   return m === 0 ? `${h}h` : `${h}h ${m}m`;
 }
 
@@ -301,7 +303,7 @@ export function PracticeCard({ activity, practiceStreak = 0 }) {
   if (mode === 'week') {
     bars = thisWeek.map(d => {
       const m = minutesOn(activity, d.key);
-      return { id: d.key, label: d.isToday ? 'Today' : d.abbr, value: m || 0, today: d.isToday, tip: m == null ? 'Active' : m > 0 ? `${m} min` : 'Rest day' };
+      return { id: d.key, label: d.isToday ? tr('Today') : d.abbr, value: m || 0, today: d.isToday, tip: m == null ? tr('Active') : m > 0 ? tr("{m} min", { m: m }) : tr('Rest day') };
     });
   } else {
     const days56 = lastNDays(56);
@@ -313,7 +315,7 @@ export function PracticeCard({ activity, practiceStreak = 0 }) {
       bars.push({
         id: chunk[0].key,
         label: w === 7 ? 'Now' : `${start.toLocaleString('en', { month: 'short', timeZone: 'UTC' })} ${start.getUTCDate()}`,
-        value: total, today: w === 7, tip: total > 0 ? `${total} min` : 'No practice',
+        value: total, today: w === 7, tip: total > 0 ? tr("{total} min", { total: total }) : 'No practice',
       });
     }
   }
@@ -326,17 +328,17 @@ export function PracticeCard({ activity, practiceStreak = 0 }) {
         <div>
           <div className="card-title disp">{mode === 'week' ? 'Practice this week' : 'Practice · last 8 weeks'}</div>
           <div className="muted" style={{ fontSize: 13 }}>
-            <b style={{ color: 'var(--color-text)' }}><CountUp value={mode === 'week' ? weekMin : bars.reduce((s, b) => s + b.value, 0)} /> min</b> trained
+            <b style={{ color: 'var(--color-text)' }}><CountUp value={mode === 'week' ? weekMin : bars.reduce((s, b) => s + b.value, 0)} /> {tr("min")}</b> {tr("trained")}
             {mode === 'week' && change != null && (
-              <> · <span className={change >= 0 ? 'good' : 'bad'}>{change >= 0 ? 'up' : 'down'} {Math.abs(change)}%</span> on last week</>
+              <> · <span className={change >= 0 ? 'good' : 'bad'}>{change >= 0 ? 'up' : 'down'} {Math.abs(change)}%</span> {tr("on last week")}</>
             )}
-            {mode === 'week' && change == null && weekMin > 0 && <> · a fresh start this week</>}
+            {mode === 'week' && change == null && weekMin > 0 && <> {tr("· a fresh start this week")}</>}
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div className="mini-seg" role="tablist">
-            <button type="button" className={mode === 'week' ? 'on' : ''} onClick={() => setMode('week')}>Week</button>
-            <button type="button" className={mode === 'weeks' ? 'on' : ''} onClick={() => setMode('weeks')}>8 weeks</button>
+            <button type="button" className={mode === 'week' ? 'on' : ''} onClick={() => setMode('week')}>{tr("Week")}</button>
+            <button type="button" className={mode === 'weeks' ? 'on' : ''} onClick={() => setMode('weeks')}>{tr("8 weeks")}</button>
           </div>
         </div>
       </div>
@@ -354,9 +356,9 @@ export function PracticeCard({ activity, practiceStreak = 0 }) {
       </div>
       {/* The old Practice Activity card's three totals. */}
       <div className="pr-metrics">
-        <div><span className="pr-ic" aria-hidden="true">🔥</span><b className="disp">{practiceStreak}</b><span>Practice streak</span></div>
-        <div><span className="pr-ic" aria-hidden="true">⏱</span><b className="disp">{fmtMinutes(totalMin || 0)}</b><span>Time spent</span></div>
-        <div><span className="pr-ic" aria-hidden="true">📅</span><b className="disp">{activity?.stats?.totalDays || 0}</b><span>Days active</span></div>
+        <div><span className="pr-ic" aria-hidden="true">🔥</span><b className="disp">{practiceStreak}</b><span>{tr("Practice streak")}</span></div>
+        <div><span className="pr-ic" aria-hidden="true">⏱</span><b className="disp">{fmtMinutes(totalMin || 0)}</b><span>{tr("Time spent")}</span></div>
+        <div><span className="pr-ic" aria-hidden="true">📅</span><b className="disp">{activity?.stats?.totalDays || 0}</b><span>{tr("Days active")}</span></div>
       </div>
     </div>
   );
@@ -364,12 +366,12 @@ export function PracticeCard({ activity, practiceStreak = 0 }) {
 
 // ── XP wallet ───────────────────────────────────────────────────────────────
 const XP_SOURCES = [
-  { key: 'puzzles',  label: 'Puzzles' },
-  { key: 'races',    label: 'Races' },
-  { key: 'arena',    label: 'Arena games' },
-  { key: 'analysis', label: 'Game analysis' },
-  { key: 'games',    label: 'Mini games' },
-  { key: 'social',   label: 'Friends & invites' },
+  { key: 'puzzles',  label: tr('Puzzles') },
+  { key: 'races',    label: tr('Races') },
+  { key: 'arena',    label: tr('Arena games') },
+  { key: 'analysis', label: tr('Game analysis') },
+  { key: 'games',    label: tr('Mini games') },
+  { key: 'social',   label: tr('Friends & invites') },
 ];
 
 export function XpCard({ wallet, onHelp }) {
@@ -380,16 +382,16 @@ export function XpCard({ wallet, onHelp }) {
   return (
     <div className="a-card lift side rise" style={{ animationDelay: '.26s', display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div className="coin">XP</div>
+        <div className="coin">{"XP"}</div>
         <div style={{ flex: 1 }}>
-          <div className="eyebrow">XP wallet</div>
+          <div className="eyebrow">{tr("XP wallet")}</div>
           <div className="disp" style={{ fontSize: 34, fontWeight: 800, lineHeight: 1 }}><CountUp value={total} /></div>
         </div>
-        <button type="button" className="help-dot" aria-label="How do I earn XP?" onClick={onHelp}>?</button>
+        <button type="button" className="help-dot" aria-label={tr("How do I earn XP?")} onClick={onHelp}>?</button>
       </div>
       {rows.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div className="eyebrow">Where it came from</div>
+          <div className="eyebrow">{tr("Where it came from")}</div>
           {rows.map(r => (
             <div key={r.key}>
               <div className="kv"><span>{r.label}</span><b className="good">+{r.v.toLocaleString()}</b></div>
@@ -398,9 +400,9 @@ export function XpCard({ wallet, onHelp }) {
           ))}
         </div>
       ) : (
-        <div className="muted" style={{ fontSize: 13 }}>Every puzzle, race and arena game adds XP here.</div>
+        <div className="muted" style={{ fontSize: 13 }}>{tr("Every puzzle, race and arena game adds XP here.")}</div>
       )}
-      <button type="button" className="ghost" style={{ marginTop: 'auto' }} onClick={onHelp}>How to earn more <span className="arr">→</span></button>
+      <button type="button" className="ghost" style={{ marginTop: 'auto' }} onClick={onHelp}>{tr("How to earn more")} <span className="arr">→</span></button>
     </div>
   );
 }
@@ -431,16 +433,16 @@ export function PuzzleCard({ stats, range, onRange, to, fallbackRating }) {
     return () => clearTimeout(id);
   }, [pct]);
   const rows = [
-    { label: 'Puzzle rating', value: rating != null ? <CountUp value={rating} /> : '—', color: 'var(--color-accent)',
+    { label: tr('Puzzle rating'), value: rating != null ? <CountUp value={rating} plain /> : '—', color: 'var(--color-accent)',
       extra: trend ? <span className={trend > 0 ? 'good' : 'bad'}>{trend > 0 ? '+' : ''}{trend}</span> : null,
       series: stats?.series?.rating },
-    { label: 'Accuracy', value: acc != null ? `${acc}%` : '—', color: 'var(--color-success)', series: stats?.series?.accuracy },
-    { label: 'Best streak', value: stats?.streak ?? 0, color: 'var(--color-warning)', series: stats?.series?.solved },
+    { label: tr('Accuracy'), value: acc != null ? `${acc}%` : '—', color: 'var(--color-success)', series: stats?.series?.accuracy },
+    { label: tr('Best streak'), value: stats?.streak ?? 0, color: 'var(--color-warning)', series: stats?.series?.solved },
   ];
   return (
     <div className="a-card lift rise" style={{ animationDelay: '.32s', display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div className="card-head">
-        <div className="eyebrow">Puzzles</div>
+        <div className="eyebrow">{tr("Puzzles")}</div>
         <div className="mini-seg">
           {['24h', '7d'].map(r => (
             <button key={r} type="button" className={range === r ? 'on' : ''} onClick={() => onRange(r)}>{r}</button>
@@ -455,7 +457,7 @@ export function PuzzleCard({ stats, range, onRange, to, fallbackRating }) {
           </svg>
           <div className="ring-in">
             <span className="disp" style={{ fontSize: 28, fontWeight: 800 }}><CountUp value={solved} /></span>
-            <span className="faint" style={{ fontSize: 10, lineHeight: 1.2, textAlign: 'center' }}>of {attempts}<br />solved</span>
+            <span className="faint" style={{ fontSize: 10, lineHeight: 1.2, textAlign: 'center' }}>{tr("of")} {attempts}<br />{tr("solved")}</span>
           </div>
         </div>
         <div className="pz-rows">
@@ -468,7 +470,7 @@ export function PuzzleCard({ stats, range, onRange, to, fallbackRating }) {
           ))}
         </div>
       </div>
-      <Link to={to} className="ghost" style={{ marginTop: 'auto' }}>Puzzle dashboard <span className="arr">→</span></Link>
+      <Link to={to} className="ghost" style={{ marginTop: 'auto' }}>{tr("Puzzle dashboard")} <span className="arr">→</span></Link>
     </div>
   );
 }
@@ -476,16 +478,16 @@ export function PuzzleCard({ stats, range, onRange, to, fallbackRating }) {
 // ── Races ───────────────────────────────────────────────────────────────────
 export function RacesCard({ user, onOpen }) {
   const rows = [
-    { type: 'timedRace', label: 'Individual race', v: user?.highestTimedRaceScore || 0, color: 'var(--color-accent)' },
-    { type: 'arenaRace', label: 'Arena race',      v: user?.highestArenaRaceScore || 0, color: 'var(--color-success)' },
-    { type: 'teamRace',  label: 'Team race',       v: user?.highestTeamRaceScore || 0,  color: 'var(--color-warning)' },
+    { type: 'timedRace', label: tr('Individual race'), v: user?.highestTimedRaceScore || 0, color: 'var(--color-accent)' },
+    { type: 'arenaRace', label: tr('Arena race'),      v: user?.highestArenaRaceScore || 0, color: 'var(--color-success)' },
+    { type: 'teamRace',  label: tr('Team race'),       v: user?.highestTeamRaceScore || 0,  color: 'var(--color-warning)' },
   ];
   const max = Math.max(1, ...rows.map(r => r.v));
   return (
     <div className="a-card lift rise" style={{ animationDelay: '.38s', display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <div className="card-head"><div className="eyebrow">Puzzle races · best</div></div>
+      <div className="card-head"><div className="eyebrow">{tr("Puzzle races · best")}</div></div>
       {rows.map(r => (
-        <button key={r.type} type="button" className="race-row" onClick={() => onOpen(r.type)} title="See race history">
+        <button key={r.type} type="button" className="race-row" onClick={() => onOpen(r.type)} title={tr("See race history")}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
             <span>{r.label}</span>
             <b className="disp" style={{ fontSize: 16 }}><CountUp value={r.v} /></b>
@@ -493,7 +495,7 @@ export function RacesCard({ user, onOpen }) {
           <div className="rbar"><i style={{ width: `${(r.v / max) * 100}%`, background: r.color }} /></div>
         </button>
       ))}
-      <div className="faint" style={{ fontSize: 12, marginTop: 'auto' }}>Tap a race to see its history.</div>
+      <div className="faint" style={{ fontSize: 12, marginTop: 'auto' }}>{tr("Tap a race to see its history.")}</div>
     </div>
   );
 }
@@ -506,13 +508,13 @@ export function TournamentCard({ arena, to }) {
   return (
     <div className="a-card lift rise" style={{ animationDelay: '.44s', display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div className="card-head">
-        <div className="eyebrow">Arena tournaments</div>
-        <Link to={to} className="ghost">Dashboard <span className="arr">→</span></Link>
+        <div className="eyebrow">{tr("Arena tournaments")}</div>
+        <Link to={to} className="ghost">{tr("Dashboard")} <span className="arr">→</span></Link>
       </div>
       <div className="stat3">
-        <div><div className="disp" style={{ color: 'var(--color-warning)' }}>{arena ? <CountUp value={arena.totalTournaments || 0} /> : '—'}</div><div className="lbl">tournaments</div></div>
-        <div><div className="disp" style={{ color: 'var(--color-accent)' }}>{arena ? <CountUp value={arena.totalGamesPlayed || 0} /> : '—'}</div><div className="lbl">games</div></div>
-        <div><div className="disp" style={{ color: 'var(--color-success)' }}>{arena ? (carry > 0 ? `+${carry}` : '0') : '—'}</div><div className="lbl">carry pts</div></div>
+        <div><div className="disp" style={{ color: 'var(--color-warning)' }}>{arena ? <CountUp value={arena.totalTournaments || 0} /> : '—'}</div><div className="lbl">{tr("tournaments")}</div></div>
+        <div><div className="disp" style={{ color: 'var(--color-accent)' }}>{arena ? <CountUp value={arena.totalGamesPlayed || 0} /> : '—'}</div><div className="lbl">{tr("games")}</div></div>
+        <div><div className="disp" style={{ color: 'var(--color-success)' }}>{arena ? (carry > 0 ? `+${carry}` : '0') : '—'}</div><div className="lbl">{tr("carry pts")}</div></div>
       </div>
     </div>
   );
@@ -562,12 +564,12 @@ export function FocusCard({ publicData }) {
       <div className="a-card lift grow rise" style={{ animationDelay: '.5s', display: 'flex', flexDirection: 'column', gap: 10 }}>
         <div className="card-head">
           <div>
-            <div className="eyebrow">Monthly focus · {monthLabel}</div>
-            <div className="disp" style={{ fontSize: 22, fontWeight: 700 }}>Monthly Focus Challenge</div>
+            <div className="eyebrow">{tr("Monthly focus ·")} {monthLabel}</div>
+            <div className="disp" style={{ fontSize: 22, fontWeight: 700 }}>{tr("Monthly Focus Challenge")}</div>
           </div>
-          <Link to="/monthly-focus" className="ghost">View all <span className="arr">→</span></Link>
+          <Link to="/monthly-focus" className="ghost">{tr("View all")} <span className="arr">→</span></Link>
         </div>
-        <div className="muted" style={{ fontSize: 13 }}>No Monthly Focus challenge active this month.</div>
+        <div className="muted" style={{ fontSize: 13 }}>{tr("No Monthly Focus challenge active this month.")}</div>
       </div>
     );
   }
@@ -583,17 +585,17 @@ export function FocusCard({ publicData }) {
     <div className="a-card lift grow rise" style={{ animationDelay: '.5s', display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div className="card-head">
         <div>
-          <div className="eyebrow">Monthly focus · {monthLabel}{isOfficial(focus) ? ' · ChessNexus official' : ''}</div>
+          <div className="eyebrow">{tr("Monthly focus ·")} {monthLabel}{isOfficial(focus) ? ' · ChessNexus official' : ''}</div>
           <div className="disp" style={{ fontSize: 24, fontWeight: 700 }}>{focus.title}</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Link to="/monthly-focus" className="ghost">View all <span className="arr">→</span></Link>
+          <Link to="/monthly-focus" className="ghost">{tr("View all")} <span className="arr">→</span></Link>
           {!publicData && (
             <Link to="/monthly-focus" className="a-btn sm">{s ? (done >= 7 ? 'Results' : 'Continue') : 'Join now'} <span className="arr">→</span></Link>
           )}
         </div>
       </div>
-      <div className="trail" aria-label={`${done} of 7 days complete`}>
+      <div className="trail" aria-label={tr("{done} of 7 days complete", { done: done })}>
         {Array.from({ length: 7 }, (_, i) => {
           const day = i + 1;
           const cls = day <= done ? 'ok' : (day === done + 1 && s ? 'now' : 'no');
@@ -608,34 +610,34 @@ export function FocusCard({ publicData }) {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
         {s ? (
           <>
-            <span className="muted" style={{ fontSize: 13, marginRight: 4 }}>{done} of 7 days done</span>
+            <span className="muted" style={{ fontSize: 13, marginRight: 4 }}>{done} {tr("of 7 days done")}</span>
             {badge && <span className="pill gold">{badge.emoji} {badge.name}</span>}
             <span className="pill">🏅 Rank {s.rank ? `#${s.rank}` : '—'}</span>
-            <span className="pill">⚡ {s.focusXp ?? 0} XP</span>
-            <span className="pill">🧠 Skill {s.skillScore ?? 0}</span>
-            <span className="pill">✨ {s.perfectDays ?? 0} perfect day{s.perfectDays === 1 ? '' : 's'}</span>
+            <span className="pill">⚡ {s.focusXp ?? 0} {tr("XP")}</span>
+            <span className="pill">{tr("🧠 Skill")} {s.skillScore ?? 0}</span>
+            <span className="pill">✨ {s.perfectDays ?? 0} {tr("perfect day")}{s.perfectDays === 1 ? '' : 's'}</span>
           </>
         ) : (
-          <span className="muted" style={{ fontSize: 13 }}>🏛️ An official Monthly Focus challenge is active this month!</span>
+          <span className="muted" style={{ fontSize: 13 }}>{tr("🏛️ An official Monthly Focus challenge is active this month!")}</span>
         )}
       </div>
       {joined.length > 1 && (
         <div className="mf-table-wrap">
           <table className="mf-table">
             <thead>
-              <tr><th>Challenge</th><th>Rank</th><th>XP</th><th>Skill</th><th>Badge</th></tr>
+              <tr><th>{tr("Challenge")}</th><th>{tr("Rank")}</th><th>{"XP"}</th><th>{tr("Skill")}</th><th>{tr("Badge")}</th></tr>
             </thead>
             <tbody>
               {joined.map(f => {
                 const fs = statsMap[f._id];
                 const off = isOfficial(f);
                 const b = focusBadge(fs.completedDays, fs.perfectDays);
-                const creator = off ? 'ChessNexus' : (f.createdBy?.displayName || f.createdBy?.username || 'Elite');
+                const creator = off ? tr('ChessNexus') : (f.createdBy?.displayName || f.createdBy?.username || tr('Elite'));
                 return (
                   <tr key={f._id}>
                     <td>
                       <Link to="/monthly-focus">{off && '🏛️ '}{f.title}</Link>
-                      <span className="faint"> · by {creator}</span>
+                      <span className="faint"> {tr("· by")} {creator}</span>
                     </td>
                     <td>{fs.rank ? `#${fs.rank}` : '—'}</td>
                     <td>{fs.focusXp ?? 0}</td>
@@ -655,12 +657,12 @@ export function FocusCard({ publicData }) {
 // Same tiers as the old dashboard's Monthly Focus badge.
 function focusBadge(completedDays, perfectDays) {
   if (!completedDays) return null;
-  if (completedDays >= 7 && perfectDays >= 5) return { emoji: '🏆', name: 'Champion' };
-  if (perfectDays >= 5) return { emoji: '👑', name: 'Perfect' };
-  if (completedDays >= 7) return { emoji: '🎯', name: 'Achiever' };
-  if (completedDays >= 5) return { emoji: '🔥', name: 'Dedicated' };
-  if (completedDays >= 3) return { emoji: '⭐', name: 'Active' };
-  return { emoji: '🌱', name: 'Beginner' };
+  if (completedDays >= 7 && perfectDays >= 5) return { emoji: '🏆', name: tr('Champion') };
+  if (perfectDays >= 5) return { emoji: '👑', name: tr('Perfect') };
+  if (completedDays >= 7) return { emoji: '🎯', name: tr('Achiever') };
+  if (completedDays >= 5) return { emoji: '🔥', name: tr('Dedicated') };
+  if (completedDays >= 3) return { emoji: '⭐', name: tr('Active') };
+  return { emoji: '🌱', name: tr('Beginner') };
 }
 
 // ── Tabs ────────────────────────────────────────────────────────────────────

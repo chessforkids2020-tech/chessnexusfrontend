@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import api from '../api';
 import PlayerName from './PlayerName';
+import { t as tr } from '../i18n/LanguageContext';
 
 const BestRacers = ({ compact = false }) => {
   const [timedRacers, setTimedRacers] = useState([]);
@@ -24,7 +25,7 @@ const BestRacers = ({ compact = false }) => {
       const res = await api.get('/api/auth/top-racers/team');
       setTopicsRacers(res.data.topics || []);
     } catch (e) {
-      setModalError('Failed to load team racers. Please try again.');
+      setModalError(tr('Failed to load team racers. Please try again.'));
       setTopicsRacers([]);
     } finally {
       setModalLoading(false);
@@ -39,7 +40,7 @@ const BestRacers = ({ compact = false }) => {
       const res = await api.get('/api/auth/top-racers/by-topic?timeLimit=5');
       setTopicsRacers(res.data.topics || []);
     } catch (e) {
-      setModalError('Failed to load racers. Please try again.');
+      setModalError(tr('Failed to load racers. Please try again.'));
       setTopicsRacers([]);
     } finally {
       setModalLoading(false);
@@ -54,7 +55,7 @@ const BestRacers = ({ compact = false }) => {
       const res = await api.get('/api/auth/top-racers/arena');
       setTopicsRacers(res.data.topics || []);
     } catch (e) {
-      setModalError('Failed to load racers. Please try again.');
+      setModalError(tr('Failed to load racers. Please try again.'));
       setTopicsRacers([]);
     } finally {
       setModalLoading(false);
@@ -135,12 +136,12 @@ const BestRacers = ({ compact = false }) => {
   return (
     <>
       <div style={compact ? { padding: '4px 0' } : styles.container}>
-        {!compact && <h2 style={styles.title}>🏆 Best Racers (Highest Scores)</h2>}
+        {!compact && <h2 style={styles.title}>{tr("🏆 Best Racers (Highest Scores)")}</h2>}
       
       <div style={compact ? { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(220px, 1fr))', gap: '12px', minWidth: '700px' } : styles.grid}>
         {/* Team Race Leaderboard */}
         <div style={compactLeaderboard}>
-          <h3 style={{ ...styles.sectionTitle, fontSize: compact ? '14px' : '18px', marginBottom: compact ? '10px' : '16px' }}>👥 Team Race</h3>
+          <h3 style={{ ...styles.sectionTitle, fontSize: compact ? '14px' : '18px', marginBottom: compact ? '10px' : '16px' }}>{tr("👥 Team Race")}</h3>
           <div style={styles.racerList}>
             {teamRaceRacers.length > 0 ? (
               teamRaceRacers.map((racer, index) => (
@@ -150,13 +151,13 @@ const BestRacers = ({ compact = false }) => {
                     <div style={styles.racerName}>
                       <PlayerName displayName={racer.displayName} username={racer.username} userId={racer.userId} />
                     </div>
-                    <div style={styles.racerUsername}>{topicsMap[racer.topic]?.title || racer.topic || 'checkmate'} • 20 min</div>
+                    <div style={styles.racerUsername}>{topicsMap[racer.topic]?.title || racer.topic || 'checkmate'} {tr("• 20 min")}</div>
                   </div>
                   <div style={styles.racerScore}>{racer.score}</div>
                 </div>
               ))
             ) : (
-              <div style={{ ...styles.racerItem, color: 'var(--color-text-muted)' }}>No team racers yet</div>
+              <div style={{ ...styles.racerItem, color: 'var(--color-text-muted)' }}>{tr("No team racers yet")}</div>
             )}
           </div>
           <div style={{display: 'flex', justifyContent: 'center', marginTop: 12}}>
@@ -167,14 +168,14 @@ const BestRacers = ({ compact = false }) => {
                 setModalError(null);
                 await fetchTeamRacers();
               }}
-              aria-label="See all team race racers"
-            >See all racers</button>
+              aria-label={tr("See all team race racers")}
+            >{tr("See all racers")}</button>
           </div>
         </div>
 
         {/* Timed Race Leaderboard */}
         <div style={compactLeaderboard}>
-          <h3 style={{ ...styles.sectionTitle, fontSize: compact ? '14px' : '18px', marginBottom: compact ? '10px' : '16px' }}>⏱️ Individual Race</h3>
+          <h3 style={{ ...styles.sectionTitle, fontSize: compact ? '14px' : '18px', marginBottom: compact ? '10px' : '16px' }}>{tr("⏱️ Individual Race")}</h3>
           <div style={styles.racerList}>
             {timedRacers.length > 0 ? (
               timedRacers.map((racer, index) => (
@@ -184,13 +185,13 @@ const BestRacers = ({ compact = false }) => {
                     <div style={styles.racerName}>
                       <PlayerName displayName={racer.displayName} username={racer.username} userId={racer.userId} />
                     </div>
-                    <div style={styles.racerUsername}>{racer.timeLimit}min race • {topicsMap[racer.topic]?.title || racer.topic || 'checkmate'}</div>
+                    <div style={styles.racerUsername}>{racer.timeLimit}{tr("min race •")} {topicsMap[racer.topic]?.title || racer.topic || 'checkmate'}</div>
                   </div>
                   <div style={styles.racerScore}>{racer.timedRaceScore}</div>
                 </div>
               ))
             ) : (
-              <div style={{ ...styles.racerItem, color: 'var(--color-text-muted)' }}>No races yet</div>
+              <div style={{ ...styles.racerItem, color: 'var(--color-text-muted)' }}>{tr("No races yet")}</div>
             )}
           </div>
           <div style={{display: 'flex', justifyContent: 'center', marginTop: 12}}>
@@ -201,14 +202,14 @@ const BestRacers = ({ compact = false }) => {
                 setModalError(null);
                 await fetchTopicsRacers();
               }}
-              aria-label="See all racers (5 min races by topic)"
-            >See all racers</button>
+              aria-label={tr("See all racers (5 min races by topic)")}
+            >{tr("See all racers")}</button>
           </div>
         </div>
 
         {/* Arena Race Leaderboard */}
         <div style={compactLeaderboard}>
-          <h3 style={{ ...styles.sectionTitle, fontSize: compact ? '14px' : '18px', marginBottom: compact ? '10px' : '16px' }}>🏙️ Arena Race</h3>
+          <h3 style={{ ...styles.sectionTitle, fontSize: compact ? '14px' : '18px', marginBottom: compact ? '10px' : '16px' }}>{tr("🏙️ Arena Race")}</h3>
           <div style={styles.racerList}>
             {arenaRacers.length > 0 ? (
               arenaRacers.map((racer, index) => (
@@ -218,13 +219,13 @@ const BestRacers = ({ compact = false }) => {
                     <div style={styles.racerName}>
                       <PlayerName displayName={racer.displayName} username={racer.username} userId={racer.userId} />
                     </div>
-                    <div style={styles.racerUsername}>{racer.timeLimit || 10}min race • {topicsMap[racer.topic]?.title || racer.topic || 'checkmate'}</div>
+                    <div style={styles.racerUsername}>{racer.timeLimit || 10}{tr("min race •")} {topicsMap[racer.topic]?.title || racer.topic || 'checkmate'}</div>
                   </div>
                   <div style={styles.racerScore}>{racer.arenaRaceScore}</div>
                 </div>
               ))
             ) : (
-              <div style={{ ...styles.racerItem, color: 'var(--color-text-muted)' }}>No races yet</div>
+              <div style={{ ...styles.racerItem, color: 'var(--color-text-muted)' }}>{tr("No races yet")}</div>
             )}
           </div>
           <div style={{display: 'flex', justifyContent: 'center', marginTop: 12}}>
@@ -235,8 +236,8 @@ const BestRacers = ({ compact = false }) => {
                 setModalError(null);
                 await fetchArenaRacers();
               }}
-              aria-label="See all arena racers"
-            >See all racers</button>
+              aria-label={tr("See all arena racers")}
+            >{tr("See all racers")}</button>
           </div>
         </div>
       </div>
@@ -250,15 +251,15 @@ const BestRacers = ({ compact = false }) => {
                 <span style={{fontSize: 28}}>🏆</span>
                 <h3 style={{margin: 0, color: 'var(--color-text)', fontSize: '24px'}}>{modalTitle}</h3>
               </div>
-              <button onClick={() => setShowAllModal(false)} style={{border: '1px solid var(--color-white-a20)', background: 'var(--color-white-a10)', color: 'var(--color-text)', padding: '10px 20px', borderRadius: 'var(--radius-lg)', cursor: 'pointer', transition: 'all 0.3s ease', fontWeight: '700'}}>Close</button>
+              <button onClick={() => setShowAllModal(false)} style={{border: '1px solid var(--color-white-a20)', background: 'var(--color-white-a10)', color: 'var(--color-text)', padding: '10px 20px', borderRadius: 'var(--radius-lg)', cursor: 'pointer', transition: 'all 0.3s ease', fontWeight: '700'}}>{tr("Close")}</button>
             </div>
 
             {modalLoading ? (
-              <div style={{textAlign: 'center', padding: 40, color: 'var(--color-text-muted)'}}>Loading racers...</div>
+              <div style={{textAlign: 'center', padding: 40, color: 'var(--color-text-muted)'}}>{tr("Loading racers...")}</div>
             ) : modalError ? (
               <div style={{textAlign: 'center', padding: 40, color: 'var(--color-danger)'}}>{modalError}</div>
             ) : topicsRacers.length === 0 ? (
-              <div style={{textAlign: 'center', padding: 40, color: 'var(--color-text-muted)'}}>No racers found.</div>
+              <div style={{textAlign: 'center', padding: 40, color: 'var(--color-text-muted)'}}>{tr("No racers found.")}</div>
             ) : (
               <div style={{...styles.modalGrid, gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)'}}>
                 {topicsRacers.map((topicObj) => (
@@ -269,9 +270,9 @@ const BestRacers = ({ compact = false }) => {
                           <th colSpan="3" style={styles.topicHeader}>{topicsMap[topicObj.topic]?.title || topicObj.topic}</th>
                         </tr>
                         <tr style={styles.tableHeaderRow}>
-                          <th style={styles.th}>Rank</th>
-                          <th style={styles.th}>Name</th>
-                          <th style={{...styles.th, textAlign: 'right'}}>Points</th>
+                          <th style={styles.th}>{tr("Rank")}</th>
+                          <th style={styles.th}>{tr("Name")}</th>
+                          <th style={{...styles.th, textAlign: 'right'}}>{tr("Points")}</th>
                         </tr>
                       </thead>
                       <tbody>

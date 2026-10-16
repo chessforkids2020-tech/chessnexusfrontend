@@ -2,24 +2,27 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
+import StudyMovesCard from '../components/StudyMovesCard';
+import { useMomentFreePlay } from '../hooks/useMomentFreePlay';
 import EnginePanel from '../components/EnginePanel';
 import api from '../api';
 import './MyMoments.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // The kinds of mistake a moment can be. Mirrors CATEGORIES in
 // backend/services/momentCategories.js — the SERVER decides which moments match
 // (the rules mix phase, theme, line length and eval), so this list only supplies
 // the labels and their order. Adding a bucket means adding it there first.
 const MOMENT_CATEGORIES = [
-  { key: 'tactics',     icon: '⚔',  label: 'Tactics' },
-  { key: 'defence',     icon: '🛡', label: 'Defence' },
-  { key: 'calculation', icon: '🧠', label: 'Calculation' },
+  { key: 'tactics',     icon: '⚔',  label: tr('Tactics') },
+  { key: 'defence',     icon: '🛡', label: tr('Defence') },
+  { key: 'calculation', icon: '🧠', label: tr('Calculation') },
   // Phase buckets. 'middlegame' must be listed here or the weekly report's
   // "Review your middlegame mistakes" link filters correctly but shows no
   // matching chip, so the student cannot tell what they are looking at.
-  { key: 'middlegame',  icon: '🧩', label: 'Middlegame' },
-  { key: 'endgames',    icon: '♟',  label: 'Endgames' },
-  { key: 'opening',     icon: '📖', label: 'Opening' },
+  { key: 'middlegame',  icon: '🧩', label: tr('Middlegame') },
+  { key: 'endgames',    icon: '♟',  label: tr('Endgames') },
+  { key: 'opening',     icon: '📖', label: tr('Opening') },
 ];
 
 // Friendly labels for the extractor's snake_case themes (mirrors GameInsightsPanel).
@@ -29,7 +32,7 @@ const THEME_LABEL = {
   discovered_attack: '💥 Discovered Attack', sacrifice: '🎯 Sacrifice',
   long_combination: '🧩 Combination', tactic: '♟️ Tactic',
 };
-const themeLabel = (t) => THEME_LABEL[t] || '♟️ Tactic';
+const themeLabel = (t) => THEME_LABEL[t] || tr('♟️ Tactic');
 
 /**
  * MY MOMENTS — a standalone training destination showing the user's OWN mistakes
@@ -72,9 +75,11 @@ export default function MyMoments() {
       // Mobile: full-screen sheet with an edge-to-edge board (see
       // .mm-modal-board's 100dvw breakout), so take the WHOLE viewport width.
       // Desktop: the panel's own padding is the limit, capped at 420.
+      // Desktop: Prev/Next sit in the right-hand column (not under the board),
+      // so the board can use nearly the full panel height — up to 560px.
       const byWidth = mobile ? vw : vw - 48;
-      const byHeight = Math.floor(vh * (mobile ? 0.6 : 0.62));
-      const cap = mobile ? Infinity : 420;
+      const byHeight = mobile ? Math.floor(vh * 0.6) : vh - 150;
+      const cap = mobile ? Infinity : 560;
       setModalBoard(Math.max(240, Math.min(byWidth, byHeight, cap)));
     };
     fit();
@@ -103,17 +108,6 @@ export default function MyMoments() {
   const [explainText, setExplainText] = useState('');
   const [explainAI, setExplainAI] = useState(false);
   const [explaining, setExplaining] = useState(false);
-  // ── Free play ("explore") after the moment is answered ────────────────────
-  // Once the student has solved or revealed, the board stops being a quiz and
-  // becomes a study board: they can play on from the position to see WHY the
-  // move works — the question every student asks next ("what if I play it?").
-  // exploreLine is the SAN list played since the puzzle position, so the moves
-  // can be listed and taken back one at a time.
-  const [exploring, setExploring] = useState(false);
-  const [exploreLine, setExploreLine] = useState([]);
-  // Engine is OFF by default and only ever offered AFTER the answer is known,
-  // so it can never be used as a hint on the student's own blunder.
-  const [engineOn, setEngineOn] = useState(false);
   const reloadRef = useRef(null);
 
   const load = async (which = filter, cat = category) => {
@@ -152,8 +146,6 @@ export default function MyMoments() {
   const showPuzzle = (p) => {
     setActive(p); setFen(p.fen); setFeedback(null); setPlayedMove(null); setRevealed(false);
     setExplainText(p.explanation || ''); setExplainAI(!!p.explanationIsAI); setExplaining(false);
-    // Explore mode never survives a move to another position.
-    setExploring(false); setExploreLine([]); setEngineOn(false);
   };
   const openPuzzle = (p) => {
     // Freeze the order the student sees at the moment they start solving.
@@ -166,7 +158,6 @@ export default function MyMoments() {
     const solvedAny = session.some(p => p.solved) || revealed;
     setActive(null); setSession([]); setFen(null); setFeedback(null); setPlayedMove(null); setRevealed(false);
     setExplainText(''); setExplainAI(false); setExplaining(false);
-    setExploring(false); setExploreLine([]); setEngineOn(false);
     if (solvedAny) load(filter, category);
   };
 
@@ -217,61 +208,7 @@ export default function MyMoments() {
     finally { setExplaining(false); }
   };
 
-  // The position the student is exploring FROM: the puzzle position itself.
-  // Rebuilt from active.fen + exploreLine so takeback is just a shorter list.
-  const exploreChessFrom = (line) => {
-    const chess = new Chess(active.fen);
-    for (const san of line) {
-      try { if (!chess.move(san, { sloppy: true })) break; } catch (e) { break; }
-    }
-    return chess;
-  };
-
-  // Free-play move. Accepts ANY legal move for EITHER side so the student can
-  // play out both sides of the line and see what the opponent's best reply is.
-  const handleExploreDrop = (from, to) => {
-    if (!active) return false;
-    const chess = exploreChessFrom(exploreLine);
-    let move;
-    try {
-      const piece = chess.get(from);
-      const promotion = piece && piece.type === 'p' && (to[1] === '8' || to[1] === '1') ? 'q' : undefined;
-      move = chess.move({ from, to, promotion });
-    } catch (e) { return false; }
-    if (!move) return false;
-    setExploreLine(line => [...line, move.san]);
-    setFen(chess.fen());
-    return true;
-  };
-
-  // Start exploring from the puzzle position (not from wherever the board sits,
-  // which after a solve is one move deep — the student wants to try the move
-  // themselves, so hand them the original position back).
-  const startExploring = () => {
-    if (!active) return;
-    setExploring(true);
-    setExploreLine([]);
-    setFen(active.fen);
-  };
-
-  // Back to the puzzle position, keeping explore mode on.
-  const resetExplore = () => {
-    if (!active) return;
-    setExploreLine([]);
-    setFen(active.fen);
-  };
-
-  // Take back a single move.
-  const undoExplore = () => {
-    if (!active || !exploreLine.length) return;
-    const line = exploreLine.slice(0, -1);
-    setExploreLine(line);
-    setFen(exploreChessFrom(line).fen());
-  };
-
   const handleDrop = (from, to) => {
-    // After the answer is known the board is a study board, not a quiz.
-    if (exploring) return handleExploreDrop(from, to);
     if (!active || feedback === 'correct') return false;
     const chess = new Chess(active.fen);
     let move;
@@ -319,15 +256,21 @@ export default function MyMoments() {
     api.post(`/api/game-insights/${active._id}/solve`, { solved: false }).catch(() => {});
   };
 
+  // Once answered (solved or best move shown) the board is a free analysis
+  // board — solution as the mainline, any move a sideline, engine on demand.
+  // Same as Healthy Mix after a puzzle; see hooks/useMomentFreePlay.js.
+  const done = !!active && (feedback === 'correct' || revealed);
+  const fp = useMomentFreePlay(active, done, playedMove);
+
   return (
     <div className="mm-page">
       <div className="mm-header">
         <div className="mm-header-icon">🎯</div>
         <div style={{ flex: 1 }}>
-          <h1 className="mm-title">My Moments</h1>
+          <h1 className="mm-title">{tr("My Moments")}</h1>
           <p className="mm-subtitle">
-            The exact mistakes from your own games — solve them to lock in the lesson.
-            <strong> Practice only: no rating change.</strong>
+            {tr("The exact mistakes from your own games — solve them to lock in the lesson.")}
+            <strong> {tr("Practice only: no rating change.")}</strong>
           </p>
         </div>
       </div>
@@ -337,7 +280,7 @@ export default function MyMoments() {
           dropdown is one row. CSS shows exactly one of these two controls, so
           the desktop chip row is untouched. */}
       <div className="mm-cats-select">
-        <label className="mm-cats-select-label" htmlFor="mm-kind">Kind</label>
+        <label className="mm-cats-select-label" htmlFor="mm-kind">{tr("Kind")}</label>
         <select
           id="mm-kind"
           value={category || ''}
@@ -349,7 +292,7 @@ export default function MyMoments() {
             setSearchParams(next, { replace: true });
           }}
         >
-          <option value="">All kinds</option>
+          <option value="">{tr("All kinds")}</option>
           {MOMENT_CATEGORIES.map(c => (
             <option key={c.key} value={c.key}>{c.icon} {c.label}</option>
           ))}
@@ -371,7 +314,7 @@ export default function MyMoments() {
             setSearchParams(next, { replace: true });
           }}
         >
-          All kinds
+          {tr("All kinds")}
         </button>
         {MOMENT_CATEGORIES.map(c => (
           <button
@@ -403,7 +346,7 @@ export default function MyMoments() {
           To practise{counts.unsolved ? ` (${counts.unsolved})` : ''}
         </button>
         <button className={`mm-tab${filter === 'true' ? ' active' : ''}`} onClick={() => setFilter('true')}>
-          Solved
+          {tr("Solved")}
         </button>
         <button className={`mm-tab${filter === 'all' ? ' active' : ''}`} onClick={() => setFilter('all')}>
           All{counts.total ? ` (${counts.total})` : ''}
@@ -411,14 +354,14 @@ export default function MyMoments() {
       </div>
 
       {loading ? (
-        <div className="mm-empty">Loading your moments…</div>
+        <div className="mm-empty">{tr("Loading your moments…")}</div>
       ) : puzzles.length === 0 ? (
         <div className="mm-empty">
           {counts.totalAllKinds === 0 ? (
             <>
-              <p>You haven't collected any moments yet.</p>
-              <p className="mm-empty-sub">Analyse your games and the Nexus Guide will turn your mistakes into puzzles here.</p>
-              <button className="mm-cta" onClick={() => navigate('/game-analysis')}>🔎 Analyse my games</button>
+              <p>{tr("You haven't collected any moments yet.")}</p>
+              <p className="mm-empty-sub">{tr("Analyse your games and the Nexus Guide will turn your mistakes into puzzles here.")}</p>
+              <button className="mm-cta" onClick={() => navigate('/game-analysis')}>{tr("🔎 Analyse my games")}</button>
             </>
           ) : category ? (
             /* The student HAS moments, just none of this kind. Say so plainly and
@@ -426,21 +369,21 @@ export default function MyMoments() {
                guess which tab, and reading it as "the app is broken" was the
                fairer interpretation. */
             <>
-              <p>No {catInfo?.label?.toLowerCase() || 'moments of this kind'} to practise here.</p>
+              <p>No {catInfo?.label?.toLowerCase() || tr('moments of this kind')} to practise here.</p>
               <p className="mm-empty-sub">
                 You have {counts.totalAllKinds} moment{counts.totalAllKinds === 1 ? '' : 's'} in total.
               </p>
               <button className="mm-cta" onClick={() => { setCategory(''); const n = new URLSearchParams(searchParams); n.delete('category'); setSearchParams(n, { replace: true }); }}>
-                Show all kinds
+                {tr("Show all kinds")}
               </button>
             </>
           ) : filter === 'false' ? (
             <>
-              <p>Nothing left to practise — you have solved them all.</p>
-              <button className="mm-cta" onClick={() => setFilter('all')}>Review the solved ones</button>
+              <p>{tr("Nothing left to practise — you have solved them all.")}</p>
+              <button className="mm-cta" onClick={() => setFilter('all')}>{tr("Review the solved ones")}</button>
             </>
           ) : (
-            <p>Nothing here in this view. Try another tab.</p>
+            <p>{tr("Nothing here in this view. Try another tab.")}</p>
           )}
         </div>
       ) : (
@@ -463,59 +406,40 @@ export default function MyMoments() {
       )}
 
       {/* Solving modal (mirrors GameInsightsPanel) */}
-      {active && (
+      {active && (() => {
+        // Moment-to-moment navigation. Desktop: top of the right-hand column, so
+        // the board gets the panel's full height. Mobile: footer under the board.
+        // Either way it is never below the explanation, where students missed it.
+        const nav = (
+          <>
+            <button
+              className="mm-nav-btn"
+              onClick={() => goToPuzzle(prevPuzzle)}
+              disabled={!prevPuzzle}
+              aria-label={tr("Previous moment")}
+            >{tr("← Prev")}</button>
+            <span className="mm-nav-count">
+              {sessionIndex >= 0 ? `${sessionIndex + 1} of ${session.length}` : ''}
+            </span>
+            <button
+              className="mm-nav-btn mm-nav-next"
+              onClick={() => nextPuzzle ? goToPuzzle(nextPuzzle) : closePuzzle()}
+              aria-label={nextPuzzle ? tr('Next moment') : tr('Finish')}
+            >{nextPuzzle ? tr('Next moment →') : tr('Done')}</button>
+          </>
+        );
+        return (
         <div className="mm-modal-overlay" onClick={closePuzzle}>
           <div className="mm-modal" onClick={(e) => e.stopPropagation()}>
             <button className="mm-modal-close" onClick={closePuzzle}>✕</button>
             <div className="mm-modal-body">
               <div className="mm-modal-board">
-                <Chessboard position={fen} boardWidth={modalBoard}
-                  draggable={exploring || feedback !== 'correct'}
-                  onDrop={handleDrop} orientation={active.sideToMove} />
-
-                {/* ── Study board: only ever AFTER the answer is known ──────
-                    The engine is deliberately unavailable until the moment is
-                    solved or revealed, so it cannot be used as a hint on the
-                    student's own blunder (same rule as Blunder Hunt). */}
-                {(feedback === 'correct' || revealed) && (
-                  exploring ? (
-                    <div className="mm-explore">
-                      <div className="mm-explore-bar">
-                        <span className="mm-explore-hint">
-                          Free play — move for either side to see what happens.
-                        </span>
-                        <div className="mm-explore-actions">
-                          <button className="mm-explore-btn" onClick={undoExplore}
-                            disabled={!exploreLine.length}>↶ Take back</button>
-                          <button className="mm-explore-btn" onClick={resetExplore}
-                            disabled={!exploreLine.length}>⟲ Start position</button>
-                          <button className="mm-explore-btn" onClick={() => { setExploring(false); setExploreLine([]); setFen(active.fen); setEngineOn(false); }}>✕ Exit</button>
-                        </div>
-                      </div>
-
-                      {exploreLine.length > 0 && (
-                        <div className="mm-explore-line">
-                          {exploreLine.map((san, i) => (
-                            <span key={i} className="mm-explore-move">{san}</span>
-                          ))}
-                        </div>
-                      )}
-
-                      <EnginePanel
-                        fen={fen}
-                        enabled={engineOn}
-                        onToggle={() => setEngineOn(v => !v)}
-                        numLines={3}
-                      />
-                    </div>
-                  ) : (
-                    <button className="mm-explore-start" onClick={startExploring}>
-                      ♟ Play it out — free board + engine
-                    </button>
-                  )
-                )}
+                <Chessboard position={done ? fp.fen : fen} boardWidth={modalBoard}
+                  draggable={done || feedback !== 'correct'}
+                  onDrop={done ? fp.onDrop : handleDrop} orientation={active.sideToMove} />
               </div>
               <div className="mm-modal-side">
+                <div className="mm-nav mm-nav-side">{nav}</div>
                 <h3>{themeLabel(active.theme)}</h3>
                 <p className="mm-modal-context">
                   {active.opponentName ? `vs ${active.opponentName} · ` : ''}move {active.moveNumber}
@@ -525,7 +449,7 @@ export default function MyMoments() {
                   <br />Can you find a better move? ({active.sideToMove} to move)
                 </p>
 
-                {feedback === 'wrong' && <div className="mm-fb mm-fb-wrong">Not quite — try again.</div>}
+                {feedback === 'wrong' && <div className="mm-fb mm-fb-wrong">{tr("Not quite — try again.")}</div>}
                 {feedback === 'correct' && (
                   <div className="mm-fb mm-fb-correct">
                     ✓ Yes! <strong>{playedMove || active.bestMove}</strong> is a great move.
@@ -536,7 +460,7 @@ export default function MyMoments() {
                 )}
 
                 {!revealed && feedback !== 'correct' && (
-                  <button className="mm-reveal" onClick={showBestMove}>💡 Show best move</button>
+                  <button className="mm-reveal" onClick={showBestMove}>{tr("💡 Show best move")}</button>
                 )}
 
                 {revealed && (
@@ -548,13 +472,13 @@ export default function MyMoments() {
                           <p className="mm-why-text">{explainText}</p>
                           {!explainAI && (
                             <button className="mm-explain-more" onClick={explainMore} disabled={explaining}>
-                              {explaining ? 'Thinking…' : '💡 Explain in more detail'}
+                              {explaining ? tr('Thinking…') : tr('💡 Explain in more detail')}
                             </button>
                           )}
                         </div>
                       </div>
                     )}
-                    <p>You should have played:</p>
+                    <p>{tr("You should have played:")}</p>
                     <div className="mm-line">
                       {active.solution.map((m, i) => (
                         <span key={i} className={`mm-move ${i === 0 ? 'mm-move-best' : ''}`}>{m}</span>
@@ -566,35 +490,29 @@ export default function MyMoments() {
                   </div>
                 )}
 
+                {done && (
+                  <div className="mm-free" data-testid="mm-free">
+                    <p className="mm-free-hint">{tr("Free board — play any move for either side to see what happens.")}</p>
+                    <StudyMovesCard
+                      compact
+                      tree={fp.tree} currentId={fp.currentId}
+                      onSelect={fp.goTo}
+                      onFirst={fp.toStart} onPrev={fp.back} onNext={fp.forward} onLast={fp.toEnd}
+                      emptyText=""
+                    />
+                    <EnginePanel fen={fp.fen} enabled={fp.engineOn} onToggle={fp.toggleEngine} numLines={3} />
+                  </div>
+                )}
+
 
               </div>
             </div>
 
-            {/* Navigation lives on the MODAL, not inside the right-hand column.
-                As a last child of .mm-modal-side it sat below the explanation
-                and the solution line, so on a revealed moment it fell past the
-                bottom of the panel and students never found it. As a footer it
-                is pinned under the board and stays on screen however long the
-                explanation runs. */}
-            <div className="mm-nav">
-              <button
-                className="mm-nav-btn"
-                onClick={() => goToPuzzle(prevPuzzle)}
-                disabled={!prevPuzzle}
-                aria-label="Previous moment"
-              >← Prev</button>
-              <span className="mm-nav-count">
-                {sessionIndex >= 0 ? `${sessionIndex + 1} of ${session.length}` : ''}
-              </span>
-              <button
-                className="mm-nav-btn mm-nav-next"
-                onClick={() => nextPuzzle ? goToPuzzle(nextPuzzle) : closePuzzle()}
-                aria-label={nextPuzzle ? 'Next moment' : 'Finish'}
-              >{nextPuzzle ? 'Next moment →' : 'Done'}</button>
-            </div>
+            <div className="mm-nav mm-nav-foot">{nav}</div>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

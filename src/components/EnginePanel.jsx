@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Chess } from 'chess.js';
 import stockfishService from '../services/stockfishService';
 import './EnginePanel.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // ── Shared live Stockfish panel ───────────────────────────────────────────────
 // This is the SAME engine panel the Quick Analyze / game-replay board uses, so any
@@ -129,7 +130,7 @@ export default function EnginePanel({ fen, numLines = ENGINE_LINES, enabled = tr
             <span className="gr-engine-depth">
               {status === 'error' ? 'unavailable'
                 : status === 'init' ? 'loading…'
-                : `depth ${depth}/${maxDepth}`}
+                : tr("depth {depth}/{maxDepth}", { depth: depth, maxDepth: maxDepth })}
             </span>
           )}
           {onToggle && (
@@ -137,7 +138,7 @@ export default function EnginePanel({ fen, numLines = ENGINE_LINES, enabled = tr
               type="button"
               className={`gr-engine-toggle${enabled ? ' on' : ''}`}
               onClick={onToggle}
-              title={enabled ? 'Turn the engine off' : 'Turn the engine on'}
+              title={enabled ? tr('Turn the engine off') : tr('Turn the engine on')}
               aria-pressed={enabled}
             >
               <span className="gr-engine-toggle-knob" />
@@ -147,11 +148,11 @@ export default function EnginePanel({ fen, numLines = ENGINE_LINES, enabled = tr
         </div>
       </div>
       {!enabled ? (
-        <div className="gr-engine-empty">Engine off — turn it on to see Stockfish lines.</div>
+        <div className="gr-engine-empty">{tr("Engine off — turn it on to see Stockfish lines.")}</div>
       ) : status === 'error' ? (
-        <div className="gr-engine-empty">Engine could not start in this browser.</div>
+        <div className="gr-engine-empty">{tr("Engine could not start in this browser.")}</div>
       ) : lines.length === 0 ? (
-        <div className="gr-engine-empty">Analysing…</div>
+        <div className="gr-engine-empty">{tr("Analysing…")}</div>
       ) : (
         <table className="gr-engine-table">
           <tbody>

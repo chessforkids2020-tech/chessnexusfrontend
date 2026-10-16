@@ -1,0 +1,38 @@
+/* Dashboard Guide tab: two choice cards, same obsidian glass as the Nexus Guide
+   panel (GameInsightsPanel.css). */
+.gh-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.gh-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  text-align: left; cursor: pointer; font: inherit;
+  padding: 22px 20px;
+  background: var(--obsidian-surface, var(--color-surface));
+  border: 1px solid var(--obsidian-border, var(--color-white-a04));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--obsidian-shadow, 0 8px 32px var(--color-black-a50));
+  color: var(--obsidian-text, var(--color-text));
+  transition: transform .15s, border-color .15s;
+}
+.gh-card:hover { transform: translateY(-2px); border-color: var(--obsidian-border-strong, var(--color-accent-a30)); }
+.gh-card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.gh-icon {
+  width: 52px; height: 52px; border-radius: var(--radius-circle);
+  display: flex; align-items: center; justify-content: center; font-size: 26px;
+  background: var(--obsidian-button, linear-gradient(135deg, #06b6d4 0%, #10b981 100%));
+  margin-bottom: 4px;
+}
+.gh-title { font-size: 17px; font-weight: 800; }
+.gh-text { font-size: 13.5px; line-height: 1.55; color: var(--obsidian-text-muted, var(--color-text-muted)); flex: 1; }
+.gh-go { margin-top: 6px; font-size: 13px; font-weight: 800; color: var(--obsidian-accent, var(--color-accent)); }
+
+.gh-open { margin-top: 8px; }
+.gh-back {
+  background: transparent; border: none; cursor: pointer; padding: 6px 0;
+  font: inherit; font-size: 13.5px; font-weight: 700;
+  color: var(--obsidian-text-muted, var(--color-text-muted));
+}
+.gh-back:hover { color: var(--obsidian-accent, var(--color-accent)); }

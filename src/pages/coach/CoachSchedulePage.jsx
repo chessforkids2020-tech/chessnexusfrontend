@@ -18,7 +18,7 @@ import '../MyCoachPortal.css'; // reuse the monthly calendar styles (mcp-cal-*)
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 // Local timezone label for the coach, e.g. "Asia/Kolkata" / "Europe/London".
-const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'your local time';
+const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || tr('your local time');
 
 // The form holds the coach's LOCAL day set + LOCAL "HH:MM".
 const BLANK = { groupId: '', title: '', days: [], time: '18:00', durationMinutes: 60, meetingLink: '' };
@@ -89,10 +89,10 @@ export default function CoachSchedulePage() {
   const addHoliday = async (e) => {
     e.preventDefault();
     setHolErr('');
-    if (!holForm.date) { setHolErr('Pick a date.'); return; }
+    if (!holForm.date) { setHolErr(tr('Pick a date.')); return; }
     if (holMode === 'range') {
-      if (!holForm.end) { setHolErr('Pick an end date.'); return; }
-      if (holForm.end < holForm.date) { setHolErr('End date must be on or after the start date.'); return; }
+      if (!holForm.end) { setHolErr(tr('Pick an end date.')); return; }
+      if (holForm.end < holForm.date) { setHolErr(tr('End date must be on or after the start date.')); return; }
     }
     setHolSaving(true);
     try {
@@ -104,7 +104,7 @@ export default function CoachSchedulePage() {
         setMsg(`${created} holiday${created === 1 ? '' : 's'} added${skipped ? ` · ${skipped} skipped (already marked)` : ''} — students notified.`);
       } else {
         await api.post('/api/coach-schedule/holidays', { date: holForm.date, label: holForm.label });
-        setMsg('Holiday added — students notified.');
+        setMsg(tr('Holiday added — students notified.'));
       }
       setHolForm({ date: '', end: '', label: '' });
       await loadAll();
@@ -116,7 +116,7 @@ export default function CoachSchedulePage() {
   };
 
   const removeHoliday = async (h) => {
-    if (!window.confirm('Remove this holiday?')) return;
+    if (!window.confirm(tr('Remove this holiday?'))) return;
     try {
       await api.delete(`/api/coach-schedule/holidays/${h._id}`);
       await loadAll();
@@ -167,13 +167,13 @@ export default function CoachSchedulePage() {
   const save = async (e) => {
     e.preventDefault();
     setFormErr('');
-    if (form.days.length === 0) { setFormErr('Pick at least one day.'); return; }
-    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(form.time)) { setFormErr('Enter a valid time.'); return; }
+    if (form.days.length === 0) { setFormErr(tr('Pick at least one day.')); return; }
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(form.time)) { setFormErr(tr('Enter a valid time.')); return; }
     if (form.meetingLink && !/^https?:\/\/\S+$/i.test(form.meetingLink)) {
-      setFormErr('Meeting link must start with http:// or https://'); return;
+      setFormErr(tr('Meeting link must start with http:// or https://')); return;
     }
     const { days, timeUTC } = localFormToUtc(form.days, form.time);
-    if (!timeUTC || days.length === 0) { setFormErr('Enter a valid time.'); return; }
+    if (!timeUTC || days.length === 0) { setFormErr(tr('Enter a valid time.')); return; }
     setSaving(true);
     try {
       const body = {
@@ -197,10 +197,10 @@ export default function CoachSchedulePage() {
   };
 
   const remove = async (slot) => {
-    if (!window.confirm('Delete this class from the schedule? Students will be notified.')) return;
+    if (!window.confirm(tr('Delete this class from the schedule? Students will be notified.'))) return;
     try {
       await api.delete(`/api/coach-schedule/${slot._id}`);
-      setMsg('Class removed — students notified.');
+      setMsg(tr('Class removed — students notified.'));
       if (editingId === slot._id) resetForm();
       await loadAll();
     } catch (err) {
@@ -214,22 +214,22 @@ export default function CoachSchedulePage() {
   // Slots reshaped for classesOnLocalDate() (same fields the student calendar uses).
   const calClasses = slots
     .filter(s => s.active !== false)
-    .map(s => ({ ...s, title: batchLabel(s), coachName: 'You' }));
+    .map(s => ({ ...s, title: batchLabel(s), coachName: tr('You') }));
   const holidayByDate = {};
   for (const h of holidays) holidayByDate[h.date] = h;
 
-  if (loading) return <div className="coach-loading">Loading your class schedule…</div>;
+  if (loading) return <div className="coach-loading">{tr("Loading your class schedule…")}</div>;
 
   return (
     <div className="coach-dash">
       <div className="coach-dash-header">
         <div>
-          <h1>📅 Class Schedule</h1>
+          <h1>{tr("📅 Class Schedule")}</h1>
           <p className="coach-dash-sub">
-            Set your weekly class days, times and meeting link. Students see it on their My Coach page.
+            {tr("Set your weekly class days, times and meeting link. Students see it on their My Coach page.")}
           </p>
         </div>
-        <Link to="/coach/dashboard" className="btn-ghost">← Back to dashboard</Link>
+        <Link to="/coach/dashboard" className="btn-ghost">{tr("← Back to dashboard")}</Link>
       </div>
 
       {error && <div className="coach-error">⚠️ {error}</div>}
@@ -243,9 +243,9 @@ export default function CoachSchedulePage() {
       {/* ── Monthly calendar preview (expand/collapse) ── */}
       <div className="coach-section">
         <div className="coach-section-head">
-          <h2>🗓️ Monthly view</h2>
+          <h2>{tr("🗓️ Monthly view")}</h2>
           <button className="btn-ghost" onClick={() => setCalOpen(o => !o)} aria-expanded={calOpen}>
-            {calOpen ? 'Collapse ▲' : 'Expand ▼'}
+            {calOpen ? tr('Collapse ▲') : tr('Expand ▼')}
           </button>
         </div>
         {calOpen && (() => {
@@ -262,9 +262,9 @@ export default function CoachSchedulePage() {
           return (
             <div className="mcp-cal">
               <div className="mcp-cal-head">
-                <button className="mcp-cal-nav" onClick={() => setCalMonth(new Date(y, m - 1, 1))} aria-label="Previous month">‹</button>
+                <button className="mcp-cal-nav" onClick={() => setCalMonth(new Date(y, m - 1, 1))} aria-label={tr("Previous month")}>‹</button>
                 <div className="mcp-cal-title">{MONTHS[m]} {y}</div>
-                <button className="mcp-cal-nav" onClick={() => setCalMonth(new Date(y, m + 1, 1))} aria-label="Next month">›</button>
+                <button className="mcp-cal-nav" onClick={() => setCalMonth(new Date(y, m + 1, 1))} aria-label={tr("Next month")}>›</button>
               </div>
               <div className="mcp-cal-grid">
                 {DAY_NAMES.map(dn => <div key={dn} className="mcp-cal-dow">{dn}</div>)}
@@ -293,9 +293,9 @@ export default function CoachSchedulePage() {
                 })}
               </div>
               <div className="mcp-cal-legend">
-                <span className="mcp-cal-legend-item"><span className="mcp-cal-swatch mcp-cal-swatch-class" /> Class day</span>
-                <span className="mcp-cal-legend-item"><span className="mcp-cal-swatch mcp-cal-swatch-holiday" /> Holiday</span>
-                <span style={{ color: 'rgba(226,232,240,0.5)' }}>Times in your local zone ({LOCAL_TZ})</span>
+                <span className="mcp-cal-legend-item"><span className="mcp-cal-swatch mcp-cal-swatch-class" /> {tr("Class day")}</span>
+                <span className="mcp-cal-legend-item"><span className="mcp-cal-swatch mcp-cal-swatch-holiday" /> {tr("Holiday")}</span>
+                <span style={{ color: 'rgba(226,232,240,0.5)' }}>{tr("Times in your local zone (")}{LOCAL_TZ})</span>
               </div>
             </div>
           );
@@ -305,32 +305,32 @@ export default function CoachSchedulePage() {
       {/* ── Add / edit form ── */}
       <div className="coach-section">
         <div className="coach-section-head">
-          <h2>{editingId ? 'Edit class' : 'Add a class'}</h2>
-          {editingId && <button className="btn-ghost" onClick={resetForm}>Cancel edit</button>}
+          <h2>{editingId ? tr('Edit class') : tr('Add a class')}</h2>
+          {editingId && <button className="btn-ghost" onClick={resetForm}>{tr("Cancel edit")}</button>}
         </div>
 
         <form onSubmit={save} className="coach-schedule-form" style={{ display: 'grid', gap: 14, maxWidth: 620 }}>
           <label>
-            <div className="csf-label">Batch</div>
+            <div className="csf-label">{tr("Batch")}</div>
             <select value={form.groupId} onChange={e => setForm(f => ({ ...f, groupId: e.target.value }))} className="csf-input">
-              <option value="">All my students</option>
+              <option value="">{tr("All my students")}</option>
               {groups.map(g => (
                 <option key={g._id} value={g._id}>{g.name} ({g.memberCount})</option>
               ))}
             </select>
             {groups.length === 0 && (
               <div className="csf-hint">
-                Tip: create named batches in <Link to="/coach/courses">Courses</Link> to schedule different timings per batch.
+                {tr("Tip: create named batches in")} <Link to="/coach/courses">{tr("Courses")}</Link> {tr("to schedule different timings per batch.")}
               </div>
             )}
           </label>
 
           <label>
-            <div className="csf-label">Label (optional)</div>
+            <div className="csf-label">{tr("Label (optional)")}</div>
             <input
               className="csf-input"
               type="text"
-              placeholder="e.g. Beginners · Advanced group"
+              placeholder={tr("e.g. Beginners · Advanced group")}
               value={form.title}
               maxLength={80}
               onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
@@ -338,7 +338,7 @@ export default function CoachSchedulePage() {
           </label>
 
           <div>
-            <div className="csf-label">Days</div>
+            <div className="csf-label">{tr("Days")}</div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {DAY_NAMES.map((name, d) => (
                 <button
@@ -356,17 +356,17 @@ export default function CoachSchedulePage() {
 
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
             <label style={{ flex: 1, minWidth: 140 }}>
-              <div className="csf-label">Time (your local time)</div>
+              <div className="csf-label">{tr("Time (your local time)")}</div>
               <input
                 className="csf-input"
                 type="time"
                 value={form.time}
                 onChange={e => setForm(f => ({ ...f, time: e.target.value }))}
               />
-              <div className="csf-hint">Your timezone: {LOCAL_TZ}. Students see this in their own local time.</div>
+              <div className="csf-hint">{tr("Your timezone:")} {LOCAL_TZ}{tr(". Students see this in their own local time.")}</div>
             </label>
             <label style={{ flex: 1, minWidth: 140 }}>
-              <div className="csf-label">Duration (min)</div>
+              <div className="csf-label">{tr("Duration (min)")}</div>
               <input
                 className="csf-input"
                 type="number"
@@ -380,7 +380,7 @@ export default function CoachSchedulePage() {
 
           {canHostLiveClassroom && liveMeetings.length > 0 && (
             <label>
-              <div className="csf-label">Use one of my Live Class meetings (in-app video)</div>
+              <div className="csf-label">{tr("Use one of my Live Class meetings (in-app video)")}</div>
               <select
                 className="csf-input"
                 value=""
@@ -389,16 +389,16 @@ export default function CoachSchedulePage() {
                   if (m) setForm(f => ({ ...f, meetingLink: buildJoinLink(m.joinCode) }));
                 }}
               >
-                <option value="">— pick a meeting to fill the link —</option>
+                <option value="">{tr("— pick a meeting to fill the link —")}</option>
                 {liveMeetings.map(m => (
-                  <option key={m.id} value={m.id}>{(m.title || 'Meeting')} · {m.durationMinutes} min</option>
+                  <option key={m.id} value={m.id}>{(m.title || tr('Meeting'))} · {m.durationMinutes} {tr("min")}</option>
                 ))}
               </select>
             </label>
           )}
 
           <label>
-            <div className="csf-label">Meeting link (in-app Live Class, Zoom / Meet — optional)</div>
+            <div className="csf-label">{tr("Meeting link (in-app Live Class, Zoom / Meet — optional)")}</div>
             <input
               className="csf-input"
               type="url"
@@ -412,7 +412,7 @@ export default function CoachSchedulePage() {
 
           <div>
             <button type="submit" className="btn-primary" disabled={saving}>
-              {saving ? 'Saving…' : editingId ? 'Save changes' : '＋ Add class'}
+              {saving ? tr('Saving…') : editingId ? tr('Save changes') : tr('＋ Add class')}
             </button>
           </div>
         </form>
@@ -420,9 +420,9 @@ export default function CoachSchedulePage() {
 
       {/* ── Existing slots ── */}
       <div className="coach-section">
-        <div className="coach-section-head"><h2>Your classes</h2></div>
+        <div className="coach-section-head"><h2>{tr("Your classes")}</h2></div>
         {slots.length === 0 ? (
-          <div className="coach-empty">No classes scheduled yet. Add your first class above.</div>
+          <div className="coach-empty">{tr("No classes scheduled yet. Add your first class above.")}</div>
         ) : (
           <div className="coach-students-grid">
             {slots.map(slot => (
@@ -432,11 +432,11 @@ export default function CoachSchedulePage() {
                   {[...new Set((slot.days || []).map(d => localDayLabel(d, slot.timeUTC)))].join(', ')}
                   {' · '}
                   {localTimeLabel((slot.days || [])[0] ?? 1, slot.timeUTC)}
-                  <span style={{ color: 'rgba(226,232,240,0.55)' }}> (your time)</span>
+                  <span style={{ color: 'rgba(226,232,240,0.55)' }}> {tr("(your time)")}</span>
                 </div>
                 <div style={{ fontSize: 12, color: 'rgba(226,232,240,0.6)', marginBottom: 8 }}>
-                  {slot.durationMinutes} min
-                  {slot.memberCount != null ? ` · ${slot.memberCount} in batch` : ''}
+                  {slot.durationMinutes} {tr("min")}
+                  {slot.memberCount != null ? tr(" · {memberCount} in batch", { memberCount: slot.memberCount }) : ''}
                 </div>
                 {(() => {
                   // Students in other timezones see a different day/time. Zones
@@ -453,7 +453,7 @@ export default function CoachSchedulePage() {
                       fontSize: 12, margin: '0 0 10px', padding: '8px 10px', borderRadius: 8,
                       background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.25)',
                     }}>
-                      <div style={{ color: 'rgba(226,232,240,0.7)', marginBottom: 4 }}>🌎 Students in other timezones see:</div>
+                      <div style={{ color: 'rgba(226,232,240,0.7)', marginBottom: 4 }}>{tr("🌎 Students in other timezones see:")}</div>
                       {abroad.map(z => (
                         <div key={z.tz} style={{ color: '#7dd3fc' }}>
                           <strong>{z.view.days} · {z.view.time}</strong>
@@ -467,12 +467,12 @@ export default function CoachSchedulePage() {
                 })()}
                 {slot.meetingLink && (
                   <a href={slot.meetingLink} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ display: 'inline-block', marginBottom: 8 }}>
-                    🔗 Open link
+                    {tr("🔗 Open link")}
                   </a>
                 )}
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button className="btn-ghost" onClick={() => startEdit(slot)}>Edit</button>
-                  <button className="btn-ghost" style={{ color: '#f87171' }} onClick={() => remove(slot)}>Delete</button>
+                  <button className="btn-ghost" onClick={() => startEdit(slot)}>{tr("Edit")}</button>
+                  <button className="btn-ghost" style={{ color: '#f87171' }} onClick={() => remove(slot)}>{tr("Delete")}</button>
                 </div>
               </div>
             ))}
@@ -482,19 +482,19 @@ export default function CoachSchedulePage() {
 
       {/* ── Holidays (academy closed — no classes) ── */}
       <div className="coach-section">
-        <div className="coach-section-head"><h2>🎉 Holidays</h2></div>
+        <div className="coach-section-head"><h2>{tr("🎉 Holidays")}</h2></div>
         <p className="csf-hint" style={{ margin: '-4px 0 12px' }}>
-          Mark days your academy is closed. Students see them on their schedule and no class shows on those days.
+          {tr("Mark days your academy is closed. Students see them on their schedule and no class shows on those days.")}
         </p>
 
         {/* Single day vs a whole date range (e.g. a Diwali week). */}
         <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
           <button type="button"
             className={holMode === 'single' ? 'btn-primary' : 'btn-ghost'}
-            onClick={() => { setHolMode('single'); setHolErr(''); }}>Single day</button>
+            onClick={() => { setHolMode('single'); setHolErr(''); }}>{tr("Single day")}</button>
           <button type="button"
             className={holMode === 'range' ? 'btn-primary' : 'btn-ghost'}
-            onClick={() => { setHolMode('range'); setHolErr(''); }}>Date range</button>
+            onClick={() => { setHolMode('range'); setHolErr(''); }}>{tr("Date range")}</button>
         </div>
 
         <form onSubmit={addHoliday} style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end', marginBottom: 16 }}>
@@ -509,7 +509,7 @@ export default function CoachSchedulePage() {
           </label>
           {holMode === 'range' && (
             <label style={{ minWidth: 150 }}>
-              <div className="csf-label">To</div>
+              <div className="csf-label">{tr("To")}</div>
               <input
                 className="csf-input"
                 type="date"
@@ -520,11 +520,11 @@ export default function CoachSchedulePage() {
             </label>
           )}
           <label style={{ flex: 1, minWidth: 180 }}>
-            <div className="csf-label">Reason (optional)</div>
+            <div className="csf-label">{tr("Reason (optional)")}</div>
             <input
               className="csf-input"
               type="text"
-              placeholder="e.g. Diwali, Public holiday"
+              placeholder={tr("e.g. Diwali, Public holiday")}
               value={holForm.label}
               maxLength={80}
               onChange={e => setHolForm(f => ({ ...f, label: e.target.value }))}
@@ -537,14 +537,14 @@ export default function CoachSchedulePage() {
         {holErr && <div className="form-error" style={{ marginBottom: 12 }}>{holErr}</div>}
 
         {holidays.length === 0 ? (
-          <div className="coach-empty">No holidays marked yet.</div>
+          <div className="coach-empty">{tr("No holidays marked yet.")}</div>
         ) : (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {holidays.map(h => (
               <div key={h._id} className="coach-holiday-chip">
                 <span className="coach-holiday-date">{fmtHolidayDate(h.date)}</span>
                 {h.label && <span className="coach-holiday-label">{h.label}</span>}
-                <button className="coach-holiday-x" onClick={() => removeHoliday(h)} title="Remove">✕</button>
+                <button className="coach-holiday-x" onClick={() => removeHoliday(h)} title={tr("Remove")}>✕</button>
               </div>
             ))}
           </div>
@@ -553,3 +553,5 @@ export default function CoachSchedulePage() {
     </div>
   );
 }
+
+import { t as tr } from '../../i18n/LanguageContext';

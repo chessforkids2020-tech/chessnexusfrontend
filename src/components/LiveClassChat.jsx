@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import socket from '../socket';
 import { useAuth } from '../contexts/AuthContext';
 import { linkify } from '../utils/linkify';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Floating chat for the Live Classroom. Messages are TRANSIENT — relayed live over
 // socket only, never persisted, and gone when the meeting ends. A floating button
@@ -55,8 +56,8 @@ export default function LiveClassChat({ sessionId, isHost }) {
       <button
         onClick={() => setOpen(o => !o)}
         style={{ ...s.fab, ...(open ? s.fabOpen : {}) }}
-        title="Class chat"
-        aria-label="Class chat"
+        title={"Class chat"}
+        aria-label={"Class chat"}
       >
         {open ? (
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
@@ -73,18 +74,18 @@ export default function LiveClassChat({ sessionId, isHost }) {
       {open && (
         <div style={s.panel}>
           <div style={s.head}>
-            <span>Class chat{blocked && ' 🔒'}</span>
+            <span>{tr("Class chat")}{blocked && ' 🔒'}</span>
             {isHost && (
               <button
                 onClick={toggleBlock}
                 style={{ ...s.blockBtn, ...(blocked ? s.blockBtnOn : {}) }}
                 title={blocked ? 'Let students chat again' : 'Block students from chatting'}
-              >{blocked ? '🔓 Unblock chat' : '🔒 Block chat'}</button>
+              >{blocked ? tr('🔓 Unblock chat') : tr('🔒 Block chat')}</button>
             )}
           </div>
           <div style={s.body}>
             {messages.length === 0
-              ? <div style={s.empty}>No messages yet. Say hello! 👋</div>
+              ? <div style={s.empty}>{tr("No messages yet. Say hello! 👋")}</div>
               : messages.map((m, i) => {
                   const mine = String(m.userId) === String(myId);
                   return (
@@ -109,7 +110,7 @@ export default function LiveClassChat({ sessionId, isHost }) {
                 value={input}
                 maxLength={300}
                 rows={1}
-                placeholder={isHost && blocked ? 'Chat is blocked for students…' : 'Type a message…'}
+                placeholder={isHost && blocked ? tr('Chat is blocked for students…') : tr('Type a message…')}
                 onChange={e => {
                   setInput(e.target.value);
                   e.target.style.height = 'auto';
@@ -117,10 +118,10 @@ export default function LiveClassChat({ sessionId, isHost }) {
                 }}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(e); } }}
               />
-              <button type="submit" disabled={!input.trim()} style={{ ...s.sendBtn, ...(input.trim() ? {} : s.sendOff) }}>Send</button>
+              <button type="submit" disabled={!input.trim()} style={{ ...s.sendBtn, ...(input.trim() ? {} : s.sendOff) }}>{tr("Send")}</button>
             </form>
           ) : (
-            <div style={s.disabledRow}>🔒 The coach has turned off chat for now.</div>
+            <div style={s.disabledRow}>{tr("🔒 The coach has turned off chat for now.")}</div>
           )}
         </div>
       )}

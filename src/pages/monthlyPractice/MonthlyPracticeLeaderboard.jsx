@@ -5,6 +5,7 @@ import socket from '../../socket';
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import './MonthlyFocusLeaderboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function MonthlyFocusLeaderboard() {
   const [currentFocus, setCurrentFocus] = useState(null);
@@ -73,10 +74,10 @@ export default function MonthlyFocusLeaderboard() {
   };
 
   const getCompletionBadge = (completedDays, perfectDays) => {
-    if (perfectDays > 0) return { icon: '👑', text: 'Perfect', class: 'perfect' };
-    if (completedDays >= 5) return { icon: '🏆', text: 'Champion', class: 'champion' };
-    if (completedDays >= 3) return { icon: '⭐', text: 'Active', class: 'active' };
-    return { icon: '🌱', text: 'Beginner', class: 'beginner' };
+    if (perfectDays > 0) return { icon: '👑', text: tr('Perfect'), class: 'perfect' };
+    if (completedDays >= 5) return { icon: '🏆', text: tr('Champion'), class: 'champion' };
+    if (completedDays >= 3) return { icon: '⭐', text: tr('Active'), class: 'active' };
+    return { icon: '🌱', text: tr('Beginner'), class: 'beginner' };
   };
 
   const getUserProgress = (user) => {
@@ -89,7 +90,7 @@ export default function MonthlyFocusLeaderboard() {
     return (
       <div className="leaderboard-page loading">
         <div className="spinner"></div>
-        <p>Loading leaderboard...</p>
+        <p>{tr("Loading leaderboard...")}</p>
       </div>
     );
   }
@@ -97,9 +98,9 @@ export default function MonthlyFocusLeaderboard() {
   if (error) {
     return (
       <div className="leaderboard-page error">
-        <h2>⚠️ Error</h2>
+        <h2>{tr("⚠️ Error")}</h2>
         <p>{error}</p>
-        <Link to="/monthly-focus" className="btn-primary">Back to Focus</Link>
+        <Link to="/monthly-focus" className="btn-primary">{tr("Back to Focus")}</Link>
       </div>
     );
   }
@@ -110,9 +111,9 @@ export default function MonthlyFocusLeaderboard() {
       <div className="leaderboard-header">
         <div className="header-content">
           <div className="title-section">
-            <h1>🏅 Monthly Practice Leaderboard</h1>
+            <h1>{tr("🏅 Monthly Practice Leaderboard")}</h1>
             <p className="focus-title">
-              {currentFocus?.title || 'Monthly Practice'} - {currentFocus?.theme || ''}
+              {currentFocus?.title || tr('Monthly Practice')} - {currentFocus?.theme || ''}
             </p>
           </div>
           
@@ -122,13 +123,13 @@ export default function MonthlyFocusLeaderboard() {
                 className={`filter-tab ${timeFilter === 'current' ? 'active' : ''}`}
                 onClick={() => setTimeFilter('current')}
               >
-                Current Month
+                {tr("Current Month")}
               </button>
               <button 
                 className={`filter-tab ${timeFilter === 'all-time' ? 'active' : ''}`}
                 onClick={() => setTimeFilter('all-time')}
               >
-                All Time
+                {tr("All Time")}
               </button>
             </div>
           </div>
@@ -138,33 +139,33 @@ export default function MonthlyFocusLeaderboard() {
       {/* User Stats Card */}
       {userStats && (
         <div className="user-stats-card">
-          <h2>Your Performance</h2>
+          <h2>{tr("Your Performance")}</h2>
           <div className="stats-grid">
             <div className="stat-item">
-              <span className="stat-label">Current Rank</span>
+              <span className="stat-label">{tr("Current Rank")}</span>
               <span className="stat-value">
                 {getRankIcon(userRank)} 
-                {userRank ? `${userRank} of ${leaderboard.length}` : 'Unranked'}
+                {userRank ? tr("{userRank} of {length}", { userRank: userRank, length: leaderboard.length }) : tr('Unranked')}
               </span>
             </div>
             
             <div className="stat-item">
-              <span className="stat-label">Focus XP</span>
-              <span className="stat-value">{userStats.focusXp || 0} XP</span>
+              <span className="stat-label">{tr("Focus XP")}</span>
+              <span className="stat-value">{userStats.focusXp || 0} {tr("XP")}</span>
             </div>
             
             <div className="stat-item">
-              <span className="stat-label">Skill Score</span>
-              <span className="stat-value">{userStats.skillScore || 0} pts</span>
+              <span className="stat-label">{tr("Skill Score")}</span>
+              <span className="stat-value">{userStats.skillScore || 0} {tr("pts")}</span>
             </div>
             
             <div className="stat-item">
-              <span className="stat-label">Completed Days</span>
+              <span className="stat-label">{tr("Completed Days")}</span>
               <span className="stat-value">{userStats.completedDays || 0}/7</span>
             </div>
             
             <div className="stat-item">
-              <span className="stat-label">Status</span>
+              <span className="stat-label">{tr("Status")}</span>
               <span className={`stat-badge ${getCompletionBadge(userStats.completedDays, userStats.perfectDays).class}`}>
                 {getCompletionBadge(userStats.completedDays, userStats.perfectDays).icon} 
                 {getCompletionBadge(userStats.completedDays, userStats.perfectDays).text}
@@ -176,7 +177,7 @@ export default function MonthlyFocusLeaderboard() {
 
       {/* TOP 3 Podium */}
       <div className="podium-section">
-        <h2>🏆 Top Performers</h2>
+        <h2>{tr("🏆 Top Performers")}</h2>
         <div className="podium">
           {leaderboard.slice(0, 3).map((user, index) => {
             const position = index + 1;
@@ -194,8 +195,8 @@ export default function MonthlyFocusLeaderboard() {
                 <div className="podium-user">
                   <h3 className="podium-username">{user.displayName}</h3>
                   <div className="podium-stats">
-                    <div className="podium-xp">{user.focusXp} XP</div>
-                    <div className="podium-score">{user.skillScore || 0} pts</div>
+                    <div className="podium-xp">{user.focusXp} {tr("XP")}</div>
+                    <div className="podium-score">{user.skillScore || 0} {tr("pts")}</div>
                     <div className={`podium-badge ${badge.class}`}>
                       {badge.icon} {badge.text}
                     </div>
@@ -215,15 +216,15 @@ export default function MonthlyFocusLeaderboard() {
 
       {/* Full Leaderboard */}
       <div className="full-leaderboard">
-        <h2>Complete Rankings</h2>
+        <h2>{tr("Complete Rankings")}</h2>
         <div className="leaderboard-table">
           <div className="table-header">
-            <div className="col-rank">Rank</div>
-            <div className="col-user">User</div>
-            <div className="col-xp">Focus XP</div>
-            <div className="col-score">Skill Score</div>
-            <div className="col-progress">Progress</div>
-            <div className="col-status">Status</div>
+            <div className="col-rank">{tr("Rank")}</div>
+            <div className="col-user">{tr("User")}</div>
+            <div className="col-xp">{tr("Focus XP")}</div>
+            <div className="col-score">{tr("Skill Score")}</div>
+            <div className="col-progress">{tr("Progress")}</div>
+            <div className="col-status">{tr("Status")}</div>
           </div>
           
           <div className="table-body">
@@ -248,16 +249,16 @@ export default function MonthlyFocusLeaderboard() {
                   <div className="col-user">
                     <div className="user-info">
                       <span className="username">{user.displayName}</span>
-                      {isCurrentUser && <span className="you-badge">YOU</span>}
+                      {isCurrentUser && <span className="you-badge">{"YOU"}</span>}
                     </div>
                   </div>
                   
                   <div className="col-xp">
-                    <span className="xp-value">{user.focusXp} XP</span>
+                    <span className="xp-value">{user.focusXp} {tr("XP")}</span>
                   </div>
                   
                   <div className="col-score">
-                    <span className="score-value">{user.skillScore || 0} pts</span>
+                    <span className="score-value">{user.skillScore || 0} {tr("pts")}</span>
                   </div>
                   
                   <div className="col-progress">
@@ -285,9 +286,9 @@ export default function MonthlyFocusLeaderboard() {
         
         {leaderboard.length === 0 && (
           <div className="empty-leaderboard">
-            <h3>📊 No participants yet</h3>
-            <p>Be the first to join this month's focus challenge!</p>
-            <Link to="/monthly-focus" className="btn-primary">Start Your Journey</Link>
+            <h3>{tr("📊 No participants yet")}</h3>
+            <p>{tr("Be the first to join this month's focus challenge!")}</p>
+            <Link to="/monthly-focus" className="btn-primary">{tr("Start Your Journey")}</Link>
           </div>
         )}
       </div>
@@ -295,7 +296,7 @@ export default function MonthlyFocusLeaderboard() {
       {/* Navigation */}
       <div className="leaderboard-navigation">
         <Link to="/monthly-focus" className="btn-secondary">
-          ← Back to Focus Dashboard
+          {tr("← Back to Focus Dashboard")}
         </Link>
       </div>
     </div>

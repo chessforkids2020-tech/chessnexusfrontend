@@ -15,6 +15,7 @@ import React, { useEffect, useState } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import api from '../api';
 import { useBoardTheme, CUSTOM_THEME_ID } from '../contexts/BoardThemeContext';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Small 2x2 board preview, matching the swatches used for the presets.
 function Swatch({ light, dark, size = 56 }) {
@@ -58,7 +59,7 @@ export default function CustomBoardColors() {
       setState(s => ({ ...s, unlocked: true, walletXp: res.data.walletXp }));
     } catch (e) {
       const d = e.response?.data;
-      setErr(d?.shortfall ? `Not enough XP — you need ${d.shortfall} more.` : (d?.message || 'Could not unlock.'));
+      setErr(d?.shortfall ? tr("Not enough XP — you need {shortfall} more.", { shortfall: d.shortfall }) : (d?.message || tr('Could not unlock.')));
     } finally { setBusy(false); }
   };
 
@@ -121,7 +122,7 @@ export default function CustomBoardColors() {
         <div style={S.head}>
           <Swatch light={light} dark={dark} size={48} />
           <div style={{ flex: 1, minWidth: 180 }}>
-            <div style={S.title}>🎨 Your own board colours</div>
+            <div style={S.title}>{tr("🎨 Your own board colours")}</div>
             <div style={S.sub}>
               Pick any light and dark squares you like. Unlock once — after that you can
               change them as often as you want, free.
@@ -133,9 +134,9 @@ export default function CustomBoardColors() {
             onClick={unlock}
             disabled={busy || !canAfford}
           >
-            {busy ? 'Unlocking…'
-              : canAfford ? `👛 Unlock for ${state.price} XP`
-              : `Need ${state.price - (state.walletXp || 0)} more XP`}
+            {busy ? tr('Unlocking…')
+              : canAfford ? tr("👛 Unlock for {price} XP", { price: state.price })
+              : tr("Need {v0} more XP", { v0: state.price - (state.walletXp || 0) })}
           </button>
         </div>
         {err && <div style={S.err}>{err}</div>}
@@ -150,12 +151,12 @@ export default function CustomBoardColors() {
       <div style={S.head}>
         <Swatch light={light} dark={dark} size={48} />
         <div style={{ flex: 1, minWidth: 180 }}>
-          <div style={S.title}>🎨 Your own board colours</div>
-          <div style={S.sub}>Tap a square to change its colour, then save.</div>
+          <div style={S.title}>{tr("🎨 Your own board colours")}</div>
+          <div style={S.sub}>{tr("Tap a square to change its colour, then save.")}</div>
         </div>
         {!isActive && (
           <button type="button" style={S.ghost} onClick={() => setThemeById(CUSTOM_THEME_ID)}>
-            Use my colours
+            {tr("Use my colours")}
           </button>
         )}
       </div>
@@ -163,11 +164,11 @@ export default function CustomBoardColors() {
       <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
         <button type="button" style={S.swatchBtn(editing === 'light')} onClick={() => setEditing(editing === 'light' ? null : 'light')}>
           <span style={S.chip(light)} />
-          <span>Light <span style={S.hex}>{light}</span></span>
+          <span>{tr("Light")} <span style={S.hex}>{light}</span></span>
         </button>
         <button type="button" style={S.swatchBtn(editing === 'dark')} onClick={() => setEditing(editing === 'dark' ? null : 'dark')}>
           <span style={S.chip(dark)} />
-          <span>Dark <span style={S.hex}>{dark}</span></span>
+          <span>{tr("Dark")} <span style={S.hex}>{dark}</span></span>
         </button>
       </div>
 
@@ -182,9 +183,9 @@ export default function CustomBoardColors() {
 
       <div style={{ display: 'flex', gap: 10, marginTop: 14, alignItems: 'center', flexWrap: 'wrap' }}>
         <button type="button" style={S.btn} onClick={save} disabled={busy}>
-          {busy ? 'Saving…' : 'Save colours'}
+          {busy ? tr('Saving…') : tr('Save colours')}
         </button>
-        {saved && <span style={S.ok}>✓ Saved</span>}
+        {saved && <span style={S.ok}>{tr("✓ Saved")}</span>}
       </div>
 
       {err && <div style={S.err}>{err}</div>}

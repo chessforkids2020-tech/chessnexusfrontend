@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import api, { resolveApiAssetUrl } from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import UserAvatar from './UserAvatar';
+import { t as tr } from '../i18n/LanguageContext';
 
 const AVATAR_TIER_RANK = { none: 0, basic: 1, customPhoto: 2, '3d': 3 };
 const tierUnlocked = (userTier, requiredTier) =>
@@ -62,7 +63,7 @@ export default function AvatarStudio() {
       setWalletXp(res.data?.walletXp || 0);
       setXpPrices(res.data?.xpPrices || { customPhoto: 0, '3d': 0 });
     } catch {
-      setAvatarError('Failed to load avatar gallery');
+      setAvatarError(tr('Failed to load avatar gallery'));
     } finally {
       setAvatarLoading(false);
     }
@@ -85,7 +86,7 @@ export default function AvatarStudio() {
       await loadAvatarOptions();  // refresh wallet + prices + per-item `owned`
     } catch (error) {
       const d = error.response?.data;
-      if (d?.shortfall) setAvatarError(`Not enough XP — you need ${d.shortfall} more.`);
+      if (d?.shortfall) setAvatarError(tr("Not enough XP — you need {shortfall} more.", { shortfall: d.shortfall }));
       else setAvatarError(d?.message || 'Could not unlock this.');
     } finally {
       setUnlockTier(null);
@@ -111,18 +112,18 @@ export default function AvatarStudio() {
     const file = event.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      setAvatarError('Please upload an image file');
+      setAvatarError(tr('Please upload an image file'));
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      setAvatarError('Image too large. Please use an image up to 2MB.');
+      setAvatarError(tr('Image too large. Please use an image up to 2MB.'));
       return;
     }
     const reader = new FileReader();
     reader.onload = async () => {
       await saveAvatarChoice({ type: 'customPhoto', imageDataUrl: reader.result });
     };
-    reader.onerror = () => setAvatarError('Could not read image file');
+    reader.onerror = () => setAvatarError(tr('Could not read image file'));
     reader.readAsDataURL(file);
   };
 
@@ -208,7 +209,7 @@ export default function AvatarStudio() {
           type="button"
           onClick={() => (locked ? unlockWithXp('3d', opt.key) : chooseFromGrid(type, opt.key))}
           disabled={avatarSaving || busy || (locked && walletXp < price)}
-          title={locked ? `Unlock this avatar for ${price} XP` : undefined}
+          title={locked ? tr("Unlock this avatar for {price} XP", { price: price }) : undefined}
           style={{
             width: '100%',
             aspectRatio: '1 / 1',
@@ -228,7 +229,7 @@ export default function AvatarStudio() {
           }}
         >
           {opt.imageUrl ? (
-            <img src={resolveApiAssetUrl(opt.imageUrl)} alt="avatar option" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={resolveApiAssetUrl(opt.imageUrl)} alt={tr("avatar option")} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : opt.modelPath ? (
             /* 3D options carry no thumbnail, so every tile used to render the
                SAME emoji and the user had to choose blind. Render the real model.
@@ -261,7 +262,7 @@ export default function AvatarStudio() {
               fontSize: 11, fontWeight: 800, padding: '4px 0',
               letterSpacing: 0.2,
             }}>
-              {busy ? '…' : `🔒 ${price} XP`}
+              {busy ? '…' : tr("🔒 {price} XP", { price: price })}
             </span>
           )}
         </button>
@@ -301,12 +302,12 @@ export default function AvatarStudio() {
             borderRadius: 'var(--radius-md)',
             padding: '6px 10px',
             cursor: 'pointer',
-          }}>Close</button>
+          }}>{tr("Close")}</button>
         </div>
 
         {avatarPickerType === 'basic' && (
           <>
-            <p style={{ color: '#93c5fd', fontSize: 13, marginTop: 0 }}>Choose any picture. Selection is applied immediately.</p>
+            <p style={{ color: '#93c5fd', fontSize: 13, marginTop: 0 }}>{tr("Choose any picture. Selection is applied immediately.")}</p>
             {renderImageGrid(avatarOptions.basicOptions, 'basic', user.activeAvatar, 'var(--color-accent)')}
           </>
         )}
@@ -314,7 +315,7 @@ export default function AvatarStudio() {
         {avatarPickerType === 'customPhoto' && (
           isTierUnlocked('customPhoto') ? (
             <>
-              <p style={{ color: 'var(--color-warning)', fontSize: 13, marginTop: 0 }}>Upload from your device. Image is applied immediately.</p>
+              <p style={{ color: 'var(--color-warning)', fontSize: 13, marginTop: 0 }}>{tr("Upload from your device. Image is applied immediately.")}</p>
               <input
                 type="file"
                 accept="image/*"
@@ -322,7 +323,7 @@ export default function AvatarStudio() {
                 disabled={avatarSaving}
                 style={{ width: '100%' }}
               />
-              <div style={{ color: 'var(--color-text-muted)', fontSize: 11, marginTop: 8 }}>Max size: 2MB</div>
+              <div style={{ color: 'var(--color-text-muted)', fontSize: 11, marginTop: 8 }}>{tr("Max size: 2MB")}</div>
             </>
           ) : (
             <div style={{
@@ -332,11 +333,11 @@ export default function AvatarStudio() {
               padding: 14,
               color: 'var(--color-warning)',
             }}>
-              <div style={{ fontWeight: 700, marginBottom: 6 }}>Unlock Custom Picture</div>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{tr("Unlock Custom Picture")}</div>
               <div style={{ fontSize: 12, marginBottom: 10 }}>
-                Spend <strong>{xpPrices.customPhoto} XP</strong> from your wallet
+                {tr("Spend")} <strong>{xpPrices.customPhoto} {tr("XP")}</strong> {tr("from your wallet")}
                 {' '}(you have <strong style={{ color: walletXp >= xpPrices.customPhoto ? '#86efac' : 'var(--color-danger)' }}>{walletXp} XP</strong>),
-                {' '}or invite 5 friends to unlock it free.
+                {' '}{tr("or invite 5 friends to unlock it free.")}
               </div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <button
@@ -349,11 +350,11 @@ export default function AvatarStudio() {
                     color: walletXp < xpPrices.customPhoto ? 'var(--color-text-muted)' : 'var(--color-text)',
                   }}
                 >
-                  {unlockTier === 'customPhoto' ? 'Unlocking…' : (walletXp < xpPrices.customPhoto ? `Need ${xpPrices.customPhoto - walletXp} more XP` : `👛 Unlock for ${xpPrices.customPhoto} XP`)}
+                  {unlockTier === 'customPhoto' ? 'Unlocking…' : (walletXp < xpPrices.customPhoto ? tr("Need {v0} more XP", { v0: xpPrices.customPhoto - walletXp }) : tr("👛 Unlock for {customPhoto} XP", { customPhoto: xpPrices.customPhoto }))}
                 </button>
                 <button type="button" onClick={() => { closeAvatarPicker(); navigate('/social'); }} style={{
                   border: 'none', borderRadius: 'var(--radius-md)', padding: '8px 12px', background: 'var(--color-warning)', color: '#111827', fontWeight: 700, cursor: 'pointer',
-                }}>Invite Friends</button>
+                }}>{tr("Invite Friends")}</button>
               </div>
             </div>
           )
@@ -362,7 +363,7 @@ export default function AvatarStudio() {
         {avatarPickerType === '3d' && (
           isTierUnlocked('3d') ? (
             <>
-              <p style={{ color: 'var(--color-accent-2)', fontSize: 13, marginTop: 0 }}>Choose any 3D avatar. Selection is applied immediately.</p>
+              <p style={{ color: 'var(--color-accent-2)', fontSize: 13, marginTop: 0 }}>{tr("Choose any 3D avatar. Selection is applied immediately.")}</p>
               {renderImageGrid(avatarOptions.model3dOptions, '3d', user.active3dModel, 'var(--color-accent-2)')}
             </>
           ) : (
@@ -373,11 +374,11 @@ export default function AvatarStudio() {
               padding: 14,
               color: '#ddd6fe',
             }}>
-              <div style={{ fontWeight: 700, marginBottom: 6 }}>Unlock 3D avatars</div>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{tr("Unlock 3D avatars")}</div>
               <div style={{ fontSize: 12, marginBottom: 10 }}>
-                Spend <strong>{xpPrices['3d']} XP</strong> from your wallet
+                {tr("Spend")} <strong>{xpPrices['3d']} {tr("XP")}</strong> {tr("from your wallet")}
                 {' '}(you have <strong style={{ color: walletXp >= xpPrices['3d'] ? '#86efac' : 'var(--color-danger)' }}>{walletXp} XP</strong>),
-                {' '}or invite 45 friends to unlock it free.
+                {' '}{tr("or invite 45 friends to unlock it free.")}
               </div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <button
@@ -390,11 +391,11 @@ export default function AvatarStudio() {
                     color: walletXp < xpPrices['3d'] ? 'var(--color-text-muted)' : 'var(--color-text)',
                   }}
                 >
-                  {unlockTier === '3d' ? 'Unlocking…' : (walletXp < xpPrices['3d'] ? `Need ${xpPrices['3d'] - walletXp} more XP` : `👛 Unlock for ${xpPrices['3d']} XP`)}
+                  {unlockTier === '3d' ? 'Unlocking…' : (walletXp < xpPrices['3d'] ? tr("Need {v0} more XP", { v0: xpPrices['3d'] - walletXp }) : tr("👛 Unlock for {v0} XP", { v0: xpPrices['3d'] }))}
                 </button>
                 <button type="button" onClick={() => { closeAvatarPicker(); navigate('/social'); }} style={{
                   border: 'none', borderRadius: 'var(--radius-md)', padding: '8px 12px', background: 'var(--color-accent-2)', color: '#f5f3ff', fontWeight: 700, cursor: 'pointer',
-                }}>Invite Friends</button>
+                }}>{tr("Invite Friends")}</button>
               </div>
             </div>
           )
@@ -406,7 +407,7 @@ export default function AvatarStudio() {
 
   return (
     <div style={cardStyle}>
-      <h4 style={h4Style}>🖼️ Avatar Studio</h4>
+      <h4 style={h4Style}>{tr("🖼️ Avatar Studio")}</h4>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
         <div style={{
@@ -419,7 +420,7 @@ export default function AvatarStudio() {
           <UserAvatar user={user} size={56} live />
         </div>
         <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
-          {user.profilePhotoUrl ? 'Current: Custom Picture' : selectedBasicAvatar ? 'Current: Basic Avatar' : selected3dModel ? 'Current: 3D Avatar' : 'Current: Initials Avatar'}
+          {user.profilePhotoUrl ? tr('Current: Custom Picture') : selectedBasicAvatar ? tr('Current: Basic Avatar') : selected3dModel ? tr('Current: 3D Avatar') : tr('Current: Initials Avatar')}
         </div>
       </div>
 
@@ -433,9 +434,9 @@ export default function AvatarStudio() {
         gap: 10,
       }}>
         {[
-          { key: 'basic', title: 'Basic Avatar', color: 'var(--color-accent)', icon: '🎨' },
-          { key: 'customPhoto', title: 'Custom Picture', color: 'var(--color-warning)', icon: '📸' },
-          { key: '3d', title: '3D Model', color: 'var(--color-accent-2)', icon: '🌌' },
+          { key: 'basic', title: tr('Basic Avatar'), color: 'var(--color-accent)', icon: '🎨' },
+          { key: 'customPhoto', title: tr('Custom Picture'), color: 'var(--color-warning)', icon: '📸' },
+          { key: '3d', title: tr('3D Model'), color: 'var(--color-accent-2)', icon: '🌌' },
         ].map((card) => (
           <div key={card.key} style={{ position: 'relative' }}>
             {card.comingSoon && (
@@ -454,7 +455,7 @@ export default function AvatarStudio() {
                 pointerEvents: 'none',
                 textTransform: 'uppercase',
               }}>
-                Coming Soon
+                {tr("Coming Soon")}
               </div>
             )}
             <button
@@ -474,7 +475,7 @@ export default function AvatarStudio() {
               <div style={{ fontSize: 22, marginBottom: 4, opacity: card.comingSoon ? 0.5 : 1 }}>{card.icon}</div>
               <div style={{ fontWeight: 700, fontSize: 12 }}>{card.title}</div>
               <div style={{ marginTop: 6, fontSize: 11, color: card.comingSoon ? 'var(--color-warning)' : isTierUnlocked(card.key) ? '#86efac' : 'var(--color-danger)' }}>
-                {card.comingSoon ? '🚧 Soon' : isTierUnlocked(card.key) ? 'Ready' : 'Locked'}
+                {card.comingSoon ? tr('🚧 Soon') : isTierUnlocked(card.key) ? tr('Ready') : tr('Locked')}
               </div>
             </button>
           </div>

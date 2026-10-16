@@ -5,16 +5,17 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import './CoachDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Activity types a coach can create. Arena race + arena tournament are open to
 // all coaches; team race is elite-only. Monthly Focus is a special case: any
 // coach gets ONE for free, then it becomes elite-only (id 'monthlyFocus' drives
 // the dynamic lock from /can-create).
 const ACTIVITY_OPTIONS = [
-  { id: 'arenaRace', label: '🏁 Arena Race', to: '/arena/create?coach=1', elite: false },
-  { id: 'arenaTournament', label: '🏆 Arena Tournament', to: '/arenatournament/create?coach=1', elite: false },
-  { id: 'teamRace', label: '🏃 Team Race', to: '/elite/team-race', elite: true },
-  { id: 'monthlyFocus', label: '🎯 Monthly Focus', to: '/elite-monthly-focus', elite: false },
+  { id: 'arenaRace', label: tr('🏁 Arena Race'), to: '/arena/create?coach=1', elite: false },
+  { id: 'arenaTournament', label: tr('🏆 Arena Tournament'), to: '/arenatournament/create?coach=1', elite: false },
+  { id: 'teamRace', label: tr('🏃 Team Race'), to: '/elite/team-race', elite: true },
+  { id: 'monthlyFocus', label: tr('🎯 Monthly Focus'), to: '/elite-monthly-focus', elite: false },
 ];
 
 export default function CoachActivities() {
@@ -68,28 +69,28 @@ export default function CoachActivities() {
     return <span style={{ color, fontWeight: 700, fontSize: 13 }}>{label}</span>;
   };
 
-  if (loading) return <div className="coach-loading">Loading activities…</div>;
+  if (loading) return <div className="coach-loading">{tr("Loading activities…")}</div>;
 
   const tChipMap = { scheduled: ['⏳ Scheduled', '#fcd34d'], lobby: ['⏳ Lobby', '#fcd34d'], active: ['🔴 Live', '#f87171'], pairing_stopped: ['🔴 Live', '#f87171'], finished: ['✅ Done', '#6ee7b7'] };
 
   const TABS = [
     { id: 'races', label: `🏁 Arena Races${races.length ? ` (${races.length})` : ''}` },
     { id: 'tournaments', label: `🏆 Arena Tournaments${tournaments.length ? ` (${tournaments.length})` : ''}` },
-    { id: 'monthlyFocus', label: '🎯 Monthly Focus' },
+    { id: 'monthlyFocus', label: tr('🎯 Monthly Focus') },
   ];
 
   return (
     <div className="coach-dash">
       <div className="coach-dash-header">
         <div>
-          <h1>🎯 Class Activities</h1>
+          <h1>{tr("🎯 Class Activities")}</h1>
           <p className="coach-dash-sub">Private activities for your students. Only they can join; you watch results live.</p>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
           {/* Create activity launcher */}
           <div className="coach-activity-menu">
             <button className="btn-primary" onClick={() => setShowMenu(v => !v)}>
-              ➕ Create Activity ▾
+              {tr("➕ Create Activity ▾")}
             </button>
             {showMenu && (
               <>
@@ -97,8 +98,8 @@ export default function CoachActivities() {
                 <div className="coach-activity-dropdown">
                   {ACTIVITY_OPTIONS.map(opt => {
                     let locked = opt.elite && !isEliteCoach;
-                    let tag = locked ? '💎 Elite' : null;
-                    let tooltip = locked ? 'Available for Elite coaches' : '';
+                    let tag = locked ? tr('💎 Elite') : null;
+                    let tooltip = locked ? tr('Available for Elite coaches') : '';
 
                     // Monthly Focus: one free per coach, then elite-only.
                     if (opt.id === 'monthlyFocus') {
@@ -126,7 +127,7 @@ export default function CoachActivities() {
               </>
             )}
           </div>
-          <Link to="/coach/dashboard" className="btn-ghost">← Dashboard</Link>
+          <Link to="/coach/dashboard" className="btn-ghost">{tr("← Dashboard")}</Link>
         </div>
       </div>
 
@@ -149,7 +150,7 @@ export default function CoachActivities() {
       {tab === 'races' && (
         races.length === 0 ? (
           <div className="coach-empty">
-            No class races yet. Click <strong>Create Activity</strong> to set one up for your students.
+            {tr("No class races yet. Click")} <strong>{tr("Create Activity")}</strong> {tr("to set one up for your students.")}
           </div>
         ) : (
           <div className="coach-students-grid">
@@ -157,10 +158,10 @@ export default function CoachActivities() {
               <div key={r._id} className="coach-student-card">
                 <div className="coach-student-name">{r.name || 'Race'}</div>
                 <div style={{ fontSize: 13, color: '#a78bfa', margin: '6px 0' }}>
-                  {r.topic} · {r.timeLimit} min · {statusChip(r.status)}
+                  {r.topic} · {r.timeLimit} {tr("min ·")} {statusChip(r.status)}
                 </div>
                 <div style={{ fontSize: 12, color: 'rgba(226,232,240,0.6)', marginBottom: 10 }}>
-                  {r.joined}/{r.invited} students joined
+                  {r.joined}/{r.invited} {tr("students joined")}
                 </div>
                 <Link to={`/coach/arena/${r.roomId}`} className="btn-primary" style={{ display: 'inline-block' }}>
                   {r.status === 'completed' ? 'View results' : 'Watch live'}
@@ -175,7 +176,7 @@ export default function CoachActivities() {
       {tab === 'tournaments' && (
         tournaments.length === 0 ? (
           <div className="coach-empty">
-            No class tournaments yet. Click <strong>Create Activity</strong> → Arena Tournament.
+            {tr("No class tournaments yet. Click")} <strong>{tr("Create Activity")}</strong> {tr("→ Arena Tournament.")}
           </div>
         ) : (
           <div className="coach-students-grid">
@@ -186,7 +187,7 @@ export default function CoachActivities() {
                   <div className="coach-student-name">{t.name || 'Tournament'}</div>
                   <div style={{ fontSize: 13, color: '#a78bfa', margin: '6px 0' }}>
                     <span style={{ color: tChip[1], fontWeight: 700 }}>{tChip[0]}</span>
-                    {' · '}{t.participantCount || 0} joined
+                    {' · '}{t.participantCount || 0} {tr("joined")}
                   </div>
                   <Link to={`/coach/arena-tournament/${t._id}`} className="btn-primary" style={{ display: 'inline-block' }}>
                     {t.status === 'finished' ? 'View results' : 'Watch'}
@@ -202,7 +203,7 @@ export default function CoachActivities() {
       {tab === 'monthlyFocus' && (
         <div className="coach-empty" style={{ textAlign: 'left' }}>
           <p style={{ margin: '0 0 12px' }}>
-            🎯 <strong>Monthly Focus</strong> — a multi-day challenge for your students.
+            🎯 <strong>{tr("Monthly Focus")}</strong> {tr("— a multi-day challenge for your students.")}
             {mf?.canCreate
               ? mf?.isTrial ? ' You have your one free Monthly Focus available.' : ' You can create one this month.'
               : mf?.reason === 'coach_trial_used' ? ' You’ve used your free Monthly Focus — creating more is an Elite feature.'
@@ -210,7 +211,7 @@ export default function CoachActivities() {
               : ' Available for Elite coaches.'}
           </p>
           <Link to="/elite-monthly-focus" className="btn-primary" style={{ display: 'inline-block' }}>
-            Open Monthly Focus →
+            {tr("Open Monthly Focus →")}
           </Link>
         </div>
       )}

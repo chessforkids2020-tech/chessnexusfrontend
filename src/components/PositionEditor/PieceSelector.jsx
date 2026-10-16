@@ -1,4 +1,5 @@
 import React from 'react';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const PIECE_SVG_MAP = {
   'P': '/mpchess-pieces-main/svg/wP.svg',
@@ -51,14 +52,14 @@ export default function PieceSelector({ selectedPiece, onSelectPiece }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {/* White pieces */}
       <div>
-        <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>White</div>
+        <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>{tr("White")}</div>
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
           {WHITE_PIECES.map(pieceBtn)}
         </div>
       </div>
       {/* Black pieces */}
       <div>
-        <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>Black</div>
+        <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>{tr("Black")}</div>
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
           {BLACK_PIECES.map(pieceBtn)}
         </div>
@@ -78,7 +79,7 @@ export default function PieceSelector({ selectedPiece, onSelectPiece }) {
           transition: 'all 0.15s',
         }}
       >
-        🗑 Eraser Mode
+        {tr("🗑 Eraser Mode")}
       </button>
     </div>
   );

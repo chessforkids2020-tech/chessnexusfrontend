@@ -168,3 +168,8 @@ button.sm-mv:hover { background: var(--color-white-a07); }
 }
 .sm-nav-btn:hover:not(:disabled) { background: var(--color-white-a10); }
 .sm-nav-btn:disabled { opacity: 0.28; cursor: default; }
+
+/* compact: inside a popup (My Moments / Nexus Guide free play), where the
+   study page's tall list would push everything else out of view. */
+.sm-compact { margin-bottom: 10px; }
+.sm-compact .sm-moves-list { min-height: 0; max-height: 200px; }

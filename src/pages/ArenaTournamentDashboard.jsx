@@ -8,6 +8,7 @@ import Chessboard from "../components/Chessboard";
 import { useAuth } from "../contexts/AuthContext";
 import "./arenatournament/ArenaTournamentLeaderboard.css";
 import "./UserGamesPage.css";
+import { t as tr } from '../i18n/LanguageContext';
 
 const DEFAULT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -29,16 +30,16 @@ const TYPE_COLOR = {
   bullet_blitz_marathon: { bg: "var(--color-warning-a20)", color: "var(--color-warning)", border: "var(--color-warning-a30)" },
   team_battle:           { bg: "rgba(99,102,241,0.22)", color: "var(--color-accent-2)", border: "rgba(99,102,241,0.4)" },
 };
-const typeLabel = (t) => TYPE_LABELS[t] || "Standard";
+const typeLabel = (t) => TYPE_LABELS[t] || tr("Standard");
 const typeColor = (t) => TYPE_COLOR[t] || TYPE_COLOR.standard;
 
 const CROWN = {
-  none:     { label: "None",     color: "var(--color-text-faint)", filter: "grayscale(1) brightness(0.6)" },
-  bronze:   { label: "Bronze",   color: "#c08457", filter: "sepia(1) saturate(2.4) brightness(0.78) hue-rotate(-12deg) drop-shadow(0 0 14px rgba(176,110,58,0.7))" },
-  silver:   { label: "Silver",   color: "var(--color-text)", filter: "grayscale(1) brightness(1.35) drop-shadow(0 0 12px var(--color-text-faint))" },
-  gold:     { label: "Gold",     color: "var(--color-warning)", filter: "drop-shadow(0 0 16px var(--color-warning-a30))" },
-  platinum: { label: "Platinum", color: "var(--color-text)", filter: "grayscale(1) brightness(1.65) drop-shadow(0 0 16px rgba(226,232,240,0.8))" },
-  gem:      { label: "Gem",      color: "var(--color-accent-2)", filter: "hue-rotate(200deg) saturate(2.4) brightness(1.05) drop-shadow(0 0 16px rgba(59,130,246,0.9))" },
+  none:     { label: tr("None"),     color: "var(--color-text-faint)", filter: "grayscale(1) brightness(0.6)" },
+  bronze:   { label: tr("Bronze"),   color: "#c08457", filter: "sepia(1) saturate(2.4) brightness(0.78) hue-rotate(-12deg) drop-shadow(0 0 14px rgba(176,110,58,0.7))" },
+  silver:   { label: tr("Silver"),   color: "var(--color-text)", filter: "grayscale(1) brightness(1.35) drop-shadow(0 0 12px var(--color-text-faint))" },
+  gold:     { label: tr("Gold"),     color: "var(--color-warning)", filter: "drop-shadow(0 0 16px var(--color-warning-a30))" },
+  platinum: { label: tr("Platinum"), color: "var(--color-text)", filter: "grayscale(1) brightness(1.65) drop-shadow(0 0 16px rgba(226,232,240,0.8))" },
+  gem:      { label: tr("Gem"),      color: "var(--color-accent-2)", filter: "hue-rotate(200deg) saturate(2.4) brightness(1.05) drop-shadow(0 0 16px rgba(59,130,246,0.9))" },
 };
 const TIER_ORDER = ["none", "bronze", "silver", "gold", "platinum", "gem"];
 
@@ -56,7 +57,7 @@ const Crown = ({ tier = "gold", size = 28 }) => {
   return (
     <img
       src={`/arenadashboardcrowns/${tier}crown.png`}
-      alt={`${CROWN[tier]?.label || tier} Crown`}
+      alt={tr("{v0} Crown", { v0: CROWN[tier]?.label || tier })}
       style={{ width: size, height: size, objectFit: "contain", display: "inline-block", verticalAlign: "middle" }}
     />
   );
@@ -65,9 +66,9 @@ const Crown = ({ tier = "gold", size = 28 }) => {
 const timeAgo = (d) => {
   if (!d) return "";
   const s = Math.floor((Date.now() - new Date(d)) / 1000);
-  if (s < 3600) return `${Math.max(1, Math.floor(s / 60))}m ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-  return `${Math.floor(s / 86400)}d ago`;
+  if (s < 3600) return tr("{v0}m ago", { v0: Math.max(1, Math.floor(s / 60)) });
+  if (s < 86400) return tr("{v0}h ago", { v0: Math.floor(s / 3600) });
+  return tr("{v0}d ago", { v0: Math.floor(s / 86400) });
 };
 const startsIn = (d) => {
   if (!d) return "";
@@ -192,7 +193,7 @@ export default function ArenaTournamentDashboard() {
     type: "team_battle",
     rank: 1,
     date: 0,
-    title: "Team Battle Champion",
+    title: tr("Team Battle Champion"),
   }));
   // Flat list, newest first, for the showcase (latest 5)
   const allTrophies = [...crownTrophies, ...marathonTrophyList, ...teamBattleList]
@@ -271,7 +272,7 @@ export default function ArenaTournamentDashboard() {
       <SEO title={`${isPublic ? `${ownerName}'s ` : ""}Arena Tournament Dashboard — Chess Nexus`} noIndex />
 
       {loading ? (
-          <p style={{ color: "var(--color-text-muted)", marginTop: 24 }}>Loading…</p>
+          <p style={{ color: "var(--color-text-muted)", marginTop: 24 }}>{tr("Loading…")}</p>
         ) : tab === "games" ? (
           <GamesPanel name={ownerName} onBack={() => setTab("overview")} />
         ) : (
@@ -295,10 +296,10 @@ export default function ArenaTournamentDashboard() {
                         {verified && <span style={S.verified}>✓</span>}
                       </div>
                       {memberYear && (
-                        <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginTop: 2 }}>Member since {memberYear}</div>
+                        <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginTop: 2 }}>{tr("Member since")} {memberYear}</div>
                       )}
                       <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
-                        <Chip icon="🏆" color="var(--color-warning)">{trophies} Trophies</Chip>
+                        <Chip icon="🏆" color="var(--color-warning)">{trophies} {tr("Trophies")}</Chip>
                       </div>
                     </div>
                   </div>
@@ -306,7 +307,7 @@ export default function ArenaTournamentDashboard() {
                   {/* RIGHT — Trophy Case: latest 5 (crowns, marathon & team battle). View All for more. */}
                   <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                     {totalTrophies === 0
-                      ? <span style={{ color: "var(--color-text-faint)", fontSize: 13 }}>No trophies yet</span>
+                      ? <span style={{ color: "var(--color-text-faint)", fontSize: 13 }}>{tr("No trophies yet")}</span>
                       : (
                         <>
                           {allTrophies.slice(0, 5).map((t) => (
@@ -314,7 +315,7 @@ export default function ArenaTournamentDashboard() {
                           ))}
                           {totalTrophies > 5 && (
                             <button onClick={() => setShowAllTrophies(true)} style={S.viewAllTrophiesBtn}>
-                              View All ({totalTrophies})
+                              {tr("View All (")}{totalTrophies})
                             </button>
                           )}
                         </>
@@ -327,15 +328,15 @@ export default function ArenaTournamentDashboard() {
               {/* ── TITLE ROW ── */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
                 <div>
-                  <h1 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Arena Tournaments</h1>
-                  <p style={{ color: "var(--color-text-muted)", fontSize: 12, margin: "3px 0 0" }}>Learn. Compete. Be the Champion.</p>
+                  <h1 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>{tr("Arena Tournaments")}</h1>
+                  <p style={{ color: "var(--color-text-muted)", fontSize: 12, margin: "3px 0 0" }}>{tr("Learn. Compete. Be the Champion.")}</p>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   <button onClick={() => setTab(tab === "games" ? "overview" : "games")} style={S.ghostBtn}>
                     {tab === "games" ? "← Overview" : "🎮 Tournament Games"}
                   </button>
                   <Link to={isPublic ? `/player/${encodeURIComponent(routeDisplayName)}` : "/dashboard"} style={S.ghostBtn}>
-                    ← Profile
+                    {tr("← Profile")}
                   </Link>
                 </div>
               </div>
@@ -364,7 +365,7 @@ export default function ArenaTournamentDashboard() {
 
                   {/* LEFT — small: Crown status */}
                   <div style={{ textAlign: "center", borderRight: "1px solid var(--color-white-a07)", paddingRight: 16 }}>
-                    <SectionLabel center style={{ color: "#b8860b", fontSize: 13 }}>Crown Status</SectionLabel>
+                    <SectionLabel center style={{ color: "#b8860b", fontSize: 13 }}>{tr("Crown Status")}</SectionLabel>
                     <div style={{ marginTop: 10, position: "relative", width: 110, height: 110, margin: "10px auto 0", overflow: "visible" }}>
                       {/* sparkle burst behind crown — very dim */}
                       <img
@@ -388,50 +389,50 @@ export default function ArenaTournamentDashboard() {
                       {tier === "none" ? (
                         <img
                           src="/arenadashboardcrowns/goldcrown.png"
-                          alt="No Crown"
+                          alt={tr("No Crown")}
                           style={{ width: 110, height: 110, objectFit: "contain", opacity: 0.15, filter: "grayscale(1)", position: "relative", zIndex: 1 }}
                         />
                       ) : (
                         <img
                           src={`/arenadashboardcrowns/${tier}crown.png`}
-                          alt={`${CROWN[tier].label} Crown`}
+                          alt={tr("{v0} Crown", { v0: CROWN[tier].label })}
                           style={{ width: 110, height: 110, objectFit: "contain", position: "relative", zIndex: 1 }}
                         />
                       )}
                     </div>
                     <div style={{ marginTop: -8, fontSize: 13.5, fontWeight: 800, color: tier === "none" ? "var(--color-text-faint)" : (CROWN[tier] || CROWN.gold).color, textAlign: "center" }}>
-                      {tier === "none" ? "No Crown" : `${CROWN[tier]?.label} Crown`}
+                      {tier === "none" ? "No Crown" : tr("{v0} Crown", { v0: CROWN[tier]?.label })}
                     </div>
                   </div>
 
                   {/* MIDDLE — medium: To next crown */}
                   <div style={{ textAlign: "center", borderRight: "1px solid var(--color-white-a07)", paddingRight: 16 }}>
-                    <SectionLabel center>To Next Crown</SectionLabel>
+                    <SectionLabel center>{tr("To Next Crown")}</SectionLabel>
                     {next ? (
                       <>
                         <div style={{ marginTop: 8 }}><Crown tier={next.next} size={38} /></div>
                         <div style={{ fontSize: 13.5, fontWeight: 700, marginTop: 7 }}>
-                          {next.need === 1 ? "Win 1 more tournament" : `Win ${next.need} more tournaments`}
+                          {next.need === 1 ? "Win 1 more tournament" : tr("Win {need} more tournaments", { need: next.need })}
                         </div>
                         <div style={S.progressTrack}>
                           <div style={{ ...S.progressFill, width: `${Math.min(100, (next.have / next.of) * 100)}%` }} />
                         </div>
                         <div style={{ fontSize: 11.5, color: "var(--color-text-muted)", marginTop: 5 }}>
-                          {next.have} / {next.of} · Get {CROWN[next.next].label} Crown
+                          {next.have} / {next.of} {tr("· Get")} {CROWN[next.next].label} {tr("Crown")}
                         </div>
                       </>
                     ) : (
                       <div style={{ marginTop: 24, fontSize: 13.5, fontWeight: 700, color: "var(--color-accent-2)" }}>
-                        💎 Highest crown reached!
+                        {tr("💎 Highest crown reached!")}
                       </div>
                     )}
                   </div>
 
                   {/* RIGHT — bigger: Crown guide */}
                   <div>
-                    <SectionLabel>Crown Guide</SectionLabel>
+                    <SectionLabel>{tr("Crown Guide")}</SectionLabel>
                     <p style={{ fontSize: 12.5, color: "var(--color-text-muted)", margin: "8px 0 14px", lineHeight: 1.6 }}>
-                      Road to next crown
+                      {tr("Road to next crown")}
                     </p>
                     {/* Crown tier progress path */}
                     <div style={{ position: "relative" }}>
@@ -514,10 +515,10 @@ export default function ArenaTournamentDashboard() {
               {/* Boost + How to win */}
               <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 10, alignItems: "start" }}>
                 <Card style={{ background: "linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(10,10,20,0.98) 100%)", border: "1px solid rgba(99,102,241,0.18)", minWidth: 0 }}>
-                  <SectionLabel>Boost Your Points</SectionLabel>
+                  <SectionLabel>{tr("Boost Your Points")}</SectionLabel>
                   <div style={{ display: "flex", gap: 10, marginTop: 12, alignItems: "stretch" }}>
-                    <Boost icon="⚡" title="Play 3 Tournaments" sub="Carry Bonus"    pts="+2 Points" color="var(--color-warning)" />
-                    <Boost icon="🐦" title="Join Early"         sub="Early Bird Bonus" pts="+3 Points" color="var(--color-success)" />
+                    <Boost icon="⚡" title={tr("Play 3 Tournaments")} sub={tr("Carry Bonus")}    pts="+2 Points" color="var(--color-warning)" />
+                    <Boost icon="🐦" title={tr("Join Early")}         sub={tr("Early Bird Bonus")} pts="+3 Points" color="var(--color-success)" />
                   </div>
                 </Card>
 
@@ -531,7 +532,7 @@ export default function ArenaTournamentDashboard() {
                   />
                   {/* text layer — full width on top */}
                   <div style={{ position: "relative", zIndex: 1, padding: "16px 18px", width: "100%" }}>
-                    <SectionLabel>How to Win Next Time</SectionLabel>
+                    <SectionLabel>{tr("How to Win Next Time")}</SectionLabel>
                     <ul style={{ listStyle: "none", padding: 0, margin: "10px 0 0", display: "grid", gap: 7 }}>
                       {[
                         "Start early and be consistent from the first round.",
@@ -545,7 +546,7 @@ export default function ArenaTournamentDashboard() {
                       ))}
                     </ul>
                     <Link to="/puzzles-hub" style={{ ...S.ghostBtn, display: "inline-block", marginTop: 12, fontSize: 11.5, padding: "6px 12px" }}>
-                      💡 View daily Tips
+                      {tr("💡 View daily Tips")}
                     </Link>
                   </div>
                 </Card>
@@ -555,11 +556,11 @@ export default function ArenaTournamentDashboard() {
               <div className="atd-pair" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
                   <Card>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                      <SectionLabel>Upcoming Tournaments</SectionLabel>
-                      <Link to="/schedule" style={S.linkSmall}>View Calendar</Link>
+                      <SectionLabel>{tr("Upcoming Tournaments")}</SectionLabel>
+                      <Link to="/schedule" style={S.linkSmall}>{tr("View Calendar")}</Link>
                     </div>
                     {upcoming.length === 0
-                      ? <Empty text="No tournaments available." />
+                      ? <Empty text={tr("No tournaments available.")} />
                       : upcoming.map((t) => {
                           const tc = typeColor(t.tournamentType);
                           return (
@@ -578,7 +579,7 @@ export default function ArenaTournamentDashboard() {
                               </div>
                               {/* PART 2 — starts in */}
                               <div style={{ textAlign: "center", flexShrink: 0, padding: "0 12px" }}>
-                                <div style={{ fontSize: 10, color: "var(--color-text-faint)", fontWeight: 600 }}>Starts in</div>
+                                <div style={{ fontSize: 10, color: "var(--color-text-faint)", fontWeight: 600 }}>{tr("Starts in")}</div>
                                 <div style={{ fontSize: 13, color: "var(--color-accent)", fontWeight: 800, marginTop: 2 }}>{startsIn(t.scheduledStartTime)}</div>
                               </div>
                               {/* PART 3 — join button */}
@@ -590,16 +591,16 @@ export default function ArenaTournamentDashboard() {
                             </div>
                           );
                         })}
-                    <Link to="/arenatournament" style={S.footerBtn}>🏆 View All Tournaments</Link>
+                    <Link to="/arenatournament" style={S.footerBtn}>{tr("🏆 View All Tournaments")}</Link>
                   </Card>
 
                 <Card>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                    <SectionLabel>Recent Tournaments</SectionLabel>
-                    <Link to="/arenatournament" style={S.linkSmall}>View All</Link>
+                    <SectionLabel>{tr("Recent Tournaments")}</SectionLabel>
+                    <Link to="/arenatournament" style={S.linkSmall}>{tr("View All")}</Link>
                   </div>
                   {finished.length === 0
-                    ? <Empty text="No recently played tournaments." />
+                    ? <Empty text={tr("No recently played tournaments.")} />
                     : <div className="atd-recent-list">{finished.slice(0, 4).map((t) => (
                       <div key={t._id} className="atd-recent-row" style={S.recentRow}>
                         {/* Circular rank medal */}
@@ -611,12 +612,12 @@ export default function ArenaTournamentDashboard() {
                         <div style={{ textAlign: "right", flexShrink: 0 }}>
                           <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>{timeAgo(t.endTime || t.scheduledStartTime)}</div>
                           <div style={{ fontWeight: 800, fontSize: 15, color: t.myRank === 1 ? "var(--color-warning)" : "var(--color-text)" }}>#{t.myRank}</div>
-                          <div style={{ color: "var(--color-success)", fontSize: 12.5, fontWeight: 700 }}>{t.myScore} pts</div>
+                          <div style={{ color: "var(--color-success)", fontSize: 12.5, fontWeight: 700 }}>{t.myScore} {tr("pts")}</div>
                         </div>
                       </div>
                     ))}</div>}
                   <button onClick={() => setTab("games")} style={{ ...S.footerBtn, border: "none", cursor: "pointer", width: "100%" }}>
-                    🎮 Tournament Games
+                    {tr("🎮 Tournament Games")}
                   </button>
                 </Card>
               </div>
@@ -629,11 +630,11 @@ export default function ArenaTournamentDashboard() {
 
               {/* Team Battle Status */}
               <Card>
-                <SectionLabel>Team Battle Status</SectionLabel>
+                <SectionLabel>{tr("Team Battle Status")}</SectionLabel>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", marginTop: 14 }}>
                   <img
                     src="/arenadashboardcrowns/teambattle.png"
-                    alt="Team Battle Trophy"
+                    alt={tr("Team Battle Trophy")}
                     style={{
                       width: 210, height: 210, objectFit: "contain",
                       filter: teamBattleTrophies > 0 ? "none" : "grayscale(1) brightness(0.6)",
@@ -643,19 +644,19 @@ export default function ArenaTournamentDashboard() {
                   {teamBattleTrophies > 0 ? (
                     <>
                       <div style={{ fontSize: 14, fontWeight: 800, color: "var(--color-accent-2)", marginTop: 8 }}>
-                        Team Battle Champion
+                        {tr("Team Battle Champion")}
                       </div>
                       <div style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 600, marginTop: 2 }}>
-                        {teamBattleTrophies} {teamBattleTrophies === 1 ? "trophy" : "trophies"} won
+                        {teamBattleTrophies} {teamBattleTrophies === 1 ? "trophy" : "trophies"} {tr("won")}
                       </div>
                     </>
                   ) : (
                     <>
                       <div style={{ fontSize: 14, fontWeight: 800, color: "var(--color-text-faint)", marginTop: 8 }}>
-                        No Trophy Yet
+                        {tr("No Trophy Yet")}
                       </div>
                       <div style={{ fontSize: 12, color: "var(--color-text-faint)", fontWeight: 600, marginTop: 2 }}>
-                        Win a team battle to get one
+                        {tr("Win a team battle to get one")}
                       </div>
                     </>
                   )}
@@ -668,8 +669,8 @@ export default function ArenaTournamentDashboard() {
                   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                     <div style={{ fontSize: 40, lineHeight: 1 }}>🏆</div>
                     <div>
-                      <div style={{ fontWeight: 800, fontSize: 15, color: "var(--color-success)" }}>Congratulations!</div>
-                      <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginTop: 2 }}>You won your last tournament!</div>
+                      <div style={{ fontWeight: 800, fontSize: 15, color: "var(--color-success)" }}>{tr("Congratulations!")}</div>
+                      <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginTop: 2 }}>{tr("You won your last tournament!")}</div>
                     </div>
                   </div>
                 </Card>
@@ -677,11 +678,11 @@ export default function ArenaTournamentDashboard() {
 
               {/* Marathon Trophies — podium hero (best earned biggest, in center) */}
               <Card>
-                <SectionLabel>Marathon Trophies</SectionLabel>
+                <SectionLabel>{tr("Marathon Trophies")}</SectionLabel>
                 <MarathonPodiumCard counts={marathonCounts} best={bestMarathon} />
                 {marathonTotal === 0 && (
                   <div style={{ textAlign: "center", fontSize: 12, color: "var(--color-text-faint)", marginTop: 8 }}>
-                    No marathon trophies yet — finish top 3 in a marathon to earn one.
+                    {tr("No marathon trophies yet — finish top 3 in a marathon to earn one.")}
                   </div>
                 )}
               </Card>
@@ -692,7 +693,7 @@ export default function ArenaTournamentDashboard() {
                 <BlunderDnaCard />
               ) : (
                 <Card>
-                  <SectionLabel>Performance Overview</SectionLabel>
+                  <SectionLabel>{tr("Performance Overview")}</SectionLabel>
                   <div style={{ marginTop: 14, borderRadius: 'var(--radius-lg)', overflow: "hidden", border: "1px solid var(--color-white-a07)" }}>
                     {/* header row */}
                     <div style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", background: "var(--color-white-a04)", padding: "8px 10px" }}>
@@ -730,13 +731,13 @@ export default function ArenaTournamentDashboard() {
             {/* ════════════════ FULL-WIDTH MONTH COMPARISON + LIFETIME ════════════════ */}
             <div style={{ gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
               <MonthStatsCard
-                title="This Month"
+                title={tr("This Month")}
                 rows={summary.performanceThisMonth || []}
                 compareRows={summary.performanceLastMonth || []}
                 showArrows
               />
               <MonthStatsCard
-                title="Last Month"
+                title={tr("Last Month")}
                 rows={summary.performanceLastMonth || []}
               />
             </div>
@@ -765,16 +766,16 @@ export default function ArenaTournamentDashboard() {
 // ── All Trophies modal — grouped by type, one row each, tightly packed ────────
 function AllTrophiesModal({ crowns, marathons, teamBattles, onClose }) {
   const rows = [
-    { key: "crown",    label: "Crowns",              items: crowns },
-    { key: "marathon", label: "Marathon Trophies",   items: marathons },
-    { key: "team",     label: "Team Battle Trophies", items: teamBattles },
+    { key: "crown",    label: tr("Crowns"),              items: crowns },
+    { key: "marathon", label: tr("Marathon Trophies"),   items: marathons },
+    { key: "team",     label: tr("Team Battle Trophies"), items: teamBattles },
   ].filter((r) => r.items.length > 0);
 
   return (
     <div style={S.trophyOverlay} onClick={onClose}>
       <div style={S.trophyModal} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>All Trophies</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>{tr("All Trophies")}</h2>
           <button onClick={onClose} style={S.trophyCloseBtn}>✕</button>
         </div>
         <div style={{ display: "grid", gap: 20 }}>
@@ -815,7 +816,7 @@ function MonthStatsCard({ title, rows, compareRows = [], showArrows = false }) {
     const good = kind === "bad" ? !up : up;
     const color = kind === "neutral" ? "var(--color-text-muted)" : good ? "var(--color-success)" : "var(--color-danger)";
     return (
-      <span title={`${up ? "+" : ""}${d}% vs last month`} style={{ fontSize: 10.5, fontWeight: 800, color, marginLeft: 3 }}>
+      <span title={tr("{v0}{d}% vs last month", { v0: up ? "+" : "", d: d })} style={{ fontSize: 10.5, fontWeight: 800, color, marginLeft: 3 }}>
         {up ? "▲" : "▼"}{Math.abs(d)}
       </span>
     );
@@ -823,7 +824,7 @@ function MonthStatsCard({ title, rows, compareRows = [], showArrows = false }) {
 
   return (
     <Card>
-      <SectionLabel>{title} · By Type</SectionLabel>
+      <SectionLabel>{title} {tr("· By Type")}</SectionLabel>
       <div style={{ borderRadius: 'var(--radius-lg)', overflow: "hidden", border: "1px solid var(--color-white-a07)", marginTop: 12 }}>
         <div style={{ display: "grid", gridTemplateColumns: COLS, background: "var(--color-white-a04)", padding: "9px 12px" }}>
           {HEADERS.map((h, i) => (
@@ -883,9 +884,9 @@ function LifetimeStatsCard({ rows }) {
 
   return (
     <Card>
-      <SectionLabel>Lifetime Tournament Stats · All Types</SectionLabel>
+      <SectionLabel>{tr("Lifetime Tournament Stats · All Types")}</SectionLabel>
       <div style={{ fontSize: 11, color: "var(--color-text-faint)", marginTop: 3, marginBottom: 12 }}>
-        Every finished tournament since you joined. Win / Lose / Draw count individual games.
+        {tr("Every finished tournament since you joined. Win / Lose / Draw count individual games.")}
       </div>
       <div style={{ borderRadius: 'var(--radius-lg)', overflow: "hidden", border: "1px solid var(--color-white-a07)" }}>
         {/* header */}
@@ -921,7 +922,7 @@ function LifetimeStatsCard({ rows }) {
         })}
         {/* totals */}
         <div style={{ display: "grid", gridTemplateColumns: COLS, padding: "11px 12px", borderTop: "2px solid var(--color-white-a13)", background: "var(--color-white-a04)", alignItems: "center" }}>
-          <div style={{ fontSize: 12.5, fontWeight: 800, color: "var(--color-text)" }}>Total</div>
+          <div style={{ fontSize: 12.5, fontWeight: 800, color: "var(--color-text)" }}>{tr("Total")}</div>
           <StatCell value={tot.played} color="var(--color-text)" bold />
           <StatCell value={tot.first} color="var(--color-warning)" bold />
           <StatCell value={tot.top3} color="var(--color-warning)" bold />
@@ -1115,7 +1116,7 @@ function GamesPanel({ name, onBack }) {
   if (loading) return (
     <div className="atg-loading">
       <div className="atg-loading-orb" />
-      <div className="atg-loading-text">Loading Games…</div>
+      <div className="atg-loading-text">{tr("Loading Games…")}</div>
     </div>
   );
 
@@ -1127,15 +1128,15 @@ function GamesPanel({ name, onBack }) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="15 18 9 12 15 6" />
           </svg>
-          Back to Dashboard
+          {tr("Back to Dashboard")}
         </button>
         <div className="atg-topbar-title">
           <span className="atg-topbar-name">{name}</span>
           <span className="atg-topbar-sep">·</span>
-          <span className="atg-topbar-sub">Tournament Games</span>
+          <span className="atg-topbar-sub">{tr("Tournament Games")}</span>
         </div>
         <div className="atg-topbar-meta upg-meta">
-          <span className="upg-meta-total">{info?.totalCount ?? 0} total games</span>
+          <span className="upg-meta-total">{info?.totalCount ?? 0} {tr("total games")}</span>
         </div>
       </header>
 
@@ -1146,11 +1147,11 @@ function GamesPanel({ name, onBack }) {
             <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
               <span style={{ fontSize: 20, flexShrink: 0 }}>🔍</span>
               <span style={{ fontSize: 13.5, fontWeight: 600, color: "var(--color-text-muted)", lineHeight: 1.4 }}>
-                Analyze your games in the <strong style={{ color: "var(--color-accent)" }}>Analysis page</strong> — find blunders, mistakes and inaccuracies.
+                {tr("Analyze your games in the")} <strong style={{ color: "var(--color-accent)" }}>{tr("Analysis page")}</strong> {tr("— find blunders, mistakes and inaccuracies.")}
               </span>
             </div>
             <Link to="/game-analysis" style={{ flexShrink: 0, textDecoration: "none", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-accent-2))", borderRadius: 'var(--radius-md)', padding: "7px 16px", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap" }}>
-              Analyze my game →
+              {tr("Analyze my game →")}
             </Link>
           </div>
 
@@ -1160,7 +1161,7 @@ function GamesPanel({ name, onBack }) {
               <svg className="atg-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
-              <input type="text" className="atg-search-input" placeholder="Search by opponent name…"
+              <input type="text" className="atg-search-input" placeholder={tr("Search by opponent name…")}
                 value={search} onChange={e => setSearch(e.target.value)} />
               {search && (
                 <button type="button" className="atg-search-clear" onClick={() => setSearch("")}>
@@ -1171,14 +1172,14 @@ function GamesPanel({ name, onBack }) {
               )}
             </div>
             {search.trim() && (
-              <span className="atg-search-results-count">{filtered.length} {filtered.length === 1 ? "game" : "games"} found</span>
+              <span className="atg-search-results-count">{filtered.length} {filtered.length === 1 ? "game" : "games"} {tr("found")}</span>
             )}
           </div>
 
           {filtered.length === 0 ? (
             <div className="atg-empty">
               <div className="atg-empty-icon">♟</div>
-              <p>{search.trim() ? `No games found for "${search}"` : "No finished games yet."}</p>
+              <p>{search.trim() ? tr("No games found for \"{search}\"", { search: search }) : tr("No finished games yet.")}</p>
             </div>
           ) : (
             <div className="atg-games-grid">
@@ -1199,7 +1200,7 @@ function GamesPanel({ name, onBack }) {
                     <span>{game.blackPlayerDisplayName || game.blackPlayerUsername}</span>
                   </div>
                   <div className="atg-card-meta">
-                    <span>{game.moves?.length ?? 0} moves</span>
+                    <span>{game.moves?.length ?? 0} {tr("moves")}</span>
                     <span>{game.finishedAt ? new Date(game.finishedAt).toLocaleDateString() : "—"}</span>
                   </div>
                 </button>
@@ -1226,7 +1227,7 @@ function GamesPanel({ name, onBack }) {
                       <span className="atg-modal-color-dot atg-dot-white" />
                       {selectedGame.whitePlayerDisplayName || selectedGame.whitePlayerUsername}
                     </span>
-                    <span className="atg-modal-vs">vs</span>
+                    <span className="atg-modal-vs">{tr("vs")}</span>
                     <span className="atg-modal-player atg-modal-player--black">
                       <span className="atg-modal-color-dot atg-dot-black" />
                       {selectedGame.blackPlayerDisplayName || selectedGame.blackPlayerUsername}
@@ -1244,22 +1245,22 @@ function GamesPanel({ name, onBack }) {
                 <div className="atg-notation-panel">
                   <div className="atg-notation-scroll">
                     {!rootId || !nodes[rootId]?.childIds.length ? (
-                      <div className="atg-notation-empty">No moves recorded</div>
+                      <div className="atg-notation-empty">{tr("No moves recorded")}</div>
                     ) : (
                       <div className="atg-analysis-moves">{renderMoves(nodes[rootId]?.childIds[0])}</div>
                     )}
                   </div>
                 </div>
                 <div className="atg-controls">
-                  <button type="button" className="atg-ctrl-btn" onClick={navStart} title="Start">⏮</button>
-                  <button type="button" className="atg-ctrl-btn" onClick={navPrev}  title="Previous">◀</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navStart} title={tr("Start")}>⏮</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navPrev}  title={tr("Previous")}>◀</button>
                   <div className="atg-ctrl-counter">
                     <span className="atg-ctrl-cur">{currentNode?.ply ?? 0}</span>
                     <span className="atg-ctrl-sep">/</span>
                     <span className="atg-ctrl-tot">{selectedGame.moves?.length ?? 0}</span>
                   </div>
-                  <button type="button" className="atg-ctrl-btn" onClick={navNext} title="Next">▶</button>
-                  <button type="button" className="atg-ctrl-btn" onClick={navEnd}  title="End">⏭</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navNext} title={tr("Next")}>▶</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navEnd}  title={tr("End")}>⏭</button>
                 </div>
               </div>
             </div>
@@ -1288,18 +1289,18 @@ function BlunderDnaCard() {
 
   return (
     <Card>
-      <SectionLabel>🧬 Your Blunder DNA</SectionLabel>
+      <SectionLabel>{tr("🧬 Your Blunder DNA")}</SectionLabel>
       {!loaded ? (
-        <div style={{ fontSize: 12, color: "var(--color-text-faint)", marginTop: 12 }}>Loading…</div>
+        <div style={{ fontSize: 12, color: "var(--color-text-faint)", marginTop: 12 }}>{tr("Loading…")}</div>
       ) : !dna ? (
         <div style={{ fontSize: 12, color: "var(--color-text-faint)", marginTop: 12, lineHeight: 1.6 }}>
-          No mistakes analyzed yet. Open the <strong style={{ color: "var(--color-text-muted)" }}>Nexus Guide</strong> on your
-          dashboard and click <strong style={{ color: "var(--color-text-muted)" }}>Analyze my games</strong> to build your profile.
+          {tr("No mistakes analyzed yet. Open the")} <strong style={{ color: "var(--color-text-muted)" }}>{tr("Nexus Guide")}</strong> {tr("on your")}
+          {tr("dashboard and click")} <strong style={{ color: "var(--color-text-muted)" }}>{tr("Analyze my games")}</strong> {tr("to build your profile.")}
         </div>
       ) : (
         <>
           <div style={{ fontSize: 11, color: "var(--color-text-muted)", marginTop: 6, marginBottom: 12 }}>
-            From {dna.total} mistakes across your games
+            {tr("From")} {dna.total} {tr("mistakes across your games")}
           </div>
           {dna.dna.map((d) => (
             <div key={d.key} style={{ display: "flex", alignItems: "center", gap: 10, margin: "9px 0" }}>
@@ -1358,7 +1359,7 @@ const RankCircle = ({ rank }) => {
     return (
       <img
         src={`/arenadashboardcrowns/${RIBBON[rank]}.png`}
-        alt={`Rank ${rank}`}
+        alt={tr("Rank {rank}", { rank: rank })}
         style={{ width: 40, height: 40, objectFit: "contain", flexShrink: 0 }}
       />
     );
@@ -1372,7 +1373,7 @@ const RankCircle = ({ rank }) => {
 
 /* Marathon podium — best earned trophy shown biggest in the center,
    other earned trophies glow but smaller, unearned trophies dim. */
-const MARATHON_LABEL = { first: "1st Place", second: "2nd Place", third: "3rd Place" };
+const MARATHON_LABEL = { first: tr("1st Place"), second: tr("2nd Place"), third: tr("3rd Place") };
 const MARATHON_SIZE = { big: 172, mid: 96, dim: 80 };
 const MarathonPodiumCard = ({ counts, best }) => {
   // tier per place: best earned → big, other earned → mid, unearned → dim
@@ -1492,7 +1493,7 @@ const Ribbon = ({ rank }) => {
     return (
       <img
         src={`/arenadashboardcrowns/${RIBBON[rank]}.png`}
-        alt={`Rank ${rank}`}
+        alt={tr("Rank {rank}", { rank: rank })}
         style={{ display: "block", margin: "2px auto", width: 72, height: 72, objectFit: "contain" }}
       />
     );

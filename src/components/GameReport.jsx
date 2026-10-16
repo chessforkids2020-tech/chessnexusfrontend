@@ -7,6 +7,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { Chess } from 'chess.js';
+import { t as tr } from '../i18n/LanguageContext';
 
 // analyzeGame's win curve is 100 / (1 + e^(-K·cp)), so a stored win % maps back
 // to the exact centipawn eval. Evals are capped at ±1000 like Lichess, so a
@@ -32,24 +33,24 @@ function phaseAfter(plyIndex, chess) {
 }
 
 const PHASES = [
-  { key: 'opening', label: 'Opening', icon: '♟' },
-  { key: 'middlegame', label: 'Middlegame', icon: '⚔' },
-  { key: 'endgame', label: 'Endgame', icon: '👑' },
+  { key: 'opening', label: tr('Opening'), icon: '♟' },
+  { key: 'middlegame', label: tr('Middlegame'), icon: '⚔' },
+  { key: 'endgame', label: tr('Endgame'), icon: '👑' },
 ];
 const QUALITY = [
-  { key: 'best', label: 'Best', mark: '★' },
-  { key: 'good', label: 'Good', mark: '✓' },
-  { key: 'inaccuracy', label: 'Inaccuracy', mark: '?!' },
-  { key: 'mistake', label: 'Mistake', mark: '?' },
-  { key: 'blunder', label: 'Blunder', mark: '??' },
+  { key: 'best', label: tr('Best'), mark: '★' },
+  { key: 'good', label: tr('Good'), mark: '✓' },
+  { key: 'inaccuracy', label: tr('Inaccuracy'), mark: '?!' },
+  { key: 'mistake', label: tr('Mistake'), mark: '?' },
+  { key: 'blunder', label: tr('Blunder'), mark: '??' },
 ];
 const PIECES = [
-  { key: 'p', label: 'Pawn', glyph: '♙' },
-  { key: 'n', label: 'Knight', glyph: '♘' },
-  { key: 'b', label: 'Bishop', glyph: '♗' },
-  { key: 'r', label: 'Rook', glyph: '♖' },
-  { key: 'q', label: 'Queen', glyph: '♕' },
-  { key: 'k', label: 'King', glyph: '♔' },
+  { key: 'p', label: tr('Pawn'), glyph: '♙' },
+  { key: 'n', label: tr('Knight'), glyph: '♘' },
+  { key: 'b', label: tr('Bishop'), glyph: '♗' },
+  { key: 'r', label: tr('Rook'), glyph: '♖' },
+  { key: 'q', label: tr('Queen'), glyph: '♕' },
+  { key: 'k', label: tr('King'), glyph: '♔' },
 ];
 const ERRORS = ['inaccuracy', 'mistake', 'blunder'];
 
@@ -121,16 +122,16 @@ function SideView({ s }) {
   return (
     <div className="sgr-grid">
       <section className="sgr-card sgr-card--wide">
-        <h4 className="sgr-card-title">🎯 Move quality</h4>
+        <h4 className="sgr-card-title">{tr("🎯 Move quality")}</h4>
         <div className="sgr-mq-row">
           <div className="sgr-big-row">
             <div className="sgr-big">
               <span className="sgr-big-num">{s.acpl}</span>
-              <span className="sgr-big-label">avg centipawn loss</span>
+              <span className="sgr-big-label">{tr("avg centipawn loss")}</span>
             </div>
             <div className="sgr-big">
               <span className={`sgr-big-num tone-${accTone(s.accuracy)}`}>{s.accuracy}%</span>
-              <span className="sgr-big-label">accuracy</span>
+              <span className="sgr-big-label">{tr("accuracy")}</span>
             </div>
           </div>
           <div className="sgr-qlist">
@@ -152,7 +153,7 @@ function SideView({ s }) {
       </section>
 
       <section className="sgr-card">
-        <h4 className="sgr-card-title">📊 Game phases</h4>
+        <h4 className="sgr-card-title">{tr("📊 Game phases")}</h4>
         {PHASES.map(ph => {
           const p = s.phases[ph.key];
           return (
@@ -163,11 +164,11 @@ function SideView({ s }) {
                   <div className="sgr-phase-bar"><div className={`tone-${accTone(p.accuracy)}`} style={{ width: `${p.accuracy}%` }} /></div>
                   <span className={`sgr-phase-acc tone-${accTone(p.accuracy)}`}>{p.accuracy}%</span>
                   <span className="sgr-phase-sub">
-                    {p.moves} moves · {p.acpl} cpl · <ErrorChips p={p} />
+                    {p.moves} {tr("moves ·")} {p.acpl} {tr("cpl ·")} <ErrorChips p={p} />
                   </span>
                 </>
               ) : (
-                <span className="sgr-phase-none">not reached</span>
+                <span className="sgr-phase-none">{tr("not reached")}</span>
               )}
             </div>
           );
@@ -175,10 +176,10 @@ function SideView({ s }) {
       </section>
 
       <section className="sgr-card">
-        <h4 className="sgr-card-title">♟ Piece-Level Mistake Map</h4>
+        <h4 className="sgr-card-title">{tr("♟ Piece-Level Mistake Map")}</h4>
         {worst ? (
           <>
-            <div className="sgr-worst">Most errors with the <b>{worst.label}</b> ({s.pieces[worst.key]})</div>
+            <div className="sgr-worst">{tr("Most errors with the")} <b>{worst.label}</b> ({s.pieces[worst.key]})</div>
             {PIECES.map(pc => (
               <div key={pc.key} className="sgr-piece">
                 <span className="sgr-piece-name"><span className="sgr-piece-glyph">{pc.glyph}</span>{pc.label}</span>
@@ -186,10 +187,10 @@ function SideView({ s }) {
                 <b className="sgr-piece-count">{s.pieces[pc.key]}</b>
               </div>
             ))}
-            <p className="sgr-note">Counts every ?!, ? and ?? by the piece that moved.</p>
+            <p className="sgr-note">{tr("Counts every ?!, ? and ?? by the piece that moved.")}</p>
           </>
         ) : (
-          <div className="sgr-clean-big">No inaccuracies, mistakes or blunders with any piece 🎉</div>
+          <div className="sgr-clean-big">{tr("No inaccuracies, mistakes or blunders with any piece 🎉")}</div>
         )}
       </section>
     </div>
@@ -222,27 +223,27 @@ function CompareView({ left, right }) {
         <span className="sgr-cmp-who"><span className={`sga-dot sga-dot-${right.side}`} />{right.name}</span>
       </div>
 
-      <div className="sgr-cmp-group">🎯 Move quality</div>
-      <CmpRow label="Avg centipawn loss" a={A.acpl} b={B.acpl} lower />
-      <CmpRow label="Accuracy" a={A.accuracy} b={B.accuracy} fmt={pct} />
+      <div className="sgr-cmp-group">{tr("🎯 Move quality")}</div>
+      <CmpRow label={tr("Avg centipawn loss")} a={A.acpl} b={B.acpl} lower />
+      <CmpRow label={tr("Accuracy")} a={A.accuracy} b={B.accuracy} fmt={pct} />
       {QUALITY.map(q => (
         <CmpRow key={q.key} label={`${q.label} ${q.mark}`} a={A.quality[q.key]} b={B.quality[q.key]}
           lower={ERRORS.includes(q.key)} neutral={q.key === 'good'} />
       ))}
 
-      <div className="sgr-cmp-group">📊 Game phases</div>
+      <div className="sgr-cmp-group">{tr("📊 Game phases")}</div>
       {PHASES.map(ph => (
         <React.Fragment key={ph.key}>
-          <CmpRow label={`${ph.icon} ${ph.label} accuracy`} a={A.phases[ph.key].accuracy} b={B.phases[ph.key].accuracy} fmt={pct} />
-          <CmpRow label="centipawn loss" a={A.phases[ph.key].acpl} b={B.phases[ph.key].acpl} lower sub />
+          <CmpRow label={tr("{icon} {label} accuracy", { icon: ph.icon, label: ph.label })} a={A.phases[ph.key].accuracy} b={B.phases[ph.key].accuracy} fmt={pct} />
+          <CmpRow label={tr("centipawn loss")} a={A.phases[ph.key].acpl} b={B.phases[ph.key].acpl} lower sub />
         </React.Fragment>
       ))}
 
-      <div className="sgr-cmp-group">♟ Errors by piece</div>
+      <div className="sgr-cmp-group">{tr("♟ Errors by piece")}</div>
       {PIECES.map(pc => (
         <CmpRow key={pc.key} label={`${pc.glyph} ${pc.label}`} a={A.pieces[pc.key]} b={B.pieces[pc.key]} lower />
       ))}
-      <p className="sgr-note">Highlighted = the better of the two.</p>
+      <p className="sgr-note">{tr("Highlighted = the better of the two.")}</p>
     </section>
   );
 }
@@ -264,13 +265,13 @@ export default function GameReport({ rows, startFen, names, mySide = 'white', is
   const tabs = [
     { key: mySide, text: label(mySide), dot: mySide },
     { key: other, text: label(other), dot: other },
-    { key: 'compare', text: '⚖ Compare' },
+    { key: 'compare', text: tr('⚖ Compare') },
   ];
 
   return (
     <div className="sgr">
       <div className="sgr-head">
-        <h3 className="sgr-title">📋 Game report</h3>
+        <h3 className="sgr-title">{tr("📋 Game report")}</h3>
         <div className="sgr-tabs" role="tablist">
           {tabs.map(t => (
             <button
@@ -293,7 +294,7 @@ export default function GameReport({ rows, startFen, names, mySide = 'white', is
           right={{ side: other, name: label(other), s: report[other] }}
         />
       ) : (
-        report[view].moves ? <SideView s={report[view]} /> : <div className="sgr-card sgr-clean-big">No moves for this side.</div>
+        report[view].moves ? <SideView s={report[view]} /> : <div className="sgr-card sgr-clean-big">{tr("No moves for this side.")}</div>
       )}
     </div>
   );

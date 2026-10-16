@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, Fragment } from 'react';
 import api from '../../api';
 import CoachChatFab from '../../components/coach/CoachChatFab';
 import './CoachAttendancePage.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ─── IST helpers ────────────────────────────────────────────────────────────
 const IST = 'Asia/Kolkata';
@@ -44,7 +45,7 @@ function DownloadBar() {
       a.remove();
       URL.revokeObjectURL(href);
     } catch {
-      alert('Could not download. Try again.');
+      alert(tr('Could not download. Try again.'));
     } finally {
       setBusy('');
     }
@@ -53,20 +54,20 @@ function DownloadBar() {
   return (
     <div className="cap-card" style={{ marginBottom: 20 }}>
       <div className="cap-card-hdr" style={{ justifyContent: 'flex-start', gap: 10, flexWrap: 'wrap' }}>
-        <h3 style={{ margin: 0 }}>⬇️ Download reports</h3>
+        <h3 style={{ margin: 0 }}>{tr("⬇️ Download reports")}</h3>
       </div>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         <div>
-          <label className="cap-label">Period</label>
+          <label className="cap-label">{tr("Period")}</label>
           <select className="cap-input" value={range} onChange={e => setRange(e.target.value)}>
-            <option value="1">This month</option>
-            <option value="6">Past 6 months</option>
+            <option value="1">{tr("This month")}</option>
+            <option value="6">{tr("Past 6 months")}</option>
           </select>
         </div>
         <div>
-          <label className="cap-label">Student</label>
+          <label className="cap-label">{tr("Student")}</label>
           <select className="cap-input" value={student} onChange={e => setStudent(e.target.value)}>
-            <option value="all">All students</option>
+            <option value="all">{tr("All students")}</option>
             {players.map(p => (
               <option key={p._id} value={p.studentId}>{p.studentName}</option>
             ))}
@@ -91,19 +92,19 @@ export default function CoachAttendancePage() {
     <div className="cap-wrap">
       <div className="cap-header">
         <div>
-          <h1 className="cap-title">📋 Coach Attendance</h1>
-          <p className="cap-sub">Track your students' classes, payments and progress</p>
+          <h1 className="cap-title">{tr("📋 Coach Attendance")}</h1>
+          <p className="cap-sub">{tr("Track your students' classes, payments and progress")}</p>
         </div>
       </div>
 
       <div className="cap-tabs">
         {[
-          { id: 'dashboard', label: '📊 Dashboard' },
-          { id: 'players',   label: '👥 Students' },
-          { id: 'attendance',label: '📝 Attendance' },
-          { id: 'payments',  label: '💰 Payments' },
-          { id: 'requests',  label: '📋 Requests' },
-          { id: 'history',   label: '📚 History' },
+          { id: 'dashboard', label: tr('📊 Dashboard') },
+          { id: 'players',   label: tr('👥 Students') },
+          { id: 'attendance',label: tr('📝 Attendance') },
+          { id: 'payments',  label: tr('💰 Payments') },
+          { id: 'requests',  label: tr('📋 Requests') },
+          { id: 'history',   label: tr('📚 History') },
         ].map(t => (
           <button key={t.id} className={`cap-tab${tab === t.id ? ' cap-tab-active' : ''}`}
             onClick={() => setTab(t.id)}>
@@ -213,15 +214,15 @@ function TabDashboard() {
         <div className="cap-stat-row">
           <div className="cap-stat-card cap-stat-cyan">
             <div className="cap-stat-num">{stats.totalPlayers}</div>
-            <div className="cap-stat-lbl">Total Students</div>
+            <div className="cap-stat-lbl">{tr("Total Students")}</div>
           </div>
           <div className="cap-stat-card cap-stat-green">
             <div className="cap-stat-num">{stats.paidThisMonth}</div>
-            <div className="cap-stat-lbl">Paid This Month</div>
+            <div className="cap-stat-lbl">{tr("Paid This Month")}</div>
           </div>
           <div className="cap-stat-card cap-stat-gold">
             <div className="cap-stat-num">{stats.classesToday}</div>
-            <div className="cap-stat-lbl">Classes Today</div>
+            <div className="cap-stat-lbl">{tr("Classes Today")}</div>
           </div>
         </div>
       )}
@@ -234,18 +235,18 @@ function TabDashboard() {
         </div>
 
         {loading ? (
-          <p className="cap-muted">Loading…</p>
+          <p className="cap-muted">{tr("Loading…")}</p>
         ) : !data || !sortedSummary.length ? (
-          <p className="cap-muted">No enrolled students found.</p>
+          <p className="cap-muted">{tr("No enrolled students found.")}</p>
         ) : (
           <div className="cap-table-wrap">
             <table className="cap-table">
               <thead><tr>
-                <th className="cap-th-sort" onClick={() => toggleSort('name')}>Student{sortArrow('name')}</th>
-                <th className="cap-th-sort" onClick={() => toggleSort('attended')} title="Present + Catch-up this month">Classes{sortArrow('attended')}</th>
-                <th className="cap-th-sort" onClick={() => toggleSort('remaining')}>Remaining{sortArrow('remaining')}</th>
-                <th className="cap-th-sort" onClick={() => toggleSort('paid')}>Fees{sortArrow('paid')}</th>
-                <th className="cap-th-sort" onClick={() => toggleSort('pct')} title="Attended ÷ classes per month">Attendance %{sortArrow('pct')}</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('name')}>{tr("Student")}{sortArrow('name')}</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('attended')} title={tr("Present + Catch-up this month")}>{tr("Classes")}{sortArrow('attended')}</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('remaining')}>{tr("Remaining")}{sortArrow('remaining')}</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('paid')}>{tr("Fees")}{sortArrow('paid')}</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('pct')} title={tr("Attended ÷ classes per month")}>{tr("Attendance %")}{sortArrow('pct')}</th>
               </tr></thead>
               <tbody>
                 {sortedSummary.map(s => {
@@ -257,7 +258,7 @@ function TabDashboard() {
                       <td>{s.remaining}</td>
                       <td>
                         <span className={s.paid ? 'cap-fee-paid' : 'cap-fee-unpaid'}>
-                          {s.paid ? 'Paid' : 'Unpaid'}
+                          {s.paid ? tr('Paid') : tr('Unpaid')}
                         </span>
                       </td>
                       <td>{pct == null ? <span className="cap-muted">—</span> : `${pct}%`}</td>
@@ -293,7 +294,7 @@ function TabPlayers() {
       const r = await api.get('/api/coach-attendance/players');
       setPlayers(r.data);
     } catch (e) {
-      setError(e?.response?.data?.error || `Could not load students (${e?.response?.status || 'network error'})`);
+      setError(e?.response?.data?.error || tr("Could not load students ({v0})", { v0: e?.response?.status || tr('network error') }));
       setPlayers([]);
     } finally {
       setLoading(false);
@@ -317,7 +318,7 @@ function TabPlayers() {
     setSaving(true);
     try {
       await api.put(`/api/coach-attendance/players/${linkId}/enroll`, form);
-      setMsg('Saved!');
+      setMsg(tr('Saved!'));
       await load();
       setTimeout(() => { setEditing(null); setMsg(''); }, 800);
     } catch (e) {
@@ -342,9 +343,9 @@ function TabPlayers() {
   // link (active:false + archivedAt) — attendance and payment history are kept,
   // and the coach's student count is decremented. It is not a data wipe.
   const removePlayer = async (p) => {
-    const name = p.studentName || 'this student';
+    const name = p.studentName || tr('this student');
     if (!window.confirm(
-      `Remove ${name} from your roster?\n\n` +
+      tr("Remove {name} from your roster?\\n\\n", { name: name }) +
       `Their past attendance and payments are kept, but they will no longer ` +
       `appear here and you can't mark them present.`
     )) return;
@@ -366,45 +367,45 @@ function TabPlayers() {
     )
   );
 
-  if (loading) return <p className="cap-muted">Loading students…</p>;
+  if (loading) return <p className="cap-muted">{tr("Loading students…")}</p>;
 
   return (
     <div>
       <div style={{ marginBottom: 16, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-        <input className="cap-input" placeholder="Search students…" value={search}
+        <input className="cap-input" placeholder={tr("Search students…")} value={search}
           onChange={e => setSearch(e.target.value)} style={{ maxWidth: 260 }} />
         <span className="cap-muted" style={{ fontSize: 13 }}>
-          {players.filter(p => p.enrolled && !p.onBreak).length} active
-          {onBreakCount > 0 && `, ${onBreakCount} on break`}
+          {players.filter(p => p.enrolled && !p.onBreak).length} {tr("active")}
+          {onBreakCount > 0 && tr(", {onBreakCount} on break", { onBreakCount: onBreakCount })}
         </span>
-        <button className="cap-btn cap-btn-ghost" onClick={load} style={{ fontSize: 12 }}>↻ Refresh</button>
+        <button className="cap-btn cap-btn-ghost" onClick={load} style={{ fontSize: 12 }}>{tr("↻ Refresh")}</button>
       </div>
 
       {onBreakCount > 0 && (
         <p className="cap-muted" style={{ fontSize: 13, marginTop: -4, marginBottom: 16 }}>
-          ⏸ {onBreakCount} student{onBreakCount === 1 ? '' : 's'} on break — rejoin them from the <strong>Payments</strong> tab.
+          ⏸ {onBreakCount} {tr("student")}{onBreakCount === 1 ? '' : 's'} {tr("on break — rejoin them from the")} <strong>{tr("Payments")}</strong> {tr("tab.")}
         </p>
       )}
 
       {error && (
         <div style={{ marginBottom: 16, padding: '10px 14px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 'var(--radius-md)', color: '#fca5a5', fontSize: 13 }}>
-          ⚠ {error} — make sure the backend server is running with the latest code.
+          ⚠ {error} {tr("— make sure the backend server is running with the latest code.")}
         </div>
       )}
 
-      {!error && !filtered.length && <p className="cap-muted">No students found. Add students via the main Coach Dashboard first.</p>}
+      {!error && !filtered.length && <p className="cap-muted">{tr("No students found. Add students via the main Coach Dashboard first.")}</p>}
 
       {!!filtered.length && (
         <div className="cap-table-wrap">
           <table className="cap-table">
             <thead><tr>
-              <th>Student</th>
-              <th>Status</th>
-              <th>Classes/mo</th>
-              <th>Fee</th>
-              <th>Type</th>
-              <th>Since</th>
-              <th style={{ textAlign: 'right' }}>Actions</th>
+              <th>{tr("Student")}</th>
+              <th>{tr("Status")}</th>
+              <th>{tr("Classes/mo")}</th>
+              <th>{tr("Fee")}</th>
+              <th>{tr("Type")}</th>
+              <th>{tr("Since")}</th>
+              <th style={{ textAlign: 'right' }}>{tr("Actions")}</th>
             </tr></thead>
             <tbody>
               {filtered.map(p => (
@@ -416,12 +417,12 @@ function TabPlayers() {
                     </td>
                     <td>
                       {p.enrolled
-                        ? <span className="cap-fee-paid">Enrolled</span>
-                        : <span className="cap-muted">Not enrolled</span>}
+                        ? <span className="cap-fee-paid">{tr("Enrolled")}</span>
+                        : <span className="cap-muted">{tr("Not enrolled")}</span>}
                     </td>
                     <td>{p.enrolled ? p.classesPerMonth : <span className="cap-muted">—</span>}</td>
                     <td>{p.enrolled ? `${p.currency} ${(p.fees || 0).toLocaleString()}` : <span className="cap-muted">—</span>}</td>
-                    <td>{p.classType || 'Private'}</td>
+                    <td>{p.classType || tr('Private')}</td>
                     <td>{p.enrollmentDate ? fmtIST(p.enrollmentDate) : <span className="cap-muted">—</span>}</td>
                     <td>
                       <div className="cap-row-actions">
@@ -431,9 +432,9 @@ function TabPlayers() {
                         </button>
                         {/* Break moves the player to the Payments tab, where Rejoin lives. */}
                         {p.enrolled && (
-                          <button className="cap-btn cap-btn-warn" onClick={() => putOnBreak(p._id)}>Break</button>
+                          <button className="cap-btn cap-btn-warn" onClick={() => putOnBreak(p._id)}>{tr("Break")}</button>
                         )}
-                        <button className="cap-btn cap-btn-danger" onClick={() => removePlayer(p)}>Delete</button>
+                        <button className="cap-btn cap-btn-danger" onClick={() => removePlayer(p)}>{tr("Delete")}</button>
                       </div>
                     </td>
                   </tr>
@@ -444,38 +445,38 @@ function TabPlayers() {
                       <td colSpan={7}>
                         <div className="cap-enroll-form">
                           <div className="cap-form-row">
-                            <label>Classes / Month</label>
+                            <label>{tr("Classes / Month")}</label>
                             <input type="number" className="cap-input" min="0" value={form.classesPerMonth}
                               onChange={e => setForm(f => ({ ...f, classesPerMonth: e.target.value }))} />
                           </div>
                           <div className="cap-form-row">
-                            <label>Monthly Fee</label>
+                            <label>{tr("Monthly Fee")}</label>
                             <div style={{ display: 'flex', gap: 8 }}>
                               <select className="cap-input" style={{ width: 80 }} value={form.currency}
                                 onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}>
-                                <option>INR</option><option>USD</option><option>EUR</option><option>GBP</option>
+                                <option>{"INR"}</option><option>{"USD"}</option><option>{"EUR"}</option><option>{"GBP"}</option>
                               </select>
                               <input type="number" className="cap-input" min="0" value={form.fees}
                                 onChange={e => setForm(f => ({ ...f, fees: e.target.value }))} />
                             </div>
                           </div>
                           <div className="cap-form-row">
-                            <label>Class Type</label>
+                            <label>{tr("Class Type")}</label>
                             <select className="cap-input" value={form.classType}
                               onChange={e => setForm(f => ({ ...f, classType: e.target.value }))}>
-                              <option>Private</option><option>Group</option><option>Online</option>
+                              <option>{tr("Private")}</option><option>{tr("Group")}</option><option>{tr("Online")}</option>
                             </select>
                           </div>
                           <div className="cap-form-row">
-                            <label>Enrollment Date</label>
+                            <label>{tr("Enrollment Date")}</label>
                             <input type="date" className="cap-input" value={form.enrollmentDate}
                               onChange={e => setForm(f => ({ ...f, enrollmentDate: e.target.value }))} />
                           </div>
                           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
                             <button className="cap-btn cap-btn-cyan" disabled={saving} onClick={() => saveEnroll(p._id)}>
-                              {saving ? 'Saving…' : 'Save Enrollment'}
+                              {saving ? tr('Saving…') : tr('Save Enrollment')}
                             </button>
-                            {msg && <span style={{ color: msg === 'Saved!' ? '#10b981' : '#fca5a5', fontSize: 13 }}>{msg}</span>}
+                            {msg && <span style={{ color: msg === tr('Saved!') ? '#10b981' : '#fca5a5', fontSize: 13 }}>{msg}</span>}
                           </div>
                         </div>
                       </td>
@@ -497,14 +498,14 @@ function TabPlayers() {
 // applies it. Matching is exact (display name OR username); ambiguous / unknown
 // names are never marked. Only the chosen date is affected.
 const OUTCOME_META = {
-  will_mark: { label: 'Will mark', color: '#10b981', icon: '✓' },
-  marked:    { label: 'Marked',    color: '#10b981', icon: '✓' },
-  already:   { label: 'Already',   color: '#38bdf8', icon: '•' },
-  on_break:  { label: 'On break',  color: '#fbbf24', icon: '⏸' },
-  full:      { label: 'Both classes full', color: '#fbbf24', icon: '⚠' },
-  ambiguous: { label: 'Ambiguous', color: '#fca5a5', icon: '⚠' },
-  not_found: { label: 'Not found', color: '#fca5a5', icon: '✗' },
-  duplicate: { label: 'Duplicate', color: '#94a3b8', icon: '↺' },
+  will_mark: { label: tr('Will mark'), color: '#10b981', icon: '✓' },
+  marked:    { label: tr('Marked'),    color: '#10b981', icon: '✓' },
+  already:   { label: tr('Already'),   color: '#38bdf8', icon: '•' },
+  on_break:  { label: tr('On break'),  color: '#fbbf24', icon: '⏸' },
+  full:      { label: tr('Both classes full'), color: '#fbbf24', icon: '⚠' },
+  ambiguous: { label: tr('Ambiguous'), color: '#fca5a5', icon: '⚠' },
+  not_found: { label: tr('Not found'), color: '#fca5a5', icon: '✗' },
+  duplicate: { label: tr('Duplicate'), color: '#94a3b8', icon: '↺' },
 };
 
 function PasteMarker({ selDate, onApplied }) {
@@ -536,7 +537,7 @@ function PasteMarker({ selDate, onApplied }) {
 
   const doPreview = async () => {
     const names = parseNames(text);
-    if (!names.length) { setMsg('Paste at least one name.'); return; }
+    if (!names.length) { setMsg(tr('Paste at least one name.')); return; }
     setBusy(true); setMsg('');
     try {
       const r = await api.post('/api/coach-attendance/attendance/bulk-paste', {
@@ -561,7 +562,7 @@ function PasteMarker({ selDate, onApplied }) {
       // The server now returns the TRUE per-row result (marked vs skipped), so we
       // display it as-is rather than assuming the plan succeeded.
       setApplied(r.data);
-      setMsg(`✓ Marked ${r.data.created} student(s) as ${status} on ${selDate}.`);
+      setMsg(tr("✓ Marked {created} student(s) as {status} on {selDate}.", { created: r.data.created, status: status, selDate: selDate }));
       setPreview(null);
       setText('');
       onApplied && onApplied();   // refresh the live attendance rows + summary below
@@ -577,13 +578,13 @@ function PasteMarker({ selDate, onApplied }) {
   return (
     <div style={{ marginTop: 16, borderTop: '1px solid rgba(148,163,184,0.18)', paddingTop: 14 }}>
       <button className="cap-btn cap-btn-ghost" onClick={() => setOpen(o => !o)} style={{ fontSize: 13 }}>
-        {open ? '▾' : '▸'} 📋 Paste names to mark attendance
+        {open ? '▾' : '▸'} {tr("📋 Paste names to mark attendance")}
       </button>
 
       {open && (
         <div style={{ marginTop: 14 }}>
           <div style={{ fontSize: 12.5, color: '#94a3b8', marginBottom: 12 }}>
-            Paste student names (one per line). They’ll be marked <strong>only for {selDate}</strong>.
+            {tr("Paste student names (one per line). They’ll be marked")} <strong>{tr("only for")} {selDate}</strong>.
             Names are matched exactly to a student’s display name or username — anything that doesn’t
             match is shown but never marked. Review the preview before confirming.
           </div>
@@ -594,7 +595,7 @@ function PasteMarker({ selDate, onApplied }) {
               <button key={st}
                 className={`cap-att-btn${status === st ? ` cap-att-btn-${st.toLowerCase().replace('-up','up')}` : ''}`}
                 onClick={() => { setStatus(st); setPreview(null); setApplied(null); setMsg(''); }}>
-                Paste {st} here
+                {tr("Paste")} {st} {tr("here")}
               </button>
             ))}
           </div>
@@ -602,7 +603,7 @@ function PasteMarker({ selDate, onApplied }) {
           <textarea
             className="cap-input"
             style={{ width: '100%', minHeight: 110, resize: 'vertical', fontFamily: 'inherit' }}
-            placeholder={`Paste ${status} names here — one per line\nAarav Kumar\npriya_2015\n…`}
+            placeholder={tr("Paste {status} names here — one per line\\nAarav Kumar\\npriya_2015\\n…", { status: status })}
             value={text}
             onChange={e => { setText(e.target.value); invalidate(); }}
           />
@@ -611,22 +612,22 @@ function PasteMarker({ selDate, onApplied }) {
               thinking "Preview" did the marking (it doesn't — it only shows the plan). */}
           <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 10, marginBottom: 6 }}>
             {!preview
-              ? <>① <strong>Preview match</strong> to check the names → ② then a <strong>Confirm &amp; mark</strong> button appears to save.</>
-              : <>Review the plan below, then click <strong style={{ color: '#10b981' }}>Confirm &amp; mark</strong> to actually save it.</>}
+              ? <>① <strong>{tr("Preview match")}</strong> {tr("to check the names → ② then a")} <strong>Confirm &amp; mark</strong> {tr("button appears to save.")}</>
+              : <>{tr("Review the plan below, then click")} <strong style={{ color: '#10b981' }}>Confirm &amp; mark</strong> {tr("to actually save it.")}</>}
           </div>
 
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             {!preview ? (
               <button className="cap-btn cap-btn-cyan" disabled={busy} onClick={doPreview}>
-                {busy ? 'Checking…' : '🔍 Step 1 — Preview match'}
+                {busy ? tr('Checking…') : tr('🔍 Step 1 — Preview match')}
               </button>
             ) : (
               <>
                 <button className="cap-btn cap-btn-green" disabled={busy || (s?.willMark ?? 0) === 0} onClick={doApply}>
-                  {busy ? 'Marking…' : `✓ Step 2 — Confirm & mark ${s?.willMark ?? 0} as ${status}`}
+                  {busy ? tr('Marking…') : tr("✓ Step 2 — Confirm & mark {v0} as {status}", { v0: s?.willMark ?? 0, status: status })}
                 </button>
                 <button className="cap-btn cap-btn-ghost" disabled={busy} onClick={() => setPreview(null)}>
-                  Edit list
+                  {tr("Edit list")}
                 </button>
               </>
             )}
@@ -636,17 +637,17 @@ function PasteMarker({ selDate, onApplied }) {
           {preview && (
             <div style={{ marginTop: 16 }}>
               <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 12.5, marginBottom: 10 }}>
-                <span style={{ color: '#10b981' }}>Will mark: <strong>{s.willMark}</strong></span>
-                <span style={{ color: '#38bdf8' }}>Already: <strong>{s.already}</strong></span>
-                {s.notFound > 0 && <span style={{ color: '#fca5a5' }}>Not found: <strong>{s.notFound}</strong></span>}
-                {s.ambiguous > 0 && <span style={{ color: '#fca5a5' }}>Ambiguous: <strong>{s.ambiguous}</strong></span>}
-                {s.onBreak > 0 && <span style={{ color: '#fbbf24' }}>On break: <strong>{s.onBreak}</strong></span>}
-                {s.full > 0 && <span style={{ color: '#fbbf24' }}>Classes full: <strong>{s.full}</strong></span>}
-                {s.duplicate > 0 && <span style={{ color: '#94a3b8' }}>Duplicates: <strong>{s.duplicate}</strong></span>}
+                <span style={{ color: '#10b981' }}>{tr("Will mark:")} <strong>{s.willMark}</strong></span>
+                <span style={{ color: '#38bdf8' }}>{tr("Already:")} <strong>{s.already}</strong></span>
+                {s.notFound > 0 && <span style={{ color: '#fca5a5' }}>{tr("Not found:")} <strong>{s.notFound}</strong></span>}
+                {s.ambiguous > 0 && <span style={{ color: '#fca5a5' }}>{tr("Ambiguous:")} <strong>{s.ambiguous}</strong></span>}
+                {s.onBreak > 0 && <span style={{ color: '#fbbf24' }}>{tr("On break:")} <strong>{s.onBreak}</strong></span>}
+                {s.full > 0 && <span style={{ color: '#fbbf24' }}>{tr("Classes full:")} <strong>{s.full}</strong></span>}
+                {s.duplicate > 0 && <span style={{ color: '#94a3b8' }}>{tr("Duplicates:")} <strong>{s.duplicate}</strong></span>}
               </div>
               <div className="cap-table-wrap">
                 <table className="cap-table">
-                  <thead><tr><th>Pasted</th><th>Matched student</th><th>Result</th></tr></thead>
+                  <thead><tr><th>{tr("Pasted")}</th><th>{tr("Matched student")}</th><th>{tr("Result")}</th></tr></thead>
                   <tbody>
                     {preview.results.map((r, i) => {
                       const meta = OUTCOME_META[r.outcome] || { label: r.outcome, color: '#94a3b8', icon: '•' };
@@ -671,11 +672,11 @@ function PasteMarker({ selDate, onApplied }) {
           {applied && (
             <div style={{ marginTop: 16 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#10b981', marginBottom: 8 }}>
-                ✓ Done — {applied.created} marked as {applied.status} on {applied.date}
+                {tr("✓ Done —")} {applied.created} {tr("marked as")} {applied.status} {tr("on")} {applied.date}
               </div>
               <div className="cap-table-wrap">
                 <table className="cap-table">
-                  <thead><tr><th>Pasted</th><th>Matched student</th><th>Result</th></tr></thead>
+                  <thead><tr><th>{tr("Pasted")}</th><th>{tr("Matched student")}</th><th>{tr("Result")}</th></tr></thead>
                   <tbody>
                     {applied.results.map((r, i) => {
                       const meta = OUTCOME_META[r.outcome] || { label: r.outcome, color: '#94a3b8', icon: '•' };
@@ -693,7 +694,7 @@ function PasteMarker({ selDate, onApplied }) {
                 </table>
               </div>
               <div className="cap-muted" style={{ fontSize: 12, marginTop: 8 }}>
-                These marks are now saved and shown in the list below.
+                {tr("These marks are now saved and shown in the list below.")}
               </div>
             </div>
           )}
@@ -745,7 +746,7 @@ function TabAttendance() {
   // Map studentId → name for the confirmation log (records don't carry names).
   const nameFor = (studentId) => {
     const p = players.find(x => x.studentId?.toString() === studentId?.toString());
-    return p?.studentName || 'Student';
+    return p?.studentName || tr('Student');
   };
   // Entries the coach marked for this date, newest edit first (for the log).
   const markedLog = [...records]
@@ -792,7 +793,7 @@ function TabAttendance() {
       <div className="cap-card" style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
           <div>
-            <label className="cap-label">Date (IST)</label>
+            <label className="cap-label">{tr("Date (IST)")}</label>
             <input type="date" className="cap-input" value={selDate}
               onChange={e => setSelDate(e.target.value)} />
           </div>
@@ -808,10 +809,10 @@ function TabAttendance() {
       </div>
 
       {!players.length ? (
-        <p className="cap-muted">No students found. Add students in the main Coach Dashboard, then come back here.</p>
+        <p className="cap-muted">{tr("No students found. Add students in the main Coach Dashboard, then come back here.")}</p>
       ) : (
         <div className="cap-card">
-          <h3 className="cap-card-title">Mark Attendance — {new Date(selDate + 'T00:00:00').toLocaleDateString('en-IN', { dateStyle: 'full' })}</h3>
+          <h3 className="cap-card-title">{tr("Mark Attendance —")} {new Date(selDate + 'T00:00:00').toLocaleDateString('en-IN', { dateStyle: 'full' })}</h3>
           <div className="cap-att-list">
             {players.filter(p => !p.onBreak).map(p => {
               const entries = entriesFor(p.studentId);
@@ -845,7 +846,7 @@ function TabAttendance() {
                                 timeZone: IST, hour: '2-digit', minute: '2-digit',
                               })}
                             </span>
-                            <button className="cap-att-chip-x" title="Remove this entry"
+                            <button className="cap-att-chip-x" title={tr("Remove this entry")}
                               disabled={busy}
                               onClick={() => removeEntry(p.studentId, r._id)}>×</button>
                           </span>
@@ -858,30 +859,30 @@ function TabAttendance() {
             })}
           </div>
           <div className="cap-att-summary">
-            <span>Present: <strong className="cap-td-present">{records.filter(r => r.status === 'Present').length}</strong></span>
-            <span>Absent: <strong className="cap-td-absent">{records.filter(r => r.status === 'Absent').length}</strong></span>
-            <span>Catch-up: <strong className="cap-td-catchup">{records.filter(r => r.status === 'Catch-up').length}</strong></span>
+            <span>{tr("Present:")} <strong className="cap-td-present">{records.filter(r => r.status === 'Present').length}</strong></span>
+            <span>{tr("Absent:")} <strong className="cap-td-absent">{records.filter(r => r.status === 'Absent').length}</strong></span>
+            <span>{tr("Catch-up:")} <strong className="cap-td-catchup">{records.filter(r => r.status === 'Catch-up').length}</strong></span>
           </div>
 
           {/* Confirmation log — what you marked for this date + when you entered it,
               so you can double-check attendance was recorded correctly. */}
           {markedLog.length > 0 && (
             <div className="cap-att-log">
-              <h4 className="cap-att-log-title">✓ Marked entries for this date</h4>
+              <h4 className="cap-att-log-title">{tr("✓ Marked entries for this date")}</h4>
               <div className="cap-table-wrap">
                 <table className="cap-table">
                   <thead><tr>
-                    <th>Student</th>
-                    <th>Status</th>
-                    <th>Class</th>
-                    <th>Entered</th>
+                    <th>{tr("Student")}</th>
+                    <th>{tr("Status")}</th>
+                    <th>{"Class"}</th>
+                    <th>{tr("Entered")}</th>
                   </tr></thead>
                   <tbody>
                     {markedLog.map(r => (
                       <tr key={r._id}>
                         <td>{nameFor(r.studentId)}</td>
                         <td><StatusBadge s={r.status} /></td>
-                        <td>Class {r.slot || 1}</td>
+                        <td>{tr("Class")} {r.slot || 1}</td>
                         <td className="cap-muted">{fmtEntryTime(r)}</td>
                       </tr>
                     ))}
@@ -957,12 +958,12 @@ function TabPayments() {
 
   const handleAdd = async () => {
     if (!form.studentId || !form.amount || !form.datePaid || !form.fromDate || !form.untilDate) {
-      setMsg('All fields required.'); return;
+      setMsg(tr('All fields required.')); return;
     }
     setSaving(true); setMsg('');
     try {
       await api.post('/api/coach-attendance/payments', form);
-      setMsg('Payment saved!');
+      setMsg(tr('Payment saved!'));
       setShowForm(false);
       setForm({ studentId: '', amount: '', currency: 'INR', datePaid: todayIST(), fromDate: '', untilDate: '', notes: '' });
       await load();
@@ -974,7 +975,7 @@ function TabPayments() {
   };
 
   const del = async (id) => {
-    if (!window.confirm('Delete this payment record?')) return;
+    if (!window.confirm(tr('Delete this payment record?'))) return;
     try {
       await api.delete(`/api/coach-attendance/payments/${id}`);
       await load();
@@ -997,20 +998,20 @@ function TabPayments() {
         background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.3)',
         borderRadius: 'var(--radius-lg)', padding: '12px 16px', marginBottom: 18, fontSize: 13.5, lineHeight: 1.6, color: 'rgba(226,232,240,0.85)'
       }}>
-        💰 <strong>Parents pay you directly.</strong> In ChessNexus you simply track and verify these
+        💰 <strong>{tr("Parents pay you directly.")}</strong> {tr("In ChessNexus you simply track and verify these")}
         payments yourself — the payment stays entirely between you and the parent. It goes straight to
         your account: no middleman, no delays, no deductions.
       </div>
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
         <button className="cap-btn cap-btn-cyan" onClick={() => { setShowForm(s => !s); setMsg(''); }}>
-          {showForm ? '✕ Cancel' : '+ Add Payment'}
+          {showForm ? tr('✕ Cancel') : tr('+ Add Payment')}
         </button>
         <select className="cap-input" style={{ maxWidth: 220 }} value={filterP}
           onChange={e => setFilterP(e.target.value)}>
-          <option value="">All Students</option>
+          <option value="">{tr("All Students")}</option>
           {players.map(p => (
             <option key={p._id} value={p.studentId}>
-              {p.studentName}{p.onBreak ? ' (on break)' : ''}
+              {p.studentName}{p.onBreak ? tr(' (on break)') : ''}
             </option>
           ))}
         </select>
@@ -1018,54 +1019,54 @@ function TabPayments() {
 
       {showForm && (
         <div className="cap-card" style={{ marginBottom: 20 }}>
-          <h3 className="cap-card-title">Record Payment</h3>
+          <h3 className="cap-card-title">{tr("Record Payment")}</h3>
           <div className="cap-form-grid">
             <div className="cap-form-row">
-              <label>Student *</label>
+              <label>{tr("Student *")}</label>
               <select className="cap-input" value={form.studentId}
                 onChange={e => {
                   const p = players.find(x => x.studentId.toString() === e.target.value);
                   setForm(f => ({ ...f, studentId: e.target.value, currency: p?.currency || f.currency, amount: p?.fees || f.amount }));
                 }}>
-                <option value="">Select student…</option>
+                <option value="">{tr("Select student…")}</option>
                 {activePlayers.map(p => <option key={p._id} value={p.studentId}>{p.studentName}</option>)}
               </select>
             </div>
             <div className="cap-form-row">
-              <label>Amount *</label>
+              <label>{tr("Amount *")}</label>
               <div style={{ display: 'flex', gap: 8 }}>
                 <select className="cap-input" style={{ width: 80 }} value={form.currency}
                   onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}>
-                  <option>INR</option><option>USD</option><option>EUR</option><option>GBP</option>
+                  <option>{"INR"}</option><option>{"USD"}</option><option>{"EUR"}</option><option>{"GBP"}</option>
                 </select>
                 <input type="number" className="cap-input" min="0" placeholder="0" value={form.amount}
                   onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} />
               </div>
             </div>
             <div className="cap-form-row">
-              <label>Date Paid *</label>
+              <label>{tr("Date Paid *")}</label>
               <input type="date" className="cap-input" value={form.datePaid}
                 onChange={e => setForm(f => ({ ...f, datePaid: e.target.value }))} />
             </div>
             <div className="cap-form-row">
-              <label>Covers From *</label>
+              <label>{tr("Covers From *")}</label>
               <input type="date" className="cap-input" value={form.fromDate}
                 onChange={e => setForm(f => ({ ...f, fromDate: e.target.value }))} />
             </div>
             <div className="cap-form-row">
-              <label>Covers Until *</label>
+              <label>{tr("Covers Until *")}</label>
               <input type="date" className="cap-input" value={form.untilDate}
                 onChange={e => setForm(f => ({ ...f, untilDate: e.target.value }))} />
             </div>
             <div className="cap-form-row">
-              <label>Notes</label>
-              <input type="text" className="cap-input" placeholder="Optional note" value={form.notes}
+              <label>{tr("Notes")}</label>
+              <input type="text" className="cap-input" placeholder={tr("Optional note")} value={form.notes}
                 onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center' }}>
             <button className="cap-btn cap-btn-green" disabled={saving} onClick={handleAdd}>
-              {saving ? 'Saving…' : '✓ Save Payment'}
+              {saving ? tr('Saving…') : tr('✓ Save Payment')}
             </button>
             {msg && <span style={{ color: msg.includes('!') ? '#10b981' : '#fca5a5', fontSize: 13 }}>{msg}</span>}
           </div>
@@ -1074,9 +1075,9 @@ function TabPayments() {
 
       {/* All payments from the active roster. */}
       <div className="cap-card">
-        <h3 className="cap-card-title">Payment History</h3>
-        {loading ? <p className="cap-muted">Loading…</p> : !activePayments.length ? (
-          <p className="cap-muted">No payment records found.</p>
+        <h3 className="cap-card-title">{tr("Payment History")}</h3>
+        {loading ? <p className="cap-muted">{tr("Loading…")}</p> : !activePayments.length ? (
+          <p className="cap-muted">{tr("No payment records found.")}</p>
         ) : (
           <PaymentTable rows={activePayments} playerName={playerName} onDelete={del} />
         )}
@@ -1086,13 +1087,13 @@ function TabPayments() {
           active roster's history stays clean. */}
       {!loading && breakPlayers.length > 0 && (
         <div className="cap-card" style={{ marginTop: 20 }}>
-          <h3 className="cap-card-title">⏸ Students on break</h3>
+          <h3 className="cap-card-title">{tr("⏸ Students on break")}</h3>
 
           <div className="cap-table-wrap" style={{ marginBottom: 18 }}>
             <table className="cap-table">
               <thead><tr>
-                <th>Student</th><th>Classes/mo</th><th>Fee</th><th>Type</th><th>Since</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th>{tr("Student")}</th><th>{tr("Classes/mo")}</th><th>{tr("Fee")}</th><th>{tr("Type")}</th><th>{tr("Since")}</th>
+                <th style={{ textAlign: 'right' }}>{tr("Actions")}</th>
               </tr></thead>
               <tbody>
                 {breakPlayers.map(p => (
@@ -1100,11 +1101,11 @@ function TabPayments() {
                     <td><span className="cap-td-player">{p.studentName}</span></td>
                     <td>{p.classesPerMonth}</td>
                     <td>{p.currency} {(p.fees || 0).toLocaleString()}</td>
-                    <td>{p.classType || 'Private'}</td>
+                    <td>{p.classType || tr('Private')}</td>
                     <td>{p.enrollmentDate ? fmtIST(p.enrollmentDate) : <span className="cap-muted">—</span>}</td>
                     <td>
                       <div className="cap-row-actions">
-                        <button className="cap-btn cap-btn-green" onClick={() => rejoin(p._id)}>Rejoin</button>
+                        <button className="cap-btn cap-btn-green" onClick={() => rejoin(p._id)}>{tr("Rejoin")}</button>
                       </div>
                     </td>
                   </tr>
@@ -1114,10 +1115,10 @@ function TabPayments() {
           </div>
 
           <h4 style={{ color: '#94a3b8', fontSize: 13, margin: '0 0 10px' }}>
-            Payments from students on break
+            {tr("Payments from students on break")}
           </h4>
           {!breakPayments.length ? (
-            <p className="cap-muted">No payments recorded for students on break.</p>
+            <p className="cap-muted">{tr("No payments recorded for students on break.")}</p>
           ) : (
             <PaymentTable rows={breakPayments} playerName={playerName} onDelete={del} />
           )}
@@ -1133,8 +1134,8 @@ function PaymentTable({ rows, playerName, onDelete }) {
     <div className="cap-table-wrap">
       <table className="cap-table">
         <thead><tr>
-          <th>Student</th><th>Amount</th><th>Date Paid</th>
-          <th>Covers From</th><th>Covers Until</th><th>Notes</th><th></th>
+          <th>{tr("Student")}</th><th>{tr("Amount")}</th><th>{tr("Date Paid")}</th>
+          <th>{tr("Covers From")}</th><th>{tr("Covers Until")}</th><th>{tr("Notes")}</th><th></th>
         </tr></thead>
         <tbody>
           {rows.map(p => (
@@ -1146,7 +1147,7 @@ function PaymentTable({ rows, playerName, onDelete }) {
               <td>{fmtIST(p.untilDate)}</td>
               <td>{p.notes || '—'}</td>
               <td>
-                <button className="cap-btn cap-btn-danger" onClick={() => onDelete(p._id)}>Del</button>
+                <button className="cap-btn cap-btn-danger" onClick={() => onDelete(p._id)}>{tr("Del")}</button>
               </td>
             </tr>
           ))}
@@ -1203,8 +1204,8 @@ function TabRequests() {
       </div>
 
       <div className="cap-card">
-        {loading ? <p className="cap-muted">Loading…</p> : !requests.length ? (
-          <p className="cap-muted">No {filter !== 'all' ? filter : ''} payment requests.</p>
+        {loading ? <p className="cap-muted">{tr("Loading…")}</p> : !requests.length ? (
+          <p className="cap-muted">{tr("No")} {filter !== 'all' ? filter : ''} {tr("payment requests.")}</p>
         ) : (
           <div className="cap-req-list">
             {requests.map(r => (
@@ -1219,12 +1220,12 @@ function TabRequests() {
                   {(r.fromDate || r.untilDate || r.paidDate) && (
                     <div className="cap-muted" style={{ fontSize: 12 }}>
                       {(r.fromDate || r.untilDate) && (
-                        <>Period: {r.fromDate ? fmtIST(r.fromDate) : '—'} – {r.untilDate ? fmtIST(r.untilDate) : '—'}</>
+                        <>{tr("Period:")} {r.fromDate ? fmtIST(r.fromDate) : '—'} – {r.untilDate ? fmtIST(r.untilDate) : '—'}</>
                       )}
                       {r.paidDate && <> · Paid {fmtIST(r.paidDate)}</>}
                     </div>
                   )}
-                  <div className="cap-muted" style={{ fontSize: 12 }}>Submitted {fmtIST(r.createdAt)}</div>
+                  <div className="cap-muted" style={{ fontSize: 12 }}>{tr("Submitted")} {fmtIST(r.createdAt)}</div>
                 </div>
                 <div className="cap-req-actions">
                   <span className={`cap-badge ${r.status === 'pending' ? 'badge-catchup' : r.status === 'approved' ? 'badge-present' : 'badge-absent'}`}>
@@ -1233,9 +1234,9 @@ function TabRequests() {
                   {r.status === 'pending' && (
                     <>
                       <button className="cap-btn cap-btn-green" disabled={acting === r._id}
-                        onClick={() => resolve(r._id, 'approved')}>Approve</button>
+                        onClick={() => resolve(r._id, 'approved')}>{tr("Approve")}</button>
                       <button className="cap-btn cap-btn-danger" disabled={acting === r._id}
-                        onClick={() => resolve(r._id, 'rejected')}>Reject</button>
+                        onClick={() => resolve(r._id, 'rejected')}>{tr("Reject")}</button>
                     </>
                   )}
                 </div>
@@ -1296,9 +1297,9 @@ function TabHistory() {
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
-        <label className="cap-label">Select Student</label>
+        <label className="cap-label">{tr("Select Student")}</label>
         <select className="cap-input" style={{ maxWidth: 280 }} value={selId} onChange={onSelect}>
-          <option value="">Choose a student…</option>
+          <option value="">{tr("Choose a student…")}</option>
           {players.map(p => <option key={p._id} value={p.studentId}>{p.studentName}</option>)}
         </select>
       </div>
@@ -1306,18 +1307,18 @@ function TabHistory() {
       {selPlayer && (
         <div className="cap-card" style={{ marginBottom: 16 }}>
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-            <div><span className="cap-muted">Student:</span> <strong>{selPlayer.studentName}</strong></div>
-            <div><span className="cap-muted">Classes/mo:</span> <strong>{selPlayer.classesPerMonth}</strong></div>
-            <div><span className="cap-muted">Type:</span> <strong>{selPlayer.classType}</strong></div>
-            {selPlayer.enrollmentDate && <div><span className="cap-muted">Since:</span> <strong>{fmtIST(selPlayer.enrollmentDate)}</strong></div>}
+            <div><span className="cap-muted">{tr("Student:")}</span> <strong>{selPlayer.studentName}</strong></div>
+            <div><span className="cap-muted">{tr("Classes/mo:")}</span> <strong>{selPlayer.classesPerMonth}</strong></div>
+            <div><span className="cap-muted">{tr("Type:")}</span> <strong>{selPlayer.classType}</strong></div>
+            {selPlayer.enrollmentDate && <div><span className="cap-muted">{tr("Since:")}</span> <strong>{fmtIST(selPlayer.enrollmentDate)}</strong></div>}
           </div>
         </div>
       )}
 
-      {loading && <p className="cap-muted">Loading…</p>}
+      {loading && <p className="cap-muted">{tr("Loading…")}</p>}
 
       {!loading && selId && !history.length && (
-        <p className="cap-muted">No attendance records found for this student.</p>
+        <p className="cap-muted">{tr("No attendance records found for this student.")}</p>
       )}
 
       {Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0])).map(([key, recs]) => {

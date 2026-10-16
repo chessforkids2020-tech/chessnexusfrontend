@@ -1,0 +1,90 @@
+/* components/ui/Tabs.css — the app's standard top-level tab strip.
+   Look taken from Social Hub (glass strip, gradient active pill). Sizes come
+   from styles/tokens/typography.css; never hard-code px font sizes here. */
+
+.ui-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 28px;
+  padding: 5px;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px var(--color-black-a35);
+}
+.ui-tabs::-webkit-scrollbar { display: none; }
+
+.ui-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 8px 22px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-faint);
+  font-family: inherit;
+  font-size: var(--fs-tab);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--dur-med), background var(--dur-med);
+}
+
+.ui-tab:hover {
+  color: var(--color-accent);
+  background: var(--color-accent-a08);
+}
+
+.ui-tab--active,
+.ui-tab--active:hover {
+  color: var(--color-accent);
+  background: linear-gradient(135deg, var(--color-accent-a20), var(--color-accent-2-a12));
+  border-color: var(--color-accent-a30);
+  box-shadow: 0 4px 18px var(--color-accent-a12);
+}
+
+.ui-tab__badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--color-danger);
+  color: var(--color-text);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-heavy);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .ui-tab { padding: 8px 14px; }
+}
+
+@media (max-width: 768px) {
+  .ui-tabs { width: 100%; margin-bottom: 20px; }
+}
+
+/* fit: share the width equally on phones; long labels wrap instead of
+   pushing the last tab off-screen. */
+@media (max-width: 480px) {
+  .ui-tabs--fit { overflow-x: visible; padding: 4px; }
+  .ui-tabs--fit .ui-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 6px 4px;
+    white-space: normal;
+    text-align: center;
+  }
+}

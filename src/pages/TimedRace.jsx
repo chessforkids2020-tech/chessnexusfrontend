@@ -5,6 +5,7 @@ import api from '../api';
 import Chessboard from '../components/Chessboard';
 import { RACE_MOVE_MS } from '../contexts/GamePrefsContext';
 import useResponsiveBoardSize from '../hooks/useResponsiveBoardSize';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function TimedRace() {
   const [searchParams] = useSearchParams();
@@ -696,7 +697,7 @@ export default function TimedRace() {
                 <div style={styles.statValueScore}>
                   {score}
                 </div>
-                <div style={styles.statLabel}>Score</div>
+                <div style={styles.statLabel}>{tr("Score")}</div>
               </div>
             </div>
 
@@ -706,17 +707,17 @@ export default function TimedRace() {
                   <div style={{ textAlign: 'center' }}>
                     <div style={styles.placeholderIcon}>⏳</div>
                     <div style={styles.placeholderText}>
-                      <strong>Loading puzzles...</strong><br/>
-                      <small style={{ color: 'var(--color-text-muted)' }}>Please wait while we prepare your race.</small>
+                      <strong>{tr("Loading puzzles...")}</strong><br/>
+                      <small style={{ color: 'var(--color-text-muted)' }}>{tr("Please wait while we prepare your race.")}</small>
                     </div>
                   </div>
                 ) : noPuzzlesAvailable ? (
                   <div style={{ textAlign: 'center' }}>
                     <div style={styles.placeholderIcon}>🔍</div>
                     <div style={styles.placeholderText}>
-                      <strong>No puzzles available</strong><br/>
-                      This topic doesn't have any puzzles yet.<br/>
-                      <small style={{ color: 'var(--color-text-muted)' }}>Please choose a different topic.</small>
+                      <strong>{tr("No puzzles available")}</strong><br/>
+                      {tr("This topic doesn't have any puzzles yet.")}<br/>
+                      <small style={{ color: 'var(--color-text-muted)' }}>{tr("Please choose a different topic.")}</small>
                     </div>
                   </div>
                 ) : raceCompleted ? (
@@ -730,10 +731,10 @@ export default function TimedRace() {
                         backgroundClip: 'text',
                         fontSize: isMobile ? '20px' : '24px'
                       }}>
-                        Congratulations!
+                        {tr("Congratulations!")}
                       </strong><br/>
-                      You've completed all {availablePuzzles.length} puzzles!<br/>
-                      <small style={{ color: 'var(--color-text-muted)' }}>Final Score: {score} points</small>
+                      {tr("You've completed all")} {availablePuzzles.length} {tr("puzzles!")}<br/>
+                      <small style={{ color: 'var(--color-text-muted)' }}>{tr("Final Score:")} {score} {tr("points")}</small>
                     </div>
                   </div>
                 ) : currentPuzzleData ? (
@@ -750,8 +751,8 @@ export default function TimedRace() {
                   <div style={{ textAlign: 'center' }}>
                     <div style={styles.placeholderIcon}>🏆</div>
                     <div style={styles.placeholderText}>
-                      Chess Puzzle Area<br/>
-                      <small style={{ color: 'var(--color-text-muted)' }}>Loading puzzle...</small>
+                      {tr("Chess Puzzle Area")}<br/>
+                      <small style={{ color: 'var(--color-text-muted)' }}>{tr("Loading puzzle...")}</small>
                     </div>
                   </div>
                 )}
@@ -761,7 +762,7 @@ export default function TimedRace() {
             {leaderboard.length > 0 && (
               <div style={styles.glassCard}>
                 <div style={styles.leaderboardTitle}>
-                  🏆 Top Racers
+                  {tr("🏆 Top Racers")}
                 </div>
                 {leaderboard.slice(0, 5).map((player, index) => (
                   <div key={index} style={styles.leaderboardItem}>
@@ -791,16 +792,16 @@ export default function TimedRace() {
             <div style={styles.glassCard}>
               {!isActive && timeLeft === initialTime && !loading && !noPuzzlesAvailable && (
                 <button style={styles.button} onClick={startRace}>
-                  🚀 Start Race
+                  {tr("🚀 Start Race")}
                 </button>
               )}
               {!isActive && timeLeft < initialTime && !loading && !noPuzzlesAvailable && (
                 <button style={styles.button} onClick={startRace}>
-                  ▶️ Resume Race
+                  {tr("▶️ Resume Race")}
                 </button>
               )}
               <button style={styles.buttonSecondary} onClick={resetRace}>
-                🔄 Reset Race
+                {tr("🔄 Reset Race")}
               </button>
             </div>
           </div>
@@ -828,13 +829,13 @@ export default function TimedRace() {
                 <div style={styles.statValueScore}>
                   {score}
                 </div>
-                <div style={styles.statLabel}>Current Score</div>
+                <div style={styles.statLabel}>{tr("Current Score")}</div>
               </div>
 
               {leaderboard.length > 0 && (
                 <div style={styles.compactCard}>
                   <div style={styles.leaderboardTitle}>
-                    🏆 Top Racers
+                    {tr("🏆 Top Racers")}
                   </div>
                   {leaderboard.slice(0, 5).map((player, index) => (
                     <div key={index} style={styles.leaderboardItem}>
@@ -863,16 +864,16 @@ export default function TimedRace() {
               <div>
                 {!isActive && timeLeft === initialTime && !loading && !noPuzzlesAvailable && (
                   <button style={styles.button} onClick={startRace}>
-                    🚀 Start Race
+                    {tr("🚀 Start Race")}
                   </button>
                 )}
                 {!isActive && timeLeft < initialTime && !loading && !noPuzzlesAvailable && (
                   <button style={styles.button} onClick={startRace}>
-                    ▶️ Resume Race
+                    {tr("▶️ Resume Race")}
                   </button>
                 )}
                 <button style={styles.buttonSecondary} onClick={resetRace}>
-                  🔄 Reset Race
+                  {tr("🔄 Reset Race")}
                 </button>
               </div>
             </div>
@@ -884,9 +885,9 @@ export default function TimedRace() {
                   <div style={{ textAlign: 'center' }}>
                     <div style={styles.placeholderIcon}>🔍</div>
                     <div style={styles.placeholderText}>
-                      <strong>No puzzles available</strong><br/>
-                      This topic doesn't have any puzzles yet.<br/>
-                      <small style={{ color: 'var(--color-text-muted)' }}>Please choose a different topic.</small>
+                      <strong>{tr("No puzzles available")}</strong><br/>
+                      {tr("This topic doesn't have any puzzles yet.")}<br/>
+                      <small style={{ color: 'var(--color-text-muted)' }}>{tr("Please choose a different topic.")}</small>
                     </div>
                   </div>
                 ) : raceCompleted ? (
@@ -900,10 +901,10 @@ export default function TimedRace() {
                         backgroundClip: 'text',
                         fontSize: isMobile ? '20px' : '24px'
                       }}>
-                        Congratulations!
+                        {tr("Congratulations!")}
                       </strong><br/>
-                      You've completed all {availablePuzzles.length} puzzles!<br/>
-                      <small style={{ color: 'var(--color-text-muted)' }}>Final Score: {score} points</small>
+                      {tr("You've completed all")} {availablePuzzles.length} {tr("puzzles!")}<br/>
+                      <small style={{ color: 'var(--color-text-muted)' }}>{tr("Final Score:")} {score} {tr("points")}</small>
                     </div>
                   </div>
                 ) : currentPuzzleData ? (
@@ -920,8 +921,8 @@ export default function TimedRace() {
                   <div style={{ textAlign: 'center' }}>
                     <div style={styles.placeholderIcon}>🏆</div>
                     <div style={styles.placeholderText}>
-                      Chess Puzzle Area<br/>
-                      <small style={{ color: 'var(--color-text-muted)' }}>Loading puzzle...</small>
+                      {tr("Chess Puzzle Area")}<br/>
+                      <small style={{ color: 'var(--color-text-muted)' }}>{tr("Loading puzzle...")}</small>
                     </div>
                   </div>
                 )}

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api';
 import Chessboard from '../components/Chessboard';
 import './PuzzleDashboard.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // ── Small SVG donut (solved vs failed) ───────────────────────────────────────
 function Donut({ solved, failed, size = 64 }) {
@@ -33,11 +34,11 @@ function timeAgo(iso) {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
   if (m < 1) return 'just now';
-  if (m < 60) return `${m} min ago`;
+  if (m < 60) return tr("{m} min ago", { m: m });
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h} hr${h !== 1 ? 's' : ''} ago`;
+  if (h < 24) return tr("{h} hr{v1} ago", { h: h, v1: h !== 1 ? 's' : '' });
   const d = Math.floor(h / 24);
-  return `${d} day${d !== 1 ? 's' : ''} ago`;
+  return tr("{d} day{v1} ago", { d: d, v1: d !== 1 ? 's' : '' });
 }
 
 // ── Mini chessboard — uses the app's real board (themed, piece graphics).
@@ -77,10 +78,10 @@ function MiniBoard({ fen }) {
 // which made the row twice as tall as it needed to be. The long form stays on
 // desktop, where there is room for it.
 const RANGES = [
-  { key: '24h', label: '24 hrs',       short: '24h' },
-  { key: '7d',  label: 'Last 7 days',  short: '7d'  },
-  { key: '30d', label: 'Last 30 days', short: '30d' },
-  { key: '90d', label: 'Last 90 days', short: '90d' },
+  { key: '24h', label: tr('24 hrs'),       short: '24h' },
+  { key: '7d',  label: tr('Last 7 days'),  short: '7d'  },
+  { key: '30d', label: tr('Last 30 days'), short: '30d' },
+  { key: '90d', label: tr('Last 90 days'), short: '90d' },
 ];
 
 export default function PuzzleDashboard() {
@@ -113,11 +114,11 @@ export default function PuzzleDashboard() {
 
   const s = data?.summary || {};
   const SUMMARY = [
-    { icon: '🏆', label: 'Puzzle Rating',  value: s.rating ?? '—',                 color: 'var(--color-warning)' },
-    { icon: '🧩', label: 'Solved',         value: s.solved ?? 0,                    color: 'var(--color-success)' },
-    { icon: '❌', label: 'Failed',         value: s.failed ?? 0,                    color: 'var(--color-danger)' },
-    { icon: '🎯', label: 'Accuracy',       value: `${s.accuracy ?? 0}%`,            color: 'var(--color-accent)' },
-    { icon: '🔥', label: 'Current Streak', value: s.streak ?? 0,                    color: 'var(--color-accent-2)' },
+    { icon: '🏆', label: tr('Puzzle Rating'),  value: s.rating ?? '—',                 color: 'var(--color-warning)' },
+    { icon: '🧩', label: tr('Solved'),         value: s.solved ?? 0,                    color: 'var(--color-success)' },
+    { icon: '❌', label: tr('Failed'),         value: s.failed ?? 0,                    color: 'var(--color-danger)' },
+    { icon: '🎯', label: tr('Accuracy'),       value: `${s.accuracy ?? 0}%`,            color: 'var(--color-accent)' },
+    { icon: '🔥', label: tr('Current Streak'), value: s.streak ?? 0,                    color: 'var(--color-accent-2)' },
   ];
 
   const redoAll = () => {
@@ -140,7 +141,7 @@ export default function PuzzleDashboard() {
       {/* ── Top summary ── */}
       <div className="pd-card">
         <div className="pd-head-row">
-          <h2 className="pd-h2">📊 {isSpectator ? `${displayName}'s Puzzle Stats` : 'Your Puzzle Stats'}</h2>
+          <h2 className="pd-h2">📊 {isSpectator ? tr("{displayName}'s Puzzle Stats", { displayName: displayName }) : 'Your Puzzle Stats'}</h2>
           <div className="pd-toggle">
             {RANGES.map(({ key, label, short }) => (
               <button key={key} onClick={() => setRange(key)}
@@ -168,34 +169,34 @@ export default function PuzzleDashboard() {
       {/* ── Needs improvement (weak topics) ── */}
       <div className="pd-card">
         <div className="pd-head-row">
-          <h3 className="pd-h3">⚠️ Topics that need improvement</h3>
+          <h3 className="pd-h3">{tr("⚠️ Topics that need improvement")}</h3>
           {!isSpectator && (data?.failedPuzzleIds?.length > 0) && (
             <button onClick={redoAll} className="pd-redo-all-btn">
-              🔁 Redo all mistakes ({data.failedPuzzleIds.length})
+              {tr("🔁 Redo all mistakes (")}{data.failedPuzzleIds.length})
             </button>
           )}
         </div>
         {loading ? (
-          <p className="pd-muted">Loading…</p>
+          <p className="pd-muted">{tr("Loading…")}</p>
         ) : data?.weakTopics?.length ? (
           <div className="pd-weak-grid">
             {data.weakTopics.map(t => (
               <div key={t.theme} className="pd-weak-item">
                 <Donut solved={t.solved} failed={t.failed} />
                 <div>
-                  <div className="pd-weak-title">{isSpectator ? <><b>{t.label}</b> needs improvement</> : <>Your <b>{t.label}</b> needs improvement</>}</div>
+                  <div className="pd-weak-title">{isSpectator ? <><b>{t.label}</b> {tr("needs improvement")}</> : <>{tr("Your")} <b>{t.label}</b> {tr("needs improvement")}</>}</div>
                   <div className="pd-weak-sub">
-                    <span style={{ color: 'var(--color-success)' }}>✓ {t.solved} solved</span>
+                    <span style={{ color: 'var(--color-success)' }}>✓ {t.solved} {tr("solved")}</span>
                     {'  ·  '}
-                    <span style={{ color: 'var(--color-danger)' }}>✗ {t.failed} failed</span>
-                    {'  ·  '}{t.attempts} total
+                    <span style={{ color: 'var(--color-danger)' }}>✗ {t.failed} {tr("failed")}</span>
+                    {'  ·  '}{t.attempts} {tr("total")}
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="pd-muted">No weak topics yet — keep solving to surface patterns.</p>
+          <p className="pd-muted">{tr("No weak topics yet — keep solving to surface patterns.")}</p>
         )}
       </div>
 
@@ -203,7 +204,7 @@ export default function PuzzleDashboard() {
       <div className="pd-card">
         <h3 className="pd-h3">💪 {isSpectator ? 'Good at these topics' : 'You are good at these topics'}</h3>
         {loading ? (
-          <p className="pd-muted">Loading…</p>
+          <p className="pd-muted">{tr("Loading…")}</p>
         ) : data?.strongTopics?.length ? (
           <div className="pd-strong-grid">
             {data.strongTopics.map(t => (
@@ -217,15 +218,15 @@ export default function PuzzleDashboard() {
             ))}
           </div>
         ) : (
-          <p className="pd-muted">No topics above 80% yet — your strengths will show here.</p>
+          <p className="pd-muted">{tr("No topics above 80% yet — your strengths will show here.")}</p>
         )}
       </div>
 
       {/* ── History ── */}
       <div className="pd-card">
-        <h3 className="pd-h3">🕑 Recent puzzles</h3>
+        <h3 className="pd-h3">{tr("🕑 Recent puzzles")}</h3>
         {loading ? (
-          <p className="pd-muted">Loading…</p>
+          <p className="pd-muted">{tr("Loading…")}</p>
         ) : data?.history?.length ? (
           <div className="pd-hist-grid">
             {data.history.map((h, i) => (
@@ -236,18 +237,18 @@ export default function PuzzleDashboard() {
                 </div>
                 <div className="pd-hist-meta">{timeAgo(h.when)} · {h.rating}</div>
                 <div className="pd-hist-actions">
-                  {!isSpectator && <button onClick={() => redoOne(h.puzzleId)} className="pd-redo-btn">Redo</button>}
+                  {!isSpectator && <button onClick={() => redoOne(h.puzzleId)} className="pd-redo-btn">{tr("Redo")}</button>}
                   {/* Hidden when the puzzle predates attempt recording — a button
                       that opens an empty modal is worse than no button. */}
                   {h.attempts?.length > 0 && (
-                    <button onClick={() => setShowAttempt(h)} className="pd-attempt-btn">Show attempt</button>
+                    <button onClick={() => setShowAttempt(h)} className="pd-attempt-btn">{tr("Show attempt")}</button>
                   )}
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="pd-muted">No puzzle history in this window.</p>
+          <p className="pd-muted">{tr("No puzzle history in this window.")}</p>
         )}
       </div>
       {/* ── Attempt modal ──
@@ -265,7 +266,7 @@ export default function PuzzleDashboard() {
             <MiniBoard fen={showAttempt.fen} />
 
             <div className="pd-modal-sect">
-              <div className="pd-modal-label">You played</div>
+              <div className="pd-modal-label">{tr("You played")}</div>
               <div className="pd-modal-moves">
                 {showAttempt.attempts.map((a, i) => (
                   <span key={i} className={a.correct ? 'pd-mv-ok' : 'pd-mv-bad'}>{a.move}</span>
@@ -274,7 +275,7 @@ export default function PuzzleDashboard() {
             </div>
 
             <div className="pd-modal-sect">
-              <div className="pd-modal-label">Engine line</div>
+              <div className="pd-modal-label">{tr("Engine line")}</div>
               <div className="pd-modal-moves">
                 {(Array.isArray(showAttempt.solution) ? showAttempt.solution : [])
                   .map((m, i) => <span key={i} className="pd-mv-eng">{m}</span>)}
@@ -283,7 +284,7 @@ export default function PuzzleDashboard() {
 
             {!isSpectator && (
               <button className="pd-redo-btn" onClick={() => redoOne(showAttempt.puzzleId)}>
-                Try it again
+                {tr("Try it again")}
               </button>
             )}
           </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const EP_SQUARES_WHITE = ['a6','b6','c6','d6','e6','f6','g6','h6'];
 const EP_SQUARES_BLACK = ['a3','b3','c3','d3','e3','f3','g3','h3'];
@@ -19,7 +20,7 @@ export function SideToMoveControl({ chess, onFenChange }) {
   const turn = chess.fen().split(' ')[1] || 'w';
   return (
     <div>
-      <div style={sectionLabel}>Side to Move</div>
+      <div style={sectionLabel}>{tr("Side to Move")}</div>
       <div style={{ display: 'flex', gap: 8 }}>
         {['w', 'b'].map(c => (
           <button
@@ -57,7 +58,7 @@ export function CastlingControl({ chess, onFenChange }) {
   );
   return (
     <div>
-      <div style={sectionLabel}>Castling Rights</div>
+      <div style={sectionLabel}>{tr("Castling Rights")}</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         {castleBtn('K', 'White O-O')}
         {castleBtn('Q', 'White O-O-O')}
@@ -76,13 +77,13 @@ export function EnPassantControl({ chess, onFenChange }) {
   const epSquares = turn === 'w' ? EP_SQUARES_BLACK : EP_SQUARES_WHITE;
   return (
     <div>
-      <div style={sectionLabel}>En Passant</div>
+      <div style={sectionLabel}>{tr("En Passant")}</div>
       <select
         value={ep}
         onChange={e => setFenPart(chess, onFenChange, 3, e.target.value)}
         style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, color: '#fff', padding: '8px 12px', fontSize: 13, cursor: 'pointer' }}
       >
-        <option value="-">None</option>
+        <option value="-">{tr("None")}</option>
         {epSquares.map(sq => <option key={sq} value={sq}>{sq}</option>)}
       </select>
     </div>
@@ -134,7 +135,7 @@ export default function SetupControls({ chess, onFenChange }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Side to move */}
       <div>
-        <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Side to Move</div>
+        <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>{tr("Side to Move")}</div>
         <div style={{ display: 'flex', gap: 8 }}>
           {['w', 'b'].map(c => (
             <button
@@ -161,7 +162,7 @@ export default function SetupControls({ chess, onFenChange }) {
 
       {/* Castling rights */}
       <div>
-        <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Castling Rights</div>
+        <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>{tr("Castling Rights")}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {castleBtn('K', 'White O-O')}
           {castleBtn('Q', 'White O-O-O')}
@@ -172,7 +173,7 @@ export default function SetupControls({ chess, onFenChange }) {
 
       {/* En passant */}
       <div>
-        <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>En Passant</div>
+        <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>{tr("En Passant")}</div>
         <select
           value={ep}
           onChange={e => updateFenPart(3, e.target.value)}
@@ -187,7 +188,7 @@ export default function SetupControls({ chess, onFenChange }) {
             cursor: 'pointer',
           }}
         >
-          <option value="-">None</option>
+          <option value="-">{tr("None")}</option>
           {epSquares.map(sq => <option key={sq} value={sq}>{sq}</option>)}
         </select>
       </div>

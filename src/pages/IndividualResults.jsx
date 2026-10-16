@@ -5,6 +5,7 @@ import { io } from 'socket.io-client';
 import StudyMode from '../components/StudyMode';
 import StudyPuzzleSidebar from '../components/StudyPuzzleSidebar';
 import { motion } from 'framer-motion';
+import { t as tr } from '../i18n/LanguageContext';
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -28,7 +29,7 @@ const IndividualResults = () => {
   useEffect(() => {
     if (typeof timeRemaining === 'number') {
       if (timeRemaining <= 0) {
-        setStatusMessage('⏰ Batch time has expired! Redirecting to leaderboard...');
+        setStatusMessage(tr('⏰ Batch time has expired! Redirecting to leaderboard...'));
         const timeout = setTimeout(() => {
           navigate(`/leaderboard/${batchId}`);
         }, 2000);
@@ -37,7 +38,7 @@ const IndividualResults = () => {
       const timer = setInterval(() => {
         setTimeRemaining(prev => {
           if (prev <= 1) {
-            setStatusMessage('⏰ Batch time has expired! Redirecting to leaderboard...');
+            setStatusMessage(tr('⏰ Batch time has expired! Redirecting to leaderboard...'));
             setTimeout(() => {
               navigate(`/leaderboard/${batchId}`);
             }, 2000);
@@ -61,7 +62,7 @@ const IndividualResults = () => {
     // Listen for batch completion
     newSocket.on('batchCompleted', (data) => {
       if (data.batchId === batchId || data.roundId === roundId) {
-        setStatusMessage('⏰ Batch time has expired! Redirecting to leaderboard...');
+        setStatusMessage(tr('⏰ Batch time has expired! Redirecting to leaderboard...'));
         setTimeout(() => {
           navigate(`/leaderboard/${batchId}`);
         }, 3000);
@@ -75,14 +76,14 @@ const IndividualResults = () => {
         
         // Update status message based on time remaining
         if (data.timeRemaining <= 30) {
-          setStatusMessage(`⚠️ Batch ending soon: ${formatTimeRemaining(data.timeRemaining)} remaining`);
+          setStatusMessage(tr("⚠️ Batch ending soon: {v0} remaining", { v0: formatTimeRemaining(data.timeRemaining) }));
         } else if (data.timeRemaining <= 0) {
-          setStatusMessage('⏰ Batch time has expired! Redirecting to leaderboard...');
+          setStatusMessage(tr('⏰ Batch time has expired! Redirecting to leaderboard...'));
           setTimeout(() => {
             navigate(`/leaderboard/${batchId}`);
           }, 2000);
         } else {
-          setStatusMessage(`⏱️ Batch time remaining: ${formatTimeRemaining(data.timeRemaining)}`);
+          setStatusMessage(tr("⏱️ Batch time remaining: {v0}", { v0: formatTimeRemaining(data.timeRemaining) }));
         }
       }
     });
@@ -100,7 +101,7 @@ const IndividualResults = () => {
     // Listen for all participants finished event
     newSocket.on('allParticipantsFinished', (data) => {
       if (data.batchId === batchId || data.roundId === roundId) {
-        setStatusMessage('🎉 All participants finished! Redirecting to final leaderboard...');
+        setStatusMessage(tr('🎉 All participants finished! Redirecting to final leaderboard...'));
         setTimeout(() => {
           navigate(`/leaderboard/${batchId}`);
         }, 3000);
@@ -137,7 +138,7 @@ const IndividualResults = () => {
           puzzleId: puzzle.puzzleId,
           puzzle: {
             _id: puzzle.puzzleId,
-            title: `Puzzle ${puzzle.puzzleId.toString().slice(-6)}`,
+            title: tr("Puzzle {v0}", { v0: puzzle.puzzleId.toString().slice(-6) }),
             fen: puzzle.fen,
             difficulty: puzzle.difficulty,
             solution: [] // Will be fetched if needed
@@ -202,11 +203,11 @@ const IndividualResults = () => {
             // Only set timer if there's actually time remaining
             if (batch.timeRemaining > 0) {
               setTimeRemaining(batch.timeRemaining);
-              setStatusMessage(`⏱️ Batch time remaining: ${formatTimeRemaining(batch.timeRemaining)}`);
+              setStatusMessage(tr("⏱️ Batch time remaining: {v0}", { v0: formatTimeRemaining(batch.timeRemaining) }));
             } else {
               // Time has expired - don't show timer
               setTimeRemaining(null);
-              setStatusMessage('⏰ Batch time has expired! Redirecting to leaderboard...');
+              setStatusMessage(tr('⏰ Batch time has expired! Redirecting to leaderboard...'));
               setTimeout(() => {
                 navigate(`/leaderboard/${batchId}`);
               }, 2000);
@@ -214,32 +215,32 @@ const IndividualResults = () => {
           } else if (!batch || !batch.isActive) {
             // Batch is no longer active - don't show timer
             setTimeRemaining(null);
-            setStatusMessage('🏆 Great job completing all puzzles!');
+            setStatusMessage(tr('🏆 Great job completing all puzzles!'));
           } else {
             // No reliable time data - don't show timer
             setTimeRemaining(null);
-            setStatusMessage('🏆 Great job completing all puzzles!');
+            setStatusMessage(tr('🏆 Great job completing all puzzles!'));
           }
         } catch (batchErr) {
           setTimeRemaining(null);
-          setStatusMessage('🏆 Great job completing all puzzles!');
+          setStatusMessage(tr('🏆 Great job completing all puzzles!'));
         }
       } else {
         // Check if all participants have finished
         if (batchInfo?.allParticipantsFinished) {
-          setStatusMessage('🎉 All participants finished! Redirecting to final leaderboard...');
+          setStatusMessage(tr('🎉 All participants finished! Redirecting to final leaderboard...'));
           setTimeout(() => {
             navigate(`/leaderboard/${batchId}`);
           }, 3000);
         } else if (batchInfo?.totalParticipants > 1) {
-          setStatusMessage(`🏆 Great job completing all puzzles! Waiting for ${batchInfo.totalParticipants - batchInfo.finishedParticipants} other participant(s) to finish...`);
+          setStatusMessage(tr("🏆 Great job completing all puzzles! Waiting for {v0} other participant(s) to finish...", { v0: batchInfo.totalParticipants - batchInfo.finishedParticipants }));
         } else {
-          setStatusMessage('🏆 Great job completing all puzzles!');
+          setStatusMessage(tr('🏆 Great job completing all puzzles!'));
         }
       }
       
     } catch (err) {
-      setError('Failed to load results');
+      setError(tr('Failed to load results'));
     } finally {
       setLoading(false);
     }
@@ -1028,9 +1029,9 @@ const IndividualResults = () => {
         <div style={styles.content}>
           <div style={styles.loadingContainer}>
             <div style={styles.loadingIcon}>⏳</div>
-            <h2 style={styles.loadingTitle}>Loading Your Results</h2>
+            <h2 style={styles.loadingTitle}>{tr("Loading Your Results")}</h2>
             <p style={styles.loadingText}>
-              Fetching your performance data...
+              {tr("Fetching your performance data...")}
             </p>
           </div>
         </div>
@@ -1045,7 +1046,7 @@ const IndividualResults = () => {
         <div style={styles.content}>
           <div style={styles.errorContainer}>
             <div style={styles.loadingIcon}>⚠️</div>
-            <h2 style={styles.errorTitle}>Error Loading Results</h2>
+            <h2 style={styles.errorTitle}>{tr("Error Loading Results")}</h2>
             <p style={styles.errorText}>{error}</p>
             <motion.button 
               onClick={() => fetchUserResults()} 
@@ -1056,7 +1057,7 @@ const IndividualResults = () => {
               }}
               transition={{ duration: 0.2 }}
             >
-              Retry
+              {tr("Retry")}
             </motion.button>
           </div>
         </div>
@@ -1081,13 +1082,13 @@ const IndividualResults = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <h1 style={styles.title}>Your Performance Results</h1>
+            <h1 style={styles.title}>{tr("Your Performance Results")}</h1>
             <div style={styles.batchInfo}>
               <span style={styles.batchInfoItem}>
-                <strong style={{color: 'var(--color-text)'}}>Batch:</strong> {batchInfo?.name || 'Unknown'}
+                <strong style={{color: 'var(--color-text)'}}>{tr("Batch:")}</strong> {batchInfo?.name || 'Unknown'}
               </span>
               <span style={styles.batchInfoItem}>
-                <strong style={{color: 'var(--color-text)'}}>Round:</strong> {batchInfo?.round?.number || 'N/A'}
+                <strong style={{color: 'var(--color-text)'}}>{tr("Round:")}</strong> {batchInfo?.round?.number || 'N/A'}
               </span>
             </div>
           </motion.div>
@@ -1099,12 +1100,12 @@ const IndividualResults = () => {
             transition={{ duration: 0.3, delay: 0.1 }}
           >
             <div style={styles.tournamentIncompleteIcon}>⏳</div>
-            <h3 style={styles.tournamentIncompleteTitle}>Waiting for Tournament Start</h3>
+            <h3 style={styles.tournamentIncompleteTitle}>{tr("Waiting for Tournament Start")}</h3>
             <p style={styles.tournamentIncompleteText}>
-              The tournament has not started yet. Please wait for the administrator to begin the batch.
+              {tr("The tournament has not started yet. Please wait for the administrator to begin the batch.")}
             </p>
             <p style={styles.tournamentIncompleteSubtext}>
-              You will see your results here once you start solving puzzles.
+              {tr("You will see your results here once you start solving puzzles.")}
             </p>
           </motion.div>
         </div>
@@ -1147,13 +1148,13 @@ const IndividualResults = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h1 style={styles.title} className="individual-results-title">Your Performance Results</h1>
+          <h1 style={styles.title} className="individual-results-title">{tr("Your Performance Results")}</h1>
           <div style={styles.batchInfo} className="individual-results-batch-info">
             <span style={styles.batchInfoItem}>
-              <strong style={{color: 'var(--color-text)'}}>Batch:</strong> {batchInfo?.name || 'Unknown'}
+              <strong style={{color: 'var(--color-text)'}}>{tr("Batch:")}</strong> {batchInfo?.name || 'Unknown'}
             </span>
             <span style={styles.batchInfoItem}>
-              <strong style={{color: 'var(--color-text)'}}>Round:</strong> {batchInfo?.round?.number || 'N/A'}
+              <strong style={{color: 'var(--color-text)'}}>{tr("Round:")}</strong> {batchInfo?.round?.number || 'N/A'}
             </span>
           </div>
           
@@ -1168,7 +1169,7 @@ const IndividualResults = () => {
               <div style={styles.timerIcon}>⏱️</div>
               <div style={styles.timerText}>
                 <div style={styles.timerValue}>{formatTimeRemaining(timeRemaining)}</div>
-                <div style={styles.timerLabel}>Time Remaining</div>
+                <div style={styles.timerLabel}>{tr("Time Remaining")}</div>
               </div>
             </motion.div>
           )}
@@ -1182,8 +1183,8 @@ const IndividualResults = () => {
             >
               <div style={styles.timerExpiredIcon}>⏰</div>
               <div style={styles.timerText}>
-                <div style={styles.timerExpiredValue}>Time's Up!</div>
-                <div style={styles.timerLabel}>Batch Ended</div>
+                <div style={styles.timerExpiredValue}>{tr("Time's Up!")}</div>
+                <div style={styles.timerLabel}>{tr("Batch Ended")}</div>
               </div>
             </motion.div>
           )}
@@ -1197,10 +1198,10 @@ const IndividualResults = () => {
           transition={{ duration: 0.3, delay: 0.1 }}
         >
           {[
-            { value: `${correctPuzzles}/${attemptedPuzzles}`, label: 'Puzzles Correct' },
-            { value: `${attemptedPuzzles}/${totalPuzzles}`, label: 'Puzzles Attempted' },
-            { value: `${totalScore}`, label: 'Total Points' },
-            { value: `${averageTime}s`, label: 'Average Time' }
+            { value: `${correctPuzzles}/${attemptedPuzzles}`, label: tr('Puzzles Correct') },
+            { value: `${attemptedPuzzles}/${totalPuzzles}`, label: tr('Puzzles Attempted') },
+            { value: `${totalScore}`, label: tr('Total Points') },
+            { value: `${averageTime}s`, label: tr('Average Time') }
           ].map((stat, index) => (
             <motion.div 
               key={index}
@@ -1227,14 +1228,14 @@ const IndividualResults = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <h2 style={styles.sectionTitle}>Detailed Results</h2>
+          <h2 style={styles.sectionTitle}>{tr("Detailed Results")}</h2>
           
           {!shouldShowPuzzleDetails ? (
             // Tournament not complete - show waiting message instead of puzzle details
             <div style={styles.tournamentIncompleteMessage}>
               <div style={styles.tournamentIncompleteIcon}>🔒</div>
               <h3 style={styles.tournamentIncompleteTitle}>
-                {batchInfo?.hasStarted ? 'Tournament In Progress' : 'Waiting for Tournament Start'}
+                {batchInfo?.hasStarted ? tr('Tournament In Progress') : tr('Waiting for Tournament Start')}
               </h3>
               <p style={styles.tournamentIncompleteText}>
                 {batchInfo?.hasStarted
@@ -1243,17 +1244,17 @@ const IndividualResults = () => {
               </p>
               {!batchInfo?.hasStarted && (
                 <p style={styles.tournamentIncompleteSubtext}>
-                  ⏳ Waiting for batch to start...
+                  {tr("⏳ Waiting for batch to start...")}
                 </p>
               )}
               {batchInfo?.isActive && timeRemaining !== null && timeRemaining > 0 && (
                 <p style={styles.tournamentIncompleteSubtext}>
-                  ⏱️ Time remaining: {formatTimeRemaining(timeRemaining)}
+                  {tr("⏱️ Time remaining:")} {formatTimeRemaining(timeRemaining)}
                 </p>
               )}
               {batchInfo?.totalParticipants > 1 && !batchInfo?.allParticipantsFinished && (
                 <p style={styles.tournamentIncompleteSubtext}>
-                  🏃 Waiting for {batchInfo.totalParticipants - (batchInfo.finishedParticipants || 0)} participant(s) to finish
+                  {tr("🏃 Waiting for")} {batchInfo.totalParticipants - (batchInfo.finishedParticipants || 0)} participant(s) to finish
                 </p>
               )}
             </div>
@@ -1263,10 +1264,10 @@ const IndividualResults = () => {
               <table style={styles.table} className="individual-results-table">
               <thead>
                 <tr style={styles.headerRow}>
-                  <th style={styles.thPosition} className="individual-results-th-position">Position (FEN)</th>
-                  <th style={styles.th} className="individual-results-th">Your Moves</th>
-                  <th style={styles.th} className="individual-results-th">Correct Solution</th>
-                  <th style={styles.th} className="individual-results-th">Result</th>
+                  <th style={styles.thPosition} className="individual-results-th-position">{tr("Position (FEN)")}</th>
+                  <th style={styles.th} className="individual-results-th">{tr("Your Moves")}</th>
+                  <th style={styles.th} className="individual-results-th">{tr("Correct Solution")}</th>
+                  <th style={styles.th} className="individual-results-th">{tr("Result")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1285,7 +1286,7 @@ const IndividualResults = () => {
                       <motion.div 
                         style={styles.fenCell}
                         onClick={() => openStudyMode(result)}
-                        title="Click to analyze position"
+                        title={tr("Click to analyze position")}
                         whileHover={{ 
                           borderColor: 'var(--color-accent-a30)',
                           background: 'var(--color-accent-a12)'
@@ -1296,32 +1297,32 @@ const IndividualResults = () => {
                           `${result.finalPosition.substring(0, 20)}...` : 
                           'No position'
                         }
-                        <div style={styles.studyHint}>📋 Click to study</div>
+                        <div style={styles.studyHint}>{tr("📋 Click to study")}</div>
                       </motion.div>
                     </td>
                     <td style={styles.td} className="individual-results-td">
                       <div style={styles.movesList} className="individual-results-moves-list">
-                        <strong>Move sequence:</strong>
+                        <strong>{tr("Move sequence:")}</strong>
                         <div style={styles.userMovesComplete}>
                           {result.isUnattempted ? (
-                            <span style={styles.unattemptedText}>Not attempted</span>
+                            <span style={styles.unattemptedText}>{tr("Not attempted")}</span>
                           ) : result.moveSequence?.length > 0 ? (
                             // Display using moveSequence with ownership
                             <div style={styles.moveSequenceDisplay}>
-                              <strong>Your moves:</strong>
+                              <strong>{tr("Your moves:")}</strong>
                               <div style={styles.moveSequence}>
                                 {result.moveSequence
                                   .filter(move => move.isUser)
                                   .map((moveObj, index) => (
                                     <div key={index} style={styles.userMoveItem}>
-                                      <span style={styles.moveNumber}>Move {Math.floor(index * 2) + 1}:</span>
+                                      <span style={styles.moveNumber}>{tr("Move")} {Math.floor(index * 2) + 1}:</span>
                                       <span style={styles.userMove}>{moveObj.move}</span>
                                     </div>
                                   ))}
                               </div>
                               {result.allMoves?.length > 0 && (
                                 <div style={styles.completeSequence}>
-                                  <strong>Complete sequence:</strong>
+                                  <strong>{tr("Complete sequence:")}</strong>
                                   <div style={styles.fullMoveSequence}>
                                     {result.allMoves.map((move, index) => (
                                       <span key={index} style={index % 2 === 0 ? styles.userMoveInSequence : styles.botMoveInSequence}>
@@ -1335,17 +1336,17 @@ const IndividualResults = () => {
                           ) : result.moves?.length > 0 ? (
                             // Fallback to old format if moveSequence not available
                             <div style={styles.userMovesActual}>
-                              <strong>Your moves:</strong> {result.moves.join(' ')}
+                              <strong>{tr("Your moves:")}</strong> {result.moves.join(' ')}
                             </div>
                           ) : (
-                            <span style={styles.unattemptedText}>No moves recorded</span>
+                            <span style={styles.unattemptedText}>{tr("No moves recorded")}</span>
                           )}
                         </div>
                       </div>
                     </td>
                     <td style={styles.td} className="individual-results-td">
                       <div style={styles.expectedMoves} className="individual-results-expected-moves">
-                        <strong>Correct solution:</strong>
+                        <strong>{tr("Correct solution:")}</strong>
                         <div style={styles.solutionMoves}>
                           {result.puzzle?.solution?.join(' ') || (
                             result.isUnattempted ? 'Click to study and see solution' : 'Solution not available'
@@ -1354,18 +1355,18 @@ const IndividualResults = () => {
                         {!result.correct && !result.isUnattempted && result.moveSequence?.length > 0 && (
                           <div style={styles.mistakeAnalysis}>
                             <div style={styles.analysisHint}>
-                              💡 Compare your moves with the correct solution above
+                              {tr("💡 Compare your moves with the correct solution above")}
                             </div>
                             {result.puzzle?.solution?.length > 0 && result.moveSequence?.length > 0 && (
                               <div style={styles.moveComparison}>
-                                <div style={styles.comparisonLabel}>Move-by-move analysis:</div>
+                                <div style={styles.comparisonLabel}>{tr("Move-by-move analysis:")}</div>
                                 {Math.max(result.moveSequence.filter(m => m.isUser).length, Math.ceil((result.puzzle.solution.length || 0) / 2)).toString().split('').map((_, index) => {
                                   const userMoves = result.moveSequence.filter(m => m.isUser);
                                   const userMove = userMoves[index]?.move;
                                   const expectedMove = result.puzzle.solution[index * 2];
                                   return (
                                     <div key={index} style={styles.moveComparisonRow}>
-                                      <span style={styles.moveNumber}>Move {index + 1}:</span>
+                                      <span style={styles.moveNumber}>{tr("Move")} {index + 1}:</span>
                                       <span style={{
                                         ...styles.moveComparisonItem,
                                         color: userMove ? 'var(--color-danger)' : 'var(--color-text-muted)'
@@ -1388,18 +1389,18 @@ const IndividualResults = () => {
                         {result.timeout && result.moveSequence?.length > 0 && (
                           <div style={styles.timeoutAnalysis}>
                             <div style={styles.analysisHint}>
-                              ⏰ Time ran out! Your moves were preserved for learning.
+                              {tr("⏰ Time ran out! Your moves were preserved for learning.")}
                             </div>
                             {result.puzzle?.solution?.length > 0 && (
                               <div style={styles.moveComparison}>
-                                <div style={styles.comparisonLabel}>See how you were progressing:</div>
+                                <div style={styles.comparisonLabel}>{tr("See how you were progressing:")}</div>
                                 {Math.max(result.moveSequence.filter(m => m.isUser).length, Math.ceil((result.puzzle.solution.length || 0) / 2)).toString().split('').map((_, index) => {
                                   const userMoves = result.moveSequence.filter(m => m.isUser);
                                   const userMove = userMoves[index]?.move;
                                   const expectedMove = result.puzzle.solution[index * 2];
                                   return (
                                     <div key={index} style={styles.moveComparisonRow}>
-                                      <span style={styles.moveNumber}>Move {index + 1}:</span>
+                                      <span style={styles.moveNumber}>{tr("Move")} {index + 1}:</span>
                                       <span style={{
                                         ...styles.moveComparisonItem,
                                         color: userMove ? 'var(--color-accent-2)' : 'var(--color-text-muted)'
@@ -1422,13 +1423,13 @@ const IndividualResults = () => {
                         {!result.correct && !result.isUnattempted && (!result.moveSequence?.length || result.moveSequence.length === 0) && (
                           <div style={styles.noMovesAnalysis}>
                             <div style={styles.analysisHint}>
-                              ⚠️ No moves were recorded for this puzzle
+                              {tr("⚠️ No moves were recorded for this puzzle")}
                             </div>
                           </div>
                         )}
                         {result.isUnattempted && (
                           <div style={styles.missedHint}>
-                            ⚠️ You missed this puzzle - practice it!
+                            {tr("⚠️ You missed this puzzle - practice it!")}
                           </div>
                         )}
                       </div>
@@ -1443,28 +1444,28 @@ const IndividualResults = () => {
                                (result.timeout ? '1px solid var(--color-accent-2-a30)' :
                                (result.correct ? '1px solid var(--color-success-a30)' : '1px solid var(--color-danger-a30)'))
                       }}>
-                        {result.isUnattempted ? '⏭️ Skipped' : (result.timeout ? '⏰ Timeout' : (result.correct ? '✅ Correct' : '❌ Incorrect'))}
+                        {result.isUnattempted ? tr('⏭️ Skipped') : (result.timeout ? tr('⏰ Timeout') : (result.correct ? tr('✅ Correct') : tr('❌ Incorrect')))}
                         <div style={styles.points}>
-                          +{result.score || 0} pts
+                          +{result.score || 0} {tr("pts")}
                         </div>
                         {result.timeout && (
                           <div style={styles.incorrectHint}>
-                            Time ran out - moves preserved for learning!
+                            {tr("Time ran out - moves preserved for learning!")}
                           </div>
                         )}
                         {!result.correct && !result.isUnattempted && !result.timeout && result.moves?.length > 0 && (
                           <div style={styles.incorrectHint}>
-                            Made {result.moves.length} move(s) - Study the comparison above!
+                            {tr("Made")} {result.moves.length} move(s) - Study the comparison above!
                           </div>
                         )}
                         {!result.correct && !result.isUnattempted && !result.timeout && (!result.moves?.length || result.moves.length === 0) && (
                           <div style={styles.incorrectHint}>
-                            No user moves recorded - Technical issue?
+                            {tr("No user moves recorded - Technical issue?")}
                           </div>
                         )}
                         {result.isUnattempted && (
                           <div style={styles.incorrectHint}>
-                            Try this puzzle!
+                            {tr("Try this puzzle!")}
                           </div>
                         )}
                       </div>
@@ -1487,23 +1488,23 @@ const IndividualResults = () => {
           <div style={styles.statusMessage}>
             {statusMessage || (
               <>
-                🏆 Great job completing all puzzles! 
+                {tr("🏆 Great job completing all puzzles!")}
                 {batchInfo?.totalParticipants > 1 && !batchInfo?.allParticipantsFinished && (
                   <>
                     <br />
-                    ⏳ Waiting for {batchInfo.totalParticipants - batchInfo.finishedParticipants} other participant(s) to finish...
+                    {tr("⏳ Waiting for")} {batchInfo.totalParticipants - batchInfo.finishedParticipants} other participant(s) to finish...
                   </>
                 )}
                 {batchInfo?.allParticipantsFinished && (
                   <>
                     <br />
-                    🎉 All participants finished! Redirecting to final leaderboard...
+                    {tr("🎉 All participants finished! Redirecting to final leaderboard...")}
                   </>
                 )}
                 {(!batchInfo?.totalParticipants || batchInfo?.totalParticipants === 1) && (
                   <>
                     <br />
-                    🎯 You're the only participant in this batch!
+                    {tr("🎯 You're the only participant in this batch!")}
                   </>
                 )}
               </>
@@ -1528,7 +1529,7 @@ const IndividualResults = () => {
             }}
             transition={{ duration: 0.2 }}
           >
-            Back to Dashboard
+            {tr("Back to Dashboard")}
           </motion.button>
         </motion.div>
 

@@ -6,6 +6,7 @@ import stockfishService from '../services/stockfishService';
 import api from '../api';
 import './BlunderAssignmentPlayer.css';
 import './FenAssignmentPlayer.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Map a Stockfish eval (cp or mate, from the side-to-move's perspective) to a
 // single comparable centipawn number. Mate → a large bounded value. (Mirrors the
@@ -129,7 +130,7 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
         if (!stockfishService.isReady()) await stockfishService.init();
         if (alive) setEngineReady(true);
       } catch {
-        if (alive) setErr('Could not start the engine. Refresh and try again.');
+        if (alive) setErr(tr('Could not start the engine. Refresh and try again.'));
       }
     })();
     return () => { alive = false; };
@@ -187,7 +188,7 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
       setFeedback(
         passed
           ? (hasNext ? '✅ Solved! Next position…' : '✅ Solved! That was the last one — submit when you are ready.')
-          : `❌ That gives up the advantage. Best was ${bestHintRef.current[idx] || '—'}.`
+          : tr("❌ That gives up the advantage. Best was {v0}.", { v0: bestHintRef.current[idx] || '—' })
             + (hasNext ? ' Next position…' : ' That was the last one — submit when you are ready.')
       );
 
@@ -261,7 +262,7 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
       // already been engine-checked, so just tell them to keep converting.
       setFeedback(playToEnd
         ? 'Good — keep going until the game ends.'
-        : `Good — ${requiredMoves - played} more good move${requiredMoves - played > 1 ? 's' : ''} to go.`);
+        : tr("Good — {v0} more good move{v1} to go.", { v0: requiredMoves - played, v1: requiredMoves - played > 1 ? 's' : '' }));
       setThinking(false);
     } catch {
       // Never block the student on an engine glitch. In play-to-the-end mode
@@ -291,10 +292,10 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
         setHint({ from });
         setFeedback('Hint: look at the piece on ' + from + '. Your move.');
       } else {
-        setFeedback('Could not work out a hint for this position.');
+        setFeedback(tr('Could not work out a hint for this position.'));
       }
     } catch {
-      setFeedback('The engine is busy — try the hint again in a moment.');
+      setFeedback(tr('The engine is busy — try the hint again in a moment.'));
     } finally {
       setHinting(false);
     }
@@ -367,9 +368,9 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
         {result ? (
           <div className="bap-result">
             <div className="bap-result-icon">{result.passed ? '🎉' : '♟️'}</div>
-            <h2>{result.passed ? 'Assignment complete!' : 'Submitted'}</h2>
-            <p>You solved <strong>{result.solved}</strong> of {result.total} positions ({result.accuracy}% accuracy).</p>
-            <button className="bap-btn" onClick={onClose}>Back to assignments</button>
+            <h2>{result.passed ? tr('Assignment complete!') : tr('Submitted')}</h2>
+            <p>{tr("You solved")} <strong>{result.solved}</strong> {tr("of")} {result.total} {tr("positions (")}{result.accuracy}{tr("% accuracy).")}</p>
+            <button className="bap-btn" onClick={onClose}>{tr("Back to assignments")}</button>
           </div>
         ) : (
           <div className="bap-body">
@@ -387,12 +388,12 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
                 highlightSquares={hint ? { [hint.from]: 'var(--color-accent-2)' } : undefined}
               />
               <div className="fap-status">
-                {!engineReady ? '⏳ Loading engine…'
+                {!engineReady ? tr('⏳ Loading engine…')
                   : thinking ? '🤔 Stockfish is checking…'
                   : cur?.tag ? `🎯 ${cur.tag}`
                   : playToEnd
-                    ? `Play this position out to the end as ${orientation === 'white' ? 'White' : 'Black'} — win it, or hold the draw.`
-                    : `Find ${requiredMoves} good move${requiredMoves > 1 ? 's' : ''} for ${orientation === 'white' ? 'White' : 'Black'}.`}
+                    ? tr("Play this position out to the end as {v0} — win it, or hold the draw.", { v0: orientation === 'white' ? 'White' : 'Black' })
+                    : tr("Find {requiredMoves} good move{v1} for {v2}.", { requiredMoves: requiredMoves, v1: requiredMoves > 1 ? 's' : '', v2: orientation === 'white' ? 'White' : 'Black' })}
               </div>
               {feedback && <div className={`fap-feedback ${verdicts[idx] === 'pass' ? 'ok' : verdicts[idx] === 'fail' ? 'bad' : ''}`}>{feedback}</div>}
               {/* HINT — only while this position is still live. Once it has a
@@ -404,13 +405,13 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
                   className={`fap-hint ${hint ? 'is-used' : ''}`}
                   onClick={showHint}
                   disabled={hinting || !!hint}
-                  title={hint ? 'Hint already shown for this position' : 'Show which piece to move'}
+                  title={hint ? tr('Hint already shown for this position') : tr('Show which piece to move')}
                 >
                   {hinting ? '💡 Thinking…' : hint ? `💡 Hint: ${hint.from}` : '💡 Hint'}
                 </button>
               )}
               {done && (
-                <button className="fap-retry" onClick={retry}>↻ Try this position again</button>
+                <button className="fap-retry" onClick={retry}>{tr("↻ Try this position again")}</button>
               )}
             </div>
 
@@ -421,32 +422,32 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
                   .fap-side-title / .bap-head rules) — the same text, positioned
                   for each layout rather than duplicated on screen. */}
               <div className="fap-side-title">♟️ {assignment.title}</div>
-              <div className="fap-progress-label">Positions</div>
+              <div className="fap-progress-label">{tr("Positions")}</div>
               <div className="fap-dots">
                 {positions.map((_, i) => (
                   <button
                     key={i}
                     className={`fap-dot ${i === idx ? 'cur' : ''} ${verdicts[i] === 'pass' ? 'pass' : verdicts[i] === 'fail' ? 'fail' : ''}`}
                     onClick={() => loadPosition(i)}
-                    title={`Position ${i + 1}`}
+                    title={tr("Position {v0}", { v0: i + 1 })}
                   >{i + 1}</button>
                 ))}
               </div>
               <div className="fap-nav">
-                <button disabled={idx === 0} onClick={() => loadPosition(idx - 1)}>◀ Prev</button>
-                <button disabled={idx >= positions.length - 1} onClick={() => loadPosition(idx + 1)}>Next ▶</button>
+                <button disabled={idx === 0} onClick={() => loadPosition(idx - 1)}>{tr("◀ Prev")}</button>
+                <button disabled={idx >= positions.length - 1} onClick={() => loadPosition(idx + 1)}>{tr("Next ▶")}</button>
               </div>
 
-              <div className="fap-tally">✅ {solvedCount} solved · {attempted}/{positions.length} attempted</div>
+              <div className="fap-tally">✅ {solvedCount} {tr("solved ·")} {attempted}/{positions.length} {tr("attempted")}</div>
               {err && <div className="bap-err">{err}</div>}
               <button
                 className="bap-btn"
                 disabled={submitting || attempted === 0}
                 onClick={submit}
               >
-                {submitting ? 'Submitting…' : 'Submit to coach'}
+                {submitting ? tr('Submitting…') : tr('Submit to coach')}
               </button>
-              <div className="fap-hint">Solve every position, then submit. Your best result is sent to your coach.</div>
+              <div className="fap-hint">{tr("Solve every position, then submit. Your best result is sent to your coach.")}</div>
             </div>
           </div>
         )}

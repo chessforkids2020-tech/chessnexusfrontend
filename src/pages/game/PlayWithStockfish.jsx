@@ -6,6 +6,7 @@ import InlineBoardEditor from '../../components/PositionEditor/InlineBoardEditor
 import stockfishService from '../../services/stockfishService';
 import api from '../../api';
 import './PlayWithStockfish.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -48,16 +49,16 @@ const newGameId = () => {
 // base = minutes, inc = increment seconds. `null` base means unlimited (no clock
 // at all — the clock UI is not rendered and nothing can flag).
 const TIME_CONTROLS = [
-  { id: 'unlimited', label: 'Unlimited', base: null, inc: 0, group: 'unlimited' },
-  { id: '1+0',   label: '1+0',   base: 1,  inc: 0,  group: 'Bullet' },
-  { id: '3+0',   label: '3+0',   base: 3,  inc: 0,  group: 'Blitz' },
-  { id: '3+2',   label: '3+2',   base: 3,  inc: 2,  group: 'Blitz' },
-  { id: '5+0',   label: '5+0',   base: 5,  inc: 0,  group: 'Blitz' },
-  { id: '10+0',  label: '10+0',  base: 10, inc: 0,  group: 'Rapid' },
-  { id: '10+5',  label: '10+5',  base: 10, inc: 5,  group: 'Rapid' },
-  { id: '15+10', label: '15+10', base: 15, inc: 10, group: 'Rapid' },
-  { id: '30+0',  label: '30+0',  base: 30, inc: 0,  group: 'Classical' },
-  { id: '30+10', label: '30+10', base: 30, inc: 10, group: 'Classical' },
+  { id: 'unlimited', label: tr('Unlimited'), base: null, inc: 0, group: 'unlimited' },
+  { id: '1+0',   label: '1+0',   base: 1,  inc: 0,  group: tr('Bullet') },
+  { id: '3+0',   label: '3+0',   base: 3,  inc: 0,  group: tr('Blitz') },
+  { id: '3+2',   label: '3+2',   base: 3,  inc: 2,  group: tr('Blitz') },
+  { id: '5+0',   label: '5+0',   base: 5,  inc: 0,  group: tr('Blitz') },
+  { id: '10+0',  label: '10+0',  base: 10, inc: 0,  group: tr('Rapid') },
+  { id: '10+5',  label: '10+5',  base: 10, inc: 5,  group: tr('Rapid') },
+  { id: '15+10', label: '15+10', base: 15, inc: 10, group: tr('Rapid') },
+  { id: '30+0',  label: '30+0',  base: 30, inc: 0,  group: tr('Classical') },
+  { id: '30+10', label: '30+10', base: 30, inc: 10, group: tr('Classical') },
 ];
 
 // ── Difficulty ───────────────────────────────────────────────────────────────
@@ -67,12 +68,12 @@ const TIME_CONTROLS = [
 // moves; depth/movetime cap how far it looks. Levels 1-3 are genuinely gentle
 // for beginners; 6 is full strength.
 const LEVELS = [
-  { id: 1, label: 'Depth 2',  depth: 2,  skill: 1,  moveTime: 200,  blurb: 'Beginner — blunders often' },
-  { id: 2, label: 'Depth 3',  depth: 3,  skill: 3,  moveTime: 300,  blurb: 'Casual — misses tactics' },
-  { id: 3, label: 'Depth 5',  depth: 5,  skill: 6,  moveTime: 500,  blurb: 'Club player' },
-  { id: 4, label: 'Depth 8',  depth: 8,  skill: 10, moveTime: 800,  blurb: 'Strong club' },
-  { id: 5, label: 'Depth 12', depth: 12, skill: 15, moveTime: 1200, blurb: 'Expert' },
-  { id: 6, label: 'Depth 16', depth: 16, skill: 20, moveTime: 2000, blurb: 'Hardest — full strength' },
+  { id: 1, label: tr('Depth 2'),  depth: 2,  skill: 1,  moveTime: 200,  blurb: tr('Beginner — blunders often') },
+  { id: 2, label: tr('Depth 3'),  depth: 3,  skill: 3,  moveTime: 300,  blurb: tr('Casual — misses tactics') },
+  { id: 3, label: tr('Depth 5'),  depth: 5,  skill: 6,  moveTime: 500,  blurb: tr('Club player') },
+  { id: 4, label: tr('Depth 8'),  depth: 8,  skill: 10, moveTime: 800,  blurb: tr('Strong club') },
+  { id: 5, label: tr('Depth 12'), depth: 12, skill: 15, moveTime: 1200, blurb: tr('Expert') },
+  { id: 6, label: tr('Depth 16'), depth: 16, skill: 20, moveTime: 2000, blurb: tr('Hardest — full strength') },
 ];
 
 const fmtClock = (ms) => {
@@ -97,8 +98,18 @@ function MoveList({ moves, current, onSelect }) {
     rows.push({ no: i / 2 + 1, w: moves[i], wPly: i + 1, b: moves[i + 1], bPly: i + 2 });
   }
   const endRef = useRef(null);
-  // Keep the viewed move in sight as the game grows.
-  useEffect(() => { endRef.current?.scrollIntoView({ block: 'nearest' }); }, [current, moves.length]);
+  const listRef = useRef(null);
+  // Keep the viewed move in sight as the game grows — by scrolling the LIST
+  // only. scrollIntoView also scrolls the page, which on a phone (list below
+  // the board) yanked the board and Stockfish's clock off screen every move.
+  useEffect(() => {
+    const list = listRef.current, mark = endRef.current;
+    if (!list || !mark) return;
+    const row = (mark.parentElement || mark).getBoundingClientRect();
+    const box = list.getBoundingClientRect();
+    if (row.top < box.top) list.scrollTop -= box.top - row.top;
+    else if (row.bottom > box.bottom) list.scrollTop += row.bottom - box.bottom;
+  }, [current, moves.length]);
   const cell = (san, ply) =>
     san ? (
       <button
@@ -107,9 +118,9 @@ function MoveList({ moves, current, onSelect }) {
       >{san}</button>
     ) : <span className="pvs-move-san" />;
   return (
-    <div className="pvs-moves">
+    <div className="pvs-moves" ref={listRef}>
       {rows.length === 0 ? (
-        <div className="pvs-moves-empty">No moves yet</div>
+        <div className="pvs-moves-empty">{tr("No moves yet")}</div>
       ) : rows.map(r => (
         <div className="pvs-move-row" key={r.no}>
           <span className="pvs-move-no">{r.no}.</span>
@@ -131,6 +142,9 @@ export default function PlayWithStockfish() {
 
   // 'setup' → choosing options; 'playing' → the game itself.
   const [phase, setPhase] = useState(saved ? 'playing' : 'setup');
+  // The Start button is at the bottom of the setup screen, so a phone arrives
+  // in the game already scrolled down — past Stockfish's clock. Start at the top.
+  useEffect(() => { if (phase === 'playing') window.scrollTo(0, 0); }, [phase]);
 
   // ── Setup choices ──
   const [tcId, setTcId] = useState(saved?.tcId ?? '10+0');
@@ -167,13 +181,19 @@ export default function PlayWithStockfish() {
       // card + gap to get the space the board may occupy.
       const grid = el.parentElement;
       const gridW = grid ? Math.round(grid.getBoundingClientRect().width) : 0;
-      const avail = Math.max(240, gridW - SIDE_CARD_W - COL_GAP);
+      // Phone/tablet (single column, see the 900px media query): the side card
+      // sits BELOW the board, so the board gets the full width. Subtracting
+      // the card here shrank a phone's board to a third of the screen.
+      const narrow = window.innerWidth <= 900;
+      const avail = Math.max(240, narrow ? gridW : gridW - SIDE_CARD_W - COL_GAP);
       const g = gutterFor(avail);
       const byWidth = avail - g.left - g.right;
       // HEIGHT: from the board's top to the page's bottom padding. Nothing sits
       // above the board any more (the result is an overlay).
       const top = el.getBoundingClientRect().top;
-      const byHeight = window.innerHeight - top - 12;
+      // On a phone the two player strips sit above and below the board (inside
+      // this column), so leave room for the lower one too.
+      const byHeight = window.innerHeight - top - 12 - (narrow ? 100 : 0);
       const next = Math.max(240, Math.floor(Math.min(byWidth, byHeight)));
       // The observer watches the very element this resizes, so only commit a
       // real change — otherwise a 1px rounding wobble could ping-pong.
@@ -320,9 +340,10 @@ export default function PlayWithStockfish() {
     if (!token) return;
     const me = myColor === 'w' ? 'white' : 'black';
     const opp = me === 'white' ? 'black' : 'white';
-    const outcome = result.text === 'You win!' ? `${me}_won`
-      : result.text === 'Stockfish wins' ? `${opp}_won`
-      : result.text === 'Draw' ? 'draw' : null;
+    // result.text is the TRANSLATED headline, so compare with tr() too.
+    const outcome = result.text === tr('You win!') ? `${me}_won`
+      : result.text === tr('Stockfish wins') ? `${opp}_won`
+      : result.text === tr('Draw') ? 'draw' : null;
     if (!outcome) return;
     let cancelled = false;
     api.post('/api/user-games/stockfish', {
@@ -356,13 +377,13 @@ export default function PlayWithStockfish() {
       // The side to move is the one that got mated.
       const loser = game.turn();
       const youWon = loser !== humanColor;
-      return { text: youWon ? 'You win!' : 'Stockfish wins', detail: 'Checkmate' };
+      return { text: youWon ? tr('You win!') : tr('Stockfish wins'), detail: tr('Checkmate') };
     }
-    if (game.isStalemate())            return { text: 'Draw', detail: 'Stalemate' };
-    if (game.isThreefoldRepetition())  return { text: 'Draw', detail: 'Threefold repetition' };
-    if (game.isInsufficientMaterial()) return { text: 'Draw', detail: 'Insufficient material' };
-    if (game.isDraw())                 return { text: 'Draw', detail: '50-move rule' };
-    return { text: 'Game over', detail: '' };
+    if (game.isStalemate())            return { text: tr('Draw'), detail: tr('Stalemate') };
+    if (game.isThreefoldRepetition())  return { text: tr('Draw'), detail: tr('Threefold repetition') };
+    if (game.isInsufficientMaterial()) return { text: tr('Draw'), detail: tr('Insufficient material') };
+    if (game.isDraw())                 return { text: tr('Draw'), detail: tr('50-move rule') };
+    return { text: tr('Game over'), detail: '' };
   }, []);
 
   // ── Clock ──────────────────────────────────────────────────────────────────
@@ -386,7 +407,7 @@ export default function PlayWithStockfish() {
         const next = prev - delta;
         if (next <= 0) {
           const humanFlagged = turn === myColorRef.current;
-          endGame(humanFlagged ? 'Stockfish wins' : 'You win!', 'Time out');
+          endGame(humanFlagged ? tr('Stockfish wins') : tr('You win!'), tr('Time out'));
           return 0;
         }
         return next;
@@ -482,7 +503,7 @@ export default function PlayWithStockfish() {
 
   // ── Start / restart ────────────────────────────────────────────────────────
   const startGame = () => {
-    if (gameLive && !window.confirm('Abandon this game and start a new one?')) return;
+    if (gameLive && !window.confirm(tr('Abandon this game and start a new one?'))) return;
     const colour = side === 'random' ? (Math.random() < 0.5 ? 'white' : 'black') : side;
     const startFen = startMode === 'position' ? customFen : START_FEN;
 
@@ -526,7 +547,7 @@ export default function PlayWithStockfish() {
 
   const resign = () => {
     if (result) return;
-    endGame('Stockfish wins', 'You resigned');
+    endGame(tr('Stockfish wins'), tr('You resigned'));
   };
 
   // Icon controls, shared by the side card and the game-over popup.
@@ -535,16 +556,16 @@ export default function PlayWithStockfish() {
   const renderActions = (showResign) => (
     <div className="pvs-side-actions">
       {showResign && !result && (
-        <button className="pvs-icon-btn" onClick={resign} title="Resign" aria-label="Resign">🏳</button>
+        <button className="pvs-icon-btn" onClick={resign} title={tr("Resign")} aria-label={tr("Resign")}>🏳</button>
       )}
-      <button className="pvs-icon-btn" onClick={startGame} title="Rematch" aria-label="Rematch">↺</button>
-      <button className="pvs-icon-btn" onClick={backToSetup} title="Game settings" aria-label="Game settings">⚙</button>
+      <button className="pvs-icon-btn" onClick={startGame} title={tr("Rematch")} aria-label={tr("Rematch")}>↺</button>
+      <button className="pvs-icon-btn" onClick={backToSetup} title={tr("Game settings")} aria-label={tr("Game settings")}>⚙</button>
       <button
         className="pvs-icon-btn pvs-icon-btn--primary"
-        title="Back to Play"
-        aria-label="Back to Play"
+        title={tr("Back to Play")}
+        aria-label={tr("Back to Play")}
         onClick={() => {
-          if (gameLive && !window.confirm('Leave this game? Your progress will be lost.')) return;
+          if (gameLive && !window.confirm(tr('Leave this game? Your progress will be lost.'))) return;
           clearSaved();
           navigate('/games');
         }}
@@ -558,13 +579,13 @@ export default function PlayWithStockfish() {
       <div className="pvs-page">
         <div className="pvs-setup">
           <div className="pvs-head">
-            <h1>♟ Play vs Stockfish</h1>
-            <p>Pick a time control, a strength, and where to start from.</p>
+            <h1>{tr("♟ Play vs Stockfish")}</h1>
+            <p>{tr("Pick a time control, a strength, and where to start from.")}</p>
           </div>
 
           {/* TIME CONTROL */}
           <section className="pvs-section">
-            <h2>Time control</h2>
+            <h2>{tr("Time control")}</h2>
             <div className="pvs-grid">
               {TIME_CONTROLS.map(t => (
                 <button
@@ -574,7 +595,7 @@ export default function PlayWithStockfish() {
                 >
                   <span className="pvs-chip-label">{t.label}</span>
                   {t.group !== 'unlimited' && <span className="pvs-chip-sub">{t.group}</span>}
-                  {t.base == null && <span className="pvs-chip-sub">No clock — take as long as you like</span>}
+                  {t.base == null && <span className="pvs-chip-sub">{tr("No clock — take as long as you like")}</span>}
                 </button>
               ))}
             </div>
@@ -582,7 +603,7 @@ export default function PlayWithStockfish() {
 
           {/* LEVEL */}
           <section className="pvs-section">
-            <h2>Stockfish level</h2>
+            <h2>{tr("Stockfish level")}</h2>
             <div className="pvs-grid pvs-grid--levels">
               {LEVELS.map(l => (
                 <button
@@ -599,7 +620,7 @@ export default function PlayWithStockfish() {
 
           {/* SIDE */}
           <section className="pvs-section">
-            <h2>You play</h2>
+            <h2>{tr("You play")}</h2>
             <div className="pvs-grid pvs-grid--side">
               {[['white', '♔ White'], ['black', '♚ Black'], ['random', '🎲 Random']].map(([v, lab]) => (
                 <button key={v} className={`pvs-chip${side === v ? ' is-on' : ''}`} onClick={() => setSide(v)}>
@@ -611,22 +632,22 @@ export default function PlayWithStockfish() {
 
           {/* START POSITION */}
           <section className="pvs-section">
-            <h2>Starting position</h2>
+            <h2>{tr("Starting position")}</h2>
             <div className="pvs-grid pvs-grid--side">
               <button className={`pvs-chip${startMode === 'standard' ? ' is-on' : ''}`} onClick={() => setStartMode('standard')}>
-                <span className="pvs-chip-label">Standard game</span>
-                <span className="pvs-chip-sub">Normal starting position</span>
+                <span className="pvs-chip-label">{tr("Standard game")}</span>
+                <span className="pvs-chip-sub">{tr("Normal starting position")}</span>
               </button>
               <button className={`pvs-chip${startMode === 'position' ? ' is-on' : ''}`} onClick={() => setStartMode('position')}>
-                <span className="pvs-chip-label">From a position</span>
-                <span className="pvs-chip-sub">Set up a board, then play it out</span>
+                <span className="pvs-chip-label">{tr("From a position")}</span>
+                <span className="pvs-chip-sub">{tr("Set up a board, then play it out")}</span>
               </button>
             </div>
 
             {startMode === 'position' && (
               <div className="pvs-posrow">
                 <button className="pvs-btn pvs-btn--ghost" onClick={() => setShowEditor(true)}>
-                  ✏️ Set up the board
+                  {tr("✏️ Set up the board")}
                 </button>
                 <code className="pvs-fen" title={customFen}>{customFen}</code>
               </div>
@@ -634,8 +655,8 @@ export default function PlayWithStockfish() {
           </section>
 
           <div className="pvs-actions">
-            <button className="pvs-btn pvs-btn--ghost" onClick={() => navigate('/games')}>← Back</button>
-            <button className="pvs-btn pvs-btn--primary" onClick={startGame}>Start game →</button>
+            <button className="pvs-btn pvs-btn--ghost" onClick={() => navigate('/games')}>{tr("← Back")}</button>
+            <button className="pvs-btn pvs-btn--primary" onClick={startGame}>{tr("Start game →")}</button>
           </div>
         </div>
 
@@ -686,6 +707,14 @@ export default function PlayWithStockfish() {
         {/* CENTER: board only — the player strips live in the right card,
             exactly like the Play-with-a-Friend room. */}
         <div className="pvs-board-col" ref={boardRef}>
+          {/* Phone layout (Lichess-style): opponent strip above the board, you
+              below it, so both clocks are always on screen. Hidden on desktop,
+              where the strips live in the right card. */}
+          <div className={`pvs-player pvs-player--m pvs-player--m-top${turn === topColor && !result ? ' is-active' : ''}`}>
+            <span className="pvs-player-name">{tr("🤖 Stockfish")} <em>({level.label})</em></span>
+            {thinking && !result && <span className="pvs-thinking-dot" title={tr("Stockfish is thinking")}>●</span>}
+            {tc.base != null && <span className="pvs-player-clock">{fmtClock(topMs)}</span>}
+          </div>
           {/* The board, with the game-over popup laid over it. */}
           <div className="pvs-board-wrap" style={{ width: boardSize }}>
           <Chessboard
@@ -704,43 +733,47 @@ export default function PlayWithStockfish() {
               <h3>{result.text}</h3>
               {result.detail && <p>{result.detail}</p>}
               <p className="pvs-result-line">
-                {moves.length} move{moves.length === 1 ? '' : 's'} · {level.label}
-                {tc.base != null ? ` · ${tc.label}` : ' · Unlimited'}
+                {moves.length} {tr("move")}{moves.length === 1 ? '' : 's'} · {level.label}
+                {tc.base != null ? ` · ${tc.label}` : tr(' · Unlimited')}
               </p>
               {renderActions(false)}
               <button className="pvs-result-dismiss" onClick={() => setShowResultPopup(false)}>
-                Review the position
+                {tr("Review the position")}
               </button>
             </div>
           )}
+          </div>
+          <div className={`pvs-player pvs-player--m${turn !== topColor && !result ? ' is-active' : ''}`}>
+            <span className="pvs-player-name">{tr("👤 You")}</span>
+            {tc.base != null && <span className="pvs-player-clock">{fmtClock(bottomMs)}</span>}
           </div>
         </div>
 
         <div className="pvs-side">
           {/* Opponent strip on top, you on the bottom — the moves list sits
               between them, matching the friend game's right card. */}
-          <div className={`pvs-player${turn === topColor && !result ? ' is-active' : ''}`}>
-            <span className="pvs-player-name">🤖 Stockfish <em>({level.label})</em></span>
+          <div className={`pvs-player pvs-player--d${turn === topColor && !result ? ' is-active' : ''}`}>
+            <span className="pvs-player-name">{tr("🤖 Stockfish")} <em>({level.label})</em></span>
             {tc.base != null && <span className="pvs-player-clock">{fmtClock(topMs)}</span>}
           </div>
 
           {engineError && <div className="pvs-alert pvs-alert--bad">Engine problem: {engineError}</div>}
-          {!engineReady && !engineError && <div className="pvs-alert">Loading engine…</div>}
+          {!engineReady && !engineError && <div className="pvs-alert">{tr("Loading engine…")}</div>}
 
-          {thinking && !result && <div className="pvs-turn">Stockfish is thinking…</div>}
+          {thinking && !result && <div className="pvs-turn pvs-turn--d">{tr("Stockfish is thinking…")}</div>}
 
           {/* Clickable move list: click any move to see the position after it. */}
           <MoveList moves={moves} current={viewPly ?? moves.length} onSelect={gotoPly} />
 
           <div className="pvs-nav">
-            <button className="pvs-nav-btn" onClick={navFirst} disabled={moves.length === 0} title="First move" aria-label="First move">⏮</button>
-            <button className="pvs-nav-btn" onClick={navPrev} disabled={(viewPly ?? moves.length) <= 0} title="Previous move" aria-label="Previous move">◀</button>
-            <button className="pvs-nav-btn" onClick={navNext} disabled={isLive} title="Next move" aria-label="Next move">▶</button>
-            <button className="pvs-nav-btn" onClick={navLast} disabled={isLive} title="Latest position" aria-label="Latest position">⏭</button>
+            <button className="pvs-nav-btn" onClick={navFirst} disabled={moves.length === 0} title={tr("First move")} aria-label={tr("First move")}>⏮</button>
+            <button className="pvs-nav-btn" onClick={navPrev} disabled={(viewPly ?? moves.length) <= 0} title={tr("Previous move")} aria-label={tr("Previous move")}>◀</button>
+            <button className="pvs-nav-btn" onClick={navNext} disabled={isLive} title={tr("Next move")} aria-label={tr("Next move")}>▶</button>
+            <button className="pvs-nav-btn" onClick={navLast} disabled={isLive} title={tr("Latest position")} aria-label={tr("Latest position")}>⏭</button>
           </div>
 
-          <div className={`pvs-player${turn !== topColor && !result ? ' is-active' : ''}`}>
-            <span className="pvs-player-name">👤 You</span>
+          <div className={`pvs-player pvs-player--d${turn !== topColor && !result ? ' is-active' : ''}`}>
+            <span className="pvs-player-name">{tr("👤 You")}</span>
             {tc.base != null && <span className="pvs-player-clock">{fmtClock(bottomMs)}</span>}
           </div>
 

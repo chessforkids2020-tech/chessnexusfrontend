@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
 import useVoiceCall from '../hooks/useVoiceCall';
+import { t as tr } from '../i18n/LanguageContext';
 
 export const GUEST_VOICE_MSG = 'Voice call is only for logged-in players. Log in to call and talk with your friend.';
 
@@ -50,7 +51,7 @@ export default function FriendVoiceBar({ socket, roomCode, isGuest, friendName }
           target="_blank"
           rel="noopener noreferrer"
           style={{ ...btn('go'), display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}
-        >🔑 Log in for voice call</a>
+        >{tr("🔑 Log in for voice call")}</a>
       </div>
     );
   }
@@ -68,17 +69,17 @@ export default function FriendVoiceBar({ socket, roomCode, isGuest, friendName }
     }
   };
 
-  const name = friendName || 'Your friend';
+  const name = friendName || tr('Your friend');
   const peerHere = inCall ? v.peerIn : friendInCall;
   const err = apiError || v.error;
 
   return (
     <div style={box}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-        <span style={{ fontWeight: 800 }}>🎙️ Voice</span>
+        <span style={{ fontWeight: 800 }}>{tr("🎙️ Voice")}</span>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)' }}>
           <span style={dot(peerHere, inCall && v.peerSpeaking)} />
-          {peerHere ? `${name} is in the call` : `${name} is not in the call`}
+          {peerHere ? tr("{name} is in the call", { name: name }) : tr("{name} is not in the call", { name: name })}
         </span>
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
           {!inCall && v.state !== 'connecting' && (
@@ -86,13 +87,13 @@ export default function FriendVoiceBar({ socket, roomCode, isGuest, friendName }
               {busy ? 'Joining…' : v.state === 'dropped' ? 'Rejoin voice' : peerHere ? 'Join call' : 'Start call'}
             </button>
           )}
-          {v.state === 'connecting' && <button style={btn()} disabled>Connecting…</button>}
+          {v.state === 'connecting' && <button style={btn()} disabled>{tr("Connecting…")}</button>}
           {inCall && (
             <>
               <button style={btn()} onClick={v.toggleMic} title={v.micOn ? 'Mute' : 'Unmute'}>
-                {v.micOn ? '🎤 Mute' : '🔇 Unmute'}
+                {v.micOn ? tr('🎤 Mute') : tr('🔇 Unmute')}
               </button>
-              <button style={btn('stop')} onClick={v.leave}>Leave</button>
+              <button style={btn('stop')} onClick={v.leave}>{tr("Leave")}</button>
             </>
           )}
         </span>
@@ -103,9 +104,9 @@ export default function FriendVoiceBar({ socket, roomCode, isGuest, friendName }
           {v.state === 'reconnecting' ? 'Reconnecting…' : v.micOn ? 'You are live' : 'You are muted'}
         </div>
       )}
-      {v.state === 'dropped' && <div style={{ marginTop: 6, color: '#fbbf24', fontSize: 12 }}>The call dropped. Tap “Rejoin voice”.</div>}
+      {v.state === 'dropped' && <div style={{ marginTop: 6, color: '#fbbf24', fontSize: 12 }}>{tr("The call dropped. Tap “Rejoin voice”.")}</div>}
       {inCall && v.audioBlocked && (
-        <button style={{ ...btn(), marginTop: 6 }} onClick={v.enableAudio}>🔊 Tap to hear your friend</button>
+        <button style={{ ...btn(), marginTop: 6 }} onClick={v.enableAudio}>{tr("🔊 Tap to hear your friend")}</button>
       )}
       {err && <div style={{ marginTop: 6, color: '#fca5a5', fontSize: 12 }}>{err}</div>}
     </div>

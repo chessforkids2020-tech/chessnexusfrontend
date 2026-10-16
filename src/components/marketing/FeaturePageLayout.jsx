@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import SEO from "../SEO";
 import FeatureLinkGrid from "./FeatureLinkGrid";
 import "./marketing.css";
+import { t as tr } from '../../i18n/LanguageContext';
 
 /**
  * Shared shell for the public SEO feature/about pages.
@@ -46,7 +47,7 @@ export default function FeaturePageLayout({
           {hero.icon && <div className="mkt-hero-icon">{hero.icon}</div>}
           <h1>{hero.h1}</h1>
           {hero.sub && <p className="mkt-hero-sub">{hero.sub}</p>}
-          <div className="mkt-free-badge">✅ 100% Free · No Ads, ever</div>
+          <div className="mkt-free-badge">{tr("✅ 100% Free · No Ads, ever")}</div>
 
           {(hero.primary || hero.secondary) && (
             <div className="mkt-cta-row">
@@ -84,10 +85,10 @@ export default function FeaturePageLayout({
 
         {children}
 
-        <section className="mkt-explore" aria-label="Explore more features">
-          <h2>Explore more of Chess Nexus</h2>
+        <section className="mkt-explore" aria-label={tr("Explore more features")}>
+          <h2>{tr("Explore more of Chess Nexus")}</h2>
           <p className="mkt-section-lead">
-            Every feature is free with no ads. Pick where you want to grow next.
+            {tr("Every feature is free with no ads. Pick where you want to grow next.")}
           </p>
           <FeatureLinkGrid exclude={excludeSlug} />
         </section>

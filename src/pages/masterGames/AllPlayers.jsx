@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api, { resolveApiAssetUrl } from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ── All Master-Games players ──────────────────────────────────────────────────
 // Every curated player as a card (same look as the home "Featured players" row).
@@ -55,9 +56,9 @@ export default function AllPlayers() {
   return (
     <div style={st.wrap}>
       <div style={st.inner}>
-        <button style={st.back} onClick={() => navigate('/master-games')}>‹ Master Games</button>
-        <h1 style={st.h1}>All players</h1>
-        <p style={st.sub}>{loading ? 'Loading…' : `${players.length} player${players.length === 1 ? '' : 's'}`}</p>
+        <button style={st.back} onClick={() => navigate('/master-games')}>{tr("‹ Master Games")}</button>
+        <h1 style={st.h1}>{tr("All players")}</h1>
+        <p style={st.sub}>{loading ? 'Loading…' : tr("{length} player{v1}", { length: players.length, v1: players.length === 1 ? '' : 's' })}</p>
 
         <div style={st.grid}>
           {players.map(p => (
@@ -68,11 +69,11 @@ export default function AllPlayers() {
               <div style={st.playerCardName}>
                 {p.title && <span style={st.title}>{p.title} </span>}{displayName(p.name)}
               </div>
-              <div style={st.playerCardCount}>{fmt(p.games)} games</div>
+              <div style={st.playerCardCount}>{fmt(p.games)} {tr("games")}</div>
             </button>
           ))}
         </div>
-        {!loading && players.length === 0 && <div style={st.empty}>No players found.</div>}
+        {!loading && players.length === 0 && <div style={st.empty}>{tr("No players found.")}</div>}
       </div>
     </div>
   );

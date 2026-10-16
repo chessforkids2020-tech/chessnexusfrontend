@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useAuth } from '../../contexts/AuthContext';
 import './MonthlyFocusList.css';
 import './MonthlyFocusDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function MonthlyFocusList() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function MonthlyFocusList() {
         });
         setFocuses(sorted);
       } catch (err) {
-        setError('Failed to load challenges');
+        setError(tr('Failed to load challenges'));
       } finally {
         setLoading(false);
       }
@@ -56,7 +57,7 @@ export default function MonthlyFocusList() {
       <div className="mfl-page">
         <div className="mfl-spinner-wrap">
           <div className="mfl-spinner" />
-          <p>Loading challenges…</p>
+          <p>{tr("Loading challenges…")}</p>
         </div>
       </div>
     );
@@ -79,20 +80,20 @@ export default function MonthlyFocusList() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55 }}
       >
-        <h1 className="mfl-title">🎯 Monthly Focus</h1>
+        <h1 className="mfl-title">{tr("🎯 Monthly Focus")}</h1>
         <p className="mfl-subtitle">
-          Sharpen your chess skills with daily tasks. Pick a challenge and start earning XP.
+          {tr("Sharpen your chess skills with daily tasks. Pick a challenge and start earning XP.")}
         </p>
 
         {/* Challenge count badge */}
         {focuses.length > 0 ? (
           <div className="mfl-count-badge">
             <span className="mfl-count-dot" />
-            {focuses.length} active challenge{focuses.length > 1 ? 's' : ''} running right now
+            {focuses.length} {tr("active challenge")}{focuses.length > 1 ? 's' : ''} {tr("running right now")}
           </div>
         ) : (
           <div className="mfl-count-badge mfl-count-none">
-            ⏳ No active challenges right now — check back soon
+            {tr("⏳ No active challenges right now — check back soon")}
           </div>
         )}
 
@@ -104,7 +105,7 @@ export default function MonthlyFocusList() {
                 className="mfl-elite-btn"
                 onClick={() => navigate('/elite-monthly-focus')}
               >
-                ✨ Create Challenge
+                {tr("✨ Create Challenge")}
               </button>
             ) : (
               <>
@@ -112,14 +113,14 @@ export default function MonthlyFocusList() {
                   className="mfl-elite-btn"
                   onClick={() => navigate('/elite-monthly-focus')}
                 >
-                  ⚙️ Manage My Challenge
+                  {tr("⚙️ Manage My Challenge")}
                 </button>
                 <p className="mfl-elite-note">
-                  Next new challenge: {nextAllowedDate ? nextAllowedDate.toLocaleDateString() : '1st of next month'}
+                  Next new challenge: {nextAllowedDate ? nextAllowedDate.toLocaleDateString() : tr('1st of next month')}
                 </p>
               </>
             )}
-            {canCreate && <p className="mfl-elite-note">Elite members can create 1 challenge per month.</p>}
+            {canCreate && <p className="mfl-elite-note">{tr("Elite members can create 1 challenge per month.")}</p>}
           </div>
         )}
       </motion.div>
@@ -133,9 +134,9 @@ export default function MonthlyFocusList() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <div className="mfl-empty-icon">🏆</div>
-          <h2>Nothing active yet</h2>
-          <p>The next Monthly Focus challenge is on its way. Stay tuned!</p>
-          <Link to="/dashboard" className="mfl-back-btn">← Back to Dashboard</Link>
+          <h2>{tr("Nothing active yet")}</h2>
+          <p>{tr("The next Monthly Focus challenge is on its way. Stay tuned!")}</p>
+          <Link to="/dashboard" className="mfl-back-btn">{tr("← Back to Dashboard")}</Link>
         </motion.div>
       ) : (
         <div className="mfl-grid">
@@ -164,122 +165,122 @@ function MonthlyFocusAwards() {
       <div className="mfa-title-row">
         <span className="mfa-trophy-icon">🏆</span>
         <div>
-          <h2 className="mfa-main-title">Monthly Focus Awards</h2>
+          <h2 className="mfa-main-title">{tr("Monthly Focus Awards")}</h2>
           <p className="mfa-subtitle">Complete daily tasks, earn XP, unlock badges &amp; climb the ranks</p>
         </div>
       </div>
 
       <div className="mfa-block">
-        <h3 className="mfa-block-title">🎖️ Achievement Badges — Your Journey</h3>
-        <p className="mfa-block-sub">Badges are awarded based on how many days you complete and how many perfect scores you achieve</p>
+        <h3 className="mfa-block-title">{tr("🎖️ Achievement Badges — Your Journey")}</h3>
+        <p className="mfa-block-sub">{tr("Badges are awarded based on how many days you complete and how many perfect scores you achieve")}</p>
         <div className="mfa-badges-list">
           <div className="mfa-badge-row">
             <div className="mfa-badge-icon mfa-badge-beginner">🌱</div>
-            <div className="mfa-badge-info"><span className="mfa-badge-name">Beginner</span><span className="mfa-badge-req">Complete 1–2 days</span></div>
-            <div className="mfa-badge-tag mfa-tag-green">You've started!</div>
+            <div className="mfa-badge-info"><span className="mfa-badge-name">{tr("Beginner")}</span><span className="mfa-badge-req">{tr("Complete 1–2 days")}</span></div>
+            <div className="mfa-badge-tag mfa-tag-green">{tr("You've started!")}</div>
           </div>
           <div className="mfa-badge-row">
             <div className="mfa-badge-icon mfa-badge-active">⭐</div>
-            <div className="mfa-badge-info"><span className="mfa-badge-name">Active</span><span className="mfa-badge-req">Complete 3 or more days</span></div>
-            <div className="mfa-badge-tag mfa-tag-blue">Showing up daily</div>
+            <div className="mfa-badge-info"><span className="mfa-badge-name">{tr("Active")}</span><span className="mfa-badge-req">{tr("Complete 3 or more days")}</span></div>
+            <div className="mfa-badge-tag mfa-tag-blue">{tr("Showing up daily")}</div>
           </div>
           <div className="mfa-badge-row">
             <div className="mfa-badge-icon mfa-badge-dedicated">🔥</div>
-            <div className="mfa-badge-info"><span className="mfa-badge-name">Dedicated</span><span className="mfa-badge-req">Complete 5 or more days</span></div>
-            <div className="mfa-badge-tag mfa-tag-orange">+75 XP Milestone Bonus</div>
+            <div className="mfa-badge-info"><span className="mfa-badge-name">{tr("Dedicated")}</span><span className="mfa-badge-req">{tr("Complete 5 or more days")}</span></div>
+            <div className="mfa-badge-tag mfa-tag-orange">{tr("+75 XP Milestone Bonus")}</div>
           </div>
           <div className="mfa-badge-row">
             <div className="mfa-badge-icon mfa-badge-achiever">🎯</div>
-            <div className="mfa-badge-info"><span className="mfa-badge-name">Achiever</span><span className="mfa-badge-req">Complete all 7 days</span></div>
-            <div className="mfa-badge-tag mfa-tag-cyan">Full week warrior!</div>
+            <div className="mfa-badge-info"><span className="mfa-badge-name">{tr("Achiever")}</span><span className="mfa-badge-req">{tr("Complete all 7 days")}</span></div>
+            <div className="mfa-badge-tag mfa-tag-cyan">{tr("Full week warrior!")}</div>
           </div>
           <div className="mfa-badge-row">
             <div className="mfa-badge-icon mfa-badge-perfect">👑</div>
-            <div className="mfa-badge-info"><span className="mfa-badge-name">Perfect</span><span className="mfa-badge-req">Get perfect score on 5+ days</span></div>
-            <div className="mfa-badge-tag mfa-tag-gold">Elite accuracy</div>
+            <div className="mfa-badge-info"><span className="mfa-badge-name">{tr("Perfect")}</span><span className="mfa-badge-req">{tr("Get perfect score on 5+ days")}</span></div>
+            <div className="mfa-badge-tag mfa-tag-gold">{tr("Elite accuracy")}</div>
           </div>
           <div className="mfa-badge-row mfa-badge-row-champion">
             <div className="mfa-badge-icon mfa-badge-champion">🏆</div>
-            <div className="mfa-badge-info"><span className="mfa-badge-name">Champion</span><span className="mfa-badge-req">Perfect score on 5+ days AND complete all 7</span></div>
-            <div className="mfa-badge-tag mfa-tag-trophy">🔝 Highest Honor</div>
+            <div className="mfa-badge-info"><span className="mfa-badge-name">{tr("Champion")}</span><span className="mfa-badge-req">{tr("Perfect score on 5+ days AND complete all 7")}</span></div>
+            <div className="mfa-badge-tag mfa-tag-trophy">{tr("🔝 Highest Honor")}</div>
           </div>
         </div>
       </div>
 
       <div className="mfa-block">
-        <h3 className="mfa-block-title">🎁 What You Earn</h3>
+        <h3 className="mfa-block-title">{tr("🎁 What You Earn")}</h3>
         <div className="mfa-rewards-grid">
           <div className="mfa-reward-card">
             <div className="mfa-reward-top">🧠</div>
-            <div className="mfa-reward-name">Skill Score</div>
-            <div className="mfa-reward-desc">Your score only goes up — never resets. It reflects your chess growth across every monthly challenge you participate in.</div>
+            <div className="mfa-reward-name">{tr("Skill Score")}</div>
+            <div className="mfa-reward-desc">{tr("Your score only goes up — never resets. It reflects your chess growth across every monthly challenge you participate in.")}</div>
           </div>
           <div className="mfa-reward-card">
             <div className="mfa-reward-top">⚡</div>
-            <div className="mfa-reward-name">Platform XP</div>
-            <div className="mfa-reward-desc">XP earned in Monthly Focus counts toward your global platform level and leaderboard rank.</div>
+            <div className="mfa-reward-name">{tr("Platform XP")}</div>
+            <div className="mfa-reward-desc">{tr("XP earned in Monthly Focus counts toward your global platform level and leaderboard rank.")}</div>
           </div>
           <div className="mfa-reward-card">
             <div className="mfa-reward-top">📊</div>
-            <div className="mfa-reward-name">Leaderboard Rank</div>
-            <div className="mfa-reward-desc">Top performers are showcased on the Monthly Focus leaderboard. Compete with everyone in your batch every week.</div>
+            <div className="mfa-reward-name">{tr("Leaderboard Rank")}</div>
+            <div className="mfa-reward-desc">{tr("Top performers are showcased on the Monthly Focus leaderboard. Compete with everyone in your batch every week.")}</div>
           </div>
           <div className="mfa-reward-card">
             <div className="mfa-reward-top">🎖️</div>
-            <div className="mfa-reward-name">Achievement Badges</div>
-            <div className="mfa-reward-desc">Unlock badges shown on your profile — from Beginner to Champion. They show your dedication at a glance.</div>
+            <div className="mfa-reward-name">{tr("Achievement Badges")}</div>
+            <div className="mfa-reward-desc">{tr("Unlock badges shown on your profile — from Beginner to Champion. They show your dedication at a glance.")}</div>
           </div>
         </div>
       </div>
 
       <div className="mfa-block mfa-tips-block">
-        <h3 className="mfa-block-title">💡 Tips to Maximize Your Score</h3>
+        <h3 className="mfa-block-title">{tr("💡 Tips to Maximize Your Score")}</h3>
         <div className="mfa-tips-table-wrap">
           <table className="mfa-tips-table">
             <thead>
               <tr>
                 <th className="mfa-th-icon"></th>
-                <th>Tip</th>
-                <th>What to do</th>
-                <th>Reward / Effect</th>
+                <th>{tr("Tip")}</th>
+                <th>{tr("What to do")}</th>
+                <th>{tr("Reward / Effect")}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td className="mfa-td-icon">⏰</td>
-                <td className="mfa-td-tip"><strong>Complete On Time</strong></td>
-                <td>Finish the task before the window closes</td>
-                <td className="mfa-td-reward mfa-reward-blue">Full XP earned</td>
+                <td className="mfa-td-tip"><strong>{tr("Complete On Time")}</strong></td>
+                <td>{tr("Finish the task before the window closes")}</td>
+                <td className="mfa-td-reward mfa-reward-blue">{tr("Full XP earned")}</td>
               </tr>
               <tr>
                 <td className="mfa-td-icon">⏱️</td>
-                <td className="mfa-td-tip"><strong>Late Submission</strong></td>
-                <td>Submit after the window has ended</td>
-                <td className="mfa-td-reward mfa-reward-gray">Only 5 XP</td>
+                <td className="mfa-td-tip"><strong>{tr("Late Submission")}</strong></td>
+                <td>{tr("Submit after the window has ended")}</td>
+                <td className="mfa-td-reward mfa-reward-gray">{tr("Only 5 XP")}</td>
               </tr>
               <tr>
                 <td className="mfa-td-icon">🎯</td>
-                <td className="mfa-td-tip"><strong>Perfect Accuracy</strong></td>
-                <td>Get every puzzle / task 100% correct</td>
-                <td className="mfa-td-reward mfa-reward-gold">Bonus XP</td>
+                <td className="mfa-td-tip"><strong>{tr("Perfect Accuracy")}</strong></td>
+                <td>{tr("Get every puzzle / task 100% correct")}</td>
+                <td className="mfa-td-reward mfa-reward-gold">{tr("Bonus XP")}</td>
               </tr>
               <tr>
                 <td className="mfa-td-icon">🔥</td>
-                <td className="mfa-td-tip"><strong>Daily Streak</strong></td>
-                <td>Complete tasks on consecutive days</td>
-                <td className="mfa-td-reward mfa-reward-orange">×1.2 XP multiplier</td>
+                <td className="mfa-td-tip"><strong>{tr("Daily Streak")}</strong></td>
+                <td>{tr("Complete tasks on consecutive days")}</td>
+                <td className="mfa-td-reward mfa-reward-orange">{tr("×1.2 XP multiplier")}</td>
               </tr>
               <tr>
                 <td className="mfa-td-icon">📅</td>
-                <td className="mfa-td-tip"><strong>5-Day Milestone</strong></td>
-                <td>Complete any 5 days in the challenge</td>
-                <td className="mfa-td-reward mfa-reward-green">+75 XP + Dedicated badge</td>
+                <td className="mfa-td-tip"><strong>{tr("5-Day Milestone")}</strong></td>
+                <td>{tr("Complete any 5 days in the challenge")}</td>
+                <td className="mfa-td-reward mfa-reward-green">{tr("+75 XP + Dedicated badge")}</td>
               </tr>
               <tr>
                 <td className="mfa-td-icon">🏆</td>
-                <td className="mfa-td-tip"><strong>Champion Path</strong></td>
-                <td>All 7 days completed + 5 perfect scores</td>
-                <td className="mfa-td-reward mfa-reward-trophy">🏆 Champion — highest honor</td>
+                <td className="mfa-td-tip"><strong>{tr("Champion Path")}</strong></td>
+                <td>{tr("All 7 days completed + 5 perfect scores")}</td>
+                <td className="mfa-td-reward mfa-reward-trophy">{tr("🏆 Champion — highest honor")}</td>
               </tr>
             </tbody>
           </table>
@@ -327,14 +328,14 @@ function FocusCard({ focus, index, isAdmin = false }) {
       {/* Top accent bar */}
       <div className="mfl-card-accent" />
       {isAdmin && (
-        <div className="mfl-official-badge">🏛️ ChessNexus Official</div>
+        <div className="mfl-official-badge">{tr("🏛️ ChessNexus Official")}</div>
       )}
 
       <div className="mfl-card-body">
         {/* Status pill */}
         <div className="mfl-card-status">
           <span className="mfl-status-dot" />
-          <span className="mfl-status-text">Live</span>
+          <span className="mfl-status-text">{tr("Live")}</span>
           {daysLeft > 0 && <span className="mfl-days-left">{daysLeft}d left</span>}
         </div>
 
@@ -348,7 +349,7 @@ function FocusCard({ focus, index, isAdmin = false }) {
             their name in front of the whole platform. */}
         {focus.locked && (
           <div className="mfl-locked-note">
-            🔒 Closed activity — for <strong>{focus.runBy}</strong> students
+            {tr("🔒 Closed activity — for")} <strong>{focus.runBy}</strong> {tr("students")}
           </div>
         )}
 
@@ -356,11 +357,11 @@ function FocusCard({ focus, index, isAdmin = false }) {
         <div className="mfl-card-progress">
           <div className="mfl-progress-row">
             <span className="mfl-prog-label">
-              {totalDays} day{totalDays !== 1 ? 's' : ''}
+              {totalDays} {tr("day")}{totalDays !== 1 ? 's' : ''}
             </span>
             {runningDays > 0 && (
               <span className="mfl-prog-running">
-                🟢 {runningDays} running
+                🟢 {runningDays} {tr("running")}
               </span>
             )}
           </div>
@@ -388,7 +389,7 @@ function FocusCard({ focus, index, isAdmin = false }) {
           {(() => {
             const name = focus.createdBy?.displayName || focus.createdBy?.username || '';
             const display = (!name || name.toLowerCase() === 'admin') ? 'ChessNexus' : name;
-            return <span>👤 Created by <strong>{display}</strong></span>;
+            return <span>{tr("👤 Created by")} <strong>{display}</strong></span>;
           })()}
         </div>
       </div>
@@ -398,11 +399,11 @@ function FocusCard({ focus, index, isAdmin = false }) {
           // No link: the by-id routes reject this user anyway, so offering a way
           // in would only lead to a 403.
           <span className="mfl-enter-btn mfl-enter-btn-locked">
-            🔒 {focus.runBy} students only
+            🔒 {focus.runBy} {tr("students only")}
           </span>
         ) : (
           <Link to={`/monthly-focus/${focus._id}`} className="mfl-enter-btn">
-            View Challenge →
+            {tr("View Challenge →")}
           </Link>
         )}
       </div>

@@ -15,31 +15,32 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import './AcademyDashboard.css';
 import './AcademyActivities.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Arena race + tournament already accept `academyWide` on their own create
 // routes, so those two link out to the shared create form in academy mode.
 // Team race + Monthly Focus are created inline here (their own create paths are
 // admin-only / per-coach-quota, neither of which fits an academy event).
 const CREATE_OPTIONS = [
-  { id: 'arenaRace', label: '🏁 Arena Race', to: '/arena/create?academy=1' },
-  { id: 'arenaTournament', label: '🏆 Arena Tournament', to: '/arenatournament/create?academy=1' },
-  { id: 'teamRace', label: '🏃 Team Race', inline: 'teamRace' },
-  { id: 'monthlyFocus', label: '🎯 Monthly Focus', inline: 'monthlyFocus' },
+  { id: 'arenaRace', label: tr('🏁 Arena Race'), to: '/arena/create?academy=1' },
+  { id: 'arenaTournament', label: tr('🏆 Arena Tournament'), to: '/arenatournament/create?academy=1' },
+  { id: 'teamRace', label: tr('🏃 Team Race'), inline: 'teamRace' },
+  { id: 'monthlyFocus', label: tr('🎯 Monthly Focus'), inline: 'monthlyFocus' },
 ];
 
 const TYPE_META = {
-  arena_race: { icon: '🏁', label: 'Arena Race' },
-  arena_tournament: { icon: '🏆', label: 'Arena Tournament' },
-  team_race: { icon: '🏃', label: 'Team Race' },
-  monthly_focus: { icon: '🎯', label: 'Monthly Focus' },
+  arena_race: { icon: '🏁', label: tr('Arena Race') },
+  arena_tournament: { icon: '🏆', label: tr('Arena Tournament') },
+  team_race: { icon: '🏃', label: tr('Team Race') },
+  monthly_focus: { icon: '🎯', label: tr('Monthly Focus') },
 };
 
 const TABS = [
   { id: 'all', label: 'All' },
-  { id: 'arena_race', label: '🏁 Races' },
-  { id: 'arena_tournament', label: '🏆 Tournaments' },
-  { id: 'team_race', label: '🏃 Team Races' },
-  { id: 'monthly_focus', label: '🎯 Monthly Focus' },
+  { id: 'arena_race', label: tr('🏁 Races') },
+  { id: 'arena_tournament', label: tr('🏆 Tournaments') },
+  { id: 'team_race', label: tr('🏃 Team Races') },
+  { id: 'monthly_focus', label: tr('🎯 Monthly Focus') },
 ];
 
 // One status vocabulary across four different engines, so the page reads as one
@@ -136,7 +137,7 @@ export default function AcademyActivities() {
       });
       const reach = res.data?.reach;
       setMsg(reach
-        ? `Team Race created for ${reach.students} student${reach.students === 1 ? '' : 's'} across ${reach.coaches} coach${reach.coaches === 1 ? '' : 'es'}.`
+        ? tr("Team Race created for {students} student{v1} across {coaches} coach{v3}.", { students: reach.students, v1: reach.students === 1 ? '' : 's', coaches: reach.coaches, v3: reach.coaches === 1 ? '' : 'es' })
         : 'Team Race created.');
       setForm(null);
       setTr({ raceName: '', topic: topics[0]?.id || '', duration: 10, scheduledStartTime: defaultStartLocal() });
@@ -161,7 +162,7 @@ export default function AcademyActivities() {
       });
       const reach = res.data?.reach;
       setMsg(reach
-        ? `Monthly Focus created for ${reach.students} student${reach.students === 1 ? '' : 's'}. Add days, then activate it.`
+        ? tr("Monthly Focus created for {students} student{v1}. Add days, then activate it.", { students: reach.students, v1: reach.students === 1 ? '' : 's' })
         : 'Monthly Focus created. Add days, then activate it.');
       setForm(null);
       setMf({ title: '', theme: 'tactics', startDate: '', endDate: '' });
@@ -173,7 +174,7 @@ export default function AcademyActivities() {
     }
   };
 
-  if (loading && !ctx) return <div className="acad-wrap"><div className="acad-empty">Loading activities…</div></div>;
+  if (loading && !ctx) return <div className="acad-wrap"><div className="acad-empty">{tr("Loading activities…")}</div></div>;
   if (err && !ctx) return <div className="acad-wrap"><div className="acad-error">⚠️ {err}</div></div>;
 
   const shown = tab === 'all' ? activities : activities.filter(a => a.type === tab);
@@ -192,9 +193,9 @@ export default function AcademyActivities() {
             Academy Activities
           </h1>
           <div className="acad-code">
-            Run across every coach in {ctx?.academy?.name || 'your academy'} ·{' '}
-            <strong>{ctx?.studentCount || 0}</strong> student{ctx?.studentCount === 1 ? '' : 's'} ·{' '}
-            <strong>{ctx?.coachCount || 0}</strong> coach{ctx?.coachCount === 1 ? '' : 'es'}
+            {tr("Run across every coach in")} {ctx?.academy?.name || tr('your academy')} ·{' '}
+            <strong>{ctx?.studentCount || 0}</strong> {tr("student")}{ctx?.studentCount === 1 ? '' : 's'} ·{' '}
+            <strong>{ctx?.coachCount || 0}</strong> {tr("coach")}{ctx?.coachCount === 1 ? '' : 'es'}
           </div>
         </div>
         <div className="acad-act-headbtns">
@@ -203,10 +204,10 @@ export default function AcademyActivities() {
               <button
                 className="acad-act-create"
                 disabled={noStudents}
-                title={noStudents ? 'No coach in this academy has students yet' : ''}
+                title={noStudents ? tr('No coach in this academy has students yet') : ''}
                 onClick={() => setShowMenu(v => !v)}
               >
-                ➕ Create Activity ▾
+                {tr("➕ Create Activity ▾")}
               </button>
               {showMenu && (
                 <>
@@ -230,7 +231,7 @@ export default function AcademyActivities() {
               )}
             </div>
           )}
-          <Link to="/academy/overview" className="acad-act-back">← Overview</Link>
+          <Link to="/academy/overview" className="acad-act-back">{tr("← Overview")}</Link>
         </div>
       </div>
 
@@ -243,7 +244,7 @@ export default function AcademyActivities() {
         <div className="acad-act-note">
           👀 You can follow every academy-wide activity here. Only the academy head
           can create them — your own class activities are unaffected and stay on
-          your <Link to="/coach/activities">Coach Activities</Link> page.
+          {tr("your")} <Link to="/coach/activities">{tr("Coach Activities")}</Link> {tr("page.")}
         </div>
       )}
 
@@ -257,35 +258,35 @@ export default function AcademyActivities() {
       {/* ── Inline create: Team Race ── */}
       {form === 'teamRace' && (
         <form className="acad-act-form" onSubmit={createTeamRace}>
-          <h3>🏃 New academy Team Race</h3>
+          <h3>{tr("🏃 New academy Team Race")}</h3>
           <div className="acad-act-grid">
             <label>
-              <span>Race name</span>
+              <span>{tr("Race name")}</span>
               <input value={tr.raceName} onChange={e => setTr({ ...tr, raceName: e.target.value })}
-                     placeholder="Friday Team Sprint" required maxLength={80} />
+                     placeholder={tr("Friday Team Sprint")} required maxLength={80} />
             </label>
             <label>
-              <span>Topic</span>
+              <span>{tr("Topic")}</span>
               <select value={tr.topic} onChange={e => setTr({ ...tr, topic: e.target.value })} required>
                 {topics.map(t => <option key={t.id} value={t.id}>{t.name || t.id}</option>)}
               </select>
             </label>
             <label>
-              <span>Duration (minutes)</span>
+              <span>{tr("Duration (minutes)")}</span>
               <input type="number" min={1} max={120} value={tr.duration}
                      onChange={e => setTr({ ...tr, duration: e.target.value })} required />
             </label>
             <label>
-              <span>Starts at</span>
+              <span>{tr("Starts at")}</span>
               <input type="datetime-local" value={tr.scheduledStartTime}
                      onChange={e => setTr({ ...tr, scheduledStartTime: e.target.value })} required />
             </label>
           </div>
           <div className="acad-act-formbtns">
             <button type="submit" className="acad-act-create" disabled={saving}>
-              {saving ? 'Creating…' : 'Create team race'}
+              {saving ? tr('Creating…') : tr('Create team race')}
             </button>
-            <button type="button" className="acad-act-back" onClick={() => setForm(null)}>Cancel</button>
+            <button type="button" className="acad-act-back" onClick={() => setForm(null)}>{tr("Cancel")}</button>
           </div>
         </form>
       )}
@@ -293,29 +294,29 @@ export default function AcademyActivities() {
       {/* ── Inline create: Monthly Focus ── */}
       {form === 'monthlyFocus' && (
         <form className="acad-act-form" onSubmit={createMonthlyFocus}>
-          <h3>🎯 New academy Monthly Focus</h3>
+          <h3>{tr("🎯 New academy Monthly Focus")}</h3>
           <div className="acad-act-grid">
             <label>
-              <span>Title</span>
+              <span>{tr("Title")}</span>
               <input value={mf.title} onChange={e => setMf({ ...mf, title: e.target.value })}
-                     placeholder="March Tactics Push" required maxLength={120} />
+                     placeholder={tr("March Tactics Push")} required maxLength={120} />
             </label>
             <label>
-              <span>Theme</span>
+              <span>{tr("Theme")}</span>
               <select value={mf.theme} onChange={e => setMf({ ...mf, theme: e.target.value })}>
-                <option value="tactics">Tactics</option>
-                <option value="endgame">Endgame</option>
-                <option value="opening">Opening</option>
-                <option value="strategy">Strategy</option>
-                <option value="mixed">Mixed</option>
+                <option value="tactics">{tr("Tactics")}</option>
+                <option value="endgame">{tr("Endgame")}</option>
+                <option value="opening">{tr("Opening")}</option>
+                <option value="strategy">{tr("Strategy")}</option>
+                <option value="mixed">{tr("Mixed")}</option>
               </select>
             </label>
             <label>
-              <span>Starts (optional)</span>
+              <span>{tr("Starts (optional)")}</span>
               <input type="date" value={mf.startDate} onChange={e => setMf({ ...mf, startDate: e.target.value })} />
             </label>
             <label>
-              <span>Ends (optional)</span>
+              <span>{tr("Ends (optional)")}</span>
               <input type="date" value={mf.endDate} onChange={e => setMf({ ...mf, endDate: e.target.value })} />
             </label>
           </div>
@@ -325,9 +326,9 @@ export default function AcademyActivities() {
           </p>
           <div className="acad-act-formbtns">
             <button type="submit" className="acad-act-create" disabled={saving}>
-              {saving ? 'Creating…' : 'Create Monthly Focus'}
+              {saving ? tr('Creating…') : tr('Create Monthly Focus')}
             </button>
-            <button type="button" className="acad-act-back" onClick={() => setForm(null)}>Cancel</button>
+            <button type="button" className="acad-act-back" onClick={() => setForm(null)}>{tr("Cancel")}</button>
           </div>
         </form>
       )}
@@ -394,7 +395,7 @@ export default function AcademyActivities() {
 
                 {a.resultsPath && (
                   <Link to={a.resultsPath} className="acad-act-open">
-                    {done ? 'View results' : 'Watch live'}
+                    {done ? tr('View results') : tr('Watch live')}
                   </Link>
                 )}
               </div>

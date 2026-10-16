@@ -17,6 +17,7 @@
 
 import React, { useMemo } from 'react';
 import { Chess } from 'chess.js';
+import { t as tr } from '../i18n/LanguageContext';
 
 // A SAN-ish token: optional move number, then the move. Captures the number and SAN.
 const MOVE_NUM = /^(\d+)\.(\.\.)?$/;            // "1." or "4..."
@@ -104,7 +105,7 @@ export default function SolutionText({ text, startFen, accentColor = 'var(--colo
           <button
             key={i}
             onClick={() => onPlayLine(p.seq)}
-            title="Play this line on the board"
+            title={tr("Play this line on the board")}
             style={{
               display: 'inline',
               background: 'transparent',

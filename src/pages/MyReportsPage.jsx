@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api";
 import SEO from "../components/SEO";
+import { t as tr } from '../i18n/LanguageContext';
 
 const fmt = (d) =>
   d ? new Date(d).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "";
 
 const STATUS_STYLE = {
-  open: { label: "Awaiting reply", color: "var(--color-warning)", bg: "var(--color-warning-a12)" },
-  replied: { label: "Replied", color: "var(--color-success)", bg: "var(--color-success-a12)" },
-  closed: { label: "Closed", color: "var(--color-text-muted)", bg: "rgba(156,163,175,0.12)" },
+  open: { label: tr("Awaiting reply"), color: "var(--color-warning)", bg: "var(--color-warning-a12)" },
+  replied: { label: tr("Replied"), color: "var(--color-success)", bg: "var(--color-success-a12)" },
+  closed: { label: tr("Closed"), color: "var(--color-text-muted)", bg: "rgba(156,163,175,0.12)" },
 };
 
 export default function MyReportsPage() {
@@ -39,28 +40,28 @@ export default function MyReportsPage() {
 
   return (
     <div style={{ maxWidth: 760, margin: "0 auto", padding: "32px 18px 64px", color: "var(--color-text)", fontFamily: "'Poppins', system-ui, sans-serif" }}>
-      <SEO title="My Reports — Chess Nexus" canonical="/my-reports" noIndex />
+      <SEO title={tr("My Reports — Chess Nexus")} canonical="/my-reports" noIndex />
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0 }}>📨 My Reports</h1>
+        <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0 }}>{tr("📨 My Reports")}</h1>
         <Link
           to="/report"
           style={{ textDecoration: "none", color: "var(--color-accent)", fontWeight: 700, fontSize: 14, padding: "8px 16px", borderRadius: 'var(--radius-lg)', background: "var(--color-accent-a12)", border: "1px solid var(--color-accent-a30)" }}
         >
-          + New report
+          {tr("+ New report")}
         </Link>
       </div>
       <p style={{ color: "var(--color-text-muted)", fontSize: 14, marginTop: 6 }}>
-        Your reports and replies from the Chess Nexus team.
+        {tr("Your reports and replies from the Chess Nexus team.")}
       </p>
 
       {loading ? (
-        <p style={{ color: "var(--color-text-muted)", marginTop: 32 }}>Loading…</p>
+        <p style={{ color: "var(--color-text-muted)", marginTop: 32 }}>{tr("Loading…")}</p>
       ) : reports.length === 0 ? (
         <div style={{ marginTop: 40, textAlign: "center", color: "var(--color-text-muted)" }}>
           <div style={{ fontSize: 40 }}>📭</div>
-          <p>You haven't sent any reports yet.</p>
-          <Link to="/report" style={{ color: "var(--color-accent)", fontWeight: 700 }}>Submit a report →</Link>
+          <p>{tr("You haven't sent any reports yet.")}</p>
+          <Link to="/report" style={{ color: "var(--color-accent)", fontWeight: 700 }}>{tr("Submit a report →")}</Link>
         </div>
       ) : (
         <div style={{ display: "grid", gap: 14, marginTop: 22 }}>
@@ -83,13 +84,13 @@ export default function MyReportsPage() {
                 {r.reply ? (
                   <div style={{ marginTop: 14, padding: "14px 16px", borderRadius: 'var(--radius-lg)', background: "var(--color-success-a12)", borderLeft: "3px solid var(--color-success)" }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-success)", marginBottom: 6 }}>
-                      ♟️ Chess Nexus Team replied · {fmt(r.repliedAt)}
+                      {tr("♟️ Chess Nexus Team replied ·")} {fmt(r.repliedAt)}
                     </div>
                     <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.65, color: "var(--color-text)", whiteSpace: "pre-wrap" }}>{r.reply}</p>
                   </div>
                 ) : (
                   <p style={{ marginTop: 12, fontSize: 13, color: "var(--color-text-muted)" }}>
-                    The team will review this and reply here shortly.
+                    {tr("The team will review this and reply here shortly.")}
                   </p>
                 )}
               </div>

@@ -1,6 +1,7 @@
 // components/ResponsiveLayout.jsx
 import { useState, useEffect } from 'react';
 import './ResponsiveLayout.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function ResponsiveLayout({ children }) {
   const [isMobile, setIsMobile] = useState(false);
@@ -24,8 +25,8 @@ export default function ResponsiveLayout({ children }) {
       <nav className="responsive-nav">
         <div className="nav-content">
           <div className="nav-brand">
-            <img src="/logo.png" alt="Chess Nexus Logo" className="logo-image" />
-            <span className="brand-text">Chess Puzzle Arena</span>
+            <img src="/logo.png" alt={tr("Chess Nexus Logo")} className="logo-image" />
+            <span className="brand-text">{tr("Chess Puzzle Arena")}</span>
           </div>
           
           {/* Desktop Navigation */}
@@ -37,7 +38,7 @@ export default function ResponsiveLayout({ children }) {
           <button 
             className={`mobile-menu-btn ${isMenuOpen ? 'active' : ''}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label={tr("Toggle menu")}
           >
             <span className="menu-line"></span>
             <span className="menu-line"></span>
@@ -63,11 +64,11 @@ export default function ResponsiveLayout({ children }) {
       {/* Responsive Footer */}
       <footer className="responsive-footer">
         <div className="footer-content">
-          <p>© 2024 Chess Puzzle Arena. All rights reserved.</p>
+          <p>{tr("© 2024 Chess Puzzle Arena. All rights reserved.")}</p>
           <div className="footer-links">
-            <a href="/privacy">Privacy</a>
-            <a href="/terms">Terms</a>
-            <a href="/contact">Contact</a>
+            <a href="/privacy">{tr("Privacy")}</a>
+            <a href="/terms">{tr("Terms")}</a>
+            <a href="/contact">{tr("Contact")}</a>
           </div>
         </div>
       </footer>
@@ -78,14 +79,14 @@ export default function ResponsiveLayout({ children }) {
 // Reusable Navigation Links Component
 function NavLinks({ onClose }) {
   const navItems = [
-    { path: '/', label: 'Dashboard' },
-    { path: '/puzzles', label: 'Puzzles' },
-    { path: '/tournament', label: 'Puzzle Tournament' },
-    { path: '/arena-race', label: 'Arena Race' },
-    { path: '/team-race', label: 'Team Race' },
-    { path: '/individual-race', label: 'Individual Race' },
-    { path: '/study', label: 'Study' },
-    { path: '/profile', label: 'Profile' },
+    { path: '/', label: tr('Dashboard') },
+    { path: '/puzzles', label: tr('Puzzles') },
+    { path: '/tournament', label: tr('Puzzle Tournament') },
+    { path: '/arena-race', label: tr('Arena Race') },
+    { path: '/team-race', label: tr('Team Race') },
+    { path: '/individual-race', label: tr('Individual Race') },
+    { path: '/study', label: tr('Study') },
+    { path: '/profile', label: tr('Profile') },
   ];
 
   return (

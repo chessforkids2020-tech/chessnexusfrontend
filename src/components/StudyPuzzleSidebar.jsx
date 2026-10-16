@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function StudyPuzzleSidebar() {
   const navigate = useNavigate();
@@ -216,17 +217,17 @@ export default function StudyPuzzleSidebar() {
         <div 
           style={styles.sidebarIcon} 
           onClick={() => handleNavigate('/')}
-          title="Chess Nexus"
+          title={tr("Chess Nexus")}
           onMouseEnter={(e) => handleMouseEnter(e, "Chess Nexus")}
           onMouseLeave={handleMouseLeave}
         >
-          <img src="/logo.png" alt="Chess Nexus" style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 'var(--radius-sm)' }} />
+          <img src="/logo.png" alt={tr("Chess Nexus")} style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 'var(--radius-sm)' }} />
           <div className="tooltip" style={styles.tooltip}></div>
         </div>
         <div 
           style={styles.sidebarIcon} 
           onClick={() => handleNavigate('/dashboard')}
-          title="Dashboard"
+          title={tr("Dashboard")}
           onMouseEnter={(e) => handleMouseEnter(e, "Dashboard")}
           onMouseLeave={handleMouseLeave}
         >
@@ -236,7 +237,7 @@ export default function StudyPuzzleSidebar() {
         <div 
           style={styles.sidebarIcon} 
           onClick={() => handleNavigate('/puzzles-hub')}
-          title="Puzzles Hub"
+          title={tr("Puzzles Hub")}
           onMouseEnter={(e) => handleMouseEnter(e, "Puzzles Hub")}
           onMouseLeave={handleMouseLeave}
         >
@@ -246,7 +247,7 @@ export default function StudyPuzzleSidebar() {
         <div 
           style={styles.sidebarIcon} 
           onClick={() => handleNavigate('/race')}
-          title="Race Hub"
+          title={tr("Race Hub")}
           onMouseEnter={(e) => handleMouseEnter(e, "Race Hub")}
           onMouseLeave={handleMouseLeave}
         >
@@ -256,7 +257,7 @@ export default function StudyPuzzleSidebar() {
         <div 
           style={styles.sidebarIcon} 
           onClick={() => handleNavigate('/study')}
-          title="Study"
+          title={tr("Study")}
           onMouseEnter={(e) => handleMouseEnter(e, "Study")}
           onMouseLeave={handleMouseLeave}
         >
@@ -266,7 +267,7 @@ export default function StudyPuzzleSidebar() {
         <div 
           style={styles.sidebarIcon} 
           onClick={() => handleNavigate('/games')}
-          title="Games"
+          title={tr("Games")}
           onMouseEnter={(e) => handleMouseEnter(e, "Games")}
           onMouseLeave={handleMouseLeave}
         >
@@ -275,7 +276,7 @@ export default function StudyPuzzleSidebar() {
         </div>
         <div 
           onClick={() => handleNavigate('/chat')}
-          title="Chat"
+          title={"Chat"}
           onMouseEnter={(e) => handleMouseEnter(e, "Chat")}
           onMouseLeave={handleMouseLeave}
         >

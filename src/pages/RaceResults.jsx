@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
 import { useChartTheme } from '../lib/chartTheme';
+import { t as tr } from '../i18n/LanguageContext';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -305,12 +306,12 @@ export default function RaceResults() {
           <div style={styles.hero}>
             <div style={styles.heroContent}>
               <div style={styles.trophyIcon}>🏁</div>
-              <h1 style={styles.heroTitle}>No Results Found</h1>
-              <p style={styles.heroSubtitle}>It looks like you haven't completed a race yet.</p>
+              <h1 style={styles.heroTitle}>{tr("No Results Found")}</h1>
+              <p style={styles.heroSubtitle}>{tr("It looks like you haven't completed a race yet.")}</p>
             </div>
           </div>
           <div style={{ textAlign: 'center', marginTop: '40px' }}>
-            <Link to="/choose-topic" style={styles.primaryButton}>Start Your First Race</Link>
+            <Link to="/choose-topic" style={styles.primaryButton}>{tr("Start Your First Race")}</Link>
           </div>
         </div>
       </div>
@@ -387,15 +388,15 @@ export default function RaceResults() {
             gap: 12,
           }}>
             <div style={{ color: 'var(--color-warning)', fontSize: 14, fontWeight: 600 }}>
-              👤 You're playing as a guest — results won't be saved.{' '}
-              <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}>Create a free account to track your progress!</span>
+              {tr("👤 You're playing as a guest — results won't be saved.")}{' '}
+              <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}>{tr("Create a free account to track your progress!")}</span>
             </div>
             <Link to="/signup-request" style={{
               background: 'linear-gradient(135deg,var(--color-warning),#d97706)',
               color: 'var(--color-text)', border: 'none', borderRadius: 'var(--radius-md)',
               padding: '8px 18px', fontWeight: 700, fontSize: 13,
               textDecoration: 'none', whiteSpace: 'nowrap',
-            }}>Request Account</Link>
+            }}>{tr("Request Account")}</Link>
           </div>
         )}
 
@@ -404,60 +405,60 @@ export default function RaceResults() {
           <div style={styles.heroContent}>
             <div style={styles.titleRow}>
               <div style={styles.trophyIcon} className="rr-trophy-icon">🏆</div>
-              <h1 style={styles.heroTitle} className="rr-hero-title">Race Complete!</h1>
+              <h1 style={styles.heroTitle} className="rr-hero-title">{tr("Race Complete!")}</h1>
             </div>
-            <p style={styles.heroSubtitle}>Great job finishing the timed race!</p>
+            <p style={styles.heroSubtitle}>{tr("Great job finishing the timed race!")}</p>
           </div>
         </div>
 
         <div style={styles.mainGrid} className="rr-main-grid">
           {/* Personal Stats */}
           <div style={styles.glassCard} className="rr-glass-card">
-            <h3 style={styles.cardTitle} className="rr-card-title">Your Performance</h3>
+            <h3 style={styles.cardTitle} className="rr-card-title">{tr("Your Performance")}</h3>
             <div style={styles.scoreDisplay}>
               <div style={styles.scoreNumber} className="rr-score-number">{points}</div>
-              <div style={styles.scoreLabel}>Points</div>
+              <div style={styles.scoreLabel}>{tr("Points")}</div>
             </div>
 
             <div style={styles.statsGrid} className="rr-stats-grid">
               <div style={styles.statItem} className="rr-stat-item">
                 <div style={styles.statIcon}>✅</div>
                 <div style={styles.statValue}>{totalCorrect}</div>
-                <div style={styles.statLabelSmall}>Correct</div>
+                <div style={styles.statLabelSmall}>{tr("Correct")}</div>
               </div>
               <div style={styles.statItem} className="rr-stat-item">
                 <div style={styles.statIcon}>❌</div>
                 <div style={styles.statValue}>{totalWrong}</div>
-                <div style={styles.statLabelSmall}>Wrong</div>
+                <div style={styles.statLabelSmall}>{tr("Wrong")}</div>
               </div>
             </div>
 
             <div style={styles.accuracySection}>
-              <div style={styles.accuracyLabel}>Accuracy: {percentCorrect}%</div>
+              <div style={styles.accuracyLabel}>{tr("Accuracy:")} {percentCorrect}%</div>
               <div style={styles.progressBar}>
                 <div style={{...styles.progressFill, width: `${percentCorrect}%`}}></div>
               </div>
             </div>
 
             <div style={styles.buttonGroup}>
-              <Link to="/choose-topic" style={styles.primaryButton}>Race Again</Link>
+              <Link to="/choose-topic" style={styles.primaryButton}>{tr("Race Again")}</Link>
             </div>
           </div>
 
           {/* Charts Section */}
           <div style={styles.glassCard} className="rr-glass-card">
-            <h3 style={styles.cardTitle} className="rr-card-title">Performance Analysis</h3>
+            <h3 style={styles.cardTitle} className="rr-card-title">{tr("Performance Analysis")}</h3>
 
             {attempts && attempts.length > 0 ? (
               <>
                 <div style={styles.chartRow} className="rr-chart-row">
                   <div style={styles.chartContainer} className="rr-chart-container">
-                    <h4 style={styles.chartTitle}>Attempt Results</h4>
+                    <h4 style={styles.chartTitle}>{tr("Attempt Results")}</h4>
                     <Line
                       data={{
                         labels: attempts.map((a, i) => `${i+1}`),
                         datasets: [{
-                          label: 'Correct/Incorrect',
+                          label: tr('Correct/Incorrect'),
                           data: attempts.map(a => a.correct ? 1 : -1),
                           borderColor: chartColors.success,
                           backgroundColor: chartColors.successFill,
@@ -484,7 +485,7 @@ export default function RaceResults() {
                           },
                           x: { 
                             ...chartOptions.scales.x,
-                            title: { display: true, text: 'Puzzle #', color: 'var(--color-text-muted)' } 
+                            title: { display: true, text: tr('Puzzle #'), color: 'var(--color-text-muted)' } 
                           }
                         },
                         plugins: { legend: { display: false } },
@@ -493,12 +494,12 @@ export default function RaceResults() {
                   </div>
 
                   <div style={styles.chartContainer} className="rr-chart-container">
-                    <h4 style={styles.chartTitle}>Point Progression</h4>
+                    <h4 style={styles.chartTitle}>{tr("Point Progression")}</h4>
                     <Line
                       data={{
                         labels: attempts.map((a, i) => `${i+1}`),
                         datasets: [{
-                          label: 'Cumulative Points',
+                          label: tr('Cumulative Points'),
                           data: (function() {
                             let sum = 0;
                             return attempts.map(a => { sum += (a.correct ? 10 : 0); return sum; });
@@ -519,7 +520,7 @@ export default function RaceResults() {
                           y: { 
                             ...chartOptions.scales.y,
                             beginAtZero: true, 
-                            title: { display: true, text: 'Points', color: 'var(--color-text-muted)' } 
+                            title: { display: true, text: tr('Points'), color: 'var(--color-text-muted)' } 
                           } 
                         },
                         plugins: { legend: { display: false } },
@@ -529,12 +530,12 @@ export default function RaceResults() {
                 </div>
 
                 <div style={styles.timeChart} className="rr-time-chart">
-                  <h4 style={styles.chartTitle}>Time per Puzzle</h4>
+                  <h4 style={styles.chartTitle}>{tr("Time per Puzzle")}</h4>
                   <Bar
                     data={{
                       labels: attempts.map((a, i) => `${i+1}`),
                       datasets: [{
-                        label: 'Time (seconds)',
+                        label: tr('Time (seconds)'),
                         data: attempts.map(a => a.timeTakenSec || 0),
                         backgroundColor: attempts.map(a => a.correct ? 'rgba(16, 185, 129, 0.8)' : 'rgba(220, 53, 69, 0.8)'),
                       }]
@@ -547,7 +548,7 @@ export default function RaceResults() {
                         y: { 
                           ...chartOptions.scales.y,
                           beginAtZero: true, 
-                          title: { display: true, text: 'Seconds', color: 'var(--color-text-muted)' } 
+                          title: { display: true, text: tr('Seconds'), color: 'var(--color-text-muted)' } 
                         } 
                       }
                     }}
@@ -555,7 +556,7 @@ export default function RaceResults() {
                 </div>
               </>
             ) : (
-              <div style={styles.noData}>No attempts recorded</div>
+              <div style={styles.noData}>{tr("No attempts recorded")}</div>
             )}
           </div>
         </div>

@@ -1,0 +1,85 @@
+/* styles/tokens/typography.css
+ *
+ * ONE TYPE PLAN FOR EVERY DEVICE.
+ *
+ * The app had ~3,800 hand-typed font sizes across 204 distinct values (13px,
+ * 12.5px, 13.5px, 11.5px …) and no rule for how a title, body text or a tab
+ * label should size on desktop vs tablet vs phone. Each page decided for itself,
+ * so the same kind of text looked different from page to page.
+ *
+ * These tokens name a ROLE, not a pixel size. A page says "this is a page
+ * title" (var(--fs-page-title)) and the value it gets already depends on the
+ * device. Change a value here and every migrated page follows.
+ *
+ * DEVICE TIERS (match styles/breakpoints.css — use ONLY these widths in new
+ * media queries):
+ *   phone    ≤ 480px
+ *   tablet   481–1024px  (layout may still switch at 768px for stacking;
+ *                         type changes only at 1024 and 480)
+ *   desktop  > 1024px
+ *
+ * Px, not rem: the rest of the app is written in px, and these values were
+ * chosen by measuring the existing pages, so px keeps them comparable.
+ *
+ * Migration: pages are moved onto these tokens one at a time (Social Hub is
+ * the pilot). An unmigrated page is unaffected — nothing here applies itself.
+ */
+
+:root {
+  /* ── Roles — desktop ─────────────────────────────────────────────── */
+  --fs-display: 36px;        /* hero / landing headline */
+  --fs-page-title: 30px;     /* one per page: "Social Hub", "Puzzles" */
+  --fs-section-title: 20px;  /* a block inside a page: "Most Active" */
+  --fs-card-title: 16px;     /* a card or list-item heading */
+  --fs-body: 15px;           /* paragraphs, descriptions, chat */
+  --fs-small: 13px;          /* secondary text, meta lines, table cells */
+  --fs-caption: 12px;        /* badges, timestamps, UPPERCASE eyebrow labels */
+  --fs-micro: 10px;          /* tiny in-pill labels only ("LIVE", status dots) */
+  --fs-button: 14px;         /* page-specific buttons (generic .btn* use --btn-font-*) */
+  --fs-tab: 14px;            /* top-level tab labels */
+  --fs-input: 15px;          /* text inputs, selects, search boxes */
+  --fs-stat: 28px;           /* big numbers on stat tiles */
+
+  /* ── Weight & rhythm ─────────────────────────────────────────────── */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-heavy: 800;
+
+  --lh-tight: 1.2;   /* titles */
+  --lh-snug: 1.35;   /* buttons, tabs, card titles */
+  --lh-body: 1.55;   /* reading text */
+
+  --ls-caption: 0.6px;   /* letter-spacing for UPPERCASE captions */
+
+  /* Room to leave on the left of a page heading when the floating ☰ button
+     (UserLayout, portrait ≤1024px) is on screen. ~40px tap target + gap. */
+  --menu-btn-clearance: 44px;
+}
+
+/* ── Tablet ────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  :root {
+    --fs-display: 32px;
+    --fs-page-title: 26px;
+    --fs-section-title: 18px;
+    --fs-tab: 13px;
+    --fs-stat: 24px;
+  }
+}
+
+/* ── Phone ─────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  :root {
+    --fs-display: 28px;
+    --fs-page-title: 24px;
+    --fs-section-title: 17px;
+    --fs-card-title: 15px;
+    --fs-body: 14px;
+    --fs-tab: 12px;
+    /* 16px stops iOS Safari auto-zooming the page when an input is focused. */
+    --fs-input: 16px;
+    --fs-stat: 22px;
+  }
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { t as tr } from '../i18n/LanguageContext';
 
 const ConfirmDialog = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -108,13 +109,13 @@ const ConfirmDialog = () => {
             onClick={handleCancel}
             autoFocus
           >
-            Cancel
+            {tr("Cancel")}
           </button>
           <button
             style={{...styles.button, ...styles.confirmButton}}
             onClick={handleConfirm}
           >
-            Confirm
+            {tr("Confirm")}
           </button>
         </div>
       </div>

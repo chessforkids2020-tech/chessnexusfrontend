@@ -18,6 +18,7 @@ import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useSupporterRefresh } from '../context/SupporterContext';
 import SEO from '../components/SEO';
+import { t as tr } from '../i18n/LanguageContext';
 
 const C = {
   base: 'var(--color-bg)',
@@ -44,24 +45,24 @@ const C = {
 // from everyone who bought that tier — change the `name` shown to users, never
 // the id.
 const COFFEE_TIERS_INR = [
-  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 149 },
-  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 250 },
-  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 500 }
+  { id: 'simple',   emoji: '♞', name: tr('Knight'),         title: null, base: 149 },
+  { id: 'espresso', emoji: '⚔', name: tr('Nexus Supporter'), title: 'NS', base: 250 },
+  { id: 'latte',    emoji: '👑', name: tr('Nexus Expert'),   title: 'NX', base: 500 }
 ];
 
 const COFFEE_TIERS_USD = [
-  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 3 },
-  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 5 },
-  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 10 }
+  { id: 'simple',   emoji: '♞', name: tr('Knight'),         title: null, base: 3 },
+  { id: 'espresso', emoji: '⚔', name: tr('Nexus Supporter'), title: 'NS', base: 5 },
+  { id: 'latte',    emoji: '👑', name: tr('Nexus Expert'),   title: 'NX', base: 10 }
 ];
 
 // Duration options shown as tabs above the tiers. They multiply the price and
 // set how long the title lasts.
 const DURATIONS = [
-  { months: 1,  label: '1 Month'   },
-  { months: 3,  label: '3 Months'  },
-  { months: 6,  label: '6 Months'  },
-  { months: 12, label: '12 Months' }
+  { months: 1,  label: tr('1 Month')   },
+  { months: 3,  label: tr('3 Months')  },
+  { months: 6,  label: tr('6 Months')  },
+  { months: 12, label: tr('12 Months') }
 ];
 
 const DEFAULT_MONTHS = 3;          // 3 months selected by default
@@ -146,7 +147,7 @@ export default function BuyMeACoffee() {
   // The name used in the "this is how it will look" previews. Falls back to a
   // placeholder for a signed-out visitor, who is exactly the person the preview
   // has to convince.
-  const previewName = user?.displayName || user?.username || 'YourName';
+  const previewName = user?.displayName || user?.username || tr('YourName');
 
   const switchCurrency = (c) => {
     userToggledCurrency.current = true;
@@ -188,7 +189,7 @@ export default function BuyMeACoffee() {
       // 2. Load Razorpay Checkout script
       const loaded = await loadRazorpayScript();
       if (!loaded) {
-        alert('Could not load payment gateway. Please check your connection and try again.');
+        alert(tr('Could not load payment gateway. Please check your connection and try again.'));
         setSubmitting(false);
         return;
       }
@@ -199,7 +200,7 @@ export default function BuyMeACoffee() {
         amount: Math.round(effectiveAmount * 100),
         currency,
         name: 'ChessNexus',
-        description: `${selectedCoffee?.name} — ${effectiveMonths} ${effectiveMonths === 1 ? 'month' : 'months'} supporter badge`,
+        description: tr("{name} — {effectiveMonths} {v2} supporter badge", { name: selectedCoffee?.name, effectiveMonths: effectiveMonths, v2: effectiveMonths === 1 ? 'month' : 'months' }),
         order_id: orderId,
         prefill: { name: user?.displayName || '' },
         theme: { color: 'var(--color-warning)' },
@@ -249,7 +250,7 @@ export default function BuyMeACoffee() {
     const coffeeObj = selectedCoffee;
     const displayAmt = effectiveAmount;
     const symbol = currency === 'INR' ? '₹' : '$';
-    const monthsLabel = effectiveMonths === 1 ? '1 month' : `${effectiveMonths} months`;
+    const monthsLabel = effectiveMonths === 1 ? '1 month' : tr("{effectiveMonths} months", { effectiveMonths: effectiveMonths });
     return (
       <div style={styles.page}>
         <div style={styles.bgGlow} />
@@ -259,7 +260,7 @@ export default function BuyMeACoffee() {
             onClick={() => { setStep('pick'); setConfirmFor(null); setProviderRef(''); setThankYou(false); }}
             style={{ background: 'transparent', border: 'none', color: C.textDim, cursor: 'pointer', fontSize: 14, padding: '6px 0', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Poppins, sans-serif', marginBottom: 24 }}
           >
-            ← Back
+            {tr("← Back")}
           </button>
 
           <div style={{ maxWidth: 460, margin: '0 auto' }}>
@@ -270,7 +271,7 @@ export default function BuyMeACoffee() {
                 <div style={{ textAlign: 'center', padding: '28px 24px 20px', borderBottom: `1px solid ${C.panelBorder}` }}>
                   <div style={{ fontSize: 54 }}>{coffeeObj?.emoji || '♞'}</div>
                   <div style={{ color: C.textDim, fontSize: 13, marginTop: 6 }}>
-                    {coffeeObj?.name || 'Custom amount'} · {monthsLabel}
+                    {coffeeObj?.name || tr('Custom amount')} · {monthsLabel}
                   </div>
                   <div style={{ fontSize: 46, fontWeight: 800, color: C.amber, margin: '6px 0 2px', fontFamily: 'Poppins, sans-serif', lineHeight: 1 }}>
                     {symbol}{displayAmt}
@@ -282,7 +283,7 @@ export default function BuyMeACoffee() {
 
                 {/* Badge preview */}
                 <div style={{ padding: '20px 24px', borderBottom: `1px solid ${C.panelBorder}` }}>
-                  <div style={{ color: C.textDim, fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 12 }}>What you'll get</div>
+                  <div style={{ color: C.textDim, fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 12 }}>{tr("What you'll get")}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 'var(--radius-lg)', padding: '10px 14px', marginBottom: 12 }}>
                     {/* Live preview of the exact title this tier grants, in the
                         same order it renders app-wide: title, then name. */}
@@ -291,15 +292,15 @@ export default function BuyMeACoffee() {
                     )}
                     <span style={{ color: C.text, fontWeight: 700, fontSize: 16 }}>{user?.displayName || 'You'}</span>
                     {!coffeeObj?.title && <span style={{ fontSize: 18, color: 'var(--color-accent)' }}>♞</span>}
-                    <span style={{ color: C.amber, fontSize: 11, fontWeight: 600, background: 'var(--color-warning-a12)', padding: '2px 8px', borderRadius: 'var(--radius-pill)' }}>Preview</span>
+                    <span style={{ color: C.amber, fontSize: 11, fontWeight: 600, background: 'var(--color-warning-a12)', padding: '2px 8px', borderRadius: 'var(--radius-pill)' }}>{tr("Preview")}</span>
                   </div>
                   <p style={{ color: C.textDim, fontSize: 13, lineHeight: 1.65, margin: 0 }}>
                     {coffeeObj?.title ? (
-                      <>The <strong className="nexus-title">{coffeeObj.title}</strong> title appears before your name for{' '}</>
+                      <>{tr("The")} <strong className="nexus-title">{coffeeObj.title}</strong> {tr("title appears before your name for")}{' '}</>
                     ) : (
-                      <>A <strong style={{ color: 'var(--color-accent)' }}>♞ knight</strong> appears beside your name for{' '}</>
+                      <>A <strong style={{ color: 'var(--color-accent)' }}>{tr("♞ knight")}</strong> {tr("appears beside your name for")}{' '}</>
                     )}
-                    <strong style={{ color: C.text }}>{monthsLabel}</strong> — visible on your dashboard, leaderboards, chat and everywhere on ChessNexus. One-time payment, no auto-renewal.
+                    <strong style={{ color: C.text }}>{monthsLabel}</strong> {tr("— visible on your dashboard, leaderboards, chat and everywhere on ChessNexus. One-time payment, no auto-renewal.")}
                   </p>
                 </div>
 
@@ -311,26 +312,26 @@ export default function BuyMeACoffee() {
                     onClick={handlePayNow}
                     style={{ ...styles.primaryBtn, width: '100%', fontSize: 15, padding: '14px 20px', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxSizing: 'border-box', opacity: submitting ? 0.7 : 1 }}
                   >
-                    {submitting ? 'Opening payment…' : 'Confirm & Pay with Razorpay'}
+                    {submitting ? tr('Opening payment…') : tr('Confirm & Pay with Razorpay')}
                   </button>
                   <div style={{ color: C.textFaint, fontSize: 12, textAlign: 'center', marginTop: 10 }}>
-                    Accepts UPI · Credit card · Debit card
+                    {tr("Accepts UPI · Credit card · Debit card")}
                   </div>
                 </div>
               </div>
             ) : (
               <div style={styles.thankBox}>
                 <div style={{ fontSize: 40, marginBottom: 10 }}>♞✨</div>
-                <div style={{ fontWeight: 700, color: C.text, fontSize: 18 }}>Welcome, supporter!</div>
+                <div style={{ fontWeight: 700, color: C.text, fontSize: 18 }}>{tr("Welcome, supporter!")}</div>
                 <div style={{ color: C.textDim, fontSize: 14, marginTop: 8, lineHeight: 1.6 }}>
-                  Your title is now live next to your name — visible on your dashboard, leaderboards, and everywhere on ChessNexus. You're literally fuelling the next feature.
+                  {tr("Your title is now live next to your name — visible on your dashboard, leaderboards, and everywhere on ChessNexus. You're literally fuelling the next feature.")}
                 </div>
                 <button
                   type="button"
                   onClick={() => navigate('/dashboard')}
                   style={{ ...styles.primaryBtn, marginTop: 18, padding: '10px 24px', borderRadius: 'var(--radius-lg)' }}
                 >
-                  Go to my dashboard →
+                  {tr("Go to my dashboard →")}
                 </button>
               </div>
             )}
@@ -346,8 +347,8 @@ export default function BuyMeACoffee() {
           which points at '/' — Google would fold this page into the homepage
           as a duplicate and never index it. */}
       <SEO
-        title="Support Chess Nexus — Earn Your Nexus Title"
-        description="Chess Nexus is free with no ads. If it has helped you or your students, support it once and earn a Nexus title — NS or NX — shown before your name across the site."
+        title={tr("Support Chess Nexus — Earn Your Nexus Title")}
+        description={tr("Chess Nexus is free with no ads. If it has helped you or your students, support it once and earn a Nexus title — NS or NX — shown before your name across the site.")}
         keywords="support chess nexus, donate chess platform, nexus title, chess supporter title"
         canonical="/nexus-supporter"
       />
@@ -356,9 +357,9 @@ export default function BuyMeACoffee() {
       <div style={styles.container}>
         {/* Hero */}
         <div style={styles.hero}>
-          <div style={styles.heroBadge}>♞ Support ChessNexus</div>
+          <div style={styles.heroBadge}>{tr("♞ Support ChessNexus")}</div>
           <h1 style={styles.heroTitle}>
-            Your support keeps  <span style={{ color: C.cyan }}>ChessNexus</span> alive
+            {tr("Your support keeps")}  <span style={{ color: C.cyan }}>{tr("ChessNexus")}</span> {tr("alive")}
           </h1>
           <p style={styles.heroLead}>
            People say chess is a lonely game.
@@ -367,16 +368,16 @@ ChessNexus says otherwise.
 Every supporter helps build real-time arenas, tournaments, puzzles, and the future of multiplayer chess.
           </p>
           {myStatus.active && (
-            <div style={styles.thankPill}>♞ You're an active supporter — thank you! Your badge is showing next to your name.</div>
+            <div style={styles.thankPill}>{tr("♞ You're an active supporter — thank you! Your badge is showing next to your name.")}</div>
           )}
           {!myStatus.active && myStatus.pendingCount > 0 && (
-            <div style={styles.pendingPill}>We've got your message — your badge will appear shortly.</div>
+            <div style={styles.pendingPill}>{tr("We've got your message — your badge will appear shortly.")}</div>
           )}
           {/* Founding-supporter draw — only while early spots remain and the viewer
               isn't already a supporter. Honest scarcity, not fake proof. */}
           {!myStatus.active && !loading && foundingLeft > 0 && (
             <div style={styles.foundingPill}>
-              👑 Founding Supporter — our first {FOUNDING_LIMIT} backers get a <strong>permanent</strong> badge that never expires.
+              {tr("👑 Founding Supporter — our first")} {FOUNDING_LIMIT} {tr("backers get a")} <strong>{tr("permanent")}</strong> {tr("badge that never expires.")}
             </div>
           )}
         </div>
@@ -393,14 +394,14 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
           <span style={styles.xpPerkIcon}>🔓</span>
           <div>
             <div style={styles.xpPerkTitle}>
-              Supporters never spend XP on locked activities
+              {tr("Supporters never spend XP on locked activities")}
             </div>
             <p style={styles.xpPerkText}>
-              While your support is active, every locked activity opens for free — no XP needed.
-              <strong style={{ color: C.text }}> Premium endgames</strong>,
-              <strong style={{ color: C.text }}> playing endgames out against Stockfish</strong>,
-              the <strong style={{ color: C.text }}>opening repertoire trainer</strong> and
-              all <strong style={{ color: C.text }}>Nexus books</strong> unlock instantly.
+              {tr("While your support is active, every locked activity opens for free — no XP needed.")}
+              <strong style={{ color: C.text }}> {tr("Premium endgames")}</strong>,
+              <strong style={{ color: C.text }}> {tr("playing endgames out against Stockfish")}</strong>,
+              {tr("the")} <strong style={{ color: C.text }}>{tr("opening repertoire trainer")}</strong> {tr("and")}
+              {tr("all")} <strong style={{ color: C.text }}>{tr("Nexus books")}</strong> {tr("unlock instantly.")}
               Save your XP — or never earn it at all.
             </p>
           </div>
@@ -408,7 +409,7 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
 
         {/* Currency switch */}
         <div style={styles.sectionTitleRow}>
-          <h2 style={styles.sectionTitle}>Choose your title</h2>
+          <h2 style={styles.sectionTitle}>{tr("Choose your title")}</h2>
           <div style={styles.currencyToggle}>
             {['INR', 'USD'].map(c => (
               <button
@@ -428,7 +429,7 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
         {/* Duration selector — sets badge length and multiplies the price */}
         <div style={{ marginBottom: 18 }}>
           <div style={{ color: C.textDim, fontSize: 13, fontWeight: 600, marginBottom: 8 }}>
-            How long should your title last?
+            {tr("How long should your title last?")}
           </div>
           <div style={styles.durationTabs}>
             {DURATIONS.map(d => {
@@ -449,7 +450,7 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
             })}
           </div>
           <div style={{ color: C.textFaint, fontSize: 12, marginTop: 8 }}>
-            One-time payment, no auto-renewal. Tier price × {effectiveMonths}{' '}
+            {tr("One-time payment, no auto-renewal. Tier price ×")} {effectiveMonths}{' '}
             {effectiveMonths === 1 ? 'month' : 'months'}.
           </div>
         </div>
@@ -517,24 +518,24 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
             unlocks all of them; the tier only decides the title. */}
         <div style={styles.perksCard}>
           <div style={styles.perksHead}>
-            <span style={styles.perksEyebrow}>♞ EVERY SUPPORTER GETS</span>
-            <span style={styles.perksSubtle}>Any tier — the tier only sets your title</span>
+            <span style={styles.perksEyebrow}>{tr("♞ EVERY SUPPORTER GETS")}</span>
+            <span style={styles.perksSubtle}>{tr("Any tier — the tier only sets your title")}</span>
           </div>
           <div style={styles.perksGrid}>
-            <Perk icon="🎯" title="Create Monthly Focus challenges"
-                  text="Design your own month-long training plans and share them." />
-            <Perk icon="🏁" title="Host Team Races"
-                  text="Create races, build teams, assign players and run the whole event." />
-            <Perk icon="☁️" title="Opening repertoire in the cloud"
-                  text="Unlimited saves — no XP, no cap." />
-            <Perk icon="♟️" title="Endgame trainer and play"
-                  text="Every position open, against the engine or as a drill. No XP." />
-            <Perk icon="📚" title="All Nexus books"
-                  text="Read the full library free." />
-            <Perk icon="📊" title="Weekly practice report"
-                  text="Your 5-day report, free every time. Normally 100 XP." />
-            <Perk icon="🎨" title="All six app themes"
-                  text="Including the three that cost 1,000 XP each." />
+            <Perk icon="🎯" title={tr("Create Monthly Focus challenges")}
+                  text={tr("Design your own month-long training plans and share them.")} />
+            <Perk icon="🏁" title={tr("Host Team Races")}
+                  text={tr("Create races, build teams, assign players and run the whole event.")} />
+            <Perk icon="☁️" title={tr("Opening repertoire in the cloud")}
+                  text={tr("Unlimited saves — no XP, no cap.")} />
+            <Perk icon="♟️" title={tr("Endgame trainer and play")}
+                  text={tr("Every position open, against the engine or as a drill. No XP.")} />
+            <Perk icon="📚" title={tr("All Nexus books")}
+                  text={tr("Read the full library free.")} />
+            <Perk icon="📊" title={tr("Weekly practice report")}
+                  text={tr("Your 5-day report, free every time. Normally 100 XP.")} />
+            <Perk icon="🎨" title={tr("All six app themes")}
+                  text={tr("Including the three that cost 1,000 XP each.")} />
           </div>
           <p style={styles.perksFoot}>
             Everything above is unlocked for as long as your support runs — no XP
@@ -551,7 +552,7 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
             onClick={handleContinue}
             style={{ ...styles.primaryBtn, padding: '13px 32px', fontSize: 15, borderRadius: 'var(--radius-lg)', opacity: canContinue ? 1 : 0.5, cursor: canContinue ? 'pointer' : 'not-allowed' }}
           >
-            Continue · {currency === 'INR' ? '₹' : '$'}{effectiveAmount} for {effectiveMonths}{' '}
+            {tr("Continue ·")} {currency === 'INR' ? '₹' : '$'}{effectiveAmount} {tr("for")} {effectiveMonths}{' '}
             {effectiveMonths === 1 ? 'month' : 'months'} →
           </button>
         </div>
@@ -560,38 +561,38 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
         <div style={{ marginTop: 26 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
             <div style={{ flex: 1, height: 1, background: 'var(--color-white-a07)' }} />
-            <span style={{ color: 'var(--color-warning)', fontSize: 13, fontWeight: 700, letterSpacing: 0.5, whiteSpace: 'nowrap' }}>♞ WHERE YOUR SUPPORT GOES</span>
+            <span style={{ color: 'var(--color-warning)', fontSize: 13, fontWeight: 700, letterSpacing: 0.5, whiteSpace: 'nowrap' }}>{tr("♞ WHERE YOUR SUPPORT GOES")}</span>
             <div style={{ flex: 1, height: 1, background: 'var(--color-white-a07)' }} />
           </div>
           <div style={styles.whyGrid}>
             <WhyCard
               icon="🖥️"
-              title="Always-On Servers"
-              text="Every cup helps keep ChessNexus.in running 24 × 7. No downtime, no slow nights — just fast, reliable chess for everyone, always."
+              title={tr("Always-On Servers")}
+              text={tr("Every cup helps keep ChessNexus.in running 24 × 7. No downtime, no slow nights — just fast, reliable chess for everyone, always.")}
               accent="var(--color-accent-a20)"
               border="var(--color-accent-a20)"
               step="01"
             />
             <WhyCard
               icon="🗄️"
-              title="Your Progress, Remembered"
-              text="Your games, ratings, streaks, and puzzle history need a home. Your support keeps our databases healthy so every move you make is recorded and learned from."
+              title={tr("Your Progress, Remembered")}
+              text={tr("Your games, ratings, streaks, and puzzle history need a home. Your support keeps our databases healthy so every move you make is recorded and learned from.")}
               accent="var(--color-success-a20)"
               border="var(--color-success-a20)"
               step="02"
             />
             <WhyCard
               icon="👨‍💻"
-              title="Full-Time Developers"
-              text="The people who build arenas, 3D rooms, team races, and everything in between work full time for ChessNexus. Your support is what keeps them here — building for you."
+              title={tr("Full-Time Developers")}
+              text={tr("The people who build arenas, 3D rooms, team races, and everything in between work full time for ChessNexus. Your support is what keeps them here — building for you.")}
               accent="var(--color-accent-2-a15)"
               border="var(--color-accent-2-a15)"
               step="03"
             />
             <WhyCard
               icon="🧑‍🏫"
-              title="Live Classroom"
-              text="Real-time video classes where coaches teach on a shared board — the servers, video, and tools that let every lesson happen live keep running on your support."
+              title={tr("Live Classroom")}
+              text={tr("Real-time video classes where coaches teach on a shared board — the servers, video, and tools that let every lesson happen live keep running on your support.")}
               accent="var(--color-warning-a20)"
               border="var(--color-warning-a20)"
               step="04"
@@ -600,26 +601,26 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
         </div>
 
         {/* Recent supporters */}
-        <h2 style={{ ...styles.sectionTitle, marginTop: 40 }}>Recent supporters</h2>
+        <h2 style={{ ...styles.sectionTitle, marginTop: 40 }}>{tr("Recent supporters")}</h2>
         {loading ? (
-          <div style={{ color: C.textFaint }}>Loading…</div>
+          <div style={{ color: C.textFaint }}>{tr("Loading…")}</div>
         ) : info.supporters.length === 0 ? (
           // Honest empty state: instead of a faint one-liner, a warm "be the first"
           // card. Being first is a draw, not a red flag — and it sells the permanent
           // Founding Supporter badge that early backers get.
           <div style={styles.firstSupporterCard}>
             <div style={{ fontSize: 40, marginBottom: 6 }}>👑</div>
-            <div style={{ fontWeight: 800, color: C.text, fontSize: 19 }}>Be our very first supporter</div>
+            <div style={{ fontWeight: 800, color: C.text, fontSize: 19 }}>{tr("Be our very first supporter")}</div>
             <p style={{ color: C.textDim, fontSize: 14, lineHeight: 1.6, margin: '10px auto 0', maxWidth: 460 }}>
               ChessNexus is brand new and built by a tiny team. Our <strong style={{ color: 'var(--color-warning)' }}>first {FOUNDING_LIMIT} supporters</strong> get a
-              permanent <strong style={{ color: 'var(--color-warning)' }}>👑 Founding Supporter</strong> badge — it never expires, as a thank-you for believing early.
+              {tr("permanent")} <strong style={{ color: 'var(--color-warning)' }}>{tr("👑 Founding Supporter")}</strong> {tr("badge — it never expires, as a thank-you for believing early.")}
             </p>
             <button
               type="button"
               onClick={() => { if (!user) { navigate('/login'); return; } window.scrollTo({ top: 0, behavior: 'smooth' }); }}
               style={{ ...styles.primaryBtn, marginTop: 16, padding: '11px 24px', borderRadius: 'var(--radius-lg)', fontSize: 14 }}
             >
-              Claim Founding Supporter
+              {tr("Claim Founding Supporter")}
             </button>
           </div>
         ) : (
@@ -627,8 +628,8 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
             {/* Founding-supporter incentive stays visible while spots remain. */}
             {foundingLeft > 0 && (
               <div style={styles.foundingBanner}>
-                👑 <strong style={{ color: 'var(--color-warning)' }}>{foundingLeft} Founding Supporter {foundingLeft === 1 ? 'spot' : 'spots'} left</strong>
-                {' '}— early supporters get a permanent badge that never expires.
+                👑 <strong style={{ color: 'var(--color-warning)' }}>{foundingLeft} {tr("Founding Supporter")} {foundingLeft === 1 ? 'spot' : 'spots'} {tr("left")}</strong>
+                {' '}{tr("— early supporters get a permanent badge that never expires.")}
               </div>
             )}
             <div style={styles.supporterRow}>
@@ -652,7 +653,7 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
 }
 
 function labelFor(p) {
-  return { razorpay: 'Razorpay', paypal: 'PayPal', upi: 'UPI', bank: 'bank transfer' }[p] || p;
+  return { razorpay: tr('Razorpay'), paypal: tr('PayPal'), upi: 'UPI', bank: tr('bank transfer') }[p] || p;
 }
 
 function WhyCard({ icon, title, text, accent, border, step }) {

@@ -5,12 +5,13 @@ import {
   diagnoseSender, diagnoseStudentView, diagnoseIncoming, diagnoseSummary,
 } from '../../lib/videoDebug';
 import { copyText } from '../../utils/clipboard';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const COLOR = { bad: '#f87171', warn: '#fbbf24', ok: '#34d399' };
 const BG = { bad: 'rgba(239,68,68,0.12)', warn: 'rgba(245,158,11,0.10)', ok: 'rgba(16,185,129,0.06)' };
 
 function Issues({ issues }) {
-  if (!issues.length) return <div style={{ color: COLOR.ok, fontSize: 11.5 }}>✓ OK</div>;
+  if (!issues.length) return <div style={{ color: COLOR.ok, fontSize: 11.5 }}>{tr("✓ OK")}</div>;
   return issues.map((i, k) => (
     <div key={k} style={{ color: COLOR[i.level], fontSize: 11.5, fontWeight: 600 }}>
       {i.level === 'bad' ? '✗' : '!'} {i.msg}
@@ -24,10 +25,10 @@ function Verdict({ v }) {
   return (
     <div style={{ marginTop: 5, padding: '5px 7px', borderRadius: 5, background: mine ? 'rgba(239,68,68,0.22)' : 'rgba(0,0,0,0.35)', border: `1px solid ${mine ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.12)'}` }}>
       <div style={{ fontSize: 11.5, fontWeight: 800, color: mine ? '#fca5a5' : '#fde68a' }}>
-        Broken at: {v.label}
+        {tr("Broken at:")} {v.label}
       </div>
       <div style={{ fontSize: 11.5, color: '#e2e8f0' }}>{v.why}</div>
-      <div style={{ fontSize: 11.5, color: '#67e8f9', fontWeight: 600 }}>Fix: {v.fix}</div>
+      <div style={{ fontSize: 11.5, color: '#67e8f9', fontWeight: 600 }}>{tr("Fix:")} {v.fix}</div>
     </div>
   );
 }
@@ -47,9 +48,9 @@ function Card({ title, sub, issues, verdict, children }) {
   );
 }
 
-const cam = (c) => !c ? 'camera not published'
+const cam = (c) => !c ? tr('camera not published')
   : c.muted ? 'camera off'
-  : `${c.w}×${c.h} · ${c.fps ?? '…'}fps · ${c.kbps ?? '…'}kbps · loss ${c.lossPct ?? '…'}%${c.subscribed ? '' : ' · NOT SUBSCRIBED'}`;
+  : tr("{w}×{h} · {v2}fps · {v3}kbps · loss {v4}%{v5}", { w: c.w, h: c.h, v2: c.fps ?? '…', v3: c.kbps ?? '…', v4: c.lossPct ?? '…', v5: c.subscribed ? '' : tr(' · NOT SUBSCRIBED') });
 
 export default function VideoDebugPanel({ getRoom, coachName, reports, onClose }) {
   const samplerRef = useRef(createSampler());
@@ -62,7 +63,7 @@ export default function VideoDebugPanel({ getRoom, coachName, reports, onClose }
     let alive = true;
     const tick = async () => {
       const room = getRoom();
-      if (!room) { if (alive) setSnap({ at: Date.now(), roomState: 'not connected', local: null, remotes: [] }); return; }
+      if (!room) { if (alive) setSnap({ at: Date.now(), roomState: tr('not connected'), local: null, remotes: [] }); return; }
       try {
         const local = await collectLocal(room, samplerRef.current);
         const remotes = await collectRemotes(room, samplerRef.current);
@@ -123,18 +124,18 @@ export default function VideoDebugPanel({ getRoom, coachName, reports, onClose }
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px', borderBottom: min ? 'none' : '1px solid rgba(255,255,255,0.08)' }}>
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: COLOR[overall], flex: 'none' }} />
-        <span style={{ fontWeight: 800, fontSize: 13 }}>🐞 Video debug</span>
+        <span style={{ fontWeight: 800, fontSize: 13 }}>{tr("🐞 Video debug")}</span>
         {badCount > 0 && <span style={{ color: COLOR.bad, fontSize: 12, fontWeight: 700 }}>{badCount} problem{badCount > 1 ? 's' : ''}</span>}
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-          <button style={btn} onClick={onCopy} title="Copy the full debug report">{copied || '📋 Copy'}</button>
+          <button style={btn} onClick={onCopy} title={tr("Copy the full debug report")}>{copied || '📋 Copy'}</button>
           <button style={btn} onClick={() => setMin(m => !m)} title={min ? 'Expand' : 'Minimize'}>{min ? '▴' : '▾'}</button>
-          <button style={{ ...btn, color: '#fca5a5' }} onClick={onClose} title="Turn debug off">Off</button>
+          <button style={{ ...btn, color: '#fca5a5' }} onClick={onClose} title={tr("Turn debug off")}>{tr("Off")}</button>
         </span>
       </div>
 
       {!min && (
         <div style={{ overflowY: 'auto', padding: '2px 10px 10px' }}>
-          {!snap ? <div style={{ fontSize: 12, color: '#94a3b8', padding: 8 }}>Collecting…</div> : (
+          {!snap ? <div style={{ fontSize: 12, color: '#94a3b8', padding: 8 }}>{tr("Collecting…")}</div> : (
             <>
               {summary && (
                 <div style={{
@@ -144,44 +145,44 @@ export default function VideoDebugPanel({ getRoom, coachName, reports, onClose }
                   color: summary.level === 'ok' ? '#6ee7b7' : '#fecaca',
                 }}>
                   {summary.level === 'ok' ? '✓ ' : '⚠ '}{summary.text}
-                  {grace && <div style={{ fontSize: 11, fontWeight: 500, color: '#94a3b8' }}>Collecting student reports…</div>}
+                  {grace && <div style={{ fontSize: 11, fontWeight: 500, color: '#94a3b8' }}>{tr("Collecting student reports…")}</div>}
                 </div>
               )}
-              <div style={head}>My video — sending</div>
-              <Card title="Coach camera" sub={`room: ${snap.roomState}`} issues={localIssues} verdict={senderVerdict}>
+              <div style={head}>{tr("My video — sending")}</div>
+              <Card title={tr("Coach camera")} sub={`room: ${snap.roomState}`} issues={localIssues} verdict={senderVerdict}>
                 {local ? (
                   <>
-                    {local.capture || 'no capture'} · {local.codec || '?'} · rtt {local.rttMs ?? '…'}ms · upload {local.availOutKbps ?? '…'}kbps<br />
+                    {local.capture || tr('no capture')} · {local.codec || '?'} {tr("· rtt")} {local.rttMs ?? '…'}{tr("ms · upload")} {local.availOutKbps ?? '…'}{tr("kbps")}<br />
                     {local.layers.length ? local.layers.map(l => (
                       <span key={l.rid} style={{ display: 'block', opacity: l.active ? 1 : 0.55 }}>
-                        layer {l.rid}: {l.w}×{l.h} · {l.fps ?? '…'}fps · {l.kbps ?? '…'}kbps{l.active ? '' : ' (paused)'}{l.limit !== 'none' ? ` · limited by ${l.limit}` : ''}
+                        layer {l.rid}: {l.w}×{l.h} · {l.fps ?? '…'}fps · {l.kbps ?? '…'}kbps{l.active ? '' : ' (paused)'}{l.limit !== 'none' ? tr(" · limited by {limit}", { limit: l.limit }) : ''}
                       </span>
                     )) : 'no outgoing video layers'}
                   </>
                 ) : 'not connected'}
               </Card>
 
-              <div style={head}>Students' video — on my screen ({remotes.length})</div>
-              {!remotes.length && <div style={{ fontSize: 12, color: '#94a3b8' }}>No students in the video room.</div>}
+              <div style={head}>{tr("Students' video — on my screen (")}{remotes.length})</div>
+              {!remotes.length && <div style={{ fontSize: 12, color: '#94a3b8' }}>{tr("No students in the video room.")}</div>}
               {remotes.map((e, k) => (
                 <Card key={e.id} title={e.name} sub={`net: ${e.quality}`} issues={recvIssues[k]} verdict={recvVerdicts[k]}>
                   {cam(e.cam)}<br />
-                  tile: {e.tile ? `${e.tile.w}px${e.tile.black ? ' BLACK' : ''}` : 'not on screen'} · mic: {e.mic ? (e.mic.muted ? 'muted' : 'on') : 'none'}
+                  tile: {e.tile ? `${e.tile.w}px${e.tile.black ? tr(' BLACK') : ''}` : tr('not on screen')} · mic: {e.mic ? (e.mic.muted ? 'muted' : 'on') : 'none'}
                 </Card>
               ))}
 
-              <div style={head}>My video — on each student's screen</div>
-              {!studentRows.length && <div style={{ fontSize: 12, color: '#94a3b8' }}>Waiting for student reports…</div>}
+              <div style={head}>{tr("My video — on each student's screen")}</div>
+              {!studentRows.length && <div style={{ fontSize: 12, color: '#94a3b8' }}>{tr("Waiting for student reports…")}</div>}
               {studentRows.map(r => (
-                <Card key={r.id} title={r.name} sub={r.rep ? `${r.rep.browser} · ${Math.round((now - r.rep.at) / 1000)}s ago` : (r.waiting ? 'waiting…' : 'no report')} issues={r.issues} verdict={r.verdict}>
+                <Card key={r.id} title={r.name} sub={r.rep ? `${r.rep.browser} · ${Math.round((now - r.rep.at) / 1000)}s ago` : (r.waiting ? 'waiting…' : tr('no report'))} issues={r.issues} verdict={r.verdict}>
                   {r.rep ? (
                     <>
-                      sees you: {cam(r.rep.coach?.cam)}<br />
-                      your tile there: {r.rep.coach?.tile ? `${r.rep.coach.tile.w}px${r.rep.coach.tile.black ? ' BLACK' : ''}` : 'not on screen'} · their net: {r.rep.quality}<br />
+                      {tr("sees you:")} {cam(r.rep.coach?.cam)}<br />
+                      your tile there: {r.rep.coach?.tile ? `${r.rep.coach.tile.w}px${r.rep.coach.tile.black ? tr(' BLACK') : ''}` : tr('not on screen')} · their net: {r.rep.quality}<br />
                       their camera: {(() => {
                         if (!r.rep.local?.camEnabled) return 'off';
                         const l = r.rep.local.layers.find(x => x.active) || r.rep.local.layers[0];
-                        return l ? `${l.w}×${l.h} · ${l.fps ?? '…'}fps` : 'no layers';
+                        return l ? tr("{w}×{h} · {v2}fps", { w: l.w, h: l.h, v2: l.fps ?? '…' }) : tr('no layers');
                       })()}
                     </>
                   ) : '—'}

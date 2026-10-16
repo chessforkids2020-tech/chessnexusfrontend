@@ -4,6 +4,7 @@ import useResponsiveBoardSize from '../hooks/useResponsiveBoardSize';
 import api from '../api';
 import Chessboard from '../components/Chessboard';
 import { Chess } from 'chess.js';
+import { t as tr } from '../i18n/LanguageContext';
 
 const StudyChapters = () => {
   const { studyId } = useParams();
@@ -28,7 +29,7 @@ const StudyChapters = () => {
           loadChapter(response.data[0]);
         }
       } catch (err) {
-        setError('Failed to load chapters');
+        setError(tr('Failed to load chapters'));
       } finally {
         setLoading(false);
       }
@@ -79,7 +80,7 @@ const StudyChapters = () => {
     if (currentChapter < chapters.length - 1) {
       selectChapter(currentChapter + 1);
     } else {
-      alert('Study completed!');
+      alert(tr('Study completed!'));
     }
   };
 
@@ -180,7 +181,7 @@ const StudyChapters = () => {
   if (loading) {
     return (
       <div style={styles.page}>
-        <div style={styles.loading}>Loading study...</div>
+        <div style={styles.loading}>{tr("Loading study...")}</div>
       </div>
     );
   }
@@ -198,7 +199,7 @@ const StudyChapters = () => {
       <div style={styles.container}>
         {/* Left Sidebar - Chapters */}
         <div style={styles.sidebar}>
-          <h3 style={{ marginTop: 0, color: 'var(--color-success)' }}>Chapters</h3>
+          <h3 style={{ marginTop: 0, color: 'var(--color-success)' }}>{tr("Chapters")}</h3>
           {chapters.map((chapter, index) => (
             <div
               key={chapter._id}
@@ -209,7 +210,7 @@ const StudyChapters = () => {
               onClick={() => selectChapter(index)}
             >
               <div style={{ fontWeight: '600' }}>
-                Chapter {chapter.chapterNumber}
+                {tr("Chapter")} {chapter.chapterNumber}
               </div>
               <div style={{ fontSize: '14px', marginTop: '4px' }}>
                 {chapter.title}
@@ -234,13 +235,13 @@ const StudyChapters = () => {
             />
           </div>
           <button style={styles.nextButton} onClick={nextChapter}>
-            {currentChapter < chapters.length - 1 ? 'Next Chapter' : 'Complete Study'}
+            {currentChapter < chapters.length - 1 ? tr('Next Chapter') : tr('Complete Study')}
           </button>
         </div>
 
         {/* Right Panel - Moves */}
         <div style={styles.rightPanel}>
-          <h3 style={{ marginTop: 0, color: 'var(--color-success)' }}>Your Moves</h3>
+          <h3 style={{ marginTop: 0, color: 'var(--color-success)' }}>{tr("Your Moves")}</h3>
           <div style={styles.movesList}>
             {moves.map((move, index) => (
               <div key={index} style={styles.moveItem}>

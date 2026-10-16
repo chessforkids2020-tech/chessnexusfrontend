@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import BookDemoModal from '../BookDemoModal';
 import './CoachHelpMenu.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function CoachHelpMenu() {
   const [open, setOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function CoachHelpMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        ❓ Help
+        {tr("❓ Help")}
       </button>
 
       {open && (
@@ -71,22 +72,22 @@ export default function CoachHelpMenu() {
           >
             <span className="chm-ic" aria-hidden="true">🎬</span>
             <span>
-              <b>Video guides</b>
-              <em>Watch how to set up and run your coaching</em>
+              <b>{tr("Video guides")}</b>
+              <em>{tr("Watch how to set up and run your coaching")}</em>
             </span>
           </button>
           <button type="button" className="chm-item" role="menuitem" onClick={() => openForm('bug')}>
             <span className="chm-ic" aria-hidden="true">🐞</span>
             <span>
-              <b>Report a problem</b>
-              <em>Something is broken or behaving oddly</em>
+              <b>{tr("Report a problem")}</b>
+              <em>{tr("Something is broken or behaving oddly")}</em>
             </span>
           </button>
           <button type="button" className="chm-item" role="menuitem" onClick={() => openForm('feature')}>
             <span className="chm-ic" aria-hidden="true">💡</span>
             <span>
-              <b>Request a feature</b>
-              <em>Tell us what would help your coaching</em>
+              <b>{tr("Request a feature")}</b>
+              <em>{tr("Tell us what would help your coaching")}</em>
             </span>
           </button>
           <button
@@ -97,8 +98,8 @@ export default function CoachHelpMenu() {
           >
             <span className="chm-ic" aria-hidden="true">📅</span>
             <span>
-              <b>Talk to the team</b>
-              <em>Book a call with Chess Nexus</em>
+              <b>{tr("Talk to the team")}</b>
+              <em>{tr("Book a call with Chess Nexus")}</em>
             </span>
           </button>
         </div>
@@ -132,7 +133,7 @@ function HelpForm({ kind, onClose }) {
   const submit = async () => {
     if (busy) return;
     if (!subject.trim() || !details.trim()) {
-      setErr('Please fill in both fields.');
+      setErr(tr('Please fill in both fields.'));
       return;
     }
     setBusy(true); setErr('');
@@ -140,7 +141,7 @@ function HelpForm({ kind, onClose }) {
       await api.post('/api/reports', {
         // Prefixed so the admin inbox can sort coach feedback at a glance
         // without a schema change.
-        subject: `${isBug ? '[Coach bug]' : '[Coach feature]'} ${subject.trim()}`,
+        subject: `${isBug ? tr('[Coach bug]') : tr('[Coach feature]')} ${subject.trim()}`,
         details: details.trim(),
       });
       setSent(true);
@@ -154,22 +155,22 @@ function HelpForm({ kind, onClose }) {
   return (
     <div className="chm-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div className="chm-card" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="chm-x" onClick={onClose} aria-label="Close">×</button>
+        <button type="button" className="chm-x" onClick={onClose} aria-label={tr("Close")}>×</button>
 
         {sent ? (
           <div className="chm-done">
             <div className="chm-done-ic" aria-hidden="true">✓</div>
-            <h3>Thank you</h3>
+            <h3>{tr("Thank you")}</h3>
             <p>
               {isBug
                 ? 'We have got it. If we need more detail we will reply — you will see it in your notifications.'
                 : 'Noted. Coach requests genuinely shape what gets built next.'}
             </p>
-            <button type="button" className="chm-primary" onClick={onClose}>Close</button>
+            <button type="button" className="chm-primary" onClick={onClose}>{tr("Close")}</button>
           </div>
         ) : (
           <>
-            <h3>{isBug ? '🐞 Report a problem' : '💡 Request a feature'}</h3>
+            <h3>{isBug ? tr('🐞 Report a problem') : tr('💡 Request a feature')}</h3>
             <p className="chm-sub">
               {isBug
                 ? 'Tell us what happened and where. The more specific, the faster we can fix it.'
@@ -177,7 +178,7 @@ function HelpForm({ kind, onClose }) {
             </p>
 
             <label className="chm-label">
-              {isBug ? 'What went wrong?' : 'What would you like?'}
+              {isBug ? tr('What went wrong?') : tr('What would you like?')}
               <input
                 className="chm-input"
                 value={subject}
@@ -190,7 +191,7 @@ function HelpForm({ kind, onClose }) {
             </label>
 
             <label className="chm-label">
-              {isBug ? 'What were you doing at the time?' : 'How would you use it?'}
+              {isBug ? tr('What were you doing at the time?') : tr('How would you use it?')}
               <textarea
                 className="chm-textarea"
                 value={details}
@@ -206,7 +207,7 @@ function HelpForm({ kind, onClose }) {
             {err && <div className="chm-err">{err}</div>}
 
             <button type="button" className="chm-primary" onClick={submit} disabled={busy}>
-              {busy ? 'Sending…' : isBug ? 'Send report' : 'Send request'}
+              {busy ? tr('Sending…') : isBug ? tr('Send report') : tr('Send request')}
             </button>
           </>
         )}

@@ -7,6 +7,7 @@ import { PIECES, PIECE_META, LESSONS, buildFen } from './pieceMovementData';
 import { pieceTargets } from './pieceMoves';
 import api from '../../../../api';
 import '../beginners.css';
+import { t as tr } from '../../../../i18n/LanguageContext';
 
 const ARROW_COLOR = 'rgba(34,211,238,0.9)';
 
@@ -42,9 +43,9 @@ export default function PieceMovements({ progress, onBack, onLevelDone }) {
   if (!pieceId) {
     return (
       <div>
-        <button type="button" className="ba-back" onClick={onBack}>← Back to Academy</button>
-        <h2 className="ba-title" style={{ fontSize: 22 }}>♟️ Piece Movements</h2>
-        <p className="ba-sub">Learn each piece, one at a time. Finish one to unlock the next!</p>
+        <button type="button" className="ba-back" onClick={onBack}>{tr("← Back to Academy")}</button>
+        <h2 className="ba-title" style={{ fontSize: 22 }}>{tr("♟️ Piece Movements")}</h2>
+        <p className="ba-sub">{tr("Learn each piece, one at a time. Finish one to unlock the next!")}</p>
         <div className="ba-pieces">
           {PIECES.map((id, i) => {
             const meta = PIECE_META[id];
@@ -56,7 +57,7 @@ export default function PieceMovements({ progress, onBack, onLevelDone }) {
                 {done && <span className="ba-piece-done">🏅</span>}
                 {locked && <span className="ba-piece-done">🔒</span>}
                 <div className="ba-piece-glyph">{meta.glyph}</div>
-                <div className="ba-piece-name">{meta.name}</div>
+                <div className="ba-piece-name">{tr(meta.name)}</div>
               </div>
             );
           })}
@@ -161,8 +162,8 @@ function PieceLesson({ pieceId, boardWidth, alreadyDoneLevels, onBackToPieces, o
   useEffect(() => {
     if (phase !== 'practice') return;
     narration.play([{ text: level === 0
-      ? `Now you try! Move the ${meta.name} to catch every star.`
-      : `Level ${level + 1}. Catch all the stars with the ${meta.name}.` }]);
+      ? tr("Now you try! Move the {name} to catch every star.", { name: tr(meta.name) })
+      : tr("Level {v0}. Catch all the stars with the {name}.", { v0: level + 1, name: tr(meta.name) }) }]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, level, pieceId]);
 
@@ -172,8 +173,8 @@ function PieceLesson({ pieceId, boardWidth, alreadyDoneLevels, onBackToPieces, o
     const par = trainer.par ?? 99;
     const good = trainer.moves <= par;
     narration.play([{ text: good
-      ? `Wow, you did it! ${trainer.moves} move${trainer.moves === 1 ? '' : 's'} — nicely done! 🌟`
-      : `You caught them all! But you can do it in fewer moves — try to find the quickest path next time.` }]);
+      ? tr("Wow, you did it! {moves} move{v1} — nicely done! 🌟", { moves: trainer.moves, v1: trainer.moves === 1 ? '' : 's' })
+      : tr("You caught them all! But you can do it in fewer moves — try to find the quickest path next time.") }]);
     const levelId = `${pieceId}-${level + 1}`;
     if (!savedLevels.has(levelId)) {
       setSavedLevels((s) => new Set(s).add(levelId));
@@ -192,13 +193,13 @@ function PieceLesson({ pieceId, boardWidth, alreadyDoneLevels, onBackToPieces, o
     return (
       <AcademyStage
         narration={narration}
-        title={<>{meta.glyph} How the {meta.name} moves</>}
+        title={<>{meta.glyph} {tr("How the {name} moves", { name: tr(meta.name) })}</>}
         actions={<>
-          <button className="ba-ghost" onClick={() => demo.replayDemo()}>↻ Watch again</button>
+          <button className="ba-ghost" onClick={() => demo.replayDemo()}>{tr("↻ Watch again")}</button>
           <button className="ba-primary" onClick={() => { narration.stop(); setPhase('practice'); setLevel(0); }}>
-            I'm ready — let me try! ▶
+            {tr("I'm ready — let me try! ▶")}
           </button>
-          <button className="ba-ghost" onClick={onBackToPieces}>← Pieces</button>
+          <button className="ba-ghost" onClick={onBackToPieces}>{tr("← Pieces")}</button>
         </>}
       >
         <StarBoard
@@ -216,7 +217,7 @@ function PieceLesson({ pieceId, boardWidth, alreadyDoneLevels, onBackToPieces, o
   return (
     <AcademyStage
       narration={narration}
-      title={<>{meta.glyph} Catch the stars — Level {level + 1}</>}
+      title={<>{meta.glyph} {tr("Catch the stars — Level {n}", { n: level + 1 })}</>}
       actions={<>
         <div className="ba-levels">
           {lesson.levels.map((_, i) => (
@@ -226,21 +227,21 @@ function PieceLesson({ pieceId, boardWidth, alreadyDoneLevels, onBackToPieces, o
         {!trainer.done ? (
           <>
             <div className="ba-hud">
-              <span className="ba-hud-stars">⭐ {trainer.remainingStars.length} left</span>
-              <span>👣 {trainer.moves} moves</span>
+              <span className="ba-hud-stars">⭐ {trainer.remainingStars.length} {tr("left")}</span>
+              <span>👣 {trainer.moves} {tr("moves")}</span>
               <span>⏱ {trainer.seconds}s</span>
             </div>
-            <button className="ba-ghost" onClick={trainer.reset}>↻ Restart</button>
-            <button className="ba-ghost" onClick={() => { narration.stop(); setPhase('teach'); }}>← Watch again</button>
+            <button className="ba-ghost" onClick={trainer.reset}>{tr("↻ Restart")}</button>
+            <button className="ba-ghost" onClick={() => { narration.stop(); setPhase('teach'); }}>{tr("← Watch again")}</button>
           </>
         ) : (
           <div className="ba-win">
             <div className="ba-win-emoji">🎉</div>
-            <div className="ba-win-title">All stars caught!</div>
-            <div className="ba-win-note">{trainer.moves} moves{trainer.par != null ? ` · target ${trainer.par}` : ''}</div>
+            <div className="ba-win-title">{tr("All stars caught!")}</div>
+            <div className="ba-win-note">{trainer.moves} {tr("moves")}{trainer.par != null ? tr(" · target {par}", { par: trainer.par }) : ''}</div>
             {isLastLevel
-              ? <button className="ba-primary" onClick={onBackToPieces}>🏅 {meta.name} complete — back</button>
-              : <button className="ba-primary" onClick={() => setLevel((l) => l + 1)}>Next level ▶</button>}
+              ? <button className="ba-primary" onClick={onBackToPieces}>🏅 {tr("{name} complete — back", { name: tr(meta.name) })}</button>
+              : <button className="ba-primary" onClick={() => setLevel((l) => l + 1)}>{tr("Next level ▶")}</button>}
           </div>
         )}
       </>}

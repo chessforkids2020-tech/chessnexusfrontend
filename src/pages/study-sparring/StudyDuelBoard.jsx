@@ -7,6 +7,7 @@ import studySparringSocket from '../../services/studySparringSocket';
 import { parseSolutionMoves, isOnBookLine } from '../../utils/studyPracticeUtils';
 import { getMoveQuality, calculateAccuracy, QUALITY_COLORS, QUALITY_SYMBOLS } from '../../utils/moveQuality';
 import { motion } from 'framer-motion';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function StudyDuelBoard() {
   const { roomCode } = useParams();
@@ -100,7 +101,7 @@ export default function StudyDuelBoard() {
     });
 
     studySparringSocket.on('deviationDetected', ({ byUsername, playedSan, bookSan }) => {
-      setDeviationMsg(`${byUsername} deviated! Played ${playedSan} (book: ${bookSan || '?'})`);
+      setDeviationMsg(tr("{byUsername} deviated! Played {playedSan} (book: {v2})", { byUsername: byUsername, playedSan: playedSan, v2: bookSan || '?' }));
       setTimeout(() => setDeviationMsg(''), 5000);
     });
 
@@ -199,11 +200,11 @@ export default function StudyDuelBoard() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
           <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-            ← Leave
+            {tr("← Leave")}
           </button>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-warning)' }}>⚔ Study Duel</div>
-            <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>Room: {roomCode} • You play as {myColor}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-warning)' }}>{tr("⚔ Study Duel")}</div>
+            <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>{tr("Room:")} {roomCode} {tr("• You play as")} {myColor}</div>
           </div>
           {/* Turn indicator */}
           <div style={{
@@ -215,7 +216,7 @@ export default function StudyDuelBoard() {
             fontWeight: 700,
             fontSize: 13,
           }}>
-            {!opponentConnected ? '⏳ Waiting for opponent...' : isMyTurn ? '🟢 Your Turn' : '⏳ Opponent thinking...'}
+            {!opponentConnected ? tr('⏳ Waiting for opponent...') : isMyTurn ? tr('🟢 Your Turn') : tr('⏳ Opponent thinking...')}
           </div>
         </div>
 
@@ -276,7 +277,7 @@ export default function StudyDuelBoard() {
             {/* Moves */}
             {userMoves.length > 0 && (
               <div style={cardStyle}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 10, textTransform: 'uppercase' }}>My Moves</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 10, textTransform: 'uppercase' }}>{tr("My Moves")}</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {userMoves.map((m, i) => (
                     <span key={i} style={{
@@ -298,30 +299,30 @@ export default function StudyDuelBoard() {
             {/* Opponent disconnected */}
             {opponentDisconnected && !gameOver && (
               <div style={{ ...cardStyle, borderColor: 'var(--color-danger-a30)', background: 'var(--color-danger-a12)' }}>
-                <div style={{ color: 'var(--color-danger)', fontWeight: 700 }}>⚠ Opponent disconnected</div>
+                <div style={{ color: 'var(--color-danger)', fontWeight: 700 }}>{tr("⚠ Opponent disconnected")}</div>
               </div>
             )}
 
             {/* Game over */}
             {gameOver && results && (
               <div style={{ ...cardStyle, borderColor: 'rgba(99,102,241,0.4)', background: 'rgba(99,102,241,0.08)' }}>
-                <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--color-accent-2)', marginBottom: 16 }}>🏁 Duel Complete!</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--color-accent-2)', marginBottom: 16 }}>{tr("🏁 Duel Complete!")}</div>
                 {results.map((p, i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--color-black-a35)', borderRadius: 'var(--radius-md)', marginBottom: 8 }}>
                     <span style={{ fontWeight: 700, color: 'var(--color-text)' }}>{p.username}</span>
-                    <span style={{ color: 'var(--color-accent-2)', fontWeight: 700 }}>{p.accuracy}% accuracy</span>
+                    <span style={{ color: 'var(--color-accent-2)', fontWeight: 700 }}>{p.accuracy}{tr("% accuracy")}</span>
                   </div>
                 ))}
                 {results.length >= 2 && (
                   <div style={{ textAlign: 'center', marginTop: 12, color: 'var(--color-warning)', fontWeight: 800, fontSize: 16 }}>
-                    🏆 Winner: {results.sort((a, b) => b.accuracy - a.accuracy)[0]?.username}
+                    {tr("🏆 Winner:")} {results.sort((a, b) => b.accuracy - a.accuracy)[0]?.username}
                   </div>
                 )}
                 <button
                   onClick={() => navigate('/study/sparring/duel/create')}
                   style={{ width: '100%', marginTop: 16, padding: '12px 0', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 'var(--radius-md)', color: 'var(--color-warning)', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}
                 >
-                  ⚔ New Duel
+                  {tr("⚔ New Duel")}
                 </button>
               </div>
             )}

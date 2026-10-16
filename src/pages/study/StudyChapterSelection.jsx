@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { motion } from 'framer-motion';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const StudyChapterSelection = () => {
   const { studyId } = useParams();
@@ -56,7 +57,7 @@ const StudyChapterSelection = () => {
         const chaptersResponse = await api.get(`/api/study/${studyId}/chapters`);
         setChapters(chaptersResponse.data);
       } catch (err) {
-        setError('Failed to load chapters');
+        setError(tr('Failed to load chapters'));
       } finally {
         setLoading(false);
       }
@@ -360,7 +361,7 @@ const StudyChapterSelection = () => {
         <div style={styles.background}></div>
         <div style={styles.gridPattern}></div>
         <div style={styles.container}>
-          <div style={styles.loading}>Loading chapters...</div>
+          <div style={styles.loading}>{tr("Loading chapters...")}</div>
         </div>
       </div>
     );
@@ -404,14 +405,14 @@ const StudyChapterSelection = () => {
               e.currentTarget.style.transform = 'translateY(-50%)';
             }}
           >
-            <span>←</span> Back to Studies
+            <span>←</span> {tr("Back to Studies")}
           </motion.button>
 
           <div style={styles.titleContainer}>
             <div style={styles.titleGlow}></div>
             <h1 style={styles.mainTitle}>{studyTitle}</h1>
             <p style={styles.subtitle}>
-              Select a chapter to begin your learning journey. Chapters are organized from fundamental to advanced concepts.
+              {tr("Select a chapter to begin your learning journey. Chapters are organized from fundamental to advanced concepts.")}
             </p>
           </div>
         </div>
@@ -422,7 +423,7 @@ const StudyChapterSelection = () => {
             <input
               style={styles.searchInput}
               type="text"
-              placeholder="Search chapters…"
+              placeholder={tr("Search chapters…")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -430,9 +431,9 @@ const StudyChapterSelection = () => {
         )}
 
         {chapters.length === 0 ? (
-          <div style={styles.emptyState}>No chapters available for this study.</div>
+          <div style={styles.emptyState}>{tr("No chapters available for this study.")}</div>
         ) : filteredChapters.length === 0 ? (
-          <div style={styles.emptyState}>No chapters match “{search}”.</div>
+          <div style={styles.emptyState}>{tr("No chapters match “")}{search}”.</div>
         ) : (
           <>
           <div style={styles.chaptersGrid}>
@@ -478,7 +479,7 @@ const StudyChapterSelection = () => {
 
                 <div style={styles.cardContent}>
                   <div style={styles.chapterNumber}>
-                    Chapter {chapter.chapterNumber}
+                    {tr("Chapter")} {chapter.chapterNumber}
                   </div>
                   <h3 style={styles.chapterTitle}>{chapter.title}</h3>
                   

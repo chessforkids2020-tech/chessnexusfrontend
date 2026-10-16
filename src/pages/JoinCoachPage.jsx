@@ -12,6 +12,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import './JoinCoachPage.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function JoinCoachPage() {
   const { code } = useParams();
@@ -34,7 +35,7 @@ export default function JoinCoachPage() {
     // survives the student signing UP rather than in.
     if (!user) {
       try { sessionStorage.setItem('pendingCoachInvite', String(code)); } catch { /* private mode */ }
-      navigate('/login', { replace: true, state: { message: 'Log in to join your coach.' } });
+      navigate('/login', { replace: true, state: { message: tr('Log in to join your coach.') } });
       return;
     }
     let alive = true;
@@ -63,7 +64,7 @@ export default function JoinCoachPage() {
   };
 
   if (authLoading || state.loading) {
-    return <div className="jc-page"><div className="jc-card jc-muted">Loading…</div></div>;
+    return <div className="jc-page"><div className="jc-card jc-muted">{tr("Loading…")}</div></div>;
   }
 
   if (state.error) {
@@ -71,10 +72,10 @@ export default function JoinCoachPage() {
       <div className="jc-page">
         <div className="jc-card">
           <div className="jc-ic" aria-hidden="true">🔗</div>
-          <h1 className="jc-title">Invite link not valid</h1>
+          <h1 className="jc-title">{tr("Invite link not valid")}</h1>
           <p className="jc-sub">{state.error}</p>
-          <p className="jc-sub">Ask your coach to send you their link again.</p>
-          <Link to="/dashboard" className="jc-ghost">← Back to dashboard</Link>
+          <p className="jc-sub">{tr("Ask your coach to send you their link again.")}</p>
+          <Link to="/dashboard" className="jc-ghost">{tr("← Back to dashboard")}</Link>
         </div>
       </div>
     );
@@ -92,33 +93,33 @@ export default function JoinCoachPage() {
 
         <h1 className="jc-title">{name}</h1>
         {c.academy && <p className="jc-academy">{c.academy}</p>}
-        {c.verified && <span className="jc-verified">🎓 Verified by the Nexus team</span>}
+        {c.verified && <span className="jc-verified">{tr("🎓 Verified by the Nexus team")}</span>}
 
         {sent || state.status === 'pending_mine' ? (
           <>
-            <div className="jc-ok">✓ Request sent</div>
+            <div className="jc-ok">{tr("✓ Request sent")}</div>
             <p className="jc-sub">
-              {name} will see your request and decide whether to add you. You will
+              {name} {tr("will see your request and decide whether to add you. You will")}
               get a notification either way.
             </p>
-            <Link to="/dashboard" className="jc-ghost">← Back to dashboard</Link>
+            <Link to="/dashboard" className="jc-ghost">{tr("← Back to dashboard")}</Link>
           </>
         ) : state.status === 'already' ? (
           <>
-            <div className="jc-ok">✓ {name} is already your coach</div>
-            <Link to="/my-coach" className="jc-btn">Open My Coach</Link>
+            <div className="jc-ok">✓ {name} {tr("is already your coach")}</div>
+            <Link to="/my-coach" className="jc-btn">{tr("Open My Coach")}</Link>
           </>
         ) : state.status === 'pending_theirs' ? (
           <>
             <p className="jc-sub">
-              {name} has already invited you — accept it from your notifications.
+              {name} {tr("has already invited you — accept it from your notifications.")}
             </p>
-            <Link to="/coach-requests" className="jc-btn">View the invitation</Link>
+            <Link to="/coach-requests" className="jc-btn">{tr("View the invitation")}</Link>
           </>
         ) : (
           <>
             <p className="jc-sub">
-              Ask {name} to add you as their student. They will need to accept
+              {tr("Ask")} {name} {tr("to add you as their student. They will need to accept")}
               before you appear on their roster.
             </p>
             {/* Guests cannot ask to join. Saying so up front beats a button
@@ -129,12 +130,12 @@ export default function JoinCoachPage() {
                   You are playing as a guest. Create a free account to ask a coach
                   to take you on.
                 </div>
-                <Link to="/signup-request" className="jc-btn">Create a free account</Link>
+                <Link to="/signup-request" className="jc-btn">{tr("Create a free account")}</Link>
               </>
             ) : (
               <>
                 <label className="jc-note-label" htmlFor="jc-note">
-                  Tell {name.split(' ')[0]} a little about yourself
+                  {tr("Tell")} {name.split(' ')[0]} {tr("a little about yourself")}
                 </label>
                 <textarea
                   id="jc-note"
@@ -143,12 +144,12 @@ export default function JoinCoachPage() {
                   maxLength={600}
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  placeholder="Your age, your rating if you have one, and what you would like help with. Coaches read this before deciding."
+                  placeholder={tr("Your age, your rating if you have one, and what you would like help with. Coaches read this before deciding.")}
                 />
                 <div className="jc-note-count">{note.length}/600</div>
                 {err && <div className="jc-err">⚠️ {err}</div>}
                 <button className="jc-btn" onClick={send} disabled={sending || !note.trim()}>
-                  {sending ? 'Sending…' : `Ask ${name} to add me`}
+                  {sending ? tr('Sending…') : tr("Ask {name} to add me", { name: name })}
                 </button>
                 {!note.trim() && (
                   <p className="jc-sub" style={{ margin: '10px 0 0', fontSize: 12 }}>
@@ -156,7 +157,7 @@ export default function JoinCoachPage() {
                     with nothing in it.
                   </p>
                 )}
-                <Link to="/dashboard" className="jc-ghost">Not now</Link>
+                <Link to="/dashboard" className="jc-ghost">{tr("Not now")}</Link>
               </>
             )}
           </>

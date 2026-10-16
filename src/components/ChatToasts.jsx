@@ -17,6 +17,7 @@ import socket from '../socket';
 import { useAuth } from '../contexts/AuthContext';
 import soundManager from '../utils/soundManager';
 import './ChatToasts.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const AUTO_DISMISS_MS = 20000; // 20s, per spec
 const MAX_VISIBLE = 3;         // beyond this the corner becomes a wall of cards
@@ -71,7 +72,7 @@ export default function ChatToasts() {
         id,
         chatId: payload.chatId,
         title: payload.isGroup && payload.chatName
-          ? `${payload.senderName || 'New message'} · ${payload.chatName}`
+          ? `${payload.senderName || tr('New message')} · ${payload.chatName}`
           : (payload.senderName || 'New message'),
         preview: payload.preview || '',
         photo: payload.senderPhotoUrl || null,
@@ -108,14 +109,14 @@ export default function ChatToasts() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="chat-toasts" role="region" aria-label="New message notifications">
+    <div className="chat-toasts" role="region" aria-label={tr("New message notifications")}>
       {toasts.map(t => (
         <div key={t.id} className="chat-toast" role="status">
           <button
             className="chat-toast-close"
             onClick={(e) => { e.stopPropagation(); dismiss(t.id); }}
-            aria-label="Dismiss notification"
-            title="Dismiss"
+            aria-label={tr("Dismiss notification")}
+            title={tr("Dismiss")}
           >
             ×
           </button>

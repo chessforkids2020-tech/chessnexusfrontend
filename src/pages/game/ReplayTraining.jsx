@@ -8,6 +8,7 @@ import {
   gradeMove, pointsFor, BASE_POINTS,
 } from '../../lib/replayTraining';
 import './ReplayTraining.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Must match .rt-session in ReplayTraining.css, INCLUDING its wide-screen
 // override — the board's width budget is derived from it, so a mismatch would
@@ -102,22 +103,22 @@ function fmtEval(line) {
 /** The coloured banner: a plain-English reading of the evaluation. */
 function verdictFor(line, youPlay) {
   const e = scoreOf(line);
-  if (!e) return { text: 'Position unclear', tone: 'even' };
+  if (!e) return { text: tr('Position unclear'), tone: 'even' };
   const you = youPlay === 'black' ? 'Black' : 'White';
   const them = youPlay === 'black' ? 'White' : 'Black';
   if (e.isMate) {
     return e.value > 0
-      ? { text: `${you} mates in ${Math.abs(e.value)}`, tone: 'good' }
-      : { text: `${them} mates in ${Math.abs(e.value)}`, tone: 'bad' };
+      ? { text: tr("{you} mates in {v1}", { you: you, v1: Math.abs(e.value) }), tone: 'good' }
+      : { text: tr("{them} mates in {v1}", { them: them, v1: Math.abs(e.value) }), tone: 'bad' };
   }
   const cp = e.value;
-  if (cp >= 300)  return { text: `${you} is winning`, tone: 'good' };
-  if (cp >= 100)  return { text: `${you} is clearly better`, tone: 'good' };
-  if (cp >= 40)   return { text: `${you} is slightly better`, tone: 'good' };
-  if (cp > -40)   return { text: 'The position is equal', tone: 'even' };
-  if (cp > -100)  return { text: `${them} is slightly better`, tone: 'bad' };
-  if (cp > -300)  return { text: `${them} is clearly better`, tone: 'bad' };
-  return { text: `${them} is winning`, tone: 'bad' };
+  if (cp >= 300)  return { text: tr("{you} is winning", { you: you }), tone: 'good' };
+  if (cp >= 100)  return { text: tr("{you} is clearly better", { you: you }), tone: 'good' };
+  if (cp >= 40)   return { text: tr("{you} is slightly better", { you: you }), tone: 'good' };
+  if (cp > -40)   return { text: tr('The position is equal'), tone: 'even' };
+  if (cp > -100)  return { text: tr("{them} is slightly better", { them: them }), tone: 'bad' };
+  if (cp > -300)  return { text: tr("{them} is clearly better", { them: them }), tone: 'bad' };
+  return { text: tr("{them} is winning", { them: them }), tone: 'bad' };
 }
 
 export default function ReplayTraining() {
@@ -362,7 +363,7 @@ export default function ReplayTraining() {
     let dead = false;
     (async () => {
       try {
-        setStatus('Loading engine…');
+        setStatus(tr('Loading engine…'));
         if (!stockfishService.isReady()) await stockfishService.init();
         if (dead || cancelRef.current) return;
         setLoading(false);
@@ -425,7 +426,7 @@ export default function ReplayTraining() {
 
       // Opponent to move → play their real move, no question.
       if (board.turn() !== mySide) {
-        setStatus('Opponent replies…');
+        setStatus(tr('Opponent replies…'));
         await sleep(REPLY_MS);
         if (cancelRef.current) return;
         if (!playGameMove(moves[plyRef.current])) { finishSession(); return; }
@@ -433,7 +434,7 @@ export default function ReplayTraining() {
       }
 
       // Our side to move. Is this a position worth asking about?
-      setStatus('Looking at the position…');
+      setStatus(tr('Looking at the position…'));
       let lines = [];
       let engineFailed = false;
       try {
@@ -464,7 +465,7 @@ export default function ReplayTraining() {
           finishSession();
           return;
         }
-        setStatus('Waiting for the engine…');
+        setStatus(tr('Waiting for the engine…'));
         await sleep(600);
         continue;
       }
@@ -652,7 +653,7 @@ export default function ReplayTraining() {
       setSaveState(null);
       setLoading(false);
 
-      setStatus('Loading engine…');
+      setStatus(tr('Loading engine…'));
       if (!stockfishService.isReady()) await stockfishService.init();
       if (cancelRef.current) return;
 
@@ -661,7 +662,7 @@ export default function ReplayTraining() {
         Number.isFinite(rec.openingPlies) ? rec.openingPlies : DEFAULT_OPENING_PLIES,
         rec.moves.length,
       );
-      setStatus('Playing the opening…');
+      setStatus(tr('Playing the opening…'));
       for (let i = 0; i < openTo; i++) {
         if (cancelRef.current) return;
         playGameMove(rec.moves[i]);
@@ -718,21 +719,21 @@ export default function ReplayTraining() {
       <div className="rt-page">
         <div className="rt-list">
           <div className="rt-head">
-            <h1>🎬 Replay Training</h1>
+            <h1>{tr("🎬 Replay Training")}</h1>
             <p>
               Replay a real game from the winning side. At the critical moments the
               board stops and asks you to find the best move.
             </p>
             <p className="rt-scoring">
-              Best move <b>{pointsFor(1)}</b> · Played in the game <b>{pointsFor(0.85)}</b> ·
-              Second best <b>{pointsFor(0.7)}</b> · Third best <b>{pointsFor(0.5)}</b>
+              {tr("Best move")} <b>{pointsFor(1)}</b> {tr("· Played in the game")} <b>{pointsFor(0.85)}</b> ·
+              {tr("Second best")} <b>{pointsFor(0.7)}</b> {tr("· Third best")} <b>{pointsFor(0.5)}</b>
             </p>
           </div>
 
-          {loading && <div className="rt-note">Loading rating ranges…</div>}
+          {loading && <div className="rt-note">{tr("Loading rating ranges…")}</div>}
           {loadError && <div className="rt-note rt-note--bad">{loadError}</div>}
           {!loading && !loadError && bands.length === 0 && (
-            <div className="rt-note">No games loaded yet.</div>
+            <div className="rt-note">{tr("No games loaded yet.")}</div>
           )}
 
           {!loading && bands.length > 0 && (
@@ -750,7 +751,7 @@ export default function ReplayTraining() {
                 onClick={() => startBand(b)}
               >
                 <span className="rt-band-range">{b.label}</span>
-                <span className="rt-band-count">{b.count.toLocaleString()} games</span>
+                <span className="rt-band-count">{b.count.toLocaleString()} {tr("games")}</span>
               </button>
             ))}
           </div>
@@ -839,20 +840,20 @@ export default function ReplayTraining() {
             <div className="rt-results-main">
               <span className="rt-results-score">{sessionPoints}</span>
               <span className="rt-results-of">
-                of {asked * BASE_POINTS} points
+                {tr("of")} {asked * BASE_POINTS} {tr("points")}
                 {asked > 0 && ` (${Math.round((sessionPoints / (asked * BASE_POINTS)) * 100)}%)`}
               </span>
               <span className="rt-results-sub">
-                {asked} question{asked === 1 ? '' : 's'}
-                {game ? ` · game result ${game.result}` : ''}
+                {asked} {tr("question")}{asked === 1 ? '' : 's'}
+                {game ? tr(" · game result {result}", { result: game.result }) : ''}
               </span>
             </div>
-            {saveState === 'saving' && <span className="rt-save">Saving…</span>}
-            {saveState === 'saved' && <span className="rt-save rt-save--ok">Saved to your Replay total</span>}
-            {saveState === 'error' && <span className="rt-save rt-save--bad">Could not save</span>}
+            {saveState === 'saving' && <span className="rt-save">{tr("Saving…")}</span>}
+            {saveState === 'saved' && <span className="rt-save rt-save--ok">{tr("Saved to your Replay total")}</span>}
+            {saveState === 'error' && <span className="rt-save rt-save--bad">{tr("Could not save")}</span>}
             {freeMoves.length > 0 && (
               <div className="rt-freeline">
-                <span className="rt-freeline-lbl">Your line:</span>
+                <span className="rt-freeline-lbl">{tr("Your line:")}</span>
                 {freeMoves.join(' ')}
                 <button
                   className="rt-freeline-reset"
@@ -896,13 +897,13 @@ export default function ReplayTraining() {
                       {feedback.depth ? <span className="rt-depth"> (Depth={feedback.depth})</span> : null}
                     </>
                   : awaiting
-                    ? `Playing ${orientation} — find the best move`
+                    ? tr("Playing {orientation} — find the best move", { orientation: orientation })
                     : (status || 'Working…')}
               </div>
 
               <div className="rt-sheet">
                 <div className="rt-sheet-row">
-                  <span className="rt-sheet-lbl">Your move</span>
+                  <span className="rt-sheet-lbl">{tr("Your move")}</span>
                   <span className="rt-sheet-move">{feedback?.yourSan || ''}</span>
                   <span className="rt-sheet-pts">
                     {feedback ? `Points=${feedback.points}/${feedback.max}` : ''}
@@ -910,13 +911,13 @@ export default function ReplayTraining() {
                   <span className="rt-sheet-eval">{feedback?.yourEval ?? ''}</span>
                 </div>
                 <div className="rt-sheet-row">
-                  <span className="rt-sheet-lbl">Game move</span>
+                  <span className="rt-sheet-lbl">{tr("Game move")}</span>
                   <span className="rt-sheet-move">{feedback?.played || ''}</span>
                   <span className="rt-sheet-pts" />
                   <span className="rt-sheet-eval" />
                 </div>
                 <div className="rt-sheet-row">
-                  <span className="rt-sheet-lbl">Engine move</span>
+                  <span className="rt-sheet-lbl">{tr("Engine move")}</span>
                   <span className="rt-sheet-move">{feedback?.bestSan || ''}</span>
                   <span className="rt-sheet-pts" />
                   <span className="rt-sheet-eval">
@@ -926,9 +927,9 @@ export default function ReplayTraining() {
                   </span>
                 </div>
                 <div className="rt-sheet-total">
-                  <span className="rt-sheet-lbl">Total score</span>
+                  <span className="rt-sheet-lbl">{tr("Total score")}</span>
                   <span>
-                    <b>{sessionPoints}</b> of {asked * BASE_POINTS}
+                    <b>{sessionPoints}</b> {tr("of")} {asked * BASE_POINTS}
                     {asked > 0 && ` (=${Math.round((sessionPoints / (asked * BASE_POINTS)) * 100)}%)`}
                     {feedback?.key === 'best' ? ' · Excellent!' : ''}
                   </span>
@@ -945,8 +946,8 @@ export default function ReplayTraining() {
 
           {engineTrouble && (
             <div className="rt-prompt rt-prompt--done">
-              <strong>Engine stopped responding</strong>
-              <span>The session ended early. Your points are safe.</span>
+              <strong>{tr("Engine stopped responding")}</strong>
+              <span>{tr("The session ended early. Your points are safe.")}</span>
             </div>
           )}
 
@@ -961,11 +962,11 @@ export default function ReplayTraining() {
                   checked={squareEvalsOn}
                   onChange={e => { setSquareEvalsOn(e.target.checked); setSelection(null); }}
                 />
-                Square evaluations
+                {tr("Square evaluations")}
               </label>
               {squareEvalsOn && (
                 <p className="rt-toggle-hint">
-                  Click a piece — every square it can reach is scored.
+                  {tr("Click a piece — every square it can reach is scored.")}
                 </p>
               )}
               {/* onToggle makes EnginePanel render its own on/off switch. */}
@@ -985,7 +986,7 @@ export default function ReplayTraining() {
               for the same reason. */}
           <div className="rt-moves">
             {shownMoves.length === 0 ? (
-              <div className="rt-moves-empty">No moves yet</div>
+              <div className="rt-moves-empty">{tr("No moves yet")}</div>
             ) : (
               Array.from({ length: Math.ceil(shownMoves.length / 2) }, (_, r) => {
                 const wPly = r * 2 + 1;
@@ -1010,37 +1011,37 @@ export default function ReplayTraining() {
 
           <div className="rt-nav">
             <button className="rt-nav-btn" onClick={navFirst}
-              disabled={reviewLimit === 0} title="First move">⏮</button>
+              disabled={reviewLimit === 0} title={tr("First move")}>⏮</button>
             <button className="rt-nav-btn" onClick={navPrev}
-              disabled={(viewPly ?? reviewLimit) <= 0} title="Previous move">◀</button>
+              disabled={(viewPly ?? reviewLimit) <= 0} title={tr("Previous move")}>◀</button>
             <button className="rt-nav-btn" onClick={navNext}
-              disabled={isLive} title="Next move">▶</button>
+              disabled={isLive} title={tr("Next move")}>▶</button>
             <button className="rt-nav-btn" onClick={navLast}
-              disabled={isLive} title="Latest position">⏭</button>
+              disabled={isLive} title={tr("Latest position")}>⏭</button>
           </div>
 
           {!isLive && (
             <button className="rt-btn rt-back-live" onClick={() => setViewPly(null)}>
-              ⏭ Back to the current position
+              {tr("⏭ Back to the current position")}
             </button>
           )}
 
           <div className="rt-actions">
             <button className="rt-btn" onClick={quit}>
-              {finished ? '← Exit' : '✕ Exit'}
+              {finished ? tr('← Exit') : tr('✕ Exit')}
             </button>
             {feedback && (
               // The student decides when to move on, so they can study the
               // engine's line for as long as they like.
               <button className="rt-btn rt-btn--go" onClick={continueSession}>
-                Continue →
+                {tr("Continue →")}
               </button>
             )}
             {!finished && (
               // Stop early and go straight to analysis. Points earned so far
               // are kept — finishSession saves them.
               <button className="rt-btn" onClick={finishAndAnalyse}>
-                ■ Finish
+                {tr("■ Finish")}
               </button>
             )}
           </div>

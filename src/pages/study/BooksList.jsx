@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -15,7 +16,7 @@ const BooksList = () => {
       try {
         const res = await api.get('/api/books');
         setBooks(res.data);
-      } catch { setError('Failed to load books'); }
+      } catch { setError(tr('Failed to load books')); }
       finally { setLoading(false); }
     })();
   }, []);
@@ -29,7 +30,7 @@ const BooksList = () => {
   const buildSections = () => {
     const sections = [];
     const freeBooks = books.filter(b => b.freeForAll);
-    if (freeBooks.length) sections.push({ key: 'free', label: '🆓 Free Books', books: freeBooks });
+    if (freeBooks.length) sections.push({ key: 'free', label: tr('🆓 Free Books'), books: freeBooks });
 
     for (const cat of CATEGORY_ORDER) {
       const inCat = books.filter(b => b.category === cat);
@@ -43,15 +44,15 @@ const BooksList = () => {
     }
 
     const uncategorised = books.filter(b => !b.category);
-    if (uncategorised.length) sections.push({ key: 'other', label: 'More Books', books: uncategorised });
+    if (uncategorised.length) sections.push({ key: 'other', label: tr('More Books'), books: uncategorised });
     return sections;
   };
 
   const renderCard = (book) => (
     <div key={book._id} style={styles.card} onClick={() => navigate(`/study/books/${book._id}`)}>
       <div style={styles.coverWrap}>
-        {book.freeForAll && <span style={styles.freeBadge}>FREE</span>}
-        {!book.freeForAll && book.unlocked && <span style={styles.unlockedBadge}>👛 Unlocked</span>}
+        {book.freeForAll && <span style={styles.freeBadge}>{tr("FREE")}</span>}
+        {!book.freeForAll && book.unlocked && <span style={styles.unlockedBadge}>{tr("👛 Unlocked")}</span>}
         {!book.freeForAll && !book.unlocked && book.xpPrice > 0 && <span style={styles.priceBadge}>👛 {book.xpPrice} XP</span>}
         {book.coverImage
           ? <img src={`${API_BASE}/api/public/book-covers/${book.coverImage}`} alt="" style={styles.cover} draggable={false} />
@@ -69,14 +70,14 @@ const BooksList = () => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <button style={styles.backButton} onClick={() => navigate('/study')}>← Back to Study</button>
-        <h1 style={styles.title}>📚 Books</h1>
+        <button style={styles.backButton} onClick={() => navigate('/study')}>{tr("← Back to Study")}</button>
+        <h1 style={styles.title}>{tr("📚 Books")}</h1>
         <p style={styles.subtitle}>Read chess books. Chapter 1 is free for everyone; unlock the rest with your XP — or free as a supporter, coach, or elite member.</p>
       </div>
 
       {error && <div style={styles.error}>{error}</div>}
-      {loading ? <div style={{ color: '#a3a3a3' }}>Loading…</div>
-        : books.length === 0 ? <div style={{ color: '#a3a3a3' }}>No books available yet.</div>
+      {loading ? <div style={{ color: '#a3a3a3' }}>{tr("Loading…")}</div>
+        : books.length === 0 ? <div style={{ color: '#a3a3a3' }}>{tr("No books available yet.")}</div>
         : (
           <div>
             {sections.map(section => (

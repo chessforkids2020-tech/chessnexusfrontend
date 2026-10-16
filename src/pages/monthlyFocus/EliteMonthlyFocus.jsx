@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
 import InlineBoardEditor from "../../components/PositionEditor/InlineBoardEditor";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const styles = {
   page: { padding: '20px', maxWidth: '1400px', margin: '0 auto', fontFamily: 'Inter, sans-serif' },
@@ -150,7 +151,7 @@ export default function EliteMonthlyFocus() {
         if (target) loadFocusDetails(target._id);
       }
     } catch (err) {
-      setError('Failed to load your challenges');
+      setError(tr('Failed to load your challenges'));
     } finally {
       setLoading(false);
     }
@@ -177,14 +178,14 @@ export default function EliteMonthlyFocus() {
       setSelectedFocus(res.data.focus);
       setFocusDays(res.data.days || []);
     } catch (err) {
-      setError('Failed to load challenge details');
+      setError(tr('Failed to load challenge details'));
     }
   };
 
   // ── Create focus ─────────────────────────────────────────────────────────
 
   const createFocus = async () => {
-    if (!focusForm.title.trim()) { setError('Title is required'); return; }
+    if (!focusForm.title.trim()) { setError(tr('Title is required')); return; }
     try {
       const res = await api.post('/api/elite/monthly-focus', focusForm);
       setShowCreateModal(false);
@@ -214,7 +215,7 @@ export default function EliteMonthlyFocus() {
       await fetchFocuses(focusId);
       loadFocusDetails(focusId);
     } catch (err) {
-      setError('Failed to deactivate');
+      setError(tr('Failed to deactivate'));
     }
   };
 
@@ -230,11 +231,11 @@ export default function EliteMonthlyFocus() {
     if (remaining <= 0) return 'Ended';
     const h = Math.floor(remaining / 3600000);
     const m = Math.floor((remaining % 3600000) / 60000);
-    return `${h}h ${m}m left`;
+    return tr("{h}h {m}m left", { h: h, m: m });
   };
 
   const startDay = async (dayNumber) => {
-    if (!window.confirm(`Start Day ${dayNumber}? Users will have 24 hours to complete it.`)) return;
+    if (!window.confirm(tr("Start Day {dayNumber}? Users will have 24 hours to complete it.", { dayNumber: dayNumber }))) return;
     try {
       await api.post(`/api/elite/monthly-focus/${selectedFocus._id}/day/${dayNumber}/start`);
       loadFocusDetails(selectedFocus._id);
@@ -244,7 +245,7 @@ export default function EliteMonthlyFocus() {
   };
 
   const stopDay = async (dayNumber) => {
-    if (!window.confirm(`Stop Day ${dayNumber}? Users will no longer be able to submit.`)) return;
+    if (!window.confirm(tr("Stop Day {dayNumber}? Users will no longer be able to submit.", { dayNumber: dayNumber }))) return;
     try {
       await api.post(`/api/elite/monthly-focus/${selectedFocus._id}/day/${dayNumber}/stop`);
       loadFocusDetails(selectedFocus._id);
@@ -254,7 +255,7 @@ export default function EliteMonthlyFocus() {
   };
 
   const resetDay = async (dayNumber) => {
-    if (!window.confirm(`Reset Day ${dayNumber}? This clears all user submissions and lets you start it again.`)) return;
+    if (!window.confirm(tr("Reset Day {dayNumber}? This clears all user submissions and lets you start it again.", { dayNumber: dayNumber }))) return;
     try {
       await api.post(`/api/elite/monthly-focus/${selectedFocus._id}/day/${dayNumber}/reset`);
       loadFocusDetails(selectedFocus._id);
@@ -317,14 +318,14 @@ export default function EliteMonthlyFocus() {
       setEditingDay(dayNumber);
       setShowDayForm(true);
     } catch (err) {
-      setError('Failed to load day for editing');
+      setError(tr('Failed to load day for editing'));
     }
   };
 
   const saveDay = async () => {
     const dayData = {
       dayNumber: dayForm.dayNumber,
-      title: dayForm.title || `Day ${dayForm.dayNumber}`,
+      title: dayForm.title || tr("Day {dayNumber}", { dayNumber: dayForm.dayNumber }),
       description: dayForm.description,
       taskType: dayForm.taskType,
       timerEnabled: dayForm.timerEnabled,
@@ -371,12 +372,12 @@ export default function EliteMonthlyFocus() {
   };
 
   const deleteDay = async (dayNumber) => {
-    if (!window.confirm(`Delete Day ${dayNumber}?`)) return;
+    if (!window.confirm(tr("Delete Day {dayNumber}?", { dayNumber: dayNumber }))) return;
     try {
       await api.delete(`/api/elite/monthly-focus/${selectedFocus._id}/day/${dayNumber}`);
       loadFocusDetails(selectedFocus._id);
     } catch (err) {
-      setError('Failed to delete day');
+      setError(tr('Failed to delete day'));
     }
   };
 
@@ -450,15 +451,15 @@ export default function EliteMonthlyFocus() {
     setDayForm({ ...dayForm, findMistakes: { ...dayForm.findMistakes, blunders: bl.length ? bl : [{ moveNumber: 1, move: '', betterMove: '', explanation: '' }] } });
   };
 
-  if (loading) return <div style={styles.page}><p>Loading your challenges…</p></div>;
+  if (loading) return <div style={styles.page}><p>{tr("Loading your challenges…")}</p></div>;
 
   return (
     <div style={styles.page}>
       {/* Header */}
       <div style={styles.header}>
-        <h1 style={styles.title}>✨ My Monthly Focus Challenges</h1>
+        <h1 style={styles.title}>{tr("✨ My Monthly Focus Challenges")}</h1>
         <button style={{ ...styles.btn, ...styles.btnSecondary }} onClick={() => navigate('/monthly-focus')}>
-          ← Back to Challenges
+          {tr("← Back to Challenges")}
         </button>
       </div>
 
@@ -472,7 +473,7 @@ export default function EliteMonthlyFocus() {
       <div style={styles.grid}>
         {/* Sidebar */}
         <div style={styles.sidebar}>
-          <h3 style={{ margin: '0 0 12px 0', fontSize: '16px' }}>My Challenges</h3>
+          <h3 style={{ margin: '0 0 12px 0', fontSize: '16px' }}>{tr("My Challenges")}</h3>
 
           {/* Can create banner */}
           {canCreate ? (
@@ -483,17 +484,17 @@ export default function EliteMonthlyFocus() {
             </div>
           ) : createInfo?.reason === 'coach_trial_used' ? (
             <div style={styles.cannotCreateBanner}>
-              💎 You've used your free Monthly Focus.<br />
-              Creating more is an <strong>Elite</strong> feature.
+              {tr("💎 You've used your free Monthly Focus.")}<br />
+              {tr("Creating more is an")} <strong>{tr("Elite")}</strong> {tr("feature.")}
             </div>
           ) : createInfo?.reason === 'month_used' ? (
             <div style={styles.cannotCreateBanner}>
-              ⏳ Already created this month.<br />
-              Next allowed: <strong>{nextAllowedDate ? nextAllowedDate.toDateString() : '1st of next month'}</strong>
+              {tr("⏳ Already created this month.")}<br />
+              {tr("Next allowed:")} <strong>{nextAllowedDate ? nextAllowedDate.toDateString() : tr('1st of next month')}</strong>
             </div>
           ) : (
             <div style={styles.cannotCreateBanner}>
-              💎 Monthly Focus creation is an <strong>Elite</strong> feature.
+              {tr("💎 Monthly Focus creation is an")} <strong>{tr("Elite")}</strong> {tr("feature.")}
             </div>
           )}
 
@@ -512,7 +513,7 @@ export default function EliteMonthlyFocus() {
             }}
             disabled={!canCreate}
           >
-            + Create Challenge
+            {tr("+ Create Challenge")}
           </button>
 
           {focuses.map(focus => (
@@ -538,7 +539,7 @@ export default function EliteMonthlyFocus() {
 
           {focuses.length === 0 && (
             <div style={{ textAlign: 'center', color: 'var(--color-text-faint)', padding: '20px', fontSize: '14px' }}>
-              No challenges yet. Create your first one!
+              {tr("No challenges yet. Create your first one!")}
             </div>
           )}
         </div>
@@ -547,8 +548,8 @@ export default function EliteMonthlyFocus() {
         <div style={styles.main}>
           {!selectedFocus ? (
             <div style={{ textAlign: 'center', padding: '60px', color: 'var(--color-text-faint)' }}>
-              <h2 style={{ marginBottom: '10px' }}>Select or Create a Challenge</h2>
-              <p>Choose a challenge from the sidebar or create a new one</p>
+              <h2 style={{ marginBottom: '10px' }}>{tr("Select or Create a Challenge")}</h2>
+              <p>{tr("Choose a challenge from the sidebar or create a new one")}</p>
             </div>
           ) : (
             <>
@@ -557,7 +558,7 @@ export default function EliteMonthlyFocus() {
                 <div>
                   <h2 style={{ margin: '0 0 5px 0' }}>{selectedFocus.title}</h2>
                   <p style={{ margin: 0, color: 'var(--color-text-faint)' }}>
-                    {selectedFocus.month} • Theme: {selectedFocus.theme}
+                    {selectedFocus.month} {tr("• Theme:")} {selectedFocus.theme}
                     {/* Say who can join. A coach needs to see at a glance whether
                         a challenge is going out to the whole platform. */}
                     {' • '}
@@ -569,12 +570,12 @@ export default function EliteMonthlyFocus() {
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {selectedFocus.status === 'draft' && (
                     <button style={{ ...styles.btn, ...styles.btnSuccess }} onClick={() => activateFocus(selectedFocus._id)}>
-                      ✓ Activate
+                      {tr("✓ Activate")}
                     </button>
                   )}
                   {selectedFocus.status === 'active' && (
                     <button style={{ ...styles.btn, ...styles.btnSecondary }} onClick={() => deactivateFocus(selectedFocus._id)}>
-                      Deactivate
+                      {tr("Deactivate")}
                     </button>
                   )}
                 </div>
@@ -583,12 +584,12 @@ export default function EliteMonthlyFocus() {
               {/* Info */}
               {selectedFocus.status === 'draft' && (
                 <div style={{ background: 'var(--color-warning-a20)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '15px', fontSize: '14px', color: 'var(--color-warning)' }}>
-                  📝 Draft — Add at least 1 day, then activate to make it live for all users.
+                  {tr("📝 Draft — Add at least 1 day, then activate to make it live for all users.")}
                 </div>
               )}
               {selectedFocus.status === 'active' && (
                 <div style={{ background: 'var(--color-success-a20)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '15px', fontSize: '14px', color: 'var(--color-success)' }}>
-                  🟢 Active — This challenge is live. Press <strong>▶️ Start Day</strong> on a day below to open it for 24 hours (one day runs at a time).
+                  {tr("🟢 Active — This challenge is live. Press")} <strong>{tr("▶️ Start Day")}</strong> {tr("on a day below to open it for 24 hours (one day runs at a time).")}
                 </div>
               )}
 
@@ -609,7 +610,7 @@ export default function EliteMonthlyFocus() {
                         disabled={savingSchedule}
                         onChange={e => saveSchedule({ autoStart: e.target.checked })}
                       />
-                      ⏰ Start each day automatically
+                      {tr("⏰ Start each day automatically")}
                     </label>
                     <p style={{ margin: '6px 0 0 24px', fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
                       {selectedFocus.autoStart
@@ -619,13 +620,13 @@ export default function EliteMonthlyFocus() {
                     {selectedFocus.autoStart && (
                       <div style={{ ...styles.row, marginTop: '10px', marginLeft: '24px', alignItems: 'flex-end' }}>
                         <div style={{ flex: 1 }}>
-                          <label style={styles.label}>Opens at (IST)</label>
+                          <label style={styles.label}>{tr("Opens at (IST)")}</label>
                           <input style={styles.input} type="time" disabled={savingSchedule}
                             value={minuteToTime(selectedFocus.dailyStartMinute ?? 1080)}
                             onChange={e => saveSchedule({ dailyStartMinute: timeToMinute(e.target.value) })} />
                         </div>
                         <div style={{ flex: 1 }}>
-                          <label style={styles.label}>Closes at (IST)</label>
+                          <label style={styles.label}>{tr("Closes at (IST)")}</label>
                           <input style={styles.input} type="time" disabled={savingSchedule}
                             value={minuteToTime(selectedFocus.dailyEndMinute ?? 1320)}
                             onChange={e => saveSchedule({ dailyEndMinute: timeToMinute(e.target.value) })} />
@@ -635,8 +636,8 @@ export default function EliteMonthlyFocus() {
                   </>
                 ) : (
                   <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
-                    ⏰ <strong>Auto-start needs all 7 days.</strong> You have {focusDays.length} —
-                    add {7 - focusDays.length} more and you can have the days open themselves.
+                    ⏰ <strong>{tr("Auto-start needs all 7 days.")}</strong> {tr("You have")} {focusDays.length} —
+                    {tr("add")} {7 - focusDays.length} {tr("more and you can have the days open themselves.")}
                     Until then you start each day yourself.
                   </p>
                 )}
@@ -644,19 +645,19 @@ export default function EliteMonthlyFocus() {
 
               {/* Days section */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ margin: 0 }}>Days (1–7)</h3>
+                <h3 style={{ margin: 0 }}>{tr("Days (1–7)")}</h3>
                 <button
                   style={{ ...styles.btn, ...styles.btnPrimary, ...(focusDays.length >= 7 ? styles.btnDisabled : {}) }}
                   onClick={() => openNewDayForm()}
                   disabled={focusDays.length >= 7}
                 >
-                  + Add Day
+                  {tr("+ Add Day")}
                 </button>
               </div>
 
               {focusDays.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px', background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-faint)' }}>
-                  <p>No days yet. Add days 1–7 to build your challenge cycle.</p>
+                  <p>{tr("No days yet. Add days 1–7 to build your challenge cycle.")}</p>
                 </div>
               ) : (
                 <div>
@@ -677,7 +678,7 @@ export default function EliteMonthlyFocus() {
                       }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                           <div>
-                            <strong>Day {dayNum}</strong>
+                            <strong>{tr("Day")} {dayNum}</strong>
                             {day ? (
                               <>
                                 <span style={{ marginLeft: '10px', color: 'var(--color-text-faint)' }}>{day.title}</span>
@@ -689,7 +690,7 @@ export default function EliteMonthlyFocus() {
                                   {day.taskType.replace(/_/g, ' ')}
                                 </span>
                                 <span style={{ marginLeft: '10px', fontSize: '12px', color: 'var(--color-success)' }}>
-                                  {day.xpReward} XP
+                                  {day.xpReward} {tr("XP")}
                                 </span>
                                 {/* Day status badge */}
                                 {day.isStarted ? (
@@ -701,16 +702,16 @@ export default function EliteMonthlyFocus() {
                                     color: isDayRunning(day) ? 'var(--color-success)' : 'var(--color-text-muted)',
                                     background: isDayRunning(day) ? 'var(--color-success-a20)' : 'var(--color-white-a07)',
                                   }}>
-                                    {isDayRunning(day) ? `LIVE — ${formatTimeRemaining(day.endTime)}` : 'ENDED'}
+                                    {isDayRunning(day) ? tr("LIVE — {v0}", { v0: formatTimeRemaining(day.endTime) }) : tr('ENDED')}
                                   </span>
                                 ) : (
                                   <span style={{ ...styles.badge, marginLeft: '10px', background: 'var(--color-warning-a20)', color: 'var(--color-warning)' }}>
-                                    NOT STARTED
+                                    {tr("NOT STARTED")}
                                   </span>
                                 )}
                               </>
                             ) : (
-                              <span style={{ marginLeft: '10px', color: 'var(--color-text-muted)' }}>Not created</span>
+                              <span style={{ marginLeft: '10px', color: 'var(--color-text-muted)' }}>{tr("Not created")}</span>
                             )}
                           </div>
                           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -719,26 +720,26 @@ export default function EliteMonthlyFocus() {
                                 {/* Start / Stop / Reset — only when challenge is active */}
                                 {selectedFocus.status === 'active' && !day.isStarted && (
                                   <button style={{ ...styles.btn, ...styles.btnSuccess, ...styles.btnSmall }} onClick={() => startDay(dayNum)}>
-                                    ▶️ Start Day
+                                    {tr("▶️ Start Day")}
                                   </button>
                                 )}
                                 {selectedFocus.status === 'active' && isDayRunning(day) && (
                                   <button style={{ ...styles.btn, ...styles.btnDanger, ...styles.btnSmall }} onClick={() => stopDay(dayNum)}>
-                                    ⏹️ Stop
+                                    {tr("⏹️ Stop")}
                                   </button>
                                 )}
                                 {selectedFocus.status === 'active' && day.isStarted && !isDayRunning(day) && (
                                   <button style={{ ...styles.btn, ...styles.btnSmall, background: 'var(--color-warning)', color: 'var(--color-text)' }} onClick={() => resetDay(dayNum)}>
-                                    🔄 Reset
+                                    {tr("🔄 Reset")}
                                   </button>
                                 )}
                                 {day.isStarted && (
                                   <button style={{ ...styles.btn, ...styles.btnSmall, background: 'var(--color-accent-2)', color: 'var(--color-text)' }} onClick={() => viewDayResults(dayNum)}>
-                                    📊 Results
+                                    {tr("📊 Results")}
                                   </button>
                                 )}
                                 <button style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall }} onClick={() => editDay(dayNum)}>
-                                  ✏️ Edit
+                                  {tr("✏️ Edit")}
                                 </button>
                                 <button style={{ ...styles.btn, ...styles.btnDanger, ...styles.btnSmall }} onClick={() => deleteDay(dayNum)}>
                                   🗑️
@@ -749,7 +750,7 @@ export default function EliteMonthlyFocus() {
                                 style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }}
                                 onClick={() => openNewDayForm(dayNum)}
                               >
-                                + Create
+                                {tr("+ Create")}
                               </button>
                             )}
                           </div>
@@ -768,32 +769,32 @@ export default function EliteMonthlyFocus() {
       {showCreateModal && (
         <div style={styles.modal} onClick={() => setShowCreateModal(false)}>
           <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <h2 style={{ marginTop: 0 }}>✨ Create Monthly Focus Challenge</h2>
+            <h2 style={{ marginTop: 0 }}>{tr("✨ Create Monthly Focus Challenge")}</h2>
             <p style={{ color: 'var(--color-text-faint)', fontSize: '14px', marginTop: '-10px' }}>
-              You can create <strong>1 challenge per month</strong>. Once created, add up to 7 days then activate.
+              {tr("You can create")} <strong>{tr("1 challenge per month")}</strong>{tr(". Once created, add up to 7 days then activate.")}
             </p>
 
-            <label style={styles.label}>Title *</label>
-            <input style={styles.input} placeholder="e.g., Endgame Mastery — June 2026"
+            <label style={styles.label}>{tr("Title *")}</label>
+            <input style={styles.input} placeholder={tr("e.g., Endgame Mastery — June 2026")}
               value={focusForm.title} onChange={e => setFocusForm({ ...focusForm, title: e.target.value })} />
 
-            <label style={styles.label}>Theme</label>
+            <label style={styles.label}>{tr("Theme")}</label>
             <select style={styles.select} value={focusForm.theme} onChange={e => setFocusForm({ ...focusForm, theme: e.target.value })}>
-              <option value="tactics">Tactics</option>
-              <option value="strategy">Strategy</option>
-              <option value="endgame">Endgame</option>
-              <option value="opening">Opening</option>
-              <option value="mixed">Mixed</option>
+              <option value="tactics">{tr("Tactics")}</option>
+              <option value="strategy">{tr("Strategy")}</option>
+              <option value="endgame">{tr("Endgame")}</option>
+              <option value="opening">{tr("Opening")}</option>
+              <option value="mixed">{tr("Mixed")}</option>
             </select>
 
             <div style={styles.row}>
               <div style={{ flex: 1 }}>
-                <label style={styles.label}>Start Date</label>
+                <label style={styles.label}>{tr("Start Date")}</label>
                 <input style={styles.input} type="date" value={focusForm.startDate}
                   onChange={e => setFocusForm({ ...focusForm, startDate: e.target.value })} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={styles.label}>End Date</label>
+                <label style={styles.label}>{tr("End Date")}</label>
                 <input style={styles.input} type="date" value={focusForm.endDate}
                   onChange={e => setFocusForm({ ...focusForm, endDate: e.target.value })} />
               </div>
@@ -805,21 +806,21 @@ export default function EliteMonthlyFocus() {
                 accepted students yet is told why the option is unavailable. */}
             {createInfo?.isCoach && createInfo?.studentCount > 0 ? (
               <>
-                <label style={styles.label}>Who can join?</label>
+                <label style={styles.label}>{tr("Who can join?")}</label>
                 <select style={styles.select} value={focusForm.visibility}
                   onChange={e => setFocusForm({ ...focusForm, visibility: e.target.value })}>
-                  <option value="private">My students only (private)</option>
-                  <option value="public">Anyone on Chess Nexus (public)</option>
+                  <option value="private">{tr("My students only (private)")}</option>
+                  <option value="public">{tr("Anyone on Chess Nexus (public)")}</option>
                 </select>
                 <p style={{ margin: '-4px 0 12px', fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
                   {focusForm.visibility === 'private'
-                    ? `Only your ${createInfo.studentCount} accepted student${createInfo.studentCount === 1 ? '' : 's'} can join. Everyone else sees it listed as a closed activity under your name. The student list is fixed when you create it.`
+                    ? tr("Only your {studentCount} accepted student{v1} can join. Everyone else sees it listed as a closed activity under your name. The student list is fixed when you create it.", { studentCount: createInfo.studentCount, v1: createInfo.studentCount === 1 ? '' : 's' })
                     : 'Every player on Chess Nexus can find and join this challenge.'}
                 </p>
               </>
             ) : (
               <p style={{ margin: '0 0 12px', fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
-                🌍 This challenge will be <strong>open to everyone</strong> on Chess Nexus.
+                {tr("🌍 This challenge will be")} <strong>{tr("open to everyone")}</strong> {tr("on Chess Nexus.")}
                 {createInfo?.isCoach && createInfo?.studentCount === 0
                   ? ' Enrol students to be able to run a private, students-only challenge.'
                   : ''}
@@ -828,10 +829,10 @@ export default function EliteMonthlyFocus() {
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
               <button style={{ ...styles.btn, ...styles.btnPrimary }} onClick={createFocus}>
-                Create Challenge
+                {tr("Create Challenge")}
               </button>
               <button style={{ ...styles.btn, ...styles.btnSecondary }} onClick={() => setShowCreateModal(false)}>
-                Cancel
+                {tr("Cancel")}
               </button>
             </div>
           </div>
@@ -843,13 +844,13 @@ export default function EliteMonthlyFocus() {
         <div style={styles.modal} onClick={() => { setShowDayForm(false); setEditingDay(null); }}>
           <div style={{ ...styles.modalContent, maxWidth: '900px' }} onClick={e => e.stopPropagation()}>
             <h2 style={{ marginTop: 0 }}>
-              {editingDay ? `Edit Day ${editingDay}` : `Add Day ${dayForm.dayNumber}`}
+              {editingDay ? tr("Edit Day {editingDay}", { editingDay: editingDay }) : tr("Add Day {dayNumber}", { dayNumber: dayForm.dayNumber })}
             </h2>
 
             {/* Day Number + Title */}
             <div style={styles.row}>
               <div style={{ flex: 1 }}>
-                <label style={styles.label}>Day Number</label>
+                <label style={styles.label}>{tr("Day Number")}</label>
                 <select style={styles.select} value={dayForm.dayNumber}
                   onChange={e => setDayForm({ ...dayForm, dayNumber: parseInt(e.target.value) })}
                   disabled={!!editingDay}>
@@ -857,36 +858,36 @@ export default function EliteMonthlyFocus() {
                 </select>
               </div>
               <div style={{ flex: 2 }}>
-                <label style={styles.label}>Title</label>
-                <input style={styles.input} placeholder={`Day ${dayForm.dayNumber}`}
+                <label style={styles.label}>{tr("Title")}</label>
+                <input style={styles.input} placeholder={tr("Day {dayNumber}", { dayNumber: dayForm.dayNumber })}
                   value={dayForm.title} onChange={e => setDayForm({ ...dayForm, title: e.target.value })} />
               </div>
             </div>
 
-            <label style={styles.label}>Description (optional)</label>
-            <input style={styles.input} placeholder="Brief description of this day's task"
+            <label style={styles.label}>{tr("Description (optional)")}</label>
+            <input style={styles.input} placeholder={tr("Brief description of this day's task")}
               value={dayForm.description} onChange={e => setDayForm({ ...dayForm, description: e.target.value })} />
 
             {/* Task type + XP */}
             <div style={styles.row}>
               <div style={{ flex: 2 }}>
-                <label style={styles.label}>Task Type *</label>
+                <label style={styles.label}>{tr("Task Type *")}</label>
                 <select style={styles.select} value={dayForm.taskType}
                   onChange={e => setDayForm({ ...dayForm, taskType: e.target.value })}>
-                  <option value="puzzles">🧩 Puzzles (FEN + Solution)</option>
-                  <option value="find_mistakes">🔍 Find Mistakes (PGN)</option>
-                  <option value="tactics_identification">🎯 Tactics Identification</option>
-                  <option value="multiple_choice">❓ Multiple Choice</option>
-                  <option value="pgn_blunder_analysis">📊 PGN Blunder Analysis</option>
+                  <option value="puzzles">{tr("🧩 Puzzles (FEN + Solution)")}</option>
+                  <option value="find_mistakes">{tr("🔍 Find Mistakes (PGN)")}</option>
+                  <option value="tactics_identification">{tr("🎯 Tactics Identification")}</option>
+                  <option value="multiple_choice">{tr("❓ Multiple Choice")}</option>
+                  <option value="pgn_blunder_analysis">{tr("📊 PGN Blunder Analysis")}</option>
                 </select>
               </div>
               <div style={{ flex: 1 }}>
-                <label style={styles.label}>XP Reward</label>
+                <label style={styles.label}>{tr("XP Reward")}</label>
                 <input style={styles.input} type="number" value={dayForm.xpReward}
                   onChange={e => setDayForm({ ...dayForm, xpReward: parseInt(e.target.value) || 100 })} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={styles.label}>Perfect Bonus XP</label>
+                <label style={styles.label}>{tr("Perfect Bonus XP")}</label>
                 <input style={styles.input} type="number" value={dayForm.perfectBonus}
                   onChange={e => setDayForm({ ...dayForm, perfectBonus: parseInt(e.target.value) || 50 })} />
               </div>
@@ -897,11 +898,11 @@ export default function EliteMonthlyFocus() {
               <label style={{ ...styles.label, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                 <input type="checkbox" checked={dayForm.timerEnabled}
                   onChange={e => setDayForm({ ...dayForm, timerEnabled: e.target.checked })} />
-                Enable Timer
+                {tr("Enable Timer")}
               </label>
               {dayForm.timerEnabled && (
                 <div style={{ marginLeft: '24px', marginTop: '5px' }}>
-                  <label style={styles.label}>Time Limit (seconds)</label>
+                  <label style={styles.label}>{tr("Time Limit (seconds)")}</label>
                   <input style={{ ...styles.input, maxWidth: '200px' }} type="number" value={dayForm.timeLimit}
                     onChange={e => setDayForm({ ...dayForm, timeLimit: parseInt(e.target.value) || 600 })} />
                   <span style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>= {Math.floor(dayForm.timeLimit / 60)} min</span>
@@ -919,7 +920,7 @@ export default function EliteMonthlyFocus() {
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: 'var(--color-text)' }}>
                     <input type="checkbox" checked={dayForm.engineJudged}
                       onChange={e => setDayForm({ ...dayForm, engineJudged: e.target.checked })} />
-                    🤖 Stockfish-judged (accept any strong move, not just one saved line)
+                    {tr("🤖 Stockfish-judged (accept any strong move, not just one saved line)")}
                   </label>
                   <p style={{ margin: '8px 0 0 24px', fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
                     The user plays, Stockfish replies in their browser. A move counts if it's within the tolerance of the engine's best.
@@ -928,35 +929,35 @@ export default function EliteMonthlyFocus() {
                   {dayForm.engineJudged && (
                     <div style={{ ...styles.row, marginTop: '10px', marginLeft: '24px' }}>
                       <div style={{ flex: 1 }}>
-                        <label style={styles.label}>Tolerance (centipawns)</label>
+                        <label style={styles.label}>{tr("Tolerance (centipawns)")}</label>
                         <input style={styles.input} type="number" min="0" max="500" value={dayForm.engineToleranceCp}
                           onChange={e => setDayForm({ ...dayForm, engineToleranceCp: parseInt(e.target.value) || 0 })} />
-                        <span style={{ fontSize: '11px', color: 'var(--color-text-faint)' }}>Lower = stricter. ~50 strict, ~100 lenient.</span>
+                        <span style={{ fontSize: '11px', color: 'var(--color-text-faint)' }}>{tr("Lower = stricter. ~50 strict, ~100 lenient.")}</span>
                       </div>
                       <div style={{ flex: 1 }}>
-                        <label style={styles.label}>Engine depth</label>
+                        <label style={styles.label}>{tr("Engine depth")}</label>
                         <input style={styles.input} type="number" min="6" max="18" value={dayForm.engineDepth}
                           onChange={e => setDayForm({ ...dayForm, engineDepth: parseInt(e.target.value) || 12 })} />
-                        <span style={{ fontSize: '11px', color: 'var(--color-text-faint)' }}>Higher = stronger but slower in-browser.</span>
+                        <span style={{ fontSize: '11px', color: 'var(--color-text-faint)' }}>{tr("Higher = stronger but slower in-browser.")}</span>
                       </div>
                     </div>
                   )}
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <strong>Puzzles ({dayForm.puzzles.length}/20)</strong>
-                  <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addPuzzle}>+ Add Puzzle</button>
+                  <strong>{tr("Puzzles (")}{dayForm.puzzles.length}/20)</strong>
+                  <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addPuzzle}>{tr("+ Add Puzzle")}</button>
                 </div>
                 {dayForm.puzzles.map((p, i) => (
                   <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-sm)', padding: '10px', marginBottom: '8px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                      <strong style={{ fontSize: '13px' }}>Puzzle {i + 1}</strong>
+                      <strong style={{ fontSize: '13px' }}>{tr("Puzzle")} {i + 1}</strong>
                       {dayForm.puzzles.length > 1 && (
-                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removePuzzle(i)}>Remove</button>
+                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removePuzzle(i)}>{tr("Remove")}</button>
                       )}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                      <label style={{ ...styles.label, marginBottom: 0 }}>FEN *</label>
+                      <label style={{ ...styles.label, marginBottom: 0 }}>{tr("FEN *")}</label>
                       <button
                         type="button"
                         style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall }}
@@ -965,7 +966,7 @@ export default function EliteMonthlyFocus() {
                         {boardEditor === 'puzzle:' + i ? '✕ Close board' : '♟ Set up on board'}
                       </button>
                     </div>
-                    <input style={styles.input} placeholder="Paste a FEN, or build the position on the board" value={p.fen}
+                    <input style={styles.input} placeholder={tr("Paste a FEN, or build the position on the board")} value={p.fen}
                       onChange={e => updatePuzzle(i, 'fen', e.target.value)} />
                     {boardEditor === 'puzzle:' + i && (
                       <div style={{ marginBottom: '10px' }}>
@@ -978,23 +979,23 @@ export default function EliteMonthlyFocus() {
                     )}
                     {dayForm.engineJudged ? (
                       <>
-                        <label style={styles.label}>User moves required *</label>
+                        <label style={styles.label}>{tr("User moves required *")}</label>
                         <input style={{ ...styles.input, maxWidth: '160px' }} type="number" min="1" max="10"
                           value={p.userMoveCount || 1}
                           onChange={e => updatePuzzle(i, 'userMoveCount', parseInt(e.target.value) || 1)} />
-                        <label style={styles.label}>Solution line (optional — hint/reference only)</label>
-                        <input style={styles.input} placeholder="optional, e.g., Qh5 g6 Qxe5" value={p.solution}
+                        <label style={styles.label}>{tr("Solution line (optional — hint/reference only)")}</label>
+                        <input style={styles.input} placeholder={tr("optional, e.g., Qh5 g6 Qxe5")} value={p.solution}
                           onChange={e => updatePuzzle(i, 'solution', e.target.value)} />
                       </>
                     ) : (
                       <>
-                        <label style={styles.label}>Solution *</label>
-                        <input style={styles.input} placeholder="e.g., e4 d5 Nf3" value={p.solution}
+                        <label style={styles.label}>{tr("Solution *")}</label>
+                        <input style={styles.input} placeholder={tr("e.g., e4 d5 Nf3")} value={p.solution}
                           onChange={e => updatePuzzle(i, 'solution', e.target.value)} />
                       </>
                     )}
-                    <label style={styles.label}>Tag (optional)</label>
-                    <input style={styles.input} placeholder="e.g., pin, fork, skewer" value={p.tag || ''}
+                    <label style={styles.label}>{tr("Tag (optional)")}</label>
+                    <input style={styles.input} placeholder={tr("e.g., pin, fork, skewer")} value={p.tag || ''}
                       onChange={e => updatePuzzle(i, 'tag', e.target.value)} />
                   </div>
                 ))}
@@ -1004,28 +1005,28 @@ export default function EliteMonthlyFocus() {
             {/* FIND MISTAKES */}
             {dayForm.taskType === 'find_mistakes' && (
               <div style={styles.fieldGroup}>
-                <strong style={{ display: 'block', marginBottom: '10px' }}>Find Mistakes</strong>
-                <label style={styles.label}>PGN *</label>
-                <textarea style={styles.textarea} placeholder="Paste PGN here"
+                <strong style={{ display: 'block', marginBottom: '10px' }}>{tr("Find Mistakes")}</strong>
+                <label style={styles.label}>{tr("PGN *")}</label>
+                <textarea style={styles.textarea} placeholder={tr("Paste PGN here")}
                   value={dayForm.findMistakes.pgn}
                   onChange={e => setDayForm({ ...dayForm, findMistakes: { ...dayForm.findMistakes, pgn: e.target.value } })} />
                 <div style={styles.row}>
                   <div style={{ flex: 1 }}>
-                    <label style={styles.label}>Mode</label>
+                    <label style={styles.label}>{tr("Mode")}</label>
                     <select style={styles.select} value={dayForm.findMistakes.mode}
                       onChange={e => setDayForm({ ...dayForm, findMistakes: { ...dayForm.findMistakes, mode: e.target.value } })}>
-                      <option value="best_moves">Best Moves</option>
-                      <option value="blunders">Blunders</option>
-                      <option value="both">Both</option>
+                      <option value="best_moves">{tr("Best Moves")}</option>
+                      <option value="blunders">{tr("Blunders")}</option>
+                      <option value="both">{tr("Both")}</option>
                     </select>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <label style={styles.label}>Side</label>
+                    <label style={styles.label}>{tr("Side")}</label>
                     <select style={styles.select} value={dayForm.findMistakes.side}
                       onChange={e => setDayForm({ ...dayForm, findMistakes: { ...dayForm.findMistakes, side: e.target.value } })}>
-                      <option value="both">Both</option>
-                      <option value="white">White</option>
-                      <option value="black">Black</option>
+                      <option value="both">{tr("Both")}</option>
+                      <option value="white">{tr("White")}</option>
+                      <option value="black">{tr("Black")}</option>
                     </select>
                   </div>
                 </div>
@@ -1033,21 +1034,21 @@ export default function EliteMonthlyFocus() {
                 {dayForm.findMistakes.mode !== 'blunders' && (
                   <>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <strong style={{ fontSize: '13px' }}>Best Moves</strong>
-                      <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addBestMove}>+ Add</button>
+                      <strong style={{ fontSize: '13px' }}>{tr("Best Moves")}</strong>
+                      <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addBestMove}>{tr("+ Add")}</button>
                     </div>
                     {dayForm.findMistakes.bestMoves.map((m, i) => (
                       <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-sm)', padding: '10px', marginBottom: '6px' }}>
                         <div style={styles.row}>
-                          <input style={{ ...styles.input, flex: 1, marginBottom: 0 }} type="number" placeholder="Move #" value={m.moveNumber}
+                          <input style={{ ...styles.input, flex: 1, marginBottom: 0 }} type="number" placeholder={tr("Move #")} value={m.moveNumber}
                             onChange={e => updateBestMove(i, 'moveNumber', parseInt(e.target.value))} />
-                          <input style={{ ...styles.input, flex: 2, marginBottom: 0 }} placeholder="Best move (e.g., Nf3)" value={m.move}
+                          <input style={{ ...styles.input, flex: 2, marginBottom: 0 }} placeholder={tr("Best move (e.g., Nf3)")} value={m.move}
                             onChange={e => updateBestMove(i, 'move', e.target.value)} />
                           {dayForm.findMistakes.bestMoves.length > 1 && (
                             <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removeBestMove(i)}>✕</button>
                           )}
                         </div>
-                        <input style={styles.input} placeholder="Explanation (optional)" value={m.explanation}
+                        <input style={styles.input} placeholder={tr("Explanation (optional)")} value={m.explanation}
                           onChange={e => updateBestMove(i, 'explanation', e.target.value)} />
                       </div>
                     ))}
@@ -1057,23 +1058,23 @@ export default function EliteMonthlyFocus() {
                 {dayForm.findMistakes.mode !== 'best_moves' && (
                   <>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <strong style={{ fontSize: '13px' }}>Blunders</strong>
-                      <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addBlunder}>+ Add</button>
+                      <strong style={{ fontSize: '13px' }}>{tr("Blunders")}</strong>
+                      <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addBlunder}>{tr("+ Add")}</button>
                     </div>
                     {dayForm.findMistakes.blunders.map((b, i) => (
                       <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-sm)', padding: '10px', marginBottom: '6px' }}>
                         <div style={styles.row}>
-                          <input style={{ ...styles.input, flex: 1, marginBottom: 0 }} type="number" placeholder="Move #" value={b.moveNumber}
+                          <input style={{ ...styles.input, flex: 1, marginBottom: 0 }} type="number" placeholder={tr("Move #")} value={b.moveNumber}
                             onChange={e => updateBlunder(i, 'moveNumber', parseInt(e.target.value))} />
-                          <input style={{ ...styles.input, flex: 2, marginBottom: 0 }} placeholder="Blunder move" value={b.move}
+                          <input style={{ ...styles.input, flex: 2, marginBottom: 0 }} placeholder={tr("Blunder move")} value={b.move}
                             onChange={e => updateBlunder(i, 'move', e.target.value)} />
-                          <input style={{ ...styles.input, flex: 2, marginBottom: 0 }} placeholder="Better move" value={b.betterMove}
+                          <input style={{ ...styles.input, flex: 2, marginBottom: 0 }} placeholder={tr("Better move")} value={b.betterMove}
                             onChange={e => updateBlunder(i, 'betterMove', e.target.value)} />
                           {dayForm.findMistakes.blunders.length > 1 && (
                             <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removeBlunder(i)}>✕</button>
                           )}
                         </div>
-                        <input style={styles.input} placeholder="Explanation (optional)" value={b.explanation}
+                        <input style={styles.input} placeholder={tr("Explanation (optional)")} value={b.explanation}
                           onChange={e => updateBlunder(i, 'explanation', e.target.value)} />
                       </div>
                     ))}
@@ -1086,19 +1087,19 @@ export default function EliteMonthlyFocus() {
             {dayForm.taskType === 'tactics_identification' && (
               <div style={styles.fieldGroup}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <strong>Tactics Items</strong>
-                  <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addTactics}>+ Add</button>
+                  <strong>{tr("Tactics Items")}</strong>
+                  <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addTactics}>{tr("+ Add")}</button>
                 </div>
                 {dayForm.tacticsItems.map((t, i) => (
                   <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-sm)', padding: '10px', marginBottom: '8px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                      <strong style={{ fontSize: '13px' }}>Item {i + 1}</strong>
+                      <strong style={{ fontSize: '13px' }}>{tr("Item")} {i + 1}</strong>
                       {dayForm.tacticsItems.length > 1 && (
-                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removeTactics(i)}>Remove</button>
+                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removeTactics(i)}>{tr("Remove")}</button>
                       )}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                      <label style={{ ...styles.label, marginBottom: 0 }}>FEN *</label>
+                      <label style={{ ...styles.label, marginBottom: 0 }}>{tr("FEN *")}</label>
                       <button
                         type="button"
                         style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall }}
@@ -1107,7 +1108,7 @@ export default function EliteMonthlyFocus() {
                         {boardEditor === 'tactics:' + i ? '✕ Close board' : '♟ Set up on board'}
                       </button>
                     </div>
-                    <input style={styles.input} placeholder="Paste a FEN, or build the position on the board" value={t.fen}
+                    <input style={styles.input} placeholder={tr("Paste a FEN, or build the position on the board")} value={t.fen}
                       onChange={e => updateTactics(i, 'fen', e.target.value)} />
                     {boardEditor === 'tactics:' + i && (
                       <div style={{ marginBottom: '10px' }}>
@@ -1118,8 +1119,8 @@ export default function EliteMonthlyFocus() {
                         />
                       </div>
                     )}
-                    <label style={styles.label}>Tactics Name *</label>
-                    <input style={styles.input} placeholder="e.g., Fork, Pin, Skewer" value={t.tacticsName}
+                    <label style={styles.label}>{tr("Tactics Name *")}</label>
+                    <input style={styles.input} placeholder={tr("e.g., Fork, Pin, Skewer")} value={t.tacticsName}
                       onChange={e => updateTactics(i, 'tacticsName', e.target.value)} />
                   </div>
                 ))}
@@ -1130,19 +1131,19 @@ export default function EliteMonthlyFocus() {
             {dayForm.taskType === 'multiple_choice' && (
               <div style={styles.fieldGroup}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <strong>Multiple Choice Items</strong>
-                  <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addMC}>+ Add</button>
+                  <strong>{tr("Multiple Choice Items")}</strong>
+                  <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addMC}>{tr("+ Add")}</button>
                 </div>
                 {dayForm.multipleChoiceItems.map((item, mi) => (
                   <div key={mi} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-sm)', padding: '12px', marginBottom: '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <strong style={{ fontSize: '13px' }}>Question {mi + 1}</strong>
+                      <strong style={{ fontSize: '13px' }}>{tr("Question")} {mi + 1}</strong>
                       {dayForm.multipleChoiceItems.length > 1 && (
-                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removeMC(mi)}>Remove</button>
+                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removeMC(mi)}>{tr("Remove")}</button>
                       )}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                      <label style={{ ...styles.label, marginBottom: 0 }}>FEN *</label>
+                      <label style={{ ...styles.label, marginBottom: 0 }}>{tr("FEN *")}</label>
                       <button
                         type="button"
                         style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall }}
@@ -1151,7 +1152,7 @@ export default function EliteMonthlyFocus() {
                         {boardEditor === 'mc:' + mi ? '✕ Close board' : '♟ Set up on board'}
                       </button>
                     </div>
-                    <input style={styles.input} placeholder="Paste a FEN, or build the position on the board" value={item.fen}
+                    <input style={styles.input} placeholder={tr("Paste a FEN, or build the position on the board")} value={item.fen}
                       onChange={e => updateMC(mi, 'fen', e.target.value)} />
                     {boardEditor === 'mc:' + mi && (
                       <div style={{ marginBottom: '10px' }}>
@@ -1162,13 +1163,13 @@ export default function EliteMonthlyFocus() {
                         />
                       </div>
                     )}
-                    <label style={styles.label}>Question *</label>
-                    <input style={styles.input} placeholder="What is the best move?" value={item.question}
+                    <label style={styles.label}>{tr("Question *")}</label>
+                    <input style={styles.input} placeholder={tr("What is the best move?")} value={item.question}
                       onChange={e => updateMC(mi, 'question', e.target.value)} />
-                    <label style={styles.label}>Options ({item.options.length}/6) *</label>
+                    <label style={styles.label}>{tr("Options (")}{item.options.length}/6) *</label>
                     {item.options.map((opt, oi) => (
                       <div key={oi} style={{ display: 'flex', gap: '8px', marginBottom: '6px', alignItems: 'center' }}>
-                        <input style={{ ...styles.input, flex: 1, marginBottom: 0 }} placeholder={`Option ${oi + 1}`} value={opt}
+                        <input style={{ ...styles.input, flex: 1, marginBottom: 0 }} placeholder={tr("Option {v0}", { v0: oi + 1 })} value={opt}
                           onChange={e => updateMCOption(mi, oi, e.target.value)} />
                         {item.options.length > 2 && (
                           <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removeMCOption(mi, oi)}>✕</button>
@@ -1176,18 +1177,18 @@ export default function EliteMonthlyFocus() {
                       </div>
                     ))}
                     {item.options.length < 6 && (
-                      <button style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall, marginBottom: '8px' }} onClick={() => addMCOption(mi)}>+ Option</button>
+                      <button style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall, marginBottom: '8px' }} onClick={() => addMCOption(mi)}>{tr("+ Option")}</button>
                     )}
-                    <label style={styles.label}>Correct Answer *</label>
+                    <label style={styles.label}>{tr("Correct Answer *")}</label>
                     <select style={styles.select} value={item.correctAnswer}
                       onChange={e => updateMC(mi, 'correctAnswer', e.target.value)}>
-                      <option value="">— Select correct answer —</option>
+                      <option value="">{tr("— Select correct answer —")}</option>
                       {item.options.filter(o => o).map((opt, oi) => (
                         <option key={oi} value={opt}>{opt}</option>
                       ))}
                     </select>
-                    <label style={styles.label}>Explanation (optional)</label>
-                    <input style={styles.input} placeholder="Why is this the correct answer?" value={item.explanation || ''}
+                    <label style={styles.label}>{tr("Explanation (optional)")}</label>
+                    <input style={styles.input} placeholder={tr("Why is this the correct answer?")} value={item.explanation || ''}
                       onChange={e => updateMC(mi, 'explanation', e.target.value)} />
                   </div>
                 ))}
@@ -1197,23 +1198,23 @@ export default function EliteMonthlyFocus() {
             {/* PGN BLUNDER ANALYSIS */}
             {dayForm.taskType === 'pgn_blunder_analysis' && (
               <div style={styles.fieldGroup}>
-                <strong style={{ display: 'block', marginBottom: '10px' }}>PGN Blunder Analysis Settings</strong>
+                <strong style={{ display: 'block', marginBottom: '10px' }}>{tr("PGN Blunder Analysis Settings")}</strong>
                 <p style={{ fontSize: '13px', color: 'var(--color-text-faint)', marginBottom: '10px' }}>
-                  Users submit their own PGN game. Stockfish analyzes it to count blunders.
+                  {tr("Users submit their own PGN game. Stockfish analyzes it to count blunders.")}
                 </p>
                 <div style={styles.row}>
                   <div style={{ flex: 1 }}>
-                    <label style={styles.label}>Blunder Limit (target to beat) *</label>
+                    <label style={styles.label}>{tr("Blunder Limit (target to beat) *")}</label>
                     <input style={styles.input} type="number" min="0" max="20" value={dayForm.blunderTask.blunderLimit}
                       onChange={e => setDayForm({ ...dayForm, blunderTask: { ...dayForm.blunderTask, blunderLimit: parseInt(e.target.value) || 0 } })} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <label style={styles.label}>Threshold (centipawns)</label>
+                    <label style={styles.label}>{tr("Threshold (centipawns)")}</label>
                     <input style={styles.input} type="number" value={dayForm.blunderTask.thresholdCp}
                       onChange={e => setDayForm({ ...dayForm, blunderTask: { ...dayForm.blunderTask, thresholdCp: parseInt(e.target.value) || 150 } })} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <label style={styles.label}>Stockfish Depth</label>
+                    <label style={styles.label}>{tr("Stockfish Depth")}</label>
                     <input style={styles.input} type="number" min="5" max="20" value={dayForm.blunderTask.stockfishDepth}
                       onChange={e => setDayForm({ ...dayForm, blunderTask: { ...dayForm.blunderTask, stockfishDepth: parseInt(e.target.value) || 15 } })} />
                   </div>
@@ -1224,10 +1225,10 @@ export default function EliteMonthlyFocus() {
             {/* Actions */}
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
               <button style={{ ...styles.btn, ...styles.btnPrimary }} onClick={saveDay}>
-                {editingDay ? 'Update Day' : 'Save Day'}
+                {editingDay ? tr('Update Day') : tr('Save Day')}
               </button>
               <button style={{ ...styles.btn, ...styles.btnSecondary }} onClick={() => { setShowDayForm(false); setEditingDay(null); }}>
-                Cancel
+                {tr("Cancel")}
               </button>
             </div>
           </div>
@@ -1238,36 +1239,36 @@ export default function EliteMonthlyFocus() {
       {showDayResults !== null && (
         <div style={styles.modal} onClick={() => setShowDayResults(null)}>
           <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <h2 style={{ marginTop: 0 }}>📊 Day {showDayResults} Results</h2>
+            <h2 style={{ marginTop: 0 }}>{tr("📊 Day")} {showDayResults} {tr("Results")}</h2>
 
             {loadingResults ? (
-              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-faint)' }}>Loading results…</div>
+              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-faint)' }}>{tr("Loading results…")}</div>
             ) : dayResults.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-faint)' }}>
-                No results yet for this day.
+                {tr("No results yet for this day.")}
               </div>
             ) : (
               <div>
                 <div style={{ background: 'var(--color-success-a12)', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
-                  <strong>{dayResults.length}</strong> user{dayResults.length !== 1 ? 's' : ''} completed this day
+                  <strong>{dayResults.length}</strong> {tr("user")}{dayResults.length !== 1 ? 's' : ''} {tr("completed this day")}
                 </div>
 
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ background: 'var(--color-surface)', borderBottom: '2px solid var(--color-text)' }}>
-                      <th style={{ padding: '12px', textAlign: 'left' }}>User</th>
-                      <th style={{ padding: '12px', textAlign: 'center' }}>Score</th>
-                      <th style={{ padding: '12px', textAlign: 'center' }}>Time</th>
-                      <th style={{ padding: '12px', textAlign: 'center' }}>XP Earned</th>
-                      <th style={{ padding: '12px', textAlign: 'center' }}>Perfect</th>
-                      <th style={{ padding: '12px', textAlign: 'center' }}>Action</th>
+                      <th style={{ padding: '12px', textAlign: 'left' }}>{tr("User")}</th>
+                      <th style={{ padding: '12px', textAlign: 'center' }}>{tr("Score")}</th>
+                      <th style={{ padding: '12px', textAlign: 'center' }}>{tr("Time")}</th>
+                      <th style={{ padding: '12px', textAlign: 'center' }}>{tr("XP Earned")}</th>
+                      <th style={{ padding: '12px', textAlign: 'center' }}>{tr("Perfect")}</th>
+                      <th style={{ padding: '12px', textAlign: 'center' }}>{tr("Action")}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {dayResults.map((result, index) => (
                       <tr key={index} style={{ borderBottom: '1px solid var(--color-text)' }}>
                         <td style={{ padding: '12px' }}>
-                          {result.userId?.displayName || result.userId?.username || 'Unknown'}
+                          {result.userId?.displayName || result.userId?.username || tr('Unknown')}
                         </td>
                         <td style={{ padding: '12px', textAlign: 'center' }}>
                           {result.total ? `${result.correct}/${result.total} (${Math.round(result.correct / result.total * 100)}%)` : '-'}
@@ -1286,7 +1287,7 @@ export default function EliteMonthlyFocus() {
                             style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall }}
                             onClick={() => setViewingAnswers(result)}
                           >
-                            Solutions
+                            {tr("Solutions")}
                           </button>
                         </td>
                       </tr>
@@ -1300,7 +1301,7 @@ export default function EliteMonthlyFocus() {
               style={{ ...styles.btn, ...styles.btnSecondary, marginTop: '20px' }}
               onClick={() => setShowDayResults(null)}
             >
-              Close
+              {tr("Close")}
             </button>
           </div>
         </div>
@@ -1311,18 +1312,18 @@ export default function EliteMonthlyFocus() {
         <div style={styles.modal} onClick={() => setViewingAnswers(null)}>
           <div style={{ ...styles.modalContent, maxWidth: '800px' }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ margin: 0 }}>🧠 Solutions: {viewingAnswers.userId?.displayName || viewingAnswers.userId?.username}</h2>
+              <h2 style={{ margin: 0 }}>{tr("🧠 Solutions:")} {viewingAnswers.userId?.displayName || viewingAnswers.userId?.username}</h2>
               <button
                 style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall }}
                 onClick={() => setViewingAnswers(null)}
               >
-                Close
+                {tr("Close")}
               </button>
             </div>
 
             <div style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: '10px' }}>
               {!viewingAnswers.answers || viewingAnswers.answers.length === 0 ? (
-                <p style={{ textAlign: 'center', color: 'var(--color-text-faint)', padding: '20px' }}>No detailed answers recorded for this result.</p>
+                <p style={{ textAlign: 'center', color: 'var(--color-text-faint)', padding: '20px' }}>{tr("No detailed answers recorded for this result.")}</p>
               ) : (
                 viewingAnswers.answers.map((ans, idx) => (
                   <div key={idx} style={{
@@ -1333,12 +1334,12 @@ export default function EliteMonthlyFocus() {
                     border: `1px solid ${ans.isCorrect ? 'var(--color-success-a30)' : 'var(--color-danger-a30)'}`
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                      <strong style={{ color: 'var(--color-text-faint)' }}>Question #{idx + 1}</strong>
+                      <strong style={{ color: 'var(--color-text-faint)' }}>{tr("Question #")}{idx + 1}</strong>
                       <span style={{
                         padding: '2px 8px', borderRadius: 'var(--radius-sm)', fontSize: '12px', fontWeight: 'bold',
                         background: ans.isCorrect ? 'var(--color-success)' : 'var(--color-danger)', color: 'var(--color-text)'
                       }}>
-                        {ans.isCorrect ? 'CORRECT' : 'INCORRECT'}
+                        {ans.isCorrect ? tr('CORRECT') : tr('INCORRECT')}
                       </span>
                     </div>
 
@@ -1350,17 +1351,17 @@ export default function EliteMonthlyFocus() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                       <div>
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>USER ANSWER</div>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>{tr("USER ANSWER")}</div>
                         <div style={{
                           fontWeight: '500', color: ans.isCorrect ? 'var(--color-success)' : 'var(--color-danger)',
                           background: 'var(--color-surface)', padding: '8px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-text)'
                         }}>
-                          {ans.userAnswer || ans.userTag || '(No answer)'}
+                          {ans.userAnswer || ans.userTag || tr('(No answer)')}
                         </div>
                       </div>
                       <div>
                         <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>
-                          {ans.engineJudged ? 'STOCKFISH' : 'EXPECTED'}
+                          {ans.engineJudged ? tr('STOCKFISH') : tr('EXPECTED')}
                         </div>
                         <div style={{
                           fontWeight: '500', color: 'var(--color-text-faint)',
@@ -1369,7 +1370,7 @@ export default function EliteMonthlyFocus() {
                           {ans.engineJudged
                             ? (ans.isCorrect
                                 ? 'Accepted by Stockfish'
-                                : (ans.engineBestMove ? `Preferred: ${ans.engineBestMove}` : 'Gave up the advantage'))
+                                : (ans.engineBestMove ? `Preferred: ${ans.engineBestMove}` : tr('Gave up the advantage')))
                             : (ans.correctAnswer || ans.correctTag || '(No answer)')}
                         </div>
                       </div>
@@ -1377,7 +1378,7 @@ export default function EliteMonthlyFocus() {
 
                     {ans.timeTaken && (
                       <div style={{ marginTop: '10px', fontSize: '12px', color: 'var(--color-text-faint)' }}>
-                        Time taken: <strong>{ans.timeTaken}s</strong>
+                        {tr("Time taken:")} <strong>{ans.timeTaken}s</strong>
                       </div>
                     )}
                   </div>
@@ -1389,7 +1390,7 @@ export default function EliteMonthlyFocus() {
               style={{ ...styles.btn, ...styles.btnSecondary, width: '100%', marginTop: '20px' }}
               onClick={() => setViewingAnswers(null)}
             >
-              Done
+              {tr("Done")}
             </button>
           </div>
         </div>

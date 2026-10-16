@@ -12,6 +12,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useIsSupporter, useNexusTitle } from '../context/SupporterContext';
+import { t as tr } from '../i18n/LanguageContext';
 
 const cardStyle = {
   background: 'linear-gradient(135deg, var(--color-accent-a12), var(--color-accent-2-a12))',
@@ -24,15 +25,15 @@ const cardStyle = {
 // Badge colours match the Members page (nx-knight / nx-ns / nx-nx / nx-nc).
 // Two groups: what kind of member you are, and the title next to your name.
 const MEMBERSHIPS = [
-  { key: 'player', badge: '♙', name: 'Player', desc: 'Every ChessNexus member', color: '#94a3b8', border: 'rgba(148,163,184,0.35)' },
-  { key: 'coach', badge: '🎓', name: 'Coach', desc: 'Runs their own academy', color: '#5eead4', border: 'rgba(45,212,191,0.5)' },
-  { key: 'elite', badge: '⭐', name: 'Elite', desc: 'Invited members', color: '#fbbf24', border: 'rgba(251,191,36,0.5)' },
+  { key: 'player', badge: '♙', name: tr('Player'), desc: tr('Every ChessNexus member'), color: '#94a3b8', border: 'rgba(148,163,184,0.35)' },
+  { key: 'coach', badge: '🎓', name: tr('Coach'), desc: tr('Runs their own academy'), color: '#5eead4', border: 'rgba(45,212,191,0.5)' },
+  { key: 'elite', badge: '⭐', name: tr('Elite'), desc: tr('Invited members'), color: '#fbbf24', border: 'rgba(251,191,36,0.5)' },
 ];
 const TITLES = [
-  { key: 'knight', badge: '♞', name: 'Knight Warrior', desc: 'Supports ChessNexus', color: '#cbd5e1', border: 'rgba(148,163,184,0.45)' },
-  { key: 'NS', badge: 'NS', name: 'Nexus Supporter', desc: 'Supports the platform', color: '#67e8f9', border: 'rgba(6,182,212,0.45)' },
-  { key: 'NX', badge: 'NX', name: 'Nexus Expert', desc: 'Senior supporter', color: '#c4b5fd', border: 'rgba(139,92,246,0.5)' },
-  { key: 'NC', badge: 'NC', name: 'Nexus Coach', desc: 'Awarded to top coaches', color: '#fcd34d', border: 'rgba(245,158,11,0.55)' },
+  { key: 'knight', badge: '♞', name: tr('Knight Warrior'), desc: tr('Supports ChessNexus'), color: '#cbd5e1', border: 'rgba(148,163,184,0.45)' },
+  { key: 'NS', badge: 'NS', name: tr('Nexus Supporter'), desc: tr('Supports the platform'), color: '#67e8f9', border: 'rgba(6,182,212,0.45)' },
+  { key: 'NX', badge: 'NX', name: tr('Nexus Expert'), desc: tr('Senior supporter'), color: '#c4b5fd', border: 'rgba(139,92,246,0.5)' },
+  { key: 'NC', badge: 'NC', name: tr('Nexus Coach'), desc: tr('Awarded to top coaches'), color: '#fcd34d', border: 'rgba(245,158,11,0.55)' },
 ];
 
 const groupLabel = {
@@ -49,7 +50,7 @@ const smallBtn = {
 function TierCard({ tier, held }) {
   return (
     <div
-      title={held ? `You are a ${tier.name}` : tier.name}
+      title={held ? tr("You are a {name}", { name: tier.name }) : tier.name}
       style={{
         position: 'relative',
         display: 'flex', alignItems: 'center', gap: 10,
@@ -77,7 +78,7 @@ function TierCard({ tier, held }) {
         </div>
         {held && (
           <div style={{ fontSize: 10, fontWeight: 800, color: tier.color, letterSpacing: 0.4, marginTop: 3 }}>
-            ✓ YOU
+            {tr("✓ YOU")}
           </div>
         )}
       </div>
@@ -106,25 +107,25 @@ export default function UpgradeCard() {
   return (
     <section style={cardStyle}>
       <h2 style={{ margin: 0, fontSize: 17, color: 'var(--color-text)' }}>
-        You're part of the ChessNexus community ♥
+        {tr("You're part of the ChessNexus community ♥")}
       </h2>
       <p style={{ margin: '4px 0 14px', color: 'var(--color-text-muted)', fontSize: 13 }}>
-        What you hold is lit up below.
+        {tr("What you hold is lit up below.")}
       </p>
 
-      <div style={groupLabel}>Membership</div>
+      <div style={groupLabel}>{tr("Membership")}</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10 }}>
         {MEMBERSHIPS.map(t => <TierCard key={t.key} tier={t} held={held[t.key]} />)}
       </div>
 
-      <div style={{ ...groupLabel, marginTop: 18 }}>Title</div>
+      <div style={{ ...groupLabel, marginTop: 18 }}>{tr("Title")}</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10 }}>
         {TITLES.map(t => <TierCard key={t.key} tier={t} held={held[t.key]} />)}
       </div>
 
       {!held.coach && (
         <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
-          <button onClick={() => navigate('/coach/onboarding')} style={smallBtn}>🎓 Become a Coach</button>
+          <button onClick={() => navigate('/coach/onboarding')} style={smallBtn}>{tr("🎓 Become a Coach")}</button>
         </div>
       )}
     </section>

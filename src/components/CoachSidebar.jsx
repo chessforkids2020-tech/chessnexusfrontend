@@ -7,34 +7,35 @@ import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
+import { t as tr } from '../i18n/LanguageContext';
 
 const NAV = [
-  { icon: '🏠', label: 'Dashboard',   path: '/coach/dashboard' },
-  { icon: '📝', label: 'Assignments', path: '/coach/assignments' },
-  { icon: '📚', label: 'Courses',     path: '/coach/courses' },
-  { icon: '📖', label: 'Library',     path: '/coach/library' },
-  { icon: '👥', label: 'Batches',     path: '/coach/batches' },
-  { icon: '📅', label: 'Schedule',    path: '/coach/schedule' },
-  { icon: '🎯', label: 'Activities',  path: '/coach/activities' },
-  { icon: '📋', label: 'Attendance',  path: '/coach/attendance' },
-  { icon: '🏆', label: 'Leaderboard', path: '/coach/leaderboard' },
+  { icon: '🏠', label: tr('Dashboard'),   path: '/coach/dashboard' },
+  { icon: '📝', label: tr('Assignments'), path: '/coach/assignments' },
+  { icon: '📚', label: tr('Courses'),     path: '/coach/courses' },
+  { icon: '📖', label: tr('Library'),     path: '/coach/library' },
+  { icon: '👥', label: tr('Batches'),     path: '/coach/batches' },
+  { icon: '📅', label: tr('Schedule'),    path: '/coach/schedule' },
+  { icon: '🎯', label: tr('Activities'),  path: '/coach/activities' },
+  { icon: '📋', label: tr('Attendance'),  path: '/coach/attendance' },
+  { icon: '🏆', label: tr('Leaderboard'), path: '/coach/leaderboard' },
 ];
 
 // Live Class is host-only (the 2 allowed accounts). Appended conditionally below.
-const LIVE_NAV = { icon: '🔴', label: 'Classroom', path: '/coach/live' };
+const LIVE_NAV = { icon: '🔴', label: tr('Classroom'), path: '/coach/live' };
 // Academy entry — the academy MANAGEMENT area, so it is for the academy head
 // (owner) only. Every page under /academy/* is wrapped in AcademyGate, which
 // redirects a non-owner back to /coach/dashboard: showing this to an ordinary
 // member coach gave them a tab that bounced them straight back where they came
 // from. A member coach is a normal coach — the academy is an overlay over their
 // account, not somewhere they manage.
-const ACADEMY_NAV = { icon: '🏛️', label: 'Academy', path: '/academy/dashboard' };
+const ACADEMY_NAV = { icon: '🏛️', label: tr('Academy'), path: '/academy/dashboard' };
 // A MEMBER coach still has no management area, but they do have one academy
 // page: the academy-wide activities their own students get pulled into. That
 // page uses AcademyMemberGate (not AcademyGate), so this entry lands rather
 // than bouncing. Without it a head could schedule an event across a coach's
 // class and the coach would have no way to see it existed.
-const ACADEMY_ACTIVITIES_NAV = { icon: '🏛️', label: 'Academy', path: '/academy/activities' };
+const ACADEMY_ACTIVITIES_NAV = { icon: '🏛️', label: tr('Academy'), path: '/academy/activities' };
 
 export default function CoachSidebar({ onNavigate }) {
   const location = useLocation();
@@ -107,19 +108,19 @@ export default function CoachSidebar({ onNavigate }) {
   const isPrivileged = isAdmin || reason === 'privileged' || reason === 'elite_free' || reason === 'comped';
   // Academy-sponsored coaches don't buy their own plan — hide upgrade/manage.
   const sponsoredByAcademy = !!plan?.coachSubscription?.sponsoredByAcademy;
-  const upgradeLabel = (isPrivileged || sponsoredByAcademy) ? null : (isFree ? '⚡ Upgrade' : '💳 Manage plan');
+  const upgradeLabel = (isPrivileged || sponsoredByAcademy) ? null : (isFree ? tr('⚡ Upgrade') : tr('💳 Manage plan'));
 
   return (
     <div style={styles.sidebar}>
       <div style={styles.content}>
         {/* Brand */}
-        <div style={styles.brand} onClick={() => go('/coach/dashboard')} title="ChessNexus Coach">
+        <div style={styles.brand} onClick={() => go('/coach/dashboard')} title={tr("ChessNexus Coach")}>
           {/* The twin-knight mark. Without it the wordmark was just two words in
               the nav font and read as a heading rather than a brand. */}
           <img src="/logo- no name.png" alt="" style={styles.brandLogo} />
           <span style={styles.brandWords}>
-            <span style={styles.brandText}>CHESSNEXUS</span>
-            <span style={styles.brandSub}>Coach</span>
+            <span style={styles.brandText}>{tr("CHESSNEXUS")}</span>
+            <span style={styles.brandSub}>{tr("Coach")}</span>
           </span>
         </div>
 
@@ -154,7 +155,7 @@ export default function CoachSidebar({ onNavigate }) {
               ref={onlineBtnRef}
               style={styles.footerHalf}
               onClick={() => setShowOnline(v => !v)}
-              title={onlineStudents.length > 0 ? `${onlineStudents.length} student${onlineStudents.length === 1 ? '' : 's'} online — click to see who` : 'No students online'}
+              title={onlineStudents.length > 0 ? tr("{length} student{v1} online — click to see who", { length: onlineStudents.length, v1: onlineStudents.length === 1 ? '' : 's' }) : 'No students online'}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(34,197,94,0.10)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -171,9 +172,9 @@ export default function CoachSidebar({ onNavigate }) {
               onClick={() => go('/dashboard')}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-white-a07)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-              title="Back to the main app"
+              title={tr("Back to the main app")}
             >
-              <span>← Back</span>
+              <span>{tr("← Back")}</span>
             </div>
           </div>
 
@@ -208,14 +209,14 @@ export default function CoachSidebar({ onNavigate }) {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid var(--color-white-a07)' }}>
                 <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 7 }}>
                   <span style={{ width: 8, height: 8, borderRadius: 'var(--radius-pill)', background: 'var(--color-success)', boxShadow: '0 0 6px var(--color-success)' }} />
-                  Students online <span style={{ color: 'var(--color-success)', fontWeight: 800 }}>{onlineStudents.length}</span>
+                  {tr("Students online")} <span style={{ color: 'var(--color-success)', fontWeight: 800 }}>{onlineStudents.length}</span>
                 </span>
                 <button onClick={() => setShowOnline(false)}
-                  style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: 15 }} title="Close">✕</button>
+                  style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: 15 }} title={tr("Close")}>✕</button>
               </div>
               {onlineStudents.length === 0 ? (
                 <div style={{ color: 'var(--color-text-faint)', fontSize: 13, textAlign: 'center', padding: '18px 4px' }}>
-                  None of your students are online right now.
+                  {tr("None of your students are online right now.")}
                 </div>
               ) : (
                 onlineStudents.map(s => (

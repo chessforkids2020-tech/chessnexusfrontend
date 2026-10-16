@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const UserTestTimeSelection = () => {
   const { studyId, chapterId } = useParams();
@@ -7,14 +8,14 @@ const UserTestTimeSelection = () => {
   const [selectedTime, setSelectedTime] = useState(null);
 
   const timeOptions = [
-    { value: 60, label: '1 Minute', icon: '⚡', description: 'Lightning fast!' },
-    { value: 120, label: '2 Minutes', icon: '🔥', description: 'Quick challenge' },
-    { value: 180, label: '3 Minutes', icon: '⏱️', description: 'Standard pace' },
-    { value: 300, label: '5 Minutes', icon: '🎯', description: 'Balanced time' },
-    { value: 600, label: '10 Minutes', icon: '🧠', description: 'Think deeply' },
-    { value: 900, label: '15 Minutes', icon: '📚', description: 'Study mode' },
-    { value: 1200, label: '20 Minutes', icon: '♟️', description: 'Extended session' },
-    { value: 1800, label: '30 Minutes', icon: '🏆', description: 'Marathon mode' },
+    { value: 60, label: tr('1 Minute'), icon: '⚡', description: tr('Lightning fast!') },
+    { value: 120, label: tr('2 Minutes'), icon: '🔥', description: tr('Quick challenge') },
+    { value: 180, label: tr('3 Minutes'), icon: '⏱️', description: tr('Standard pace') },
+    { value: 300, label: tr('5 Minutes'), icon: '🎯', description: tr('Balanced time') },
+    { value: 600, label: tr('10 Minutes'), icon: '🧠', description: tr('Think deeply') },
+    { value: 900, label: tr('15 Minutes'), icon: '📚', description: tr('Study mode') },
+    { value: 1200, label: tr('20 Minutes'), icon: '♟️', description: tr('Extended session') },
+    { value: 1800, label: tr('30 Minutes'), icon: '🏆', description: tr('Marathon mode') },
   ];
 
   const handleStart = () => {
@@ -126,19 +127,19 @@ const UserTestTimeSelection = () => {
           style={styles.backButton} 
           onClick={() => navigate(`/test/chapters/${studyId}`)}
         >
-          ← Back to Chapters
+          {tr("← Back to Chapters")}
         </button>
 
         <div style={styles.header}>
-          <h1 style={styles.title}>⏱️ Select Time Limit</h1>
+          <h1 style={styles.title}>{tr("⏱️ Select Time Limit")}</h1>
           <p style={styles.subtitle}>
-            How much time do you want for this test?
+            {tr("How much time do you want for this test?")}
           </p>
         </div>
 
         <div style={styles.info}>
-          <strong>Scoring:</strong> 2 points for each puzzle you solve completely!<br/>
-          Stockfish will play against you until you complete the admin's solution.
+          <strong>{tr("Scoring:")}</strong> {tr("2 points for each puzzle you solve completely!")}<br/>
+          {tr("Stockfish will play against you until you complete the admin's solution.")}
         </div>
 
         <div style={styles.grid}>
@@ -163,7 +164,7 @@ const UserTestTimeSelection = () => {
           onClick={handleStart}
           disabled={!selectedTime}
         >
-          {selectedTime ? '🚀 Start Test' : 'Select a time to continue'}
+          {selectedTime ? tr('🚀 Start Test') : tr('Select a time to continue')}
         </button>
       </div>
     </div>

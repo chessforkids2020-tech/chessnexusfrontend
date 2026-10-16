@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import api from '../../api';
 import './CoachDashboard.css';
 import './CourseBuilder.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function CourseBuilder() {
   const [courses, setCourses] = useState([]);
@@ -145,7 +146,7 @@ export default function CourseBuilder() {
 
   const deleteCourse = async () => {
     if (!window.confirm(
-      `Delete "${selected.title}"?\n\n` +
+      tr("Delete \"{title}\"?\\n\\n", { title: selected.title }) +
       `It disappears from your courses and from students' syllabus. ` +
       `Enrollment and progress records are kept.`
     )) return;
@@ -286,7 +287,7 @@ export default function CourseBuilder() {
     setEgPositions([]);
     if (src === 'premium') {
       const fams = await loadPremiumEndgames();
-      const FAM_LABEL = { pawn: 'Pawn', knight: 'Knight', bishop: 'Bishop', bishop_knight: 'Bishop + Knight', rook: 'Rook', queen: 'Queen', queen_rook: 'Queen + Rook', other_mixed: 'Mixed' };
+      const FAM_LABEL = { pawn: tr('Pawn'), knight: tr('Knight'), bishop: tr('Bishop'), bishop_knight: tr('Bishop + Knight'), rook: tr('Rook'), queen: tr('Queen'), queen_rook: tr('Queen + Rook'), other_mixed: tr('Mixed') };
       setEgFamilies(Object.keys(fams).map(k => ({ key: k, label: FAM_LABEL[k] || k })));
     } else {
       setEgFamilies(await loadFreeEndgameFamilies());
@@ -313,7 +314,7 @@ export default function CourseBuilder() {
     setAddingLesson(true);
     try {
       const title = pos.white || pos.black
-        ? `${pos.white || 'White'} vs ${pos.black || 'Black'}${pos.year ? ` (${pos.year})` : ''}`
+        ? `${pos.white || tr('White')} vs ${pos.black || tr('Black')}${pos.year ? ` (${pos.year})` : ''}`
         : (pos.title || 'Endgame position');
       // Premium picks are added by id (server trusts its stored FEN + gates to paid).
       const body = egSource === 'premium'
@@ -328,7 +329,7 @@ export default function CourseBuilder() {
   };
 
   const deleteLesson = async (lessonIndex) => {
-    if (!window.confirm('Remove this lesson from the course?')) return;
+    if (!window.confirm(tr('Remove this lesson from the course?'))) return;
     try {
       await api.delete(`/api/coach/courses/${selected._id}/lessons/${lessonIndex}`);
       await openCourse(selected._id);
@@ -370,7 +371,7 @@ export default function CourseBuilder() {
         totalNew += r.data.newlyEnrolled || 0;
         batches += 1;
       }
-      setEnrollMsg(`Enrolled ${batches} batch${batches === 1 ? '' : 'es'} · ${totalStudents} student(s) (${totalNew} new).`);
+      setEnrollMsg(tr("Enrolled {batches} batch{v1} · {totalStudents} student(s) ({totalNew} new).", { batches: batches, v1: batches === 1 ? '' : 'es', totalStudents: totalStudents, totalNew: totalNew }));
       setEnrollGroupIds([]);
       await loadAll();
     } catch (err) {
@@ -381,7 +382,7 @@ export default function CourseBuilder() {
   };
 
   // ── Group management (multi-group: a student can be in many groups) ──
-  if (loading) return <div className="coach-dash"><p>Loading…</p></div>;
+  if (loading) return <div className="coach-dash"><p>{tr("Loading…")}</p></div>;
 
   const sortedLessons = (selected?.lessons || []).slice().sort((a, b) => a.lessonIndex - b.lessonIndex);
   // Nexus (official) studies must be added one chapter at a time — no "whole study".
@@ -392,15 +393,15 @@ export default function CourseBuilder() {
       <div className="coach-dash-header">
         <div>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            📚 Courses
+            {tr("📚 Courses")}
             <button type="button" className="cb-help-btn"
-              aria-label="How courses work"
-              title="How courses work"
+              aria-label={tr("How courses work")}
+              title={tr("How courses work")}
               onClick={() => setShowHelp(h => !h)}>?</button>
           </h1>
-          <p className="coach-dash-sub">Build a syllabus from your studies. Students work through them in order.</p>
+          <p className="coach-dash-sub">{tr("Build a syllabus from your studies. Students work through them in order.")}</p>
         </div>
-        <Link to="/coach/dashboard" className="btn-ghost">← Dashboard</Link>
+        <Link to="/coach/dashboard" className="btn-ghost">{tr("← Dashboard")}</Link>
       </div>
 
       {error && <div className="cb-error">{error}</div>}
@@ -409,26 +410,26 @@ export default function CourseBuilder() {
       {showHelp && (
         <div className="cb-help">
           <div className="cb-help-head">
-            <span>💡 How students join a course</span>
-            <button type="button" className="cb-help-toggle" onClick={() => setShowHelp(false)}>Close ✕</button>
+            <span>{tr("💡 How students join a course")}</span>
+            <button type="button" className="cb-help-toggle" onClick={() => setShowHelp(false)}>{tr("Close ✕")}</button>
           </div>
           <ol className="cb-help-steps">
             <li>
-              <strong>Make a batch.</strong> On the <Link to="/coach/batches"><strong>Batches</strong></Link> page,
-              create a batch (e.g. <em>Batch A</em>) and tick the students who belong to it. A student can be in
-              <strong> several batches</strong> at once.
+              <strong>{tr("Make a batch.")}</strong> {tr("On the")} <Link to="/coach/batches"><strong>{tr("Batches")}</strong></Link> {tr("page,")}
+              {tr("create a batch (e.g.")} <em>{tr("Batch A")}</em>{tr(") and tick the students who belong to it. A student can be in")}
+              <strong> {tr("several batches")}</strong> {tr("at once.")}
             </li>
             <li>
-              <strong>Build the course</strong> — add your studies and YouTube videos as lessons, in order.
+              <strong>{tr("Build the course")}</strong> {tr("— add your studies and YouTube videos as lessons, in order.")}
             </li>
             <li>
-              <strong>Enroll batches.</strong> Open the course → tick <strong>one or more batches</strong> →
-              <strong> Enroll selected batches</strong>. You can add more batches to the same course any time.
+              <strong>{tr("Enroll batches.")}</strong> {tr("Open the course → tick")} <strong>{tr("one or more batches")}</strong> →
+              <strong> {tr("Enroll selected batches")}</strong>{tr(". You can add more batches to the same course any time.")}
               This is what actually gives those students access.
             </li>
             <li>
-              Students then see it under <strong>My Coach → 📚 My Syllabus</strong> and work through the
-              lessons one by one. Private studies are visible <strong>only</strong> to enrolled students.
+              {tr("Students then see it under")} <strong>{tr("My Coach → 📚 My Syllabus")}</strong> {tr("and work through the")}
+              {tr("lessons one by one. Private studies are visible")} <strong>{tr("only")}</strong> {tr("to enrolled students.")}
             </li>
           </ol>
         </div>
@@ -441,7 +442,7 @@ export default function CourseBuilder() {
             const atCourseCap = limits.maxCourses != null && courses.length >= limits.maxCourses;
             return (
               <form onSubmit={createCourse} className="cb-card">
-                <h3>➕ New course
+                <h3>{tr("➕ New course")}
                   {limits.maxCourses != null && (
                     <span className="cb-muted" style={{ fontSize: 12, fontWeight: 400, marginLeft: 8 }}>
                       {courses.length}/{limits.maxCourses}
@@ -450,17 +451,17 @@ export default function CourseBuilder() {
                 </h3>
                 {atCourseCap ? (
                   <p className="cb-muted" style={{ margin: 0 }}>
-                    You've reached the free limit of {limits.maxCourses} courses.{' '}
-                    <Link to="/coach/subscription">Subscribe</Link> for unlimited courses.
+                    {tr("You've reached the free limit of")} {limits.maxCourses} {tr("courses.")}{' '}
+                    <Link to="/coach/subscription">{tr("Subscribe")}</Link> {tr("for unlimited courses.")}
                   </p>
                 ) : (
                   <>
-                    <input className="cb-input" placeholder="Course title (e.g. Beginner → 1200)"
+                    <input className="cb-input" placeholder={tr("Course title (e.g. Beginner → 1200)")}
                       value={newCourse.title} onChange={e => setNewCourse({ ...newCourse, title: e.target.value })} />
-                    <textarea className="cb-textarea" placeholder="Description (optional)" rows={2}
+                    <textarea className="cb-textarea" placeholder={tr("Description (optional)")} rows={2}
                       value={newCourse.description} onChange={e => setNewCourse({ ...newCourse, description: e.target.value })} />
                     <button className="btn-primary" disabled={creating || !newCourse.title.trim()}>
-                      {creating ? 'Creating…' : 'Create course'}
+                      {creating ? tr('Creating…') : tr('Create course')}
                     </button>
                   </>
                 )}
@@ -469,15 +470,15 @@ export default function CourseBuilder() {
           })()}
 
           <div className="cb-card">
-            <h3>Your courses</h3>
-            {courses.length === 0 && <p className="cb-muted">No courses yet.</p>}
+            <h3>{tr("Your courses")}</h3>
+            {courses.length === 0 && <p className="cb-muted">{tr("No courses yet.")}</p>}
             {courses.map(c => (
               <div key={c._id}
                 className={`cb-course-row ${selected?._id === c._id ? 'active' : ''}`}
                 onClick={() => openCourse(c._id)}>
                 <div className="cb-course-title">{c.title}</div>
                 <div className="cb-course-meta">
-                  {c.lessonCount} lesson{c.lessonCount === 1 ? '' : 's'} · {c.enrollmentCount} student{c.enrollmentCount === 1 ? '' : 's'}
+                  {c.lessonCount} {tr("lesson")}{c.lessonCount === 1 ? '' : 's'} · {c.enrollmentCount} {tr("student")}{c.enrollmentCount === 1 ? '' : 's'}
                 </div>
               </div>
             ))}
@@ -487,7 +488,7 @@ export default function CourseBuilder() {
 
         {/* RIGHT: selected course */}
         <div className="cb-col-right">
-          {!selected && <div className="cb-card"><p className="cb-muted">Select or create a course to add lessons.</p></div>}
+          {!selected && <div className="cb-card"><p className="cb-muted">{tr("Select or create a course to add lessons.")}</p></div>}
           {selected && (
             <>
               <div className="cb-card">
@@ -497,7 +498,7 @@ export default function CourseBuilder() {
                       className="cb-input"
                       value={courseForm.title}
                       onChange={e => setCourseForm(f => ({ ...f, title: e.target.value }))}
-                      placeholder="Course title"
+                      placeholder={tr("Course title")}
                       maxLength={200}
                     />
                     <textarea
@@ -505,17 +506,17 @@ export default function CourseBuilder() {
                       rows={3}
                       value={courseForm.description}
                       onChange={e => setCourseForm(f => ({ ...f, description: e.target.value }))}
-                      placeholder="Description (optional)"
+                      placeholder={tr("Description (optional)")}
                       maxLength={2000}
                       style={{ resize: 'vertical' }}
                     />
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button className="btn-primary" onClick={saveCourse}
                         disabled={savingCourse || !courseForm.title.trim()}>
-                        {savingCourse ? 'Saving…' : 'Save'}
+                        {savingCourse ? tr('Saving…') : tr('Save')}
                       </button>
                       <button className="btn-ghost" onClick={() => setEditingCourse(false)} disabled={savingCourse}>
-                        Cancel
+                        {tr("Cancel")}
                       </button>
                     </div>
                   </div>
@@ -524,10 +525,10 @@ export default function CourseBuilder() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <h2 style={{ margin: 0 }}>{selected.title}</h2>
                       <div style={{ display: 'flex', gap: 8 }}>
-                        <Link className="btn-ghost" to={`/coach/courses/${selected._id}/progress`}>📊 Progress</Link>
-                        <button className="btn-ghost" onClick={startEditCourse}>✏️ Edit</button>
+                        <Link className="btn-ghost" to={`/coach/courses/${selected._id}/progress`}>{tr("📊 Progress")}</Link>
+                        <button className="btn-ghost" onClick={startEditCourse}>{tr("✏️ Edit")}</button>
                         <button className="btn-ghost" onClick={deleteCourse}
-                          style={{ color: '#f87171', borderColor: 'rgba(248,113,113,0.4)' }}>🗑 Delete</button>
+                          style={{ color: '#f87171', borderColor: 'rgba(248,113,113,0.4)' }}>{tr("🗑 Delete")}</button>
                       </div>
                     </div>
                     {selected.description && <p className="cb-muted">{selected.description}</p>}
@@ -535,7 +536,7 @@ export default function CourseBuilder() {
                 )}
                 {groups.length > 0 && (
                   <div style={{ marginTop: 10 }}>
-                    <div className="cb-muted" style={{ fontSize: 12, marginBottom: 6 }}>Enroll one or more batches into this course:</div>
+                    <div className="cb-muted" style={{ fontSize: 12, marginBottom: 6 }}>{tr("Enroll one or more batches into this course:")}</div>
                     <div className="cb-batch-picker">
                       {groups.map(g => (
                         <label key={g._id} className={`cb-batch-chip ${enrollGroupIds.includes(g._id) ? 'on' : ''}`}>
@@ -558,27 +559,27 @@ export default function CourseBuilder() {
                         ? 'Enrolling…'
                         : enrollGroupIds.length <= 1
                           ? 'Enroll selected batch'
-                          : `Enroll ${enrollGroupIds.length} selected batches`}
+                          : tr("Enroll {length} selected batches", { length: enrollGroupIds.length })}
                     </button>
                   </div>
                 )}
                 {groups.length === 0 && (
                   <p className="cb-muted" style={{ marginTop: 6, fontSize: 12 }}>
-                    No batches yet — create one on the <Link to="/coach/batches"><strong>Batches</strong></Link> page, then enroll it here.
+                    {tr("No batches yet — create one on the")} <Link to="/coach/batches"><strong>{tr("Batches")}</strong></Link> {tr("page, then enroll it here.")}
                   </p>
                 )}
                 {enrollMsg && <p className="cb-muted" style={{ marginTop: 6 }}>{enrollMsg}</p>}
               </div>
 
               <div className="cb-card">
-                <h3>Lessons (your studies, in order)
+                <h3>{tr("Lessons (your studies, in order)")}
                   {limits.maxLessons != null && (
                     <span className="cb-muted" style={{ fontSize: 12, fontWeight: 400, marginLeft: 8 }}>
                       {sortedLessons.length}/{limits.maxLessons}
                     </span>
                   )}
                 </h3>
-                {sortedLessons.length === 0 && <p className="cb-muted">No lessons yet — add a study below.</p>}
+                {sortedLessons.length === 0 && <p className="cb-muted">{tr("No lessons yet — add a study below.")}</p>}
                 {sortedLessons.map((l, i) => (
                   <div key={l.lessonIndex} className="cb-lesson-row">
                     <span className="cb-lesson-idx">{l.lessonIndex}</span>
@@ -594,31 +595,31 @@ export default function CourseBuilder() {
 
               {limits.maxLessons != null && sortedLessons.length >= limits.maxLessons ? (
                 <div className="cb-card">
-                  <h3>➕ Add a lesson</h3>
+                  <h3>{tr("➕ Add a lesson")}</h3>
                   <p className="cb-muted" style={{ margin: 0 }}>
-                    This course has reached the free limit of {limits.maxLessons} lessons.{' '}
-                    <Link to="/coach/subscription">Subscribe</Link> for unlimited lessons per course.
+                    {tr("This course has reached the free limit of")} {limits.maxLessons} {tr("lessons.")}{' '}
+                    <Link to="/coach/subscription">{tr("Subscribe")}</Link> {tr("for unlimited lessons per course.")}
                   </p>
                 </div>
               ) : (
               <div className="cb-card">
-                <h3>➕ Add a lesson</h3>
+                <h3>{tr("➕ Add a lesson")}</h3>
                 {lessonErr && <div className="cb-error">{lessonErr}</div>}
 
                 {/* Lesson type toggle */}
                 <div className="cb-row" style={{ marginBottom: 10, flexWrap: 'wrap' }}>
                   <button type="button"
                     className={lessonMode === 'study' ? 'btn-primary' : 'btn-ghost'}
-                    onClick={() => { setLessonMode('study'); setLessonErr(''); }}>📖 Study</button>
+                    onClick={() => { setLessonMode('study'); setLessonErr(''); }}>{tr("📖 Study")}</button>
                   <button type="button"
                     className={lessonMode === 'video' ? 'btn-primary' : 'btn-ghost'}
-                    onClick={() => { setLessonMode('video'); setLessonErr(''); }}>🎥 Video</button>
+                    onClick={() => { setLessonMode('video'); setLessonErr(''); }}>{tr("🎥 Video")}</button>
                   <button type="button"
                     className={lessonMode === 'masterGame' ? 'btn-primary' : 'btn-ghost'}
-                    onClick={() => { setLessonMode('masterGame'); setLessonErr(''); }}>♟ Master Game</button>
+                    onClick={() => { setLessonMode('masterGame'); setLessonErr(''); }}>{tr("♟ Master Game")}</button>
                   <button type="button"
                     className={lessonMode === 'endgame' ? 'btn-primary' : 'btn-ghost'}
-                    onClick={() => { setLessonMode('endgame'); setLessonErr(''); loadEndgameFamilies(); }}>🏁 Endgame</button>
+                    onClick={() => { setLessonMode('endgame'); setLessonErr(''); loadEndgameFamilies(); }}>{tr("🏁 Endgame")}</button>
                 </div>
 
                 {lessonMode === 'study' && (
@@ -627,15 +628,15 @@ export default function CourseBuilder() {
                     <div className="cb-row" style={{ marginBottom: 8 }}>
                       <button type="button"
                         className={studySource === 'mine' ? 'btn-primary' : 'btn-ghost'}
-                        onClick={() => { setStudySource('mine'); loadStudies('mine', studySearch); }}>My studies</button>
+                        onClick={() => { setStudySource('mine'); loadStudies('mine', studySearch); }}>{tr("My studies")}</button>
                       <button type="button"
                         className={studySource === 'public' ? 'btn-primary' : 'btn-ghost'}
-                        onClick={() => { setStudySource('public'); loadStudies('public', studySearch); }}>🌐 Public studies</button>
+                        onClick={() => { setStudySource('public'); loadStudies('public', studySearch); }}>{tr("🌐 Public studies")}</button>
                       <button type="button"
                         className={studySource === 'nexus' ? 'btn-primary' : 'btn-ghost'}
-                        onClick={() => { setStudySource('nexus'); loadStudies('nexus', studySearch); }}>✦ Nexus studies</button>
+                        onClick={() => { setStudySource('nexus'); loadStudies('nexus', studySearch); }}>{tr("✦ Nexus studies")}</button>
                     </div>
-                    <input className="cb-input" placeholder="Search studies by name…"
+                    <input className="cb-input" placeholder={tr("Search studies by name…")}
                       value={studySearch}
                       onChange={e => setStudySearch(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') loadStudies(studySource, studySearch); }} />
@@ -644,18 +645,18 @@ export default function CourseBuilder() {
                       <p className="cb-muted">
                         {studySource === 'nexus' ? 'No Nexus studies found.'
                           : studySource === 'public' ? 'No public studies found.'
-                          : <>You have no studies yet. <Link to="/my-studies">Create a study</Link> first.</>}
+                          : <>{tr("You have no studies yet.")} <Link to="/my-studies">{tr("Create a study")}</Link> first.</>}
                       </p>
                     ) : (
                       <>
                         <select className="cb-select" value={pickStudyId}
                           onChange={e => { setPickStudyId(e.target.value); setPickChapterId(''); }}>
-                          <option value="">Pick a study…</option>
+                          <option value="">{tr("Pick a study…")}</option>
                           {myStudies.map(s => (
                             <option key={s._id} value={s._id}>
                               {s.name}{s.isPublic ? '' : ' (private)'}
-                              {studySource === 'public' && s.username ? ` · by ${s.username}` : ''}
-                              {' · '}{s.chapters?.length || 0} ch.
+                              {studySource === 'public' && s.username ? tr(" · by {username}", { username: s.username }) : ''}
+                              {' · '}{s.chapters?.length || 0} {tr("ch.")}
                             </option>
                           ))}
                         </select>
@@ -668,7 +669,7 @@ export default function CourseBuilder() {
                           return (
                             <select className="cb-select" value={pickChapterId} onChange={e => setPickChapterId(e.target.value)}>
                               <option value="">
-                                {isNexus ? '— Pick a chapter —' : `📚 Whole study (${chs.length} chapters)`}
+                                {isNexus ? tr('— Pick a chapter —') : tr("📚 Whole study ({length} chapters)", { length: chs.length })}
                               </option>
                               {chs.map(c => (
                                 <option key={c._id} value={c._id}>
@@ -680,36 +681,36 @@ export default function CourseBuilder() {
                         })()}
 
                         {isNexus && pickStudyId && !pickChapterId && (
-                          <p className="cb-muted">Pick a chapter to add it as a lesson.</p>
+                          <p className="cb-muted">{tr("Pick a chapter to add it as a lesson.")}</p>
                         )}
 
                         <button className="btn-primary"
                           onClick={addLesson}
                           disabled={!pickStudyId || (isNexus && !pickChapterId) || addingLesson}>
-                          {addingLesson ? 'Adding…' : pickChapterId ? 'Add chapter' : 'Add study'}
+                          {addingLesson ? tr('Adding…') : pickChapterId ? tr('Add chapter') : tr('Add study')}
                         </button>
                       </>
                     )}
                     <p className="cb-muted" style={{ marginTop: 8, fontSize: 12 }}>
-                      Add a whole study or a single chapter. Your private studies become visible to enrolled students automatically.
+                      {tr("Add a whole study or a single chapter. Your private studies become visible to enrolled students automatically.")}
                     </p>
                   </>
                 )}
 
                 {lessonMode === 'video' && (
                   <>
-                    <input className="cb-input" placeholder="Video title (e.g. How pins work)"
+                    <input className="cb-input" placeholder={tr("Video title (e.g. How pins work)")}
                       value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
                     <div className="cb-row" style={{ alignItems: 'center' }}>
                       <input className="cb-input" style={{ marginBottom: 0 }}
-                        placeholder="YouTube link (https://youtu.be/… )"
+                        placeholder={tr("YouTube link (https://youtu.be/… )")}
                         value={videoUrl} onChange={e => setVideoUrl(e.target.value)} />
                       <button className="btn-primary" onClick={addVideoLesson} disabled={!videoUrl.trim() || addingLesson} style={{ flex: '0 0 auto' }}>
-                        {addingLesson ? 'Adding…' : 'Add video'}
+                        {addingLesson ? tr('Adding…') : tr('Add video')}
                       </button>
                     </div>
                     <p className="cb-muted" style={{ marginTop: 8, fontSize: 12 }}>
-                      Paste a YouTube link — the video plays embedded inside the student's syllabus.
+                      {tr("Paste a YouTube link — the video plays embedded inside the student's syllabus.")}
                     </p>
                   </>
                 )}
@@ -726,7 +727,7 @@ export default function CourseBuilder() {
                         value={mgFamily}
                         onChange={e => setMgFamily(e.target.value)}
                       >
-                        <option value="">All openings</option>
+                        <option value="">{tr("All openings")}</option>
                         {mgFamilies.map(f => <option key={f} value={f}>{f}</option>)}
                       </select>
                       <select
@@ -735,10 +736,10 @@ export default function CourseBuilder() {
                         value={mgOpening}
                         onChange={e => setMgOpening(e.target.value)}
                         disabled={!mgFamily || mgVariations.length === 0}
-                        title={mgFamily ? 'Narrow to one variation' : 'Choose an opening first'}
+                        title={mgFamily ? tr('Narrow to one variation') : tr('Choose an opening first')}
                       >
                         <option value="">
-                          {mgFamily ? `All ${mgFamily} variations` : 'All variations'}
+                          {mgFamily ? tr("All {mgFamily} variations", { mgFamily: mgFamily }) : tr('All variations')}
                         </option>
                         {mgVariations.map(v => <option key={v} value={v}>{v}</option>)}
                       </select>
@@ -746,7 +747,7 @@ export default function CourseBuilder() {
 
                     <div className="cb-row" style={{ alignItems: 'center' }}>
                       <input className="cb-input" style={{ marginBottom: 0 }}
-                        placeholder="Player name (optional, e.g. Kasparov)"
+                        placeholder={tr("Player name (optional, e.g. Kasparov)")}
                         value={mgQuery}
                         onChange={e => setMgQuery(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') searchMasterGames(); }} />
@@ -756,7 +757,7 @@ export default function CourseBuilder() {
                         disabled={(!mgQuery.trim() && !mgFamily && !mgOpening) || mgSearching}
                         style={{ flex: '0 0 auto' }}
                       >
-                        {mgSearching ? 'Searching…' : 'Search'}
+                        {mgSearching ? tr('Searching…') : tr('Search')}
                       </button>
                     </div>
                     {mgResults.length > 0 && (
@@ -766,14 +767,14 @@ export default function CourseBuilder() {
                             <span style={{ fontSize: 13 }}>
                               {g.white} vs {g.black}{g.year ? ` · ${g.year}` : ''}{g.result ? ` · ${g.result}` : ''}
                             </span>
-                            <button className="btn-ghost" disabled={addingLesson} onClick={() => addMasterGameLesson(g._id)} style={{ flex: '0 0 auto' }}>Add</button>
+                            <button className="btn-ghost" disabled={addingLesson} onClick={() => addMasterGameLesson(g._id)} style={{ flex: '0 0 auto' }}>{tr("Add")}</button>
                           </div>
                         ))}
                       </div>
                     )}
                     {mgSearched && !mgSearching && mgResults.length === 0 && (
                       <p className="cb-muted" style={{ marginTop: 8, fontSize: 12 }}>
-                        No games matched. Try a broader opening, or clear the player name.
+                        {tr("No games matched. Try a broader opening, or clear the player name.")}
                       </p>
                     )}
                     <p className="cb-muted" style={{ marginTop: 8, fontSize: 12 }}>
@@ -789,37 +790,37 @@ export default function CourseBuilder() {
                     <div className="cb-row" style={{ marginBottom: 8 }}>
                       <button type="button"
                         className={egSource === 'free' ? 'btn-primary' : 'btn-ghost'}
-                        onClick={() => switchEgSource('free')}>Free collection</button>
+                        onClick={() => switchEgSource('free')}>{tr("Free collection")}</button>
                       {limits.subscribed ? (
                         <button type="button"
                           className={egSource === 'premium' ? 'btn-primary' : 'btn-ghost'}
-                          onClick={() => switchEgSource('premium')}>⭐ Premium endgames</button>
+                          onClick={() => switchEgSource('premium')}>{tr("⭐ Premium endgames")}</button>
                       ) : (
                         <button type="button" className="btn-ghost" disabled
-                          title="Subscribe to add premium endgames"
-                          style={{ opacity: 0.55 }}>🔒 Premium endgames</button>
+                          title={tr("Subscribe to add premium endgames")}
+                          style={{ opacity: 0.55 }}>{tr("🔒 Premium endgames")}</button>
                       )}
                     </div>
                     <select className="cb-select" value={egFamily} onChange={e => loadEndgamePositions(e.target.value)}>
-                      <option value="">Pick an endgame type…</option>
+                      <option value="">{tr("Pick an endgame type…")}</option>
                       {egFamilies.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}
                     </select>
                     {egLoading ? (
-                      <p className="cb-muted">Loading positions…</p>
+                      <p className="cb-muted">{tr("Loading positions…")}</p>
                     ) : egPositions.length > 0 ? (
                       <div className="cb-eg-results" style={{ maxHeight: 260, overflowY: 'auto' }}>
                         {egPositions.map((p, i) => (
                           <div key={i} className="cb-row" style={{ alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                             <span style={{ fontSize: 13 }}>
-                              {p.white || p.black ? `${p.white || 'White'} vs ${p.black || 'Black'}` : (p.title || 'Position')}
+                              {p.white || p.black ? tr("{v0} vs {v1}", { v0: p.white || tr('White'), v1: p.black || tr('Black') }) : (p.title || tr('Position'))}
                               {p.year ? ` · ${p.year}` : ''}{p.result ? ` · ${p.result}` : ''}
                             </span>
-                            <button className="btn-ghost" disabled={addingLesson} onClick={() => addEndgameLesson(p)} style={{ flex: '0 0 auto' }}>Add</button>
+                            <button className="btn-ghost" disabled={addingLesson} onClick={() => addEndgameLesson(p)} style={{ flex: '0 0 auto' }}>{tr("Add")}</button>
                           </div>
                         ))}
                       </div>
                     ) : egFamily ? (
-                      <p className="cb-muted">No positions in this type.</p>
+                      <p className="cb-muted">{tr("No positions in this type.")}</p>
                     ) : null}
                     <p className="cb-muted" style={{ marginTop: 8, fontSize: 12 }}>
                       {egSource === 'premium'

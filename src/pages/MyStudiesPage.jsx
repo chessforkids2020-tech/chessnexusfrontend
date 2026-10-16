@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 const typeColors = {
   basics:     { color: 'var(--color-success)', bg: 'var(--color-success-a12)', gradient: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent))' },
@@ -41,11 +42,11 @@ export default function MyStudiesPage() {
   };
 
   const createStudy = async () => {
-    if (!newName.trim()) { setNewErr('Give your study a name'); return; }
+    if (!newName.trim()) { setNewErr(tr('Give your study a name')); return; }
     setNewErr(''); setNewBusy(true);
     try {
       const s = await api.post('/api/user-studies', { name: newName.trim(), studyType: newType, isPublic: newPublic });
-      const c = await api.post(`/api/user-studies/${s.data._id}/chapters`, { name: 'Chapter 1' });
+      const c = await api.post(`/api/user-studies/${s.data._id}/chapters`, { name: tr('Chapter 1') });
       // Straight into the empty chapter, where "Create First Position" waits.
       navigate(`/my-studies/${s.data._id}/chapter/${c.data.chapter._id}`);
     } catch (e) {
@@ -56,7 +57,7 @@ export default function MyStudiesPage() {
 
   const loadStudies = () => api.get('/api/user-studies/mine')
     .then(res => setStudies(res.data || []))
-    .catch(() => setError('Failed to load your studies'))
+    .catch(() => setError(tr('Failed to load your studies')))
     .finally(() => setLoading(false));
 
   const runImport = async () => {
@@ -67,7 +68,7 @@ export default function MyStudiesPage() {
         name: importName.trim() || undefined,
         chapterName: importChapter.trim() || undefined,
       });
-      setImportOk(`✓ Imported “${r.data.name}” — chapter “${r.data.chapter}” with ${r.data.positions} position(s).`);
+      setImportOk(tr("✓ Imported “{name}” — chapter “{chapter}” with {positions} position(s).", { name: r.data.name, chapter: r.data.chapter, positions: r.data.positions }));
       setImportUrl(''); setImportName(''); setImportChapter('');
       await loadStudies();
       // Jump into the freshly imported study after a beat so they see it.
@@ -80,7 +81,7 @@ export default function MyStudiesPage() {
   useEffect(() => {
     api.get('/api/user-studies/mine')
       .then(res => setStudies(res.data || []))
-      .catch(() => setError('Failed to load your studies'))
+      .catch(() => setError(tr('Failed to load your studies')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -106,10 +107,10 @@ export default function MyStudiesPage() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28, flexWrap: 'wrap' }}>
           <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-            ← Back
+            {tr("← Back")}
           </button>
           <div>
-            <div style={{ fontSize: 26, fontWeight: 900, color: 'var(--color-accent-2)' }}>📚 My Studies</div>
+            <div style={{ fontSize: 26, fontWeight: 900, color: 'var(--color-accent-2)' }}>{tr("📚 My Studies")}</div>
             <div style={{ fontSize: 13, color: 'var(--color-text-faint)', marginTop: 2 }}>Your private &amp; public position studies</div>
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -117,19 +118,19 @@ export default function MyStudiesPage() {
               onClick={() => { setImportOpen(true); setImportErr(''); setImportOk(''); }}
               style={{ padding: '12px 20px', background: 'rgba(45,212,191,0.12)', border: '1px solid rgba(45,212,191,0.4)', borderRadius: 'var(--radius-lg)', color: '#5eead4', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
             >
-              ♞ Import from Lichess
+              {tr("♞ Import from Lichess")}
             </button>
             <button
               onClick={() => navigate('/create-position')}
               style={{ padding: '12px 22px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 'var(--radius-lg)', color: 'var(--color-accent-2)', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
             >
-              + Add Position
+              {tr("+ Add Position")}
             </button>
             <button
               onClick={openNewStudy}
               style={{ padding: '12px 22px', background: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent))', border: 'none', borderRadius: 'var(--radius-lg)', color: '#04211d', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
             >
-              + New Study
+              {tr("+ New Study")}
             </button>
           </div>
         </div>
@@ -141,16 +142,16 @@ export default function MyStudiesPage() {
             style={{ position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.72)', backdropFilter: 'blur(3px)', display: 'grid', placeItems: 'center', zIndex: 9500, padding: 16 }}
           >
             <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 420, background: '#0f1520', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 'var(--radius-xl)', padding: 22 }}>
-              <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-accent-2)', marginBottom: 6 }}>📚 New study</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-accent-2)', marginBottom: 6 }}>{tr("📚 New study")}</div>
               <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: 16 }}>
-                We'll make <b>Chapter 1</b> for you. Add positions, then just play the moves on the board — it's saved automatically.
+                {tr("We'll make")} <b>{tr("Chapter 1")}</b> {tr("for you. Add positions, then just play the moves on the board — it's saved automatically.")}
               </div>
               <input
                 autoFocus
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !newBusy) createStudy(); }}
-                placeholder="Study name (e.g. Mate in 2 for beginners)"
+                placeholder={tr("Study name (e.g. Mate in 2 for beginners)")}
                 style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, marginBottom: 12 }}
               />
               <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
@@ -166,7 +167,7 @@ export default function MyStudiesPage() {
                 })}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--color-text-faint)', marginBottom: 14 }}>
-                Category:
+                {tr("Category:")}
                 {[['basics', '📗 Basics'], ['positional', '📘 Positional']].map(([t, label]) => (
                   <button
                     key={t}
@@ -182,13 +183,13 @@ export default function MyStudiesPage() {
                   disabled={newBusy}
                   style={{ flex: 1, padding: '11px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: newBusy ? 'default' : 'pointer', opacity: newBusy ? 0.6 : 1 }}
                 >
-                  {newBusy ? 'Creating…' : 'Create study'}
+                  {newBusy ? tr('Creating…') : tr('Create study')}
                 </button>
                 <button
                   onClick={() => !newBusy && setNewOpen(false)}
                   style={{ padding: '11px 18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, cursor: 'pointer' }}
                 >
-                  Cancel
+                  {tr("Cancel")}
                 </button>
               </div>
             </div>
@@ -202,9 +203,9 @@ export default function MyStudiesPage() {
             style={{ position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.72)', backdropFilter: 'blur(3px)', display: 'grid', placeItems: 'center', zIndex: 9500, padding: 16 }}
           >
             <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, background: '#0f1520', border: '1px solid rgba(45,212,191,0.3)', borderRadius: 'var(--radius-xl)', padding: 22 }}>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#5eead4', marginBottom: 6 }}>♞ Import a Lichess study</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#5eead4', marginBottom: 6 }}>{tr("♞ Import a Lichess study")}</div>
               <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: 16 }}>
-                Paste a <b>public</b> (or unlisted) Lichess study link. It becomes <b>one study with one chapter</b> here, and each Lichess chapter becomes a <b>position</b> inside it — ready to teach in the live classroom. Private studies won’t import — make it public/unlisted on Lichess first.
+                {tr("Paste a")} <b>{tr("public")}</b> {tr("(or unlisted) Lichess study link. It becomes")} <b>{tr("one study with one chapter")}</b> {tr("here, and each Lichess chapter becomes a")} <b>{tr("position")}</b> {tr("inside it — ready to teach in the live classroom. Private studies won’t import — make it public/unlisted on Lichess first.")}
               </div>
               <input
                 autoFocus
@@ -216,13 +217,13 @@ export default function MyStudiesPage() {
               <input
                 value={importName}
                 onChange={e => setImportName(e.target.value)}
-                placeholder="Name for this study (optional)"
+                placeholder={tr("Name for this study (optional)")}
                 style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, marginBottom: 10 }}
               />
               <input
                 value={importChapter}
                 onChange={e => setImportChapter(e.target.value)}
-                placeholder="Name for the chapter (optional)"
+                placeholder={tr("Name for the chapter (optional)")}
                 style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, marginBottom: 12 }}
               />
               {importErr && <div style={{ color: 'var(--color-danger)', fontSize: 13, marginBottom: 10 }}>{importErr}</div>}
@@ -233,13 +234,13 @@ export default function MyStudiesPage() {
                   disabled={importBusy || !importUrl.trim()}
                   style={{ flex: 1, padding: '11px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: importBusy ? 'default' : 'pointer', opacity: (importBusy || !importUrl.trim()) ? 0.6 : 1 }}
                 >
-                  {importBusy ? 'Importing…' : 'Import study'}
+                  {importBusy ? tr('Importing…') : tr('Import study')}
                 </button>
                 <button
                   onClick={() => !importBusy && setImportOpen(false)}
                   style={{ padding: '11px 18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, cursor: 'pointer' }}
                 >
-                  Cancel
+                  {tr("Cancel")}
                 </button>
               </div>
             </div>
@@ -255,28 +256,28 @@ export default function MyStudiesPage() {
               style={{ padding: '7px 18px', borderRadius: 'var(--radius-2xl)', border: `1px solid ${filter === val ? 'var(--color-accent-2)' : 'var(--color-white-a10)'}`, background: filter === val ? 'rgba(99,102,241,0.2)' : 'transparent', color: filter === val ? 'var(--color-accent-2)' : 'var(--color-text-faint)', cursor: 'pointer', fontSize: 13, fontWeight: filter === val ? 700 : 400 }}
             >{label}</button>
           ))}
-          <span style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--color-text-faint)', alignSelf: 'center' }}>{displayed.length} stud{displayed.length !== 1 ? 'ies' : 'y'}</span>
+          <span style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--color-text-faint)', alignSelf: 'center' }}>{displayed.length} {tr("stud")}{displayed.length !== 1 ? 'ies' : 'y'}</span>
         </div>
 
         {error && <div style={{ color: 'var(--color-danger)', marginBottom: 16, fontSize: 14 }}>{error}</div>}
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: 60, color: 'var(--color-text-faint)' }}>Loading...</div>
+          <div style={{ textAlign: 'center', padding: 60, color: 'var(--color-text-faint)' }}>{tr("Loading...")}</div>
         ) : displayed.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 40px', ...cardStyle }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>📚</div>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-accent-2)', marginBottom: 8 }}>
-              {filter === 'all' ? 'No studies yet' : `No ${filter} studies`}
+              {filter === 'all' ? 'No studies yet' : tr("No {filter} studies", { filter: filter })}
             </div>
             <div style={{ color: 'var(--color-text-faint)', marginBottom: 24, fontSize: 14 }}>
-              Start a study, add positions, and play the solution on the board — it's recorded for you.
+              {tr("Start a study, add positions, and play the solution on the board — it's recorded for you.")}
             </div>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button onClick={openNewStudy} style={{ padding: '14px 32px', background: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent))', border: 'none', borderRadius: 'var(--radius-lg)', color: '#04211d', fontSize: 15, fontWeight: 800, cursor: 'pointer' }}>
-                + New Study
+                {tr("+ New Study")}
               </button>
               <button onClick={() => navigate('/create-position')} style={{ padding: '14px 32px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 'var(--radius-lg)', color: 'var(--color-accent-2)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
-                + Create Position
+                {tr("+ Create Position")}
               </button>
             </div>
           </div>
@@ -304,7 +305,7 @@ export default function MyStudiesPage() {
                         {study.studyType || 'study'}
                       </span>
                       <span style={{ padding: '2px 9px', background: study.isPublic ? 'var(--color-success-a12)' : 'rgba(107,114,128,0.15)', borderRadius: 'var(--radius-sm)', fontSize: 11, color: study.isPublic ? 'var(--color-success)' : 'var(--color-text-muted)', fontWeight: 600 }}>
-                        {study.isPublic ? '🌐 Public' : '🔒 Private'}
+                        {study.isPublic ? tr('🌐 Public') : tr('🔒 Private')}
                       </span>
                     </div>
 
@@ -317,11 +318,11 @@ export default function MyStudiesPage() {
                     <div style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
                       <div style={{ textAlign: 'center' }}>
                         <div style={{ fontSize: 18, fontWeight: 800, color: tc.color }}>{study.chapterCount || 0}</div>
-                        <div style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>Chapters</div>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>{tr("Chapters")}</div>
                       </div>
                       <div style={{ textAlign: 'center' }}>
                         <div style={{ fontSize: 18, fontWeight: 800, color: tc.color }}>{study.puzzleCount || 0}</div>
-                        <div style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>Positions</div>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>{tr("Positions")}</div>
                       </div>
                     </div>
 

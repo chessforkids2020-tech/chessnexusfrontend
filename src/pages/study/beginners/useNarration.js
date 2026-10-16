@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { t as tr, getLanguage } from '../../../i18n/LanguageContext';
 
 // Voice narration for the Nexus Coach using the browser Web Speech API. A "script" is
 // an ordered array of steps: { text, onStart?() }. play() speaks each step in turn and
@@ -48,15 +49,17 @@ export function useNarration() {
     }
     idxRef.current = i;
     const step = script[i] || {};
+    const text = step.text ? tr(step.text) : '';
     setLineIndex(i);
-    setLineText(step.text || '');
+    setLineText(text);
     try { step.onStart && step.onStart(i); } catch (_) {}
 
     const next = () => { if (!cancelledRef.current) speakStep(i + 1); };
 
-    if (hasTTS() && !mutedRef.current && step.text) {
+    if (hasTTS() && !mutedRef.current && text) {
       try {
-        const u = new SpeechSynthesisUtterance(step.text);
+        const u = new SpeechSynthesisUtterance(text);
+        if (getLanguage() === 'es') u.lang = 'es-ES';
         u.rate = 0.92; u.pitch = 1.05; // a touch slow + friendly for kids
         u.onstart = () => setSpeaking(true);
         u.onend = () => { setSpeaking(false); if (!cancelledRef.current) timerRef.current = setTimeout(next, 350); };
@@ -67,7 +70,7 @@ export function useNarration() {
     }
     // No audio (unsupported or muted): show the line, then advance on a reading timer.
     setSpeaking(!mutedRef.current);
-    timerRef.current = setTimeout(() => { setSpeaking(false); next(); }, readMs(step.text));
+    timerRef.current = setTimeout(() => { setSpeaking(false); next(); }, readMs(text));
   }, []);
 
   // Start (or restart) narrating a script. Steps: [{ text, onStart? }].

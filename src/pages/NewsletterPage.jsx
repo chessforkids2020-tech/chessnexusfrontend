@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import api, { resolveApiAssetUrl } from '../api';
 import SEO from '../components/SEO';
 import './Newsletter.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 function fmtDate(d) {
   if (!d) return '';
@@ -29,7 +30,7 @@ export default function NewsletterPage() {
     let alive = true;
     api.get('/api/newsletter')
       .then(r => { if (alive) setPosts(r.data?.posts || []); })
-      .catch(() => { if (alive) setErr('Could not load the newsletter.'); })
+      .catch(() => { if (alive) setErr(tr('Could not load the newsletter.')); })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
   }, []);
@@ -40,24 +41,24 @@ export default function NewsletterPage() {
   return (
     <div className="nl-wrap">
       <SEO
-        title="Newsletter — Chess Nexus news & new features"
-        description="What's new on Chess Nexus: new features for coaches and players, tournaments, and product news."
+        title={tr("Newsletter — Chess Nexus news & new features")}
+        description={tr("What's new on Chess Nexus: new features for coaches and players, tournaments, and product news.")}
       />
 
       <header className="nl-head">
-        <h1 className="nl-h1">📰 Newsletter</h1>
+        <h1 className="nl-h1">{tr("📰 Newsletter")}</h1>
         <p className="nl-lead">
-          New features, tournaments and everything happening on Chess Nexus.
+          {tr("New features, tournaments and everything happening on Chess Nexus.")}
         </p>
       </header>
 
-      {loading && <div className="nl-note">Loading…</div>}
+      {loading && <div className="nl-note">{tr("Loading…")}</div>}
       {err && <div className="nl-note nl-note-err">{err}</div>}
 
       {!loading && !err && posts.length === 0 && (
         <div className="nl-empty">
           <div className="nl-empty-icon">📭</div>
-          <p>No posts yet — check back soon.</p>
+          <p>{tr("No posts yet — check back soon.")}</p>
         </div>
       )}
 
@@ -71,7 +72,7 @@ export default function NewsletterPage() {
 
       {rest.length > 0 && (
         <>
-          {pinned.length > 0 && <h2 className="nl-section">Earlier posts</h2>}
+          {pinned.length > 0 && <h2 className="nl-section">{tr("Earlier posts")}</h2>}
           <div className="nl-grid">
             {rest.map(p => <PostCard key={p.id} post={p} />)}
           </div>
@@ -91,7 +92,7 @@ function PostCard({ post, pinned }) {
       <div className="nl-card-body">
         <div className="nl-card-meta">
           <span className="nl-chip">{post.topic || 'News'}</span>
-          {pinned && <span className="nl-chip nl-chip-pin">📌 Pinned</span>}
+          {pinned && <span className="nl-chip nl-chip-pin">{tr("📌 Pinned")}</span>}
         </div>
         <h3 className="nl-card-title">{post.title}</h3>
         {post.summary && <p className="nl-card-sum">{post.summary}</p>}

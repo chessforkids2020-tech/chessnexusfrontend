@@ -9,6 +9,7 @@ import Footer from './Footer';
 import FeedbackPromptGate from './FeedbackPromptGate';
 import ChatToasts from './ChatToasts';
 import './UserLayout.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Pages that use the slim 60px icon rail instead of the 170px main sidebar,
 // because they need the horizontal room.
@@ -173,7 +174,7 @@ export default function UserLayout({ children, showFooter = true }) {
                 <button
                   className={`floating-menu-btn${menuHidden ? ' is-hidden' : ''}`}
                   onClick={() => setIsSidebarOpen(true)}
-                  aria-label="Open menu"
+                  aria-label={tr("Open menu")}
                 >
                   ☰
                 </button>

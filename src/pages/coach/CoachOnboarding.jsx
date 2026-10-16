@@ -7,6 +7,7 @@ import {
   coachVideoEmbedUrl,
 } from '../../data/coachVideoGuides';
 import './CoachOnboarding.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const COUNTRIES = [
   'India', 'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany',
@@ -82,20 +83,20 @@ export default function CoachOnboarding() {
   const submit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!form.coachName.trim()) return setError('Please enter your coach name.');
-    if (!form.coachCountry) return setError('Please pick your country.');
+    if (!form.coachName.trim()) return setError(tr('Please enter your coach name.'));
+    if (!form.coachCountry) return setError(tr('Please pick your country.'));
     // Only an ACADEMY has an academy name. Asking individuals for one is what
     // produced a queue full of "no" and "n/a".
     if (form.coachType === 'academy' && !form.academyName.trim()) {
-      return setError('Please enter your academy name.');
+      return setError(tr('Please enter your academy name.'));
     }
     if (!form.proofUrl.trim() && !form.proofNote.trim()) {
-      return setError('Please add a link where we can see your coaching — or tell us where you teach.');
+      return setError(tr('Please add a link where we can see your coaching — or tell us where you teach.'));
     }
     if (form.proofUrl.trim() && !/^https?:\/\/[^\s.]+\.[^\s]{2,}$/i.test(form.proofUrl.trim())) {
-      return setError('That link does not look valid — include https:// (or leave it blank and tell us where you teach).');
+      return setError(tr('That link does not look valid — include https:// (or leave it blank and tell us where you teach).'));
     }
-    if (!agreedTerms) return setError('Please accept the coach terms to continue.');
+    if (!agreedTerms) return setError(tr('Please accept the coach terms to continue.'));
 
 
     setSubmitting(true);
@@ -131,7 +132,7 @@ export default function CoachOnboarding() {
       <div className="coach-onboard-wrap">
         <div className="coach-onboard-card">
           <div className="coach-onboard-emoji">🎓</div>
-          <h1 className="coach-onboard-title">Create an account to coach</h1>
+          <h1 className="coach-onboard-title">{tr("Create an account to coach")}</h1>
           <p className="coach-onboard-sub">
             You are signed in as a guest. Coaching needs a real account — your
             students, classes and directory profile are all tied to it, and a
@@ -139,10 +140,10 @@ export default function CoachOnboarding() {
           </p>
           <div className="coach-onboard-actions">
             <button className="btn-primary" onClick={() => navigate('/signup-request')}>
-              Create a free account
+              {tr("Create a free account")}
             </button>
             <button className="btn-ghost" onClick={() => navigate('/dashboard')}>
-              Back
+              {tr("Back")}
             </button>
           </div>
         </div>
@@ -156,14 +157,14 @@ export default function CoachOnboarding() {
         {step === 'prompt' && (
           <>
             <div className="coach-onboard-emoji">🎓</div>
-            <h1 className="coach-onboard-title">Are you a chess coach?</h1>
+            <h1 className="coach-onboard-title">{tr("Are you a chess coach?")}</h1>
             <p className="coach-onboard-sub">
               Turn your students into champions. Manage them in one place — assignments,
               progress tracking, parent reports, attendance, class schedule, and more.
             </p>
             <div className="coach-onboard-perks">
-              <div className="perk">✅ Free forever — no trial, no time limit</div>
-              <div className="perk">✅ No card required</div>
+              <div className="perk">{tr("✅ Free forever — no trial, no time limit")}</div>
+              <div className="perk">{tr("✅ No card required")}</div>
             </div>
 
             {/* Collab offer — streamers/bloggers get all coach features free on
@@ -171,33 +172,33 @@ export default function CoachOnboarding() {
             <div className="coach-onboard-collab">
               <div className="coach-onboard-collab-text">
                 🤝 <strong>Streamers &amp; bloggers</strong> can collaborate
-                with Nexus to access <strong>all coach features for free on any plan</strong>.
+                {tr("with Nexus to access")} <strong>{tr("all coach features for free on any plan")}</strong>.
               </div>
               <Link to="/contact" className="coach-onboard-collab-link">
-                Contact Nexus →
+                {tr("Contact Nexus →")}
               </Link>
               <div className="coach-onboard-collab-note">
-                The Nexus team will contact you shortly.
+                {tr("The Nexus team will contact you shortly.")}
               </div>
             </div>
 
             {/* Everything a free coach already gets, grouped so each capability is
                 legible instead of several features crammed into one line. */}
             <div className="coach-onboard-benefits">
-              <div className="coach-onboard-benefits-title">🎁 Included free, always</div>
+              <div className="coach-onboard-benefits-title">{tr("🎁 Included free, always")}</div>
 
               <div className="benefit-group">
-                <div className="benefit-head">🎥 Built-in live classroom</div>
+                <div className="benefit-head">{tr("🎥 Built-in live classroom")}</div>
                 <div className="benefit">HD video, screen share &amp; a shared board — no Zoom needed</div>
-                <div className="benefit">Give any student control of the board to play their move</div>
+                <div className="benefit">{tr("Give any student control of the board to play their move")}</div>
                 <div className="benefit">Teach from studies, courses, endgames, puzzles &amp; master games</div>
                 <div className="benefit">Raise hand, mute/camera controls &amp; a waiting room</div>
-                <div className="benefit">Attendance marks itself as students join</div>
+                <div className="benefit">{tr("Attendance marks itself as students join")}</div>
               </div>
 
               <div className="benefit-group">
                 <div className="benefit-head">📝 Teaching &amp; content</div>
-                <div className="benefit">Assignments — 7 types, from puzzles to full studies</div>
+                <div className="benefit">{tr("Assignments — 7 types, from puzzles to full studies")}</div>
                 <div className="benefit">Build courses &amp; keep a reusable coach library</div>
                 <div className="benefit">Premium Endgame Mastery &amp; Opening Repertoire</div>
               </div>
@@ -205,11 +206,11 @@ export default function CoachOnboarding() {
               <div className="benefit-group">
                 <div className="benefit-head">📊 Tracking &amp; parents</div>
                 <div className="benefit">Student progress dashboards &amp; game analysis</div>
-                <div className="benefit">One shareable parent report per student</div>
+                <div className="benefit">{tr("One shareable parent report per student")}</div>
               </div>
 
               <div className="benefit-group">
-                <div className="benefit-head">🗂 Running your academy</div>
+                <div className="benefit-head">{tr("🗂 Running your academy")}</div>
                 <div className="benefit">Batches, class schedule, attendance &amp; fee requests</div>
                 <div className="benefit">Private Arena Races &amp; Tournaments for your students</div>
               </div>
@@ -219,21 +220,21 @@ export default function CoachOnboarding() {
                 Figures mirror backend/config/coachPlans.js (REFERRAL_REWARD_PCT
                 = 0.25, REFERRAL_MAX_DISCOUNT_PCT = 0.50). */}
             <div className="coach-onboard-wallet">
-              <div className="coach-onboard-wallet-title">💰 Refer coaches, earn wallet credit</div>
+              <div className="coach-onboard-wallet-title">{tr("💰 Refer coaches, earn wallet credit")}</div>
               <div className="coach-onboard-wallet-note">
                 Every coach gets a personal referral link. When a coach you invite takes
-                their <strong>first paid subscription</strong>, you earn{' '}
-                <strong>{REWARD_PCT}% of what they paid</strong> as credit in your referral
-                wallet — in <strong>your own currency</strong>.
+                {tr("their")} <strong>{tr("first paid subscription")}</strong>{tr(", you earn")}{' '}
+                <strong>{REWARD_PCT}{tr("% of what they paid")}</strong> {tr("as credit in your referral")}
+                {tr("wallet — in")} <strong>{tr("your own currency")}</strong>.
               </div>
               <div className="coach-onboard-wallet-note">
                 That credit is spendable as a discount toward your own subscription (covers
-                up to {MAX_DISCOUNT_PCT}% of a purchase). No cap on referrals, no cost to invite.
+                {tr("up to")} {MAX_DISCOUNT_PCT}{tr("% of a purchase). No cap on referrals, no cost to invite.")}
               </div>
             </div>
 
             <div className="coach-onboard-verify-note">
-              🛡️ New coaches are verified by the Nexus team (usually within 12 hours) before adding students — this keeps the community safe for kids.
+              {tr("🛡️ New coaches are verified by the Nexus team (usually within 12 hours) before adding students — this keeps the community safe for kids.")}
             </div>
 
             {/* Coach reference pages — open in a new tab so onboarding isn't lost. */}
@@ -244,7 +245,7 @@ export default function CoachOnboarding() {
                   the one video that answers "what am I signing up for?" arrived
                   after the question had already been answered. */}
               <div className="coach-onboard-videos">
-                <div className="coach-onboard-refs-title">🎬 See how it works</div>
+                <div className="coach-onboard-refs-title">{tr("🎬 See how it works")}</div>
                 {COACH_VIDEO_GUIDES.filter(v => v.preOnboarding && v.videoId).map(v => {
                   const isOpen = openVideo === v.id;
                   return (
@@ -273,21 +274,21 @@ export default function CoachOnboarding() {
                 })}
               </div>
 
-              <div className="coach-onboard-refs-title">📚 Learn more before you start</div>
+              <div className="coach-onboard-refs-title">{tr("📚 Learn more before you start")}</div>
               <div className="coach-onboard-refs-links">
-                <a href="/chess-coach-guide" target="_blank" rel="noopener noreferrer">Coach Guide</a>
+                <a href="/chess-coach-guide" target="_blank" rel="noopener noreferrer">{tr("Coach Guide")}</a>
                 <a href="/chess-coach-referral" target="_blank" rel="noopener noreferrer">Referral &amp; Wallet</a>
-                <a href="/chess-coach-pricing" target="_blank" rel="noopener noreferrer">Pricing</a>
-                <a href="/chess-coaching-questions" target="_blank" rel="noopener noreferrer">Coach FAQ</a>
+                <a href="/chess-coach-pricing" target="_blank" rel="noopener noreferrer">{tr("Pricing")}</a>
+                <a href="/chess-coaching-questions" target="_blank" rel="noopener noreferrer">{tr("Coach FAQ")}</a>
               </div>
             </div>
 
             <div className="coach-onboard-actions">
               <button className="btn-primary" onClick={() => setStep('form')}>
-                Yes — I'm a coach
+                {tr("Yes — I'm a coach")}
               </button>
               <button className="btn-ghost" onClick={() => navigate('/dashboard')}>
-                No, maybe later
+                {tr("No, maybe later")}
               </button>
             </div>
           </>
@@ -295,29 +296,29 @@ export default function CoachOnboarding() {
 
         {step === 'form' && (
           <form className="coach-onboard-form" onSubmit={submit}>
-            <h2 className="coach-onboard-title">Set up your coach profile</h2>
-            <p className="coach-onboard-sub-small">Takes less than a minute.</p>
+            <h2 className="coach-onboard-title">{tr("Set up your coach profile")}</h2>
+            <p className="coach-onboard-sub-small">{tr("Takes less than a minute.")}</p>
 
             <label className="field">
-              <span>Coach name *</span>
+              <span>{tr("Coach name *")}</span>
               <input
                 type="text"
                 value={form.coachName}
                 onChange={e => update('coachName', e.target.value)}
-                placeholder="e.g. Coach Queen"
+                placeholder={tr("e.g. Coach Queen")}
                 maxLength={100}
                 required
               />
             </label>
 
             <label className="field">
-              <span>Country *</span>
+              <span>{tr("Country *")}</span>
               <select
                 value={form.coachCountry}
                 onChange={e => update('coachCountry', e.target.value)}
                 required
               >
-                <option value="">— Select country —</option>
+                <option value="">{tr("— Select country —")}</option>
                 {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </label>
@@ -337,9 +338,9 @@ export default function CoachOnboarding() {
                 and stop guessing — and the copy states plainly that they keep
                 their academy name on their public profile either way. */}
             <div className="field">
-              <span>How does your coaching run? *</span>
+              <span>{tr("How does your coaching run? *")}</span>
               <div className="coach-onboard-social-hint" style={{ marginTop: 0, marginBottom: 10 }}>
-                Pick by <strong>who teaches</strong> — not by what your business is
+                {tr("Pick by")} <strong>{tr("who teaches")}</strong> {tr("— not by what your business is")}
                 called. Running an academy on your own? That's the first option.
               </div>
               <div className="radio-row radio-row-stack">
@@ -352,14 +353,14 @@ export default function CoachOnboarding() {
                     onChange={() => update('coachType', 'individual')}
                   />
                   <span className="radio-icon">👤</span>
-                  <span className="radio-label">I'm the only coach</span>
+                  <span className="radio-label">{tr("I'm the only coach")}</span>
                   <span className="radio-hint">
-                    Solo coach <strong>or a one-coach academy</strong> — you teach every
+                    {tr("Solo coach")} <strong>{tr("or a one-coach academy")}</strong> {tr("— you teach every")}
                     student yourself. Most coaches here are this.
                   </span>
                   <span className="radio-tags">
-                    <span className="radio-tag good">Free forever · up to 30 students</span>
-                    <span className="radio-tag">Your academy name still shows on your profile</span>
+                    <span className="radio-tag good">{tr("Free forever · up to 30 students")}</span>
+                    <span className="radio-tag">{tr("Your academy name still shows on your profile")}</span>
                   </span>
                 </label>
                 <label className={`radio-card radio-card-wide ${form.coachType === 'academy' ? 'active' : ''}`}>
@@ -371,18 +372,18 @@ export default function CoachOnboarding() {
                     onChange={() => update('coachType', 'academy')}
                   />
                   <span className="radio-icon">🏛️</span>
-                  <span className="radio-label">Other coaches teach under me</span>
+                  <span className="radio-label">{tr("Other coaches teach under me")}</span>
                   <span className="radio-hint">
-                    An academy with <strong>two or more coaches</strong>. You're the head:
+                    {tr("An academy with")} <strong>{tr("two or more coaches")}</strong>{tr(". You're the head:")}
                     coaches join your academy, you approve them and manage them all together.
                   </span>
                   <span className="radio-tags">
-                    <span className="radio-tag paid">Needs a paid academy plan before it unlocks</span>
+                    <span className="radio-tag paid">{tr("Needs a paid academy plan before it unlocks")}</span>
                   </span>
                 </label>
               </div>
               <div className="coach-onboard-social-hint">
-                Not sure? Choose <strong>“I'm the only coach”</strong> — it's free, and you
+                {tr("Not sure? Choose")} <strong>{tr("“I'm the only coach”")}</strong> {tr("— it's free, and you")}
                 can upgrade to a multi-coach academy later from your profile when you
                 take on your first coach.
               </div>
@@ -396,23 +397,23 @@ export default function CoachOnboarding() {
                     /academy/billing right after finishing signup. */}
                 <div className="coach-onboard-academy-confirm">
                   <div className="coach-onboard-academy-confirm-title">
-                    🏛️ You're setting up a multi-coach academy
+                    {tr("🏛️ You're setting up a multi-coach academy")}
                   </div>
                   <div>
                     You'll be the head. After signup you share your academy join link,
                     approve the coaches who join, and your academy pays for their plans —
-                    so this needs an <strong>active academy plan before it unlocks</strong>.
+                    {tr("so this needs an")} <strong>{tr("active academy plan before it unlocks")}</strong>.
                   </div>
                   <div className="coach-onboard-academy-confirm-alt">
-                    Teaching all your students yourself, even under an academy name?{' '}
+                    {tr("Teaching all your students yourself, even under an academy name?")}{' '}
                     <button type="button" onClick={() => update('coachType', 'individual')}>
-                      Pick “I'm the only coach” instead
+                      {tr("Pick “I'm the only coach” instead")}
                     </button>{' '}
                     — it's free forever and keeps your academy name on your profile.
                   </div>
                 </div>
                 <div className="field">
-                  <span>Will you also teach? *</span>
+                  <span>{tr("Will you also teach? *")}</span>
                   <div className="radio-row">
                     <label className={`radio-card ${form.usesCoachingTools ? 'active' : ''}`}>
                       <input
@@ -422,8 +423,8 @@ export default function CoachOnboarding() {
                         onChange={() => update('usesCoachingTools', true)}
                       />
                       <span className="radio-icon">🎓</span>
-                      <span className="radio-label">Yes, I coach too</span>
-                      <span className="radio-hint">Full coaching tools + academy</span>
+                      <span className="radio-label">{tr("Yes, I coach too")}</span>
+                      <span className="radio-hint">{tr("Full coaching tools + academy")}</span>
                     </label>
                     <label className={`radio-card ${!form.usesCoachingTools ? 'active' : ''}`}>
                       <input
@@ -433,12 +434,12 @@ export default function CoachOnboarding() {
                         onChange={() => update('usesCoachingTools', false)}
                       />
                       <span className="radio-icon">🏛️</span>
-                      <span className="radio-label">Just manage</span>
-                      <span className="radio-hint">Only the academy dashboard</span>
+                      <span className="radio-label">{tr("Just manage")}</span>
+                      <span className="radio-hint">{tr("Only the academy dashboard")}</span>
                     </label>
                   </div>
                   <div className="coach-onboard-social-hint">
-                    You can turn coaching tools on later from Academy settings.
+                    {tr("You can turn coaching tools on later from Academy settings.")}
                   </div>
                 </div>
               </>
@@ -451,12 +452,12 @@ export default function CoachOnboarding() {
                 later from their profile. */}
             {form.coachType === 'academy' && (
               <label className="field">
-                <span>Academy name *</span>
+                <span>{tr("Academy name *")}</span>
                 <input
                   type="text"
                   value={form.academyName}
                   onChange={e => update('academyName', e.target.value)}
-                  placeholder="e.g. Queen's Chess Academy"
+                  placeholder={tr("e.g. Queen's Chess Academy")}
                   required
                 />
               </label>
@@ -470,23 +471,23 @@ export default function CoachOnboarding() {
                 An academy name alone never gave them that. */}
             <div className="coach-onboard-proof">
               <label className="field">
-                <span>Where can we see your coaching? *</span>
+                <span>{tr("Where can we see your coaching? *")}</span>
                 <select
                   value={form.proofType}
                   onChange={e => update('proofType', e.target.value)}
                 >
-                  <option value="lichess_team">Lichess team / club</option>
-                  <option value="website">Website</option>
-                  <option value="facebook">Facebook page</option>
-                  <option value="instagram">Instagram</option>
-                  <option value="chesscom">Chess.com profile</option>
-                  <option value="youtube">YouTube channel</option>
-                  <option value="other">Something else</option>
+                  <option value="lichess_team">{tr("Lichess team / club")}</option>
+                  <option value="website">{tr("Website")}</option>
+                  <option value="facebook">{tr("Facebook page")}</option>
+                  <option value="instagram">{tr("Instagram")}</option>
+                  <option value="chesscom">{tr("Chess.com profile")}</option>
+                  <option value="youtube">{tr("YouTube channel")}</option>
+                  <option value="other">{tr("Something else")}</option>
                 </select>
               </label>
 
               <label className="field">
-                <span>Link</span>
+                <span>{tr("Link")}</span>
                 <input
                   type="url"
                   value={form.proofUrl}
@@ -505,51 +506,51 @@ export default function CoachOnboarding() {
                   coach with no web presence must not be shut out, so a written
                   explanation is accepted in place of a link. */}
               <label className="field">
-                <span>No link? Tell us where you teach instead</span>
+                <span>{tr("No link? Tell us where you teach instead")}</span>
                 <textarea
                   rows={2}
                   value={form.proofNote}
                   onChange={e => update('proofNote', e.target.value)}
-                  placeholder="e.g. I teach chess at St. Mary's School, Chennai — 20 students, Saturdays."
+                  placeholder={tr("e.g. I teach chess at St. Mary's School, Chennai — 20 students, Saturdays.")}
                   maxLength={500}
                 />
               </label>
             </div>
 
             <label className="field">
-              <span>Specialization (optional)</span>
+              <span>{tr("Specialization (optional)")}</span>
               <input
                 type="text"
                 value={form.specialization}
                 onChange={e => update('specialization', e.target.value)}
-                placeholder="e.g. Openings, Endgame, Kids beginner"
+                placeholder={tr("e.g. Openings, Endgame, Kids beginner")}
                 maxLength={100}
               />
             </label>
 
             <label className="field">
-              <span>Short bio (optional)</span>
+              <span>{tr("Short bio (optional)")}</span>
               <textarea
                 rows={3}
                 value={form.bio}
                 onChange={e => update('bio', e.target.value)}
-                placeholder="Tell students about your coaching style..."
+                placeholder={tr("Tell students about your coaching style...")}
                 maxLength={600}
               />
             </label>
 
             <label className="field">
-              <span>Referral code (optional)</span>
+              <span>{tr("Referral code (optional)")}</span>
               <input
                 type="text"
                 value={form.referredByCoachCode}
                 onChange={e => update('referredByCoachCode', e.target.value.toUpperCase())}
-                placeholder="Were you invited by another coach? Enter their code"
+                placeholder={tr("Were you invited by another coach? Enter their code")}
                 maxLength={20}
                 autoCapitalize="characters"
               />
               <div className="coach-onboard-social-hint">
-                If a coach referred you, add their code — they'll earn {REWARD_PCT}% wallet credit when you first subscribe.
+                {tr("If a coach referred you, add their code — they'll earn")} {REWARD_PCT}{tr("% wallet credit when you first subscribe.")}
               </div>
             </label>
 
@@ -560,9 +561,9 @@ export default function CoachOnboarding() {
                 onChange={e => setAgreedTerms(e.target.checked)}
               />
               <span>
-                I agree to the ChessNexus coach terms. I confirm I will keep{' '}
-                <strong>only one coach account</strong>. If the Nexus team finds a coach
-                running multiple accounts, that coach may be <strong>removed</strong>.
+                {tr("I agree to the ChessNexus coach terms. I confirm I will keep")}{' '}
+                <strong>{tr("only one coach account")}</strong>{tr(". If the Nexus team finds a coach")}
+                {tr("running multiple accounts, that coach may be")} <strong>{tr("removed")}</strong>.
               </span>
             </label>
 
@@ -570,10 +571,10 @@ export default function CoachOnboarding() {
 
             <div className="coach-onboard-actions">
               <button type="button" className="btn-ghost" onClick={() => setStep('prompt')} disabled={submitting}>
-                Back
+                {tr("Back")}
               </button>
               <button type="submit" className="btn-primary" disabled={submitting || !agreedTerms}>
-                {submitting ? 'Creating…' : 'Create my free coach account →'}
+                {submitting ? tr('Creating…') : tr('Create my free coach account →')}
               </button>
             </div>
           </form>

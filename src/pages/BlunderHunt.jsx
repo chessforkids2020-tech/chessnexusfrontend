@@ -18,6 +18,7 @@ import api from '../api';
 import Chessboard from '../components/Chessboard';
 import EnginePanel from '../components/EnginePanel';
 import './BlunderHunt.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -90,7 +91,7 @@ export default function BlunderHunt() {
         const firstUnsolved = list.findIndex(g => !g.solved);
         setGi(firstUnsolved >= 0 ? firstUnsolved : 0);
       })
-      .catch(() => setErr('Could not load games.'))
+      .catch(() => setErr(tr('Could not load games.')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -194,7 +195,7 @@ export default function BlunderHunt() {
         setGames(prev => prev.map((g, i) => (i === gi ? { ...g, solved: true } : g)));
       }
     } catch {
-      setErr('Could not submit. Please try again.');
+      setErr(tr('Could not submit. Please try again.'));
     } finally {
       setSubmitting(false);
     }
@@ -208,7 +209,7 @@ export default function BlunderHunt() {
       <div className="bh-page">
         <div className="bh-header">
           <div className="bh-head-main">
-          <h1 className="bh-title">🔎 Find the Blunder</h1>
+          <h1 className="bh-title">{tr("🔎 Find the Blunder")}</h1>
           <p className="bh-sub">
             Real master games with real mistakes. Step through the game, spot the losing
             move, and see what should have been played instead.
@@ -216,8 +217,8 @@ export default function BlunderHunt() {
           </div>
         </div>
 
-        {levels === null && <div className="bh-empty">Loading levels…</div>}
-        {levels?.length === 0 && <div className="bh-empty">No games available yet.</div>}
+        {levels === null && <div className="bh-empty">{tr("Loading levels…")}</div>}
+        {levels?.length === 0 && <div className="bh-empty">{tr("No games available yet.")}</div>}
 
         <div className="bh-levels">
           {(levels || []).map(lv => (
@@ -226,10 +227,10 @@ export default function BlunderHunt() {
               <span className="bh-level-body">
                 <span className="bh-level-name">{lv.label}</span>
                 <span className="bh-level-meta">
-                  {lv.games} game{lv.games === 1 ? '' : 's'} · {lv.blunders} blunder{lv.blunders === 1 ? '' : 's'}
+                  {lv.games} {tr("game")}{lv.games === 1 ? '' : 's'} · {lv.blunders} {tr("blunder")}{lv.blunders === 1 ? '' : 's'}
                 </span>
                 {lv.solved > 0 && (
-                  <span className="bh-level-progress">✓ {lv.solved} of {lv.games} solved</span>
+                  <span className="bh-level-progress">✓ {lv.solved} {tr("of")} {lv.games} {tr("solved")}</span>
                 )}
               </span>
               <span className="bh-level-arrow">→</span>
@@ -247,16 +248,16 @@ export default function BlunderHunt() {
           and "Game N of M · White vs Black" wrapped underneath, which took more
           vertical space than it earned and pushed the board down. Everything
           now sits on one row, with the game title free to shrink. */}
-      {loading && <div className="bh-empty">Loading games…</div>}
+      {loading && <div className="bh-empty">{tr("Loading games…")}</div>}
       {/* The title bar (with its ← button) lives inside the right column, which
           only renders when there IS a game — so the empty state needs its own
           way back, or the user is stranded on this level. */}
       {!loading && !game && (
         <div className="bh-empty">
-          No games in this level yet.
+          {tr("No games in this level yet.")}
           <div style={{ marginTop: 14 }}>
             <button type="button" className="bh-back" onClick={() => { setLevel(null); setGames([]); }}>
-              ← Back to levels
+              {tr("← Back to levels")}
             </button>
           </div>
         </div>
@@ -282,12 +283,12 @@ export default function BlunderHunt() {
               <button type="button" onClick={() => goTo(ply - 1)} disabled={ply === 0}>◀</button>
               <span className="bh-ply">
                 {line.length > 0
-                  ? `analysis +${line.length}`
+                  ? tr("analysis +{length}", { length: line.length })
                   : `${ply} / ${maxPly}${ply > 0 ? ` · ${parsed.sans[ply - 1]}` : ''}`}
               </span>
               <button type="button" onClick={() => goTo(ply + 1)} disabled={ply >= maxPly}>▶</button>
               <button type="button" onClick={() => goTo(maxPly)} disabled={ply >= maxPly}>⏭</button>
-              <span className="bh-keys" title="Arrow keys step through the game">← →</span>
+              <span className="bh-keys" title={tr("Arrow keys step through the game")}>← →</span>
             </div>
 
             {graded && (
@@ -351,14 +352,14 @@ export default function BlunderHunt() {
                 <div className="bh-answers-label">
                   {game.side ? (
                     <>
-                      Find <strong>{game.side === 'w' ? "White's" : "Black's"}</strong>{' '}
-                      {game.blunderCount} blunder{game.blunderCount === 1 ? '' : 's'} —
-                      type the move{game.blunderCount === 1 ? '' : 's'} that threw the game away.
+                      {tr("Find")} <strong>{game.side === 'w' ? "White's" : "Black's"}</strong>{' '}
+                      {game.blunderCount} {tr("blunder")}{game.blunderCount === 1 ? '' : 's'} —
+                      {tr("type the move")}{game.blunderCount === 1 ? '' : 's'} {tr("that threw the game away.")}
                     </>
                   ) : (
                     <>
-                      Find {game.blunderCount} blunder{game.blunderCount === 1 ? '' : 's'} —
-                      type the move{game.blunderCount === 1 ? '' : 's'} that threw the game away.
+                      {tr("Find")} {game.blunderCount} {tr("blunder")}{game.blunderCount === 1 ? '' : 's'} —
+                      {tr("type the move")}{game.blunderCount === 1 ? '' : 's'} {tr("that threw the game away.")}
                     </>
                   )}
                 </div>
@@ -372,7 +373,7 @@ export default function BlunderHunt() {
                       <input
                         className="bh-input"
                         value={v}
-                        placeholder="Qh5"
+                        placeholder={"Qh5"}
                         maxLength={10}
                         onChange={e => setAnswers(a => a.map((x, j) => (j === i ? e.target.value : x)))}
                       />
@@ -386,21 +387,21 @@ export default function BlunderHunt() {
                   onClick={submit}
                   disabled={submitting || answers.every(a => !a.trim())}
                 >
-                  {submitting ? 'Checking…' : 'Submit'}
+                  {submitting ? tr('Checking…') : tr('Submit')}
                 </button>
               </div>
             ) : (
               <div className="bh-result">
                 <div className={`bh-result-head ${result.passed ? 'ok' : 'no'}`}>
-                  {result.passed ? '🎉 Correct!' : '🔍 Not quite'}
+                  {result.passed ? tr('🎉 Correct!') : tr('🔍 Not quite')}
                   <span className="bh-result-score">
-                    {result.foundCount} of {result.findTarget} found
+                    {result.foundCount} {tr("of")} {result.findTarget} {tr("found")}
                   </span>
                 </div>
                 {result.xpAwarded > 0 && (
-                  <div className="bh-xp">+{result.xpAwarded} XP</div>
+                  <div className="bh-xp">+{result.xpAwarded} {tr("XP")}</div>
                 )}
-                <div className="bh-answers-label">The blunders</div>
+                <div className="bh-answers-label">{tr("The blunders")}</div>
                 {result.blunders.map((b, i) => (
                   <div key={i} className="bh-reveal">
                     <span className="bh-reveal-move">{b.moveNumber}. {b.move}</span>
@@ -414,7 +415,7 @@ export default function BlunderHunt() {
                   onClick={nextGame}
                   disabled={gi >= games.length - 1}
                 >
-                  {gi >= games.length - 1 ? 'Last game in this level' : 'Next game →'}
+                  {gi >= games.length - 1 ? tr('Last game in this level') : tr('Next game →')}
                 </button>
               </div>
             )}

@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function ClubsPage() {
   const navigate = useNavigate();
@@ -80,19 +81,19 @@ export default function ClubsPage() {
     <div style={s.page}>
       <div style={s.header}>
         <div>
-          <h1 style={s.title}>🏰 Clubs</h1>
-          <p style={s.sub}>Join a club, chat with members, and play together.</p>
+          <h1 style={s.title}>{tr("🏰 Clubs")}</h1>
+          <p style={s.sub}>{tr("Join a club, chat with members, and play together.")}</p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
-          <button style={s.btnSecondary} onClick={() => setShowJoin(true)}>🔑 Join with Code</button>
-          <button style={s.btnPrimary} onClick={() => setShowCreate(true)}>+ Create Club</button>
+          <button style={s.btnSecondary} onClick={() => setShowJoin(true)}>{tr("🔑 Join with Code")}</button>
+          <button style={s.btnPrimary} onClick={() => setShowCreate(true)}>{tr("+ Create Club")}</button>
         </div>
       </div>
 
       {/* My Clubs */}
       {myClubs.length > 0 && (
         <div style={s.section}>
-          <h2 style={s.sectionTitle}>My Clubs</h2>
+          <h2 style={s.sectionTitle}>{tr("My Clubs")}</h2>
           <div style={s.grid}>
             {myClubs.map(c => (
               <div key={c._id} style={{ ...s.clubCard, border: '1px solid rgba(139,92,246,0.4)' }}
@@ -100,11 +101,11 @@ export default function ClubsPage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                   <div style={s.clubName}>{c.name}</div>
                   {c.isPrivate
-                    ? <span style={s.privateBadge}>🔒 Private</span>
-                    : <span style={s.publicBadge}>🌍 Public</span>}
+                    ? <span style={s.privateBadge}>{tr("🔒 Private")}</span>
+                    : <span style={s.publicBadge}>{tr("🌍 Public")}</span>}
                 </div>
                 <div style={s.clubDesc}>{c.description || 'No description'}</div>
-                <div style={s.clubMeta}>👥 {c.memberCount} members</div>
+                <div style={s.clubMeta}>👥 {c.memberCount} {tr("members")}</div>
               </div>
             ))}
           </div>
@@ -113,20 +114,20 @@ export default function ClubsPage() {
 
       {/* Browse */}
       <div style={s.section}>
-        <h2 style={s.sectionTitle}>Browse Clubs {total > 0 && <span style={{ color: 'var(--color-text-faint)', fontWeight: 400, fontSize: 14 }}>({total} total)</span>}</h2>
+        <h2 style={s.sectionTitle}>{tr("Browse Clubs")} {total > 0 && <span style={{ color: 'var(--color-text-faint)', fontWeight: 400, fontSize: 14 }}>({total} total)</span>}</h2>
         <input
           type="text"
-          placeholder="Search clubs…"
+          placeholder={tr("Search clubs…")}
           value={search}
           onChange={e => setSearch(e.target.value)}
           style={s.searchInput}
         />
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-faint)' }}>Loading…</div>
+          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-faint)' }}>{tr("Loading…")}</div>
         ) : clubs.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-faint)' }}>
-            No clubs found. <button style={s.linkBtn} onClick={() => setShowCreate(true)}>Create the first one!</button>
+            {tr("No clubs found.")} <button style={s.linkBtn} onClick={() => setShowCreate(true)}>{tr("Create the first one!")}</button>
           </div>
         ) : (
           <>
@@ -136,12 +137,12 @@ export default function ClubsPage() {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                     <div style={s.clubName}>{c.name}</div>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                      <span style={s.publicBadge}>🌍 Public</span>
-                      {c.isMember && <span style={s.memberChip}>✓ Member</span>}
+                      <span style={s.publicBadge}>{tr("🌍 Public")}</span>
+                      {c.isMember && <span style={s.memberChip}>{tr("✓ Member")}</span>}
                     </div>
                   </div>
                   <div style={s.clubDesc}>{c.description || 'No description'}</div>
-                  <div style={s.clubMeta}>👥 {c.memberCount} members</div>
+                  <div style={s.clubMeta}>👥 {c.memberCount} {tr("members")}</div>
                 </div>
               ))}
             </div>
@@ -161,10 +162,10 @@ export default function ClubsPage() {
       {showCreate && (
         <div style={s.overlay} onClick={() => setShowCreate(false)}>
           <div style={s.modal} onClick={e => e.stopPropagation()}>
-            <h2 style={s.modalTitle}>Create a Club</h2>
+            <h2 style={s.modalTitle}>{tr("Create a Club")}</h2>
             <form onSubmit={createClub} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <input
-                placeholder="Club name *"
+                placeholder={tr("Club name *")}
                 value={createForm.name}
                 onChange={e => setCreateForm({ ...createForm, name: e.target.value })}
                 style={s.inputField}
@@ -172,7 +173,7 @@ export default function ClubsPage() {
                 maxLength={50}
               />
               <textarea
-                placeholder="Description (optional)"
+                placeholder={tr("Description (optional)")}
                 value={createForm.description}
                 onChange={e => setCreateForm({ ...createForm, description: e.target.value })}
                 style={{ ...s.inputField, height: 80, resize: 'vertical' }}
@@ -180,7 +181,7 @@ export default function ClubsPage() {
               />
               {/* Privacy selector */}
               <div>
-                <div style={{ fontSize: 12, color: 'var(--color-text-faint)', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Visibility</div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-faint)', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>{tr("Visibility")}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                   <button
                     type="button"
@@ -193,7 +194,7 @@ export default function ClubsPage() {
                     }}
                   >
                     <div style={{ fontSize: 18, marginBottom: 4 }}>🌍</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: !createForm.isPrivate ? '#4ade80' : 'var(--color-text-muted)' }}>Public</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: !createForm.isPrivate ? '#4ade80' : 'var(--color-text-muted)' }}>{tr("Public")}</div>
                     <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>Anyone can find &amp; join</div>
                   </button>
                   <button
@@ -207,15 +208,15 @@ export default function ClubsPage() {
                     }}
                   >
                     <div style={{ fontSize: 18, marginBottom: 4 }}>🔒</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: createForm.isPrivate ? 'var(--color-accent-2)' : 'var(--color-text-muted)' }}>Private</div>
-                    <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>Invite link only</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: createForm.isPrivate ? 'var(--color-accent-2)' : 'var(--color-text-muted)' }}>{tr("Private")}</div>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>{tr("Invite link only")}</div>
                   </button>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                <button type="button" style={s.btnSecondary} onClick={() => setShowCreate(false)}>Cancel</button>
+                <button type="button" style={s.btnSecondary} onClick={() => setShowCreate(false)}>{tr("Cancel")}</button>
                 <button type="submit" style={s.btnPrimary} disabled={submitting}>
-                  {submitting ? 'Creating…' : 'Create Club'}
+                  {submitting ? tr('Creating…') : tr('Create Club')}
                 </button>
               </div>
             </form>
@@ -227,19 +228,19 @@ export default function ClubsPage() {
       {showJoin && (
         <div style={s.overlay} onClick={() => setShowJoin(false)}>
           <div style={s.modal} onClick={e => e.stopPropagation()}>
-            <h2 style={s.modalTitle}>Join with Code</h2>
+            <h2 style={s.modalTitle}>{tr("Join with Code")}</h2>
             <form onSubmit={joinClub} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <input
-                placeholder="Enter club join code…"
+                placeholder={tr("Enter club join code…")}
                 value={joinCode}
                 onChange={e => setJoinCode(e.target.value.toUpperCase())}
                 style={{ ...s.inputField, fontFamily: 'monospace', letterSpacing: 2 }}
                 required
               />
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                <button type="button" style={s.btnSecondary} onClick={() => setShowJoin(false)}>Cancel</button>
+                <button type="button" style={s.btnSecondary} onClick={() => setShowJoin(false)}>{tr("Cancel")}</button>
                 <button type="submit" style={s.btnPrimary} disabled={submitting}>
-                  {submitting ? 'Joining…' : 'Join Club'}
+                  {submitting ? tr('Joining…') : tr('Join Club')}
                 </button>
               </div>
             </form>

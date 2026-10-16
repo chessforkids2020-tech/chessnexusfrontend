@@ -3,12 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../../api';
 import AboutFeatureCTA from '../../components/marketing/AboutFeatureCTA';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const StudyOverview = () => {
   const navigate = useNavigate();
   const [studyStats, setStudyStats] = useState({
-    basic: { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Beginner' },
-    positional: { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Advanced' }
+    basic: { studies: 0, chapters: 0, puzzles: 0, difficulty: tr('Beginner') },
+    positional: { studies: 0, chapters: 0, puzzles: 0, difficulty: tr('Advanced') }
   });
   // Whether the admin has published any public books. The Books card only shows
   // when at least one published book exists (GET /api/books returns published only).
@@ -23,8 +24,8 @@ const StudyOverview = () => {
         
         // Ensure data has the correct structure with fallbacks
         setStudyStats({
-          basic: data?.basic || { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Beginner' },
-          positional: data?.positional || { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Advanced' }
+          basic: data?.basic || { studies: 0, chapters: 0, puzzles: 0, difficulty: tr('Beginner') },
+          positional: data?.positional || { studies: 0, chapters: 0, puzzles: 0, difficulty: tr('Advanced') }
         });
       } catch (error) {
         // Keep default values on error
@@ -48,8 +49,8 @@ const StudyOverview = () => {
 
   // Single unified "Study" card. Stats combine basic + positional so existing
   // positional studies/chapters/puzzles still get counted in the merged view.
-  const basicStats = studyStats?.basic || { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Beginner' };
-  const positionalStats = studyStats?.positional || { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Advanced' };
+  const basicStats = studyStats?.basic || { studies: 0, chapters: 0, puzzles: 0, difficulty: tr('Beginner') };
+  const positionalStats = studyStats?.positional || { studies: 0, chapters: 0, puzzles: 0, difficulty: tr('Advanced') };
   const combinedStats = {
     studies: (basicStats.studies || 0) + (positionalStats.studies || 0),
     chapters: (basicStats.chapters || 0) + (positionalStats.chapters || 0),
@@ -60,8 +61,8 @@ const StudyOverview = () => {
   const studyTypes = [
     {
       type: 'basic',
-      title: 'STUDY',
-      description: 'Master chess concepts — tactics, opening principles, endgame patterns, strategic ideas, piece activity, weak squares, pawn structures, and more.',
+      title: tr('STUDY'),
+      description: tr('Master chess concepts — tactics, opening principles, endgame patterns, strategic ideas, piece activity, weak squares, pawn structures, and more.'),
       icon: '♟️',
       color: 'var(--color-success)',
       gradient: 'linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)',
@@ -391,8 +392,8 @@ const StudyOverview = () => {
             onClick={() => navigate('/public-studies')}
           >
             <div style={{ fontSize: 32, marginBottom: 10 }}>📚</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-warning)', marginBottom: 6 }}>Public Studies</div>
-            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Browse community-created studies with chapters and positions. Create your own and share your knowledge.</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-warning)', marginBottom: 6 }}>{tr("Public Studies")}</div>
+            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>{tr("Browse community-created studies with chapters and positions. Create your own and share your knowledge.")}</div>
           </motion.div>
 
           {/* Books card — only shown when the admin has published at least one book. */}
@@ -403,7 +404,7 @@ const StudyOverview = () => {
               onClick={() => navigate('/study/books')}
             >
               <div style={{ fontSize: 32, marginBottom: 10 }}>📖</div>
-              <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-success)', marginBottom: 6 }}>Books</div>
+              <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-success)', marginBottom: 6 }}>{tr("Books")}</div>
               <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Read chess books chapter by chapter. Chapter 1 is free for everyone; unlock the rest with your XP.</div>
             </motion.div>
           )}
@@ -414,8 +415,8 @@ const StudyOverview = () => {
             onClick={() => navigate('/study/endgames')}
           >
             <div style={{ fontSize: 32, marginBottom: 10 }}>🏁</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-accent)', marginBottom: 6 }}>Endgames</div>
-            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Master endgames from real grandmaster games — rook, pawn, queen, minor-piece and more. Pick a type and play through how champions converted them.</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-accent)', marginBottom: 6 }}>{tr("Endgames")}</div>
+            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>{tr("Master endgames from real grandmaster games — rook, pawn, queen, minor-piece and more. Pick a type and play through how champions converted them.")}</div>
           </motion.div>
         </div>
 
@@ -510,7 +511,7 @@ const StudyOverview = () => {
                     <div style={{ ...styles.statBoxValue, color: studyType.color }}>
                       {studyType.stats.studies}
                     </div>
-                    <div style={styles.statBoxLabel}>Studies</div>
+                    <div style={styles.statBoxLabel}>{tr("Studies")}</div>
                   </motion.div>
                   <motion.div 
                     style={styles.statBox}
@@ -523,7 +524,7 @@ const StudyOverview = () => {
                     <div style={{ ...styles.statBoxValue, color: studyType.color }}>
                       {studyType.stats.chapters}
                     </div>
-                    <div style={styles.statBoxLabel}>Chapter</div>
+                    <div style={styles.statBoxLabel}>{tr("Chapter")}</div>
                   </motion.div>
                   <motion.div 
                     style={styles.statBox}
@@ -536,7 +537,7 @@ const StudyOverview = () => {
                     <div style={{ ...styles.statBoxValue, color: studyType.color }}>
                       {studyType.stats.puzzles}
                     </div>
-                    <div style={styles.statBoxLabel}>Positions</div>
+                    <div style={styles.statBoxLabel}>{tr("Positions")}</div>
                   </motion.div>
                 </div>
 
@@ -573,10 +574,10 @@ const StudyOverview = () => {
                       <div className="shimmer" style={styles.shimmer}></div>
                       <div className="action-icon" style={styles.actionIconWrapper}>📘</div>
                       <div style={{ ...styles.actionLabel, color: studyType.color }}>
-                        Study
+                        {tr("Study")}
                       </div>
                       <div style={styles.actionSubtext}>
-                        Learn concepts
+                        {tr("Learn concepts")}
                       </div>
                     </motion.div>
                   </Link>
@@ -642,20 +643,20 @@ const StudyOverview = () => {
                     <div style={styles.cardIcon}>🏆</div>
                   </div>
                   <div style={styles.cardTitleGroup}>
-                    <h2 style={styles.cardTitle}>MASTERS GAMES</h2>
+                    <h2 style={styles.cardTitle}>{tr("MASTERS GAMES")}</h2>
                     <span style={{
                       ...styles.difficultyBadge,
                       color: 'var(--color-warning)',
                       borderColor: 'var(--color-warning-a20)',
                     }}>
-                      Grandmasters
+                      {tr("Grandmasters")}
                     </span>
                   </div>
                 </div>
               </div>
 
               <p style={styles.cardDescription}>
-                Explore legendary games from world champions and grandmasters. Replay immortal classics and learn the ideas behind every move.
+                {tr("Explore legendary games from world champions and grandmasters. Replay immortal classics and learn the ideas behind every move.")}
               </p>
 
               {/* Feature highlights — mirrors the Study card's stats grid for visual balance */}
@@ -666,7 +667,7 @@ const StudyOverview = () => {
                     whileHover={{ y: -4, background: 'var(--color-warning-a12)', borderColor: 'var(--color-warning-a20)' }}
                   >
                     <div style={{ ...styles.statBoxValue, color: 'var(--color-warning)' }}>♟</div>
-                    <div style={styles.statBoxLabel}>Browse</div>
+                    <div style={styles.statBoxLabel}>{tr("Browse")}</div>
                   </motion.div>
                 </Link>
                 <Link to="/master-games/immortal" style={{ textDecoration: 'none' }}>
@@ -675,7 +676,7 @@ const StudyOverview = () => {
                     whileHover={{ y: -4, background: 'var(--color-warning-a12)', borderColor: 'var(--color-warning-a20)' }}
                   >
                     <div style={{ ...styles.statBoxValue, color: 'var(--color-warning)' }}>♛</div>
-                    <div style={styles.statBoxLabel}>Immortal</div>
+                    <div style={styles.statBoxLabel}>{tr("Immortal")}</div>
                   </motion.div>
                 </Link>
                 <Link to="/master-games/players" style={{ textDecoration: 'none' }}>
@@ -684,7 +685,7 @@ const StudyOverview = () => {
                     whileHover={{ y: -4, background: 'var(--color-warning-a12)', borderColor: 'var(--color-warning-a20)' }}
                   >
                     <div style={{ ...styles.statBoxValue, color: 'var(--color-warning)' }}>♚</div>
-                    <div style={styles.statBoxLabel}>Players</div>
+                    <div style={styles.statBoxLabel}>{tr("Players")}</div>
                   </motion.div>
                 </Link>
               </div>
@@ -722,10 +723,10 @@ const StudyOverview = () => {
                     <div className="shimmer" style={styles.shimmer}></div>
                     <div className="action-icon" style={styles.actionIconWrapper}>♚</div>
                     <div style={{ ...styles.actionLabel, color: 'var(--color-warning)' }}>
-                      Show Masters Games
+                      {tr("Show Masters Games")}
                     </div>
                     <div style={styles.actionSubtext}>
-                      Browse champion classics
+                      {tr("Browse champion classics")}
                     </div>
                   </motion.div>
                 </Link>
@@ -742,8 +743,8 @@ const StudyOverview = () => {
             onClick={() => navigate('/my-studies')}
           >
             <div style={{ fontSize: 32, marginBottom: 10 }}>📚</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-success)', marginBottom: 6 }}>My Studies</div>
-            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>View and manage your studies — organised by chapters. Play through your saved positions.</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-success)', marginBottom: 6 }}>{tr("My Studies")}</div>
+            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>{tr("View and manage your studies — organised by chapters. Play through your saved positions.")}</div>
           </motion.div>
 
           <motion.div
@@ -752,8 +753,8 @@ const StudyOverview = () => {
             onClick={() => navigate('/study/sparring/duel/create')}
           >
             <div style={{ fontSize: 32, marginBottom: 10 }}>⚔</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-danger)', marginBottom: 6 }}>Study Duel</div>
-            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Challenge a classmate 1v1 in real time. Create a room and share the code. Best accuracy wins.</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-danger)', marginBottom: 6 }}>{tr("Study Duel")}</div>
+            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>{tr("Challenge a classmate 1v1 in real time. Create a room and share the code. Best accuracy wins.")}</div>
           </motion.div>
 
           <motion.div
@@ -762,15 +763,15 @@ const StudyOverview = () => {
             onClick={() => navigate('/study/sparring/join')}
           >
             <div style={{ fontSize: 32, marginBottom: 10 }}>🔗</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-danger)', marginBottom: 6 }}>Join Duel / Coaching</div>
-            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Got a room code? Enter it here to join a duel or coaching session your partner shared with you.</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-danger)', marginBottom: 6 }}>{tr("Join Duel / Coaching")}</div>
+            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>{tr("Got a room code? Enter it here to join a duel or coaching session your partner shared with you.")}</div>
           </motion.div>
         </div>
 
       </div>
 
       <AboutFeatureCTA
-        links={[{ label: "About Chess Study", to: "/chess-study" }]}
+        links={[{ label: tr("About Chess Study"), to: "/chess-study" }]}
       />
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import PositionEditor from '../components/PositionEditor';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function PositionCreatorPage() {
   const { state } = useLocation();
@@ -20,14 +21,14 @@ export default function PositionCreatorPage() {
           setInitialFen(res.data.fen);
           setPuzzleTitle(res.data.title || '');
         } else {
-          setLoadError('Position not found or is private.');
+          setLoadError(tr('Position not found or is private.'));
         }
       })
-      .catch(() => setLoadError('Position not found or is private.'));
+      .catch(() => setLoadError(tr('Position not found or is private.')));
   }, [shareCode]);
 
   if (shareCode && !initialFen && !loadError) {
-    return <div style={{ color: 'var(--color-text-muted)', textAlign: 'center', padding: 60, fontFamily: 'sans-serif' }}>Loading position...</div>;
+    return <div style={{ color: 'var(--color-text-muted)', textAlign: 'center', padding: 60, fontFamily: 'sans-serif' }}>{tr("Loading position...")}</div>;
   }
 
   if (loadError) {
@@ -36,7 +37,7 @@ export default function PositionCreatorPage() {
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>🔒</div>
           <div style={{ color: 'var(--color-danger)', fontSize: 16, marginBottom: 12 }}>{loadError}</div>
-          <button onClick={() => navigate(-1)} style={{ padding: '8px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer' }}>← Back</button>
+          <button onClick={() => navigate(-1)} style={{ padding: '8px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer' }}>{tr("← Back")}</button>
         </div>
       </div>
     );
@@ -48,7 +49,7 @@ export default function PositionCreatorPage() {
         onClick={() => navigate(-1)}
         style={{ marginBottom: 14, padding: '7px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
       >
-        ← Back
+        {tr("← Back")}
       </button>
       {puzzleTitle && (
         <div style={{ color: 'var(--color-accent-2)', fontWeight: 700, fontSize: 15, marginBottom: 12 }}>

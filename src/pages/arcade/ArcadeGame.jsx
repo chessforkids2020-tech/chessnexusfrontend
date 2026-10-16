@@ -17,6 +17,7 @@ import { useAuth } from "../../contexts/AuthContext";
 // homepage and every other page uses, and the same one ArcadeLobby/TTTChoose
 // already render. This page was the odd one out with the icon-only rail.
 import Sidebar from "../../components/Sidebar";
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function shuffle(arr) {
@@ -93,7 +94,7 @@ export default function ArcadeGame() {
 
   const { roomCode, gameType, boardSize: size, playerNum, username, userId: stateUserId, players, firstPlayer, gameState: initState } = src;
   const userId = stateUserId || user?._id || user?.id;
-  const myUsername = user?.displayName || username || "Player";
+  const myUsername = user?.displayName || username || tr("Player");
 
   const socketRef = useRef(null);
   const isP1 = playerNum === 1;
@@ -102,7 +103,7 @@ export default function ArcadeGame() {
   // determine opponent name; if room has no other human yet treat as bot
   const initialOpp = players?.find(p => p.playerNum !== playerNum)?.displayName || players?.find(p => p.playerNum !== playerNum)?.username;
   // opponent name state: use initial from room or default to bot until a human joins
-  const [oppName, setOppName] = useState(initialOpp || "Opponent");
+  const [oppName, setOppName] = useState(initialOpp || tr("Opponent"));
 
   const playerColors  = { 1: T.p1, 2: T.p2 };
   const playerSymbols = { 1: "✕", 2: "○" };
@@ -176,9 +177,9 @@ export default function ArcadeGame() {
       const res = await fetch(`${API_BASE}/puzzles/random`);
       if (!res.ok) {
         if (res.status === 404) {
-          setError("No puzzles available in the database. Import some and try again.");
+          setError(tr("No puzzles available in the database. Import some and try again."));
         } else {
-          setError(`Server error (${res.status})`);
+          setError(tr("Server error ({status})", { status: res.status }));
         }
         return;
       }
@@ -189,7 +190,7 @@ export default function ArcadeGame() {
       socketRef.current?.emit("sync_puzzle", { roomCode, puzzle: p });
     } catch (err) {
       console.error('[ArcadeGame] failed to fetch puzzle:', err);
-      setError("Unable to load puzzle from server.");
+      setError(tr("Unable to load puzzle from server."));
     }
   }, [roomCode]);
 
@@ -240,11 +241,11 @@ export default function ArcadeGame() {
     });
     socket.on("connect_error", (err) => {
       console.error("[ArcadeGame] socket connect_error:", err);
-      setError(`Connection error: ${err?.message || String(err)}. Retrying...`);
+      setError(tr("Connection error: {v0}. Retrying...", { v0: err?.message || String(err) }));
     });
     socket.on("connect_timeout", () => {
       console.error("[ArcadeGame] socket connect_timeout");
-      setError("Connection timed out. Please refresh.");
+      setError(tr("Connection timed out. Please refresh."));
     });
 
     socket.on("connect", () => {
@@ -254,7 +255,7 @@ export default function ArcadeGame() {
     });
 
     socket.on("reconnect_failed", ({ message }) => {
-      setError(`❌ ${message || "Room no longer active."} Redirecting...`);
+      setError(`❌ ${message || tr("Room no longer active.")} Redirecting...`);
       sessionStorage.removeItem("arcade_session");
       setTimeout(() => navigate("/arcade"), 3000);
     });
@@ -291,10 +292,10 @@ export default function ArcadeGame() {
         setLastMove(serverLastMove || null);
         if (srvTurn === playerNum) {
           setPhase("solving");
-          setFeedback(`🧩 Your turn! (${totalMoves - playerMoveIndex} move${totalMoves - playerMoveIndex > 1 ? 's' : ''} left)`);
+          setFeedback(tr("🧩 Your turn! ({v0} move{v1} left)", { v0: totalMoves - playerMoveIndex, v1: totalMoves - playerMoveIndex > 1 ? 's' : '' }));
         } else {
           setPhase("opponent_turn");
-          setFeedback(`⏳ ${oppName}'s turn — watch the puzzle!`);
+          setFeedback(tr("⏳ {oppName}'s turn — watch the puzzle!", { oppName: oppName }));
         }
         return;
       }
@@ -312,7 +313,7 @@ export default function ArcadeGame() {
         setCurrentFen(fen);
         setLastMove(null);
         setPhase(srvTurn === playerNum ? "bot_moving" : "opponent_turn");
-        setFeedback(srvTurn === playerNum ? "♟️ Opponent is making a move..." : `⏳ ${oppName}'s turn — watch the puzzle!`);
+        setFeedback(srvTurn === playerNum ? "♟️ Opponent is making a move..." : tr("⏳ {oppName}'s turn — watch the puzzle!", { oppName: oppName }));
         setTimeout(() => {
           try { game.move({ from: botMove.slice(0,2), to: botMove.slice(2,4), promotion: botMove[4] || undefined }); } catch(e) { console.warn('opponent move error', e); }
           setCurrentFen(game.fen());
@@ -336,14 +337,14 @@ export default function ArcadeGame() {
       const game = chessGameRef.current;
       if (!game) return;
       setPhase("bot_moving");
-      setFeedback("♟️ Opponent responds...");
+      setFeedback(tr("♟️ Opponent responds..."));
       setTimeout(() => {
         try { game.move({ from: botMove.slice(0,2), to: botMove.slice(2,4), promotion: botMove[4] || undefined }); } catch(e) { console.warn('opponent move error', e); }
         setCurrentFen(game.fen());
         setLastMove(botMove);
         if (!isFinal) {
           setPhase("solving");
-          setFeedback(`🧩 Your turn! (${remainingMoves} move${remainingMoves > 1 ? 's' : ''} left)`);
+          setFeedback(tr("🧩 Your turn! ({remainingMoves} move{v1} left)", { remainingMoves: remainingMoves, v1: remainingMoves > 1 ? 's' : '' }));
         }
       }, 600);
     });
@@ -351,10 +352,10 @@ export default function ArcadeGame() {
     socket.on("puzzle_complete", ({ playerNum: pNum, gameType: gt }) => {
       console.log('[ArcadeGame] puzzle_complete', { pNum });
       if (pNum === playerNum) {
-        setFeedback("✅ Puzzle solved!");
+        setFeedback(tr("✅ Puzzle solved!"));
         setPhase(gt === "ttt" ? "pending_cell" : "pending_theme");
       } else {
-        setFeedback(`✅ ${oppName} solved the puzzle!`);
+        setFeedback(tr("✅ {oppName} solved the puzzle!", { oppName: oppName }));
         setPhase("opponent_turn");
       }
     });
@@ -363,9 +364,9 @@ export default function ArcadeGame() {
       if (pNum === playerNum) {
         // Undo the player's optimistic move
         if (chessGameRef.current) { try { chessGameRef.current.undo(); setCurrentFen(chessGameRef.current.fen()); } catch(e) {} }
-        setFeedback(`❌ Wrong! Correct was ${correctMove}. Turn passes.`);
+        setFeedback(tr("❌ Wrong! Correct was {correctMove}. Turn passes.", { correctMove: correctMove }));
       } else {
-        setFeedback(`❌ ${oppName} got it wrong! Your turn next.`);
+        setFeedback(tr("❌ {oppName} got it wrong! Your turn next.", { oppName: oppName }));
       }
       setPhase("waiting_puzzle");
     });
@@ -388,7 +389,7 @@ export default function ArcadeGame() {
       } else {
         setOppMarked(new Set(markedIndexes));
       }
-      setFeedback(isCorrect ? `🎯 "${theme}" is correct!` : `❌ Wrong! It was "${correctTheme}"`);
+      setFeedback(isCorrect ? tr("🎯 \"{theme}\" is correct!", { theme: theme }) : tr("❌ Wrong! It was \"{correctTheme}\"", { correctTheme: correctTheme }));
     });
 
     // Turn change
@@ -407,7 +408,7 @@ export default function ArcadeGame() {
     // Pass turn — someone chose None
     socket.on("turn_passed", ({ playerNum: passedBy }) => {
       const passer = passedBy === playerNum ? "You" : oppName;
-      setFeedback(`⏭️ ${passer} passed — no matching theme on the board.`);
+      setFeedback(tr("⏭️ {passer} passed — no matching theme on the board.", { passer: passer }));
     });
 
     // Game over
@@ -436,7 +437,7 @@ export default function ArcadeGame() {
       } else if (gameStarted && !hasPuzzle) {
         // Game is active but between puzzles — server will send a new puzzle shortly
         setPhase("waiting_puzzle");
-        setFeedback("♻️ Reconnected! Loading next puzzle...");
+        setFeedback(tr("♻️ Reconnected! Loading next puzzle..."));
       } else if (gameStarted && hasPuzzle) {
         // Puzzle will arrive via puzzle_started event
         setPhase("waiting_puzzle");
@@ -445,7 +446,7 @@ export default function ArcadeGame() {
       if (opp) setOppName(opp.displayName || opp.username);
       setDisconnectMsg("");
       if (!gameEnded) {
-        setFeedback(prev => prev || "♻️ Reconnected!");
+        setFeedback(prev => prev || tr("♻️ Reconnected!"));
         setTimeout(() => setFeedback(""), 2000);
       }
     });
@@ -455,13 +456,13 @@ export default function ArcadeGame() {
     socket.on("opponent_reconnected",  ({ username: u }) => { setDisconnectMsg(""); setFeedback(`✅ ${u} reconnected!`); setTimeout(() => setFeedback(""), 2000); });
 
     // Rematch
-    socket.on("rematch_requested", ({ from }) => { setOppWantsRematch(true); setFeedback(`🔄 ${from} wants a rematch!`); });
+    socket.on("rematch_requested", ({ from }) => { setOppWantsRematch(true); setFeedback(tr("🔄 {from} wants a rematch!", { from: from })); });
 
     socket.on("game_start", ({ gameState: gs, firstPlayer: fp }) => {
       setTttBoard(gs?.board || Array(size * size).fill(null));
       setMyMarked(new Set()); setOppMarked(new Set());
       setCurrentTurn(fp || 1);
-      setPhase("waiting_puzzle"); setFeedback("Loading first puzzle..."); setSelTheme(null); setThemeResult(null);
+      setPhase("waiting_puzzle"); setFeedback(tr("Loading first puzzle...")); setSelTheme(null); setThemeResult(null);
       setWinner(null); setIsDraw(false); setForfeit(false);
       setISentRematch(false); setOppWantsRematch(false);
       setPuzzle(null);
@@ -529,7 +530,7 @@ export default function ArcadeGame() {
     setCurrentFen(game.fen());
     setLastMove(uci);
     setPhase("bot_moving"); // waiting for server response
-    setFeedback("⏳ Checking...");
+    setFeedback(tr("⏳ Checking..."));
 
     // Send to server for validation
     socketRef.current?.emit("puzzle_move", { roomCode, move: uci });
@@ -555,7 +556,7 @@ export default function ArcadeGame() {
   const handlePassTurn = () => {
     if (!isMyTurn || phase !== "pending_theme" || selTheme) return;
     setSelTheme("__pass__");
-    setFeedback("⏭️ Passing turn...");
+    setFeedback(tr("⏭️ Passing turn..."));
     socketRef.current?.emit("pass_turn", { roomCode, playerNum });
   };
 
@@ -571,10 +572,10 @@ export default function ArcadeGame() {
     const uname = username || user?.username;
     if (socket?.connected && (uid || uname)) {
       socket.emit("reconnect_room", { roomCode, userId: uid, username: uname });
-      setFeedback("♻️ Reconnecting...");
+      setFeedback(tr("♻️ Reconnecting..."));
     } else if (socket && !socket.connected) {
       socket.connect();
-      setFeedback("🔌 Reconnecting socket...");
+      setFeedback(tr("🔌 Reconnecting socket..."));
     }
   }, [roomCode, userId, username, user]);
 
@@ -586,15 +587,15 @@ export default function ArcadeGame() {
           {error && <ErrorBanner message={error} onClose={() => setError("")} />}
           <GlassCard style={{ textAlign:"center", padding:"56px 40px" }}>
             <GradHeading size={20} style={{ marginBottom:8 }}>
-              {feedback || "Loading game..."}
+              {feedback || tr("Loading game...")}
             </GradHeading>
-            <p style={{ color:T.textMuted, fontSize:13, marginBottom: 16 }}>Room: <span style={{ color:T.accent1, fontWeight:700, letterSpacing:2 }}>{roomCode}</span></p>
+            <p style={{ color:T.textMuted, fontSize:13, marginBottom: 16 }}>{tr("Room:")} <span style={{ color:T.accent1, fontWeight:700, letterSpacing:2 }}>{roomCode}</span></p>
             <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
               <Btn primary onClick={handleManualReconnect} style={{ fontSize:13, padding:"8px 20px" }}>
-                🔄 Reconnect
+                {tr("🔄 Reconnect")}
               </Btn>
               <Btn ghost onClick={() => { sessionStorage.removeItem("arcade_session"); navigate("/arcade"); }} style={{ fontSize:13, padding:"8px 20px" }}>
-                ← Back to Arcade
+                {tr("← Back to Arcade")}
               </Btn>
             </div>
           </GlassCard>
@@ -636,7 +637,7 @@ export default function ArcadeGame() {
                 boardWidth={chessBoardWidth}
               />
               {!isMyTurn && <div style={{ color:T.textDim, fontSize:12 }}>Watch {oppName} solve...</div>}
-              {phase === "bot_moving" && isMyTurn && <div style={{ color:T.accent1, fontSize:12 }}>♟️ Opponent making move...</div>}
+              {phase === "bot_moving" && isMyTurn && <div style={{ color:T.accent1, fontSize:12 }}>{tr("♟️ Opponent making move...")}</div>}
               {feedback && (
                 <div style={{ fontSize:13, fontWeight:600, color: feedback.startsWith("❌") ? T.wrong : T.correct, textAlign:"center" }}>
                   {feedback}
@@ -711,17 +712,17 @@ export default function ArcadeGame() {
               style={{ position:"absolute", top:0, left:0, zIndex:10, background:"var(--color-white-a07)", border:"1px solid var(--color-white-a13)", borderRadius: 'var(--radius-md)', padding:"5px 12px", color:"var(--color-text-muted)", fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:T.font, transition:"all 0.2s" }}
               onMouseEnter={e => { e.currentTarget.style.background="var(--color-accent-a15)"; e.currentTarget.style.borderColor="var(--color-accent-a40)"; e.currentTarget.style.color=T.accent1; }}
               onMouseLeave={e => { e.currentTarget.style.background="var(--color-white-a07)"; e.currentTarget.style.borderColor="var(--color-white-a13)"; e.currentTarget.style.color="var(--color-text-muted)"; }}
-            >← Arcade</button>
+            >{tr("← Arcade")}</button>
             <div className="arc-game-bingo">
 
-            <BingoCard label="You" card={myCard} marked={myMarked} color={playerColors[playerNum]} isActive={isMyTurn} size={size} turnText={isMyTurn ? "▶ Your turn" : "Waiting..."} />
+            <BingoCard label={tr("You")} card={myCard} marked={myMarked} color={playerColors[playerNum]} isActive={isMyTurn} size={size} turnText={isMyTurn ? tr("▶ Your turn") : tr("Waiting...")} />
 
             {/* Center: board + turn banner + theme buttons */}
             <GlassCard className="arc-ttt-chess" style={{ padding:"8px 2px 18px 6px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, flex:"1 1 auto", minWidth:0, maxWidth:520 }}>
 
               {/* Game title */}
               <div style={{ fontSize:18, fontWeight:800, background:T.accentGrad, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", marginBottom:-10 }}>
-                🎯 Chess Bingo • {size}×{size}
+                {tr("🎯 Chess Bingo •")} {size}×{size}
               </div>
 
               <Chessboard
@@ -771,8 +772,8 @@ export default function ArcadeGame() {
                     );
                   })}
                 </div>
-                {themeResult === "correct" && <div style={{ color:T.correct, fontSize:12, textAlign:"center", marginTop:6, fontWeight:600 }}>✅ Correct! Cell marked on your board.</div>}
-                {themeResult === "wrong" && <div style={{ color:T.wrong, fontSize:12, textAlign:"center", marginTop:6, fontWeight:600 }}>❌ Wrong theme! Turn passes.</div>}
+                {themeResult === "correct" && <div style={{ color:T.correct, fontSize:12, textAlign:"center", marginTop:6, fontWeight:600 }}>{tr("✅ Correct! Cell marked on your board.")}</div>}
+                {themeResult === "wrong" && <div style={{ color:T.wrong, fontSize:12, textAlign:"center", marginTop:6, fontWeight:600 }}>{tr("❌ Wrong theme! Turn passes.")}</div>}
 
                 {/* None / Pass button */}
                 {(isMyTurn && (phase === "pending_theme" || selTheme === "__pass__")) && (
@@ -798,7 +799,7 @@ export default function ArcadeGame() {
               </div>
             </GlassCard>
 
-            <BingoCard label={oppName} card={oppCard} marked={oppMarked} color={playerColors[oppNum]} isActive={!isMyTurn} size={size} turnText={!isMyTurn ? "▶ Their turn" : "Waiting..."} />
+            <BingoCard label={oppName} card={oppCard} marked={oppMarked} color={playerColors[oppNum]} isActive={!isMyTurn} size={size} turnText={!isMyTurn ? tr("▶ Their turn") : tr("Waiting...")} />
             </div>
           </div>
         )}
@@ -814,9 +815,9 @@ export default function ArcadeGame() {
                 {isDraw ? "It's a Draw!" : winner === playerNum ? "You Win! 🎉" : "You Lose!"}
               </GradHeading>
               {gameType === "bingo" && !isDraw && winner === playerNum && (
-                <p style={{ color:T.accent1, fontSize:22, fontWeight:700, margin:"0 0 4px" }}>BINGO!</p>
+                <p style={{ color:T.accent1, fontSize:22, fontWeight:700, margin:"0 0 4px" }}>{tr("BINGO!")}</p>
               )}
-              {forfeit && <p style={{ color:T.textMuted, fontSize:13 }}>Opponent forfeited</p>}
+              {forfeit && <p style={{ color:T.textMuted, fontSize:13 }}>{tr("Opponent forfeited")}</p>}
               <p style={{ color:T.textMuted, marginBottom:28, fontSize:14 }}>
                 {isDraw ? "What a battle!" : winner === playerNum ? "Great tactical vision!" : "Better luck next time!"}
               </p>
@@ -824,18 +825,18 @@ export default function ArcadeGame() {
               <div style={{ display:"flex", flexDirection:"column", gap:10, alignItems:"center" }}>
                 {/* Rematch logic */}
                 {!iSentRematch && !oppWantsRematch && (
-                  <Btn primary full onClick={handleRematch}>🔄 Request Rematch</Btn>
+                  <Btn primary full onClick={handleRematch}>{tr("🔄 Request Rematch")}</Btn>
                 )}
                 {iSentRematch && !oppWantsRematch && (
-                  <div style={{ color:T.textMuted, fontSize:14, padding:"8px 0" }}>Rematch request sent... waiting</div>
+                  <div style={{ color:T.textMuted, fontSize:14, padding:"8px 0" }}>{tr("Rematch request sent... waiting")}</div>
                 )}
                 {oppWantsRematch && !iSentRematch && (
-                  <Btn primary full onClick={handleRematch}>✅ Accept Rematch!</Btn>
+                  <Btn primary full onClick={handleRematch}>{tr("✅ Accept Rematch!")}</Btn>
                 )}
                 {oppWantsRematch && iSentRematch && (
-                  <div style={{ color:T.correct, fontSize:14, padding:"8px 0" }}>Starting rematch...</div>
+                  <div style={{ color:T.correct, fontSize:14, padding:"8px 0" }}>{tr("Starting rematch...")}</div>
                 )}
-                <Btn ghost full onClick={() => navigate("/arcade")} style={{ maxWidth:260 }}>← Back to Arcade</Btn>
+                <Btn ghost full onClick={() => navigate("/arcade")} style={{ maxWidth:260 }}>{tr("← Back to Arcade")}</Btn>
               </div>
             </GlassCard>
           </div>

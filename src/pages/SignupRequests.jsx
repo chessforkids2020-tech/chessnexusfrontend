@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import api from '../api';
 import { useNavigate } from "react-router-dom";
 import socket from "../socket";
+import { t as tr } from '../i18n/LanguageContext';
 
 const styles = {
   page: {
@@ -226,7 +227,7 @@ function SignupRequests() {
       setRequests(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       if (err.response?.status === 401) {
-        alert('Session expired. Please login again.');
+        alert(tr('Session expired. Please login again.'));
         nav('/login?role=admin');
       }
     } finally {
@@ -235,11 +236,11 @@ function SignupRequests() {
   }
 
   async function handleApprove(id) {
-    if (!confirm('Are you sure you want to approve this signup request?')) return;
+    if (!confirm(tr('Are you sure you want to approve this signup request?'))) return;
     
     try {
       await api.post(`/api/admin/signup-requests/${id}/approve`, {});
-      alert('Signup request approved successfully!');
+      alert(tr('Signup request approved successfully!'));
       fetchRequests();
     } catch (err) {
       alert('Failed to approve: ' + (err.response?.data?.message || err.message));
@@ -254,7 +255,7 @@ function SignupRequests() {
       await api.post(`/api/admin/signup-requests/${id}/reject`, {
         reason
       });
-      alert('Signup request rejected.');
+      alert(tr('Signup request rejected.'));
       fetchRequests();
     } catch (err) {
       alert('Failed to reject: ' + (err.response?.data?.message || err.message));
@@ -262,11 +263,11 @@ function SignupRequests() {
   }
 
   async function handleDelete(id) {
-    if (!confirm('Are you sure you want to delete this signup request? This cannot be undone.')) return;
+    if (!confirm(tr('Are you sure you want to delete this signup request? This cannot be undone.'))) return;
     
     try {
       await api.delete(`/api/admin/signup-requests/${id}`);
-      alert('Signup request deleted.');
+      alert(tr('Signup request deleted.'));
       fetchRequests();
     } catch (err) {
       alert('Failed to delete: ' + (err.response?.data?.message || err.message));
@@ -290,9 +291,9 @@ function SignupRequests() {
   return (
     <div style={styles.page}>
       <div style={styles.header}>
-        <h1 style={styles.title}>📬 Signup Requests</h1>
+        <h1 style={styles.title}>{tr("📬 Signup Requests")}</h1>
         <button style={styles.backBtn} onClick={() => nav('/admin')}>
-          ← Back to Dashboard
+          {tr("← Back to Dashboard")}
         </button>
       </div>
 
@@ -301,34 +302,34 @@ function SignupRequests() {
           style={filter === 'pending' ? { ...styles.filterBtn, ...styles.filterBtnActive } : styles.filterBtn}
           onClick={() => setFilter('pending')}
         >
-          Pending
+          {tr("Pending")}
         </button>
         <button
           style={filter === 'approved' ? { ...styles.filterBtn, ...styles.filterBtnActive } : styles.filterBtn}
           onClick={() => setFilter('approved')}
         >
-          Approved
+          {tr("Approved")}
         </button>
         <button
           style={filter === 'rejected' ? { ...styles.filterBtn, ...styles.filterBtnActive } : styles.filterBtn}
           onClick={() => setFilter('rejected')}
         >
-          Rejected
+          {tr("Rejected")}
         </button>
         <button
           style={filter === 'all' ? { ...styles.filterBtn, ...styles.filterBtnActive } : styles.filterBtn}
           onClick={() => setFilter('all')}
         >
-          All
+          {"All"}
         </button>
       </div>
 
       {loading ? (
-        <div style={styles.loading}>Loading...</div>
+        <div style={styles.loading}>{tr("Loading...")}</div>
       ) : requests.length === 0 ? (
         <div style={styles.emptyState}>
           <p style={{ fontSize: 48, margin: 0 }}>📭</p>
-          <p style={{ fontSize: 18, marginTop: 16 }}>No {filter !== 'all' ? filter : ''} signup requests</p>
+          <p style={{ fontSize: 18, marginTop: 16 }}>{tr("No")} {filter !== 'all' ? filter : ''} {tr("signup requests")}</p>
         </div>
       ) : (
         <div style={styles.requestsGrid}>
@@ -346,24 +347,24 @@ function SignupRequests() {
 
               <div style={styles.infoGrid}>
                 <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Country</span>
+                  <span style={styles.infoLabel}>{tr("Country")}</span>
                   <span style={styles.infoValue}>{request.country}</span>
                 </div>
                 <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Email</span>
+                  <span style={styles.infoLabel}>{tr("Email")}</span>
                   <span style={styles.infoValue}>{request.email}</span>
                 </div>
                 <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Experience</span>
+                  <span style={styles.infoLabel}>{tr("Experience")}</span>
                   <span style={styles.infoValue}>{request.chessExperience}</span>
                 </div>
               </div>
 
               {(request.lichessUsername || request.chessComUsername) && (
                 <div style={styles.chessInfo}>
-                  <div style={styles.chessLabel}>Chess Accounts</div>
+                  <div style={styles.chessLabel}>{tr("Chess Accounts")}</div>
                   {request.lichessUsername && (
-                    <div style={styles.chessValue}>Lichess: {request.lichessUsername}</div>
+                    <div style={styles.chessValue}>{tr("Lichess:")} {request.lichessUsername}</div>
                   )}
                   {request.chessComUsername && (
                     <div style={styles.chessValue}>Chess.com: {request.chessComUsername}</div>
@@ -377,7 +378,7 @@ function SignupRequests() {
 
               {request.status === 'rejected' && request.rejectionReason && (
                 <div style={{ ...styles.chessInfo, background: '#fee2e2', marginTop: 12 }}>
-                  <div style={styles.chessLabel}>Rejection Reason</div>
+                  <div style={styles.chessLabel}>{tr("Rejection Reason")}</div>
                   <div style={styles.chessValue}>{request.rejectionReason}</div>
                 </div>
               )}
@@ -390,7 +391,7 @@ function SignupRequests() {
                     onMouseOver={(e) => e.target.style.background = '#047857'}
                     onMouseOut={(e) => e.target.style.background = 'var(--color-success)'}
                   >
-                    ✓ Approve
+                    {tr("✓ Approve")}
                   </button>
                   <button
                     style={styles.rejectBtn}
@@ -398,7 +399,7 @@ function SignupRequests() {
                     onMouseOver={(e) => e.target.style.background = '#b91c1c'}
                     onMouseOut={(e) => e.target.style.background = 'var(--color-danger)'}
                   >
-                    ✗ Reject
+                    {tr("✗ Reject")}
                   </button>
                 </div>
               )}
@@ -411,7 +412,7 @@ function SignupRequests() {
                     onMouseOver={(e) => e.target.style.background = 'var(--color-text-faint)'}
                     onMouseOut={(e) => e.target.style.background = 'var(--color-text-faint)'}
                   >
-                    🗑️ Delete
+                    {tr("🗑️ Delete")}
                   </button>
                 </div>
               )}

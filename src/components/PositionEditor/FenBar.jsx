@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Chess } from 'chess.js';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function FenBar({ fen, onFenChange }) {
   const [input, setInput] = useState(fen);
@@ -19,7 +20,7 @@ export default function FenBar({ fen, onFenChange }) {
       setError('');
       onFenChange(c.fen());
     } catch {
-      setError('Invalid FEN');
+      setError(tr('Invalid FEN'));
     }
   }
 
@@ -34,7 +35,7 @@ export default function FenBar({ fen, onFenChange }) {
           value={input}
           onChange={handleChange}
           spellCheck={false}
-          placeholder="Paste FEN here..."
+          placeholder={tr("Paste FEN here...")}
           style={{
             flex: 1,
             background: error ? 'rgba(239,68,68,0.1)' : 'rgba(0,0,0,0.4)',
@@ -49,7 +50,7 @@ export default function FenBar({ fen, onFenChange }) {
         />
         <button
           onClick={handleCopy}
-          title="Copy FEN"
+          title={tr("Copy FEN")}
           style={{
             padding: '8px 14px',
             background: 'rgba(99,102,241,0.15)',
@@ -62,7 +63,7 @@ export default function FenBar({ fen, onFenChange }) {
             whiteSpace: 'nowrap',
           }}
         >
-          📋 Copy
+          {tr("📋 Copy")}
         </button>
       </div>
       {error && <div style={{ color: '#ef4444', fontSize: 12 }}>{error}</div>}

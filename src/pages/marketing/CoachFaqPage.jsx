@@ -11,6 +11,7 @@
 // text, so the schema copy mirrors the visible answer without markup).
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-coaching-questions";
 
@@ -27,10 +28,10 @@ const QA = [
       <>
         Chess Nexus gives you a single coach dashboard to manage your whole
         roster — add students, group them into <Link to="/chess-coaching">batches</Link>,
-        set assignments, follow their <Link to="/chess-progress-reports">progress</Link>{" "}
-        and chat with them directly. It's{" "}
-        <Link to="/chess-coaching">free forever for up to 30 students</Link>. See the{" "}
-        <Link to="/chess-coach-guide">full coach guide</Link> for the step-by-step.
+        {tr("set assignments, follow their")} <Link to="/chess-progress-reports">{tr("progress")}</Link>{" "}
+        {tr("and chat with them directly. It's")}{" "}
+        <Link to="/chess-coaching">{tr("free forever for up to 30 students")}</Link>{tr(". See the")}{" "}
+        <Link to="/chess-coach-guide">{tr("full coach guide")}</Link> {tr("for the step-by-step.")}
       </>
     ),
   },
@@ -42,10 +43,10 @@ const QA = [
     a: (
       <>
         Create batches on your Batches page and drop each student into one.
-        Assignments, <Link to="/chess-courses">courses</Link> and class schedules
+        {tr("Assignments,")} <Link to="/chess-courses">{tr("courses")}</Link> {tr("and class schedules")}
         can then target a whole batch at once instead of one student at a time — so
-        running several groups stays simple even as your{" "}
-        <Link to="/chess-coaching">academy</Link> grows.
+        {tr("running several groups stays simple even as your")}{" "}
+        <Link to="/chess-coaching">{tr("academy")}</Link> {tr("grows.")}
       </>
     ),
   },
@@ -57,8 +58,8 @@ const QA = [
     a: (
       <>
         Everything you do — assignments, <Link to="/chess-courses">courses</Link>,
-        class schedules, and private{" "}
-        <Link to="/3d-chess-arena-tournament">races and tournaments</Link> — can be
+        {tr("class schedules, and private")}{" "}
+        <Link to="/3d-chess-arena-tournament">{tr("races and tournaments")}</Link> {tr("— can be")}
         aimed at a specific batch. Run several batches of different levels, set each
         batch's work once, and every student in it receives it.
       </>
@@ -73,11 +74,11 @@ const QA = [
       "Chess Nexus has a built-in live classroom — no Zoom needed. You get a shared board, video and audio, and can push positions or endgames straight onto the board for the class. Every coach gets at least one live class a day free; paid plans raise the limits.",
     a: (
       <>
-        Use the built-in <Link to="/live-chess-classroom">live classroom</Link> — no
+        {tr("Use the built-in")} <Link to="/live-chess-classroom">{tr("live classroom")}</Link> {tr("— no")}
         Zoom needed. You get a shared board, video and audio, and can push a position
-        or an <Link to="/chess-endgame-training">endgame</Link> straight onto the board
+        {tr("or an")} <Link to="/chess-endgame-training">{tr("endgame")}</Link> {tr("straight onto the board")}
         for the whole class. Every coach gets at least one live class a day free;{" "}
-        <Link to="/chess-coach-pricing">paid plans</Link> raise the length, frequency
+        <Link to="/chess-coach-pricing">{tr("paid plans")}</Link> {tr("raise the length, frequency")}
         and class size.
       </>
     ),
@@ -89,13 +90,13 @@ const QA = [
       "Build a course — an ordered syllabus of studies, master games, videos and free endgame positions — and enroll a beginner batch in it. Students work through it in sequence, and you can teach the same material live in the classroom. A course keeps a beginner group on a clear path rather than ad-hoc lessons.",
     a: (
       <>
-        Build a <Link to="/chess-courses">course</Link> — an ordered syllabus of{" "}
-        <Link to="/chess-study">studies</Link>,{" "}
-        <Link to="/masters-chess-games">master games</Link>, videos and free{" "}
-        <Link to="/chess-endgame-training">endgame positions</Link> — and enroll a
+        {tr("Build a")} <Link to="/chess-courses">{tr("course")}</Link> {tr("— an ordered syllabus of")}{" "}
+        <Link to="/chess-study">{tr("studies")}</Link>,{" "}
+        <Link to="/masters-chess-games">{tr("master games")}</Link>{tr(", videos and free")}{" "}
+        <Link to="/chess-endgame-training">{tr("endgame positions")}</Link> {tr("— and enroll a")}
         beginner batch in it. Students work through it in sequence, and you can teach
-        the same material live in the{" "}
-        <Link to="/live-chess-classroom">classroom</Link>. That keeps a beginner group
+        {tr("the same material live in the")}{" "}
+        <Link to="/live-chess-classroom">{tr("classroom")}</Link>{tr(". That keeps a beginner group")}
         on a clear path instead of ad-hoc lessons.
       </>
     ),
@@ -107,10 +108,10 @@ const QA = [
       "A curriculum on Chess Nexus is a course: an ordered list of lessons built from your own studies, master games, videos and endgame positions. You create it once, reuse it across batches, and students follow it lesson by lesson.",
     a: (
       <>
-        A curriculum here is a <Link to="/chess-courses">course</Link>: an ordered list
-        of lessons built from your own <Link to="/chess-study">studies</Link>,{" "}
-        <Link to="/masters-chess-games">master games</Link>, videos and{" "}
-        <Link to="/chess-endgame-training">endgame positions</Link>. Build it once,
+        {tr("A curriculum here is a")} <Link to="/chess-courses">{tr("course")}</Link>{tr(": an ordered list")}
+        {tr("of lessons built from your own")} <Link to="/chess-study">{tr("studies")}</Link>,{" "}
+        <Link to="/masters-chess-games">{tr("master games")}</Link>{tr(", videos and")}{" "}
+        <Link to="/chess-endgame-training">{tr("endgame positions")}</Link>{tr(". Build it once,")}
         reuse it across batches, and students follow it lesson by lesson.
       </>
     ),
@@ -126,9 +127,9 @@ const QA = [
       <>
         Create an assignment and give it to a student or a whole batch. Assignments
         can be tactics drawn from a student's own blunders, Play-vs-Stockfish
-        positions, or <Link to="/chess-puzzles">puzzle</Link> sets. Students receive it
-        in their account and you see who's completed it — full detail in the{" "}
-        <Link to="/chess-coach-guide">coach guide</Link>.
+        {tr("positions, or")} <Link to="/chess-puzzles">{tr("puzzle")}</Link> {tr("sets. Students receive it")}
+        {tr("in their account and you see who's completed it — full detail in the")}{" "}
+        <Link to="/chess-coach-guide">{tr("coach guide")}</Link>.
       </>
     ),
   },
@@ -142,7 +143,7 @@ const QA = [
         Save an assignment as a template and reuse it across students and batches
         instead of rebuilding it every week — you can also pull from a shared blunder
         library. That turns weekly homework into a couple of clicks. Assignments draw
-        on the same tactics and <Link to="/chess-puzzles">puzzle</Link> engine students
+        {tr("on the same tactics and")} <Link to="/chess-puzzles">{tr("puzzle")}</Link> {tr("engine students")}
         use, so the work is always relevant.
       </>
     ),
@@ -156,11 +157,11 @@ const QA = [
       "Each student has a progress view showing puzzles solved, races and activity over time, plus games they've played on Lichess and Chess.com in the last 30 days. You can send parents a shareable progress report link so families see it too.",
     a: (
       <>
-        Each student has a <Link to="/chess-progress-reports">progress view</Link> —
-        puzzles solved, <Link to="/chess-tactics-race">races</Link> and activity over
+        {tr("Each student has a")} <Link to="/chess-progress-reports">{tr("progress view")}</Link> —
+        {tr("puzzles solved,")} <Link to="/chess-tactics-race">{tr("races")}</Link> {tr("and activity over")}
         time, plus games they've played on Lichess and Chess.com in the last 30 days.
-        You can send parents a shareable{" "}
-        <Link to="/chess-progress-reports">progress report</Link> link so families see
+        {tr("You can send parents a shareable")}{" "}
+        <Link to="/chess-progress-reports">{tr("progress report")}</Link> {tr("link so families see")}
         it too.
       </>
     ),
@@ -172,11 +173,11 @@ const QA = [
       "Students can analyze their own games in the browser with a built-in engine, and coaches can turn a student's blunders into a tactics assignment — so the student re-solves the exact positions they got wrong in real games. It's the fastest way to fix recurring mistakes.",
     a: (
       <>
-        Students <Link to="/analyse-my-chess-game">analyze their own games</Link> in
+        {tr("Students")} <Link to="/analyse-my-chess-game">{tr("analyze their own games")}</Link> {tr("in")}
         the browser with a built-in engine, and you can turn a student's blunders into
         a tactics assignment — so they re-solve the exact positions they got wrong in
-        real games. It's the fastest way to fix recurring mistakes. See how{" "}
-        <Link to="/improve-at-chess">improvement</Link> is structured here.
+        {tr("real games. It's the fastest way to fix recurring mistakes. See how")}{" "}
+        <Link to="/improve-at-chess">{tr("improvement")}</Link> {tr("is structured here.")}
       </>
     ),
   },
@@ -189,13 +190,13 @@ const QA = [
       "Batches, assignment templates, reusable courses, an automatic class schedule that notifies students, and parent progress reports each remove a piece of manual work. Set things up once at the batch level and the platform delivers it to every student for you.",
     a: (
       <>
-        Batches, assignment templates, reusable{" "}
-        <Link to="/chess-courses">courses</Link>, a class schedule that notifies
-        students automatically, and parent{" "}
-        <Link to="/chess-progress-reports">progress reports</Link> each remove a piece
+        {tr("Batches, assignment templates, reusable")}{" "}
+        <Link to="/chess-courses">{tr("courses")}</Link>{tr(", a class schedule that notifies")}
+        {tr("students automatically, and parent")}{" "}
+        <Link to="/chess-progress-reports">{tr("progress reports")}</Link> {tr("each remove a piece")}
         of manual work. Set things up once at the batch level and the platform delivers
-        it to every student for you — that's the point of a{" "}
-        <Link to="/chess-coaching">coach-run platform</Link> over spreadsheets and chat
+        {tr("it to every student for you — that's the point of a")}{" "}
+        <Link to="/chess-coaching">{tr("coach-run platform")}</Link> {tr("over spreadsheets and chat")}
         apps.
       </>
     ),
@@ -207,10 +208,10 @@ const QA = [
       "Private races and tournaments just for your students, puzzle challenges, a monthly focus theme, and visible progress all give students a reason to keep coming back. Competition among their own batch is often the strongest motivator for kids.",
     a: (
       <>
-        Private <Link to="/chess-tactics-race">races</Link> and{" "}
-        <Link to="/3d-chess-arena-tournament">tournaments</Link> just for your
-        students, <Link to="/chess-puzzles">puzzle</Link> challenges, a monthly focus
-        theme, and visible <Link to="/chess-progress-reports">progress</Link> all give
+        {tr("Private")} <Link to="/chess-tactics-race">{tr("races")}</Link> {tr("and")}{" "}
+        <Link to="/3d-chess-arena-tournament">{tr("tournaments")}</Link> {tr("just for your")}
+        {tr("students,")} <Link to="/chess-puzzles">{tr("puzzle")}</Link> {tr("challenges, a monthly focus")}
+        {tr("theme, and visible")} <Link to="/chess-progress-reports">{tr("progress")}</Link> {tr("all give")}
         students a reason to keep coming back. Friendly competition inside their own
         batch is often the strongest motivator for kids.
       </>
@@ -223,13 +224,13 @@ const QA = [
       "Sign up as a coach (free forever for up to 30 students, no card), add your students, group them into batches, build a course as your curriculum, and set a weekly class schedule. Everything an academy needs — roster, lessons, homework, live classes, reports — is in one place. You can also earn credit by referring other coaches.",
     a: (
       <>
-        <Link to="/coach/onboarding">Sign up as a coach</Link> — free forever for up to
-        30 students, no card — add your students, group them into batches, build a{" "}
-        <Link to="/chess-courses">course</Link> as your curriculum, and set a weekly
-        class schedule. Everything an academy needs — roster, lessons, homework,{" "}
-        <Link to="/live-chess-classroom">live classes</Link>,{" "}
-        <Link to="/chess-progress-reports">reports</Link> — is in one place. You can
-        even <Link to="/chess-coach-referral">earn credit by referring other coaches</Link>.
+        <Link to="/coach/onboarding">{tr("Sign up as a coach")}</Link> {tr("— free forever for up to")}
+        {tr("30 students, no card — add your students, group them into batches, build a")}{" "}
+        <Link to="/chess-courses">{tr("course")}</Link> {tr("as your curriculum, and set a weekly")}
+        {tr("class schedule. Everything an academy needs — roster, lessons, homework,")}{" "}
+        <Link to="/live-chess-classroom">{tr("live classes")}</Link>,{" "}
+        <Link to="/chess-progress-reports">{tr("reports")}</Link> {tr("— is in one place. You can")}
+        {tr("even")} <Link to="/chess-coach-referral">{tr("earn credit by referring other coaches")}</Link>.
       </>
     ),
   },
@@ -248,14 +249,14 @@ export default function CoachFaqPage() {
     mainEntity: QA.map(({ q, plain }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: plain },
+      acceptedAnswer: { "@type": tr("Answer"), text: plain },
     })),
   };
 
   return (
     <FeaturePageLayout
       seo={{
-        title: "Chess Coaching Questions — How to Manage, Teach & Track Students",
+        title: tr("Chess Coaching Questions — How to Manage, Teach & Track Students"),
         description:
           "Straight answers for chess coaches: how to manage students, run online classes, organize batches, assign homework, track progress and start a chess academy — with the tools to do each.",
         keywords:
@@ -267,8 +268,8 @@ export default function CoachFaqPage() {
         h1: "Chess coaching questions, answered",
         sub:
           "The real questions coaches ask — managing students, running classes, homework, progress, and starting an academy — each answered with the tool that does it.",
-        primary: { to: "/coach/onboarding", label: "Start coaching free" },
-        secondary: { to: "/chess-coach-guide", label: "Read the coach guide" },
+        primary: { to: "/coach/onboarding", label: tr("Start coaching free") },
+        secondary: { to: "/chess-coach-guide", label: tr("Read the coach guide") },
       }}
       jsonLd={faqSchema}
       excludeSlug={CANONICAL}
@@ -287,12 +288,12 @@ export default function CoachFaqPage() {
         </section>
       ))}
 
-      <section className="mkt-section mkt-cta-section" aria-label="Start">
-        <h2>Everything a chess coach needs, in one place</h2>
-        <p className="mkt-section-lead">Free forever for up to 30 students. No card required.</p>
+      <section className="mkt-section mkt-cta-section" aria-label={tr("Start")}>
+        <h2>{tr("Everything a chess coach needs, in one place")}</h2>
+        <p className="mkt-section-lead">{tr("Free forever for up to 30 students. No card required.")}</p>
         <div className="mkt-cta-row">
-          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Start coaching free</Link>
-          <Link to="/chess-coach-guide" className="mkt-btn">Read the coach guide</Link>
+          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">{tr("Start coaching free")}</Link>
+          <Link to="/chess-coach-guide" className="mkt-btn">{tr("Read the coach guide")}</Link>
         </div>
       </section>
     </FeaturePageLayout>

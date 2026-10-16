@@ -11,6 +11,7 @@
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 import AudienceSplit from "../../components/marketing/AudienceSplit";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-academy-software";
 
@@ -53,36 +54,36 @@ const HOW_IT_WORKS = [
   {
     n: "1",
     icon: "🏫",
-    title: "Create the academy",
-    body: "Set up your academy with its name and details. You become the head coach — the owner — with full control over billing, coaches and settings.",
+    title: tr("Create the academy"),
+    body: tr("Set up your academy with its name and details. You become the head coach — the owner — with full control over billing, coaches and settings."),
   },
   {
     n: "2",
     icon: "✉️",
-    title: "Invite your coaches",
-    body: "Invite coaches by email or share a join link. They accept and become members of your academy, keeping the coach account and students they already have.",
+    title: tr("Invite your coaches"),
+    body: tr("Invite coaches by email or share a join link. They accept and become members of your academy, keeping the coach account and students they already have."),
   },
   {
     n: "3",
     icon: "💳",
-    title: "Pay once, for everyone",
-    body: "Choose an academy plan and pay centrally. Every member coach is upgraded automatically — no coach handles their own billing, and adding a coach costs nothing extra until you outgrow the tier.",
+    title: tr("Pay once, for everyone"),
+    body: tr("Choose an academy plan and pay centrally. Every member coach is upgraded automatically — no coach handles their own billing, and adding a coach costs nothing extra until you outgrow the tier."),
   },
   {
     n: "4",
     icon: "📊",
-    title: "Oversee everything",
-    body: "The academy dashboard aggregates every coach: their students, classes taken, assignments set and activity — so you can see how the whole organisation is running at a glance.",
+    title: tr("Oversee everything"),
+    body: tr("The academy dashboard aggregates every coach: their students, classes taken, assignments set and activity — so you can see how the whole organisation is running at a glance."),
   },
 ];
 
 const MANAGE = [
-  { icon: "👥", title: "Coaches", body: "Invite, view and remove coaches. See each coach's student count and activity, and assign which plan each of them is on." },
-  { icon: "🎓", title: "Students across the academy", body: "Every student of every coach, aggregated. See who is active, who has stalled, and which coach they belong to." },
-  { icon: "💳", title: "Central billing", body: "One academy plan covers all of your coaches. Pay monthly or for three months at a discount, in your own currency." },
-  { icon: "🧾", title: "Payments & invoices", body: "A full record of what the academy has paid, when, and for which coaches — for your own accounting." },
-  { icon: "🎥", title: "Live classes for every coach", body: "Each coach gets the built-in live classroom with a shared board, video, chat and play-in-class — unlimited classes a day with unlimited students in the room, on every academy plan." },
-  { icon: "⚙️", title: "Academy settings", body: "Your academy's identity and preferences in one place, controlled by the head coach." },
+  { icon: "👥", title: tr("Coaches"), body: tr("Invite, view and remove coaches. See each coach's student count and activity, and assign which plan each of them is on.") },
+  { icon: "🎓", title: tr("Students across the academy"), body: tr("Every student of every coach, aggregated. See who is active, who has stalled, and which coach they belong to.") },
+  { icon: "💳", title: tr("Central billing"), body: tr("One academy plan covers all of your coaches. Pay monthly or for three months at a discount, in your own currency.") },
+  { icon: "🧾", title: tr("Payments & invoices"), body: tr("A full record of what the academy has paid, when, and for which coaches — for your own accounting.") },
+  { icon: "🎥", title: tr("Live classes for every coach"), body: tr("Each coach gets the built-in live classroom with a shared board, video, chat and play-in-class — unlimited classes a day with unlimited students in the room, on every academy plan.") },
+  { icon: "⚙️", title: tr("Academy settings"), body: tr("Your academy's identity and preferences in one place, controlled by the head coach.") },
 ];
 
 export default function ChessAcademyPage() {
@@ -92,7 +93,7 @@ export default function ChessAcademyPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
@@ -111,7 +112,7 @@ export default function ChessAcademyPage() {
   return (
     <FeaturePageLayout
       seo={{
-        title: "Chess Academy Software — Manage Multiple Coaches in One Place",
+        title: tr("Chess Academy Software — Manage Multiple Coaches in One Place"),
         description:
           "Run your whole chess academy on Chess Nexus: invite your coaches, pay for everyone centrally, and oversee every coach, student and class from one dashboard — while still coaching your own students as head coach. Plans from $89/month for 5 coaches to $199 for unlimited coaches, each with 100 students and an unlimited live classroom.",
         keywords:
@@ -123,21 +124,21 @@ export default function ChessAcademyPage() {
         h1: "Chess academy software",
         sub:
           "Bring your coaches together in one place. Invite your team, pay for everyone centrally, and oversee every coach, student and class from a single dashboard — while still teaching your own students as head coach.",
-        primary: { to: "/chess-academy-pricing", label: "See academy pricing" },
-        secondary: { to: "/coach/onboarding", label: "Start as a coach — free" },
+        primary: { to: "/chess-academy-pricing", label: tr("See academy pricing") },
+        secondary: { to: "/coach/onboarding", label: tr("Start as a coach — free") },
       }}
       jsonLd={[faqSchema, howToSchema]}
       excludeSlug={CANONICAL}
     >
-      <section className="mkt-section" aria-label="What an academy is">
-        <h2>Built for academies, institutes and chess schools</h2>
+      <section className="mkt-section" aria-label={tr("What an academy is")}>
+        <h2>{tr("Built for academies, institutes and chess schools")}</h2>
         <p className="mkt-section-lead">
           A single coach account is built for one person teaching their own students.
-          An academy is built for an <strong>organisation</strong> — several coaches
+          {tr("An academy is built for an")} <strong>{tr("organisation")}</strong> {tr("— several coaches")}
           teaching under one roof, with one person responsible for all of it.
         </p>
         <p className="mkt-p">
-          On Chess Nexus an academy sits <em>on top of</em> normal coach accounts. Your
+          {tr("On Chess Nexus an academy sits")} <em>{tr("on top of")}</em> {tr("normal coach accounts. Your")}
           coaches keep everything they already have — their students, their courses,
           their assignments, their live classes. What the academy adds is the layer
           above: central billing, a coach roster you control, and one dashboard that
@@ -146,9 +147,9 @@ export default function ChessAcademyPage() {
         <AudienceSplit current="academy" />
       </section>
 
-      <section className="mkt-section" aria-label="How it works">
-        <h2>How it works</h2>
-        <p className="mkt-section-lead">Four steps from your first coach to a running academy.</p>
+      <section className="mkt-section" aria-label={tr("How it works")}>
+        <h2>{tr("How it works")}</h2>
+        <p className="mkt-section-lead">{tr("Four steps from your first coach to a running academy.")}</p>
         <ul className="mkt-featurelist">
           {HOW_IT_WORKS.map((s) => (
             <li key={s.n}>
@@ -162,10 +163,10 @@ export default function ChessAcademyPage() {
         </ul>
       </section>
 
-      <section className="mkt-section" aria-label="Head coach">
-        <h2>You run the academy — and you still coach</h2>
+      <section className="mkt-section" aria-label={tr("Head coach")}>
+        <h2>{tr("You run the academy — and you still coach")}</h2>
         <p className="mkt-section-lead">
-          The head of the academy is not an administrator locked out of teaching.
+          {tr("The head of the academy is not an administrator locked out of teaching.")}
         </p>
         <p className="mkt-p">
           As head coach you keep a complete, ordinary coach account: your own students,
@@ -180,8 +181,8 @@ export default function ChessAcademyPage() {
         </p>
       </section>
 
-      <section className="mkt-section" aria-label="What you manage">
-        <h2>Everything you manage in one place</h2>
+      <section className="mkt-section" aria-label={tr("What you manage")}>
+        <h2>{tr("Everything you manage in one place")}</h2>
         <ul className="mkt-featurelist">
           {MANAGE.map((m) => (
             <li key={m.title}>
@@ -195,8 +196,8 @@ export default function ChessAcademyPage() {
         </ul>
       </section>
 
-      <section className="mkt-section" aria-label="Plans overview">
-        <h2>Plans that scale with your team</h2>
+      <section className="mkt-section" aria-label={tr("Plans overview")}>
+        <h2>{tr("Plans that scale with your team")}</h2>
         <p className="mkt-section-lead">
           Academy plans are sized by one thing only: how many coaches you have. Every plan
           gives every coach 100 students and the full unlimited live classroom.
@@ -210,16 +211,16 @@ export default function ChessAcademyPage() {
           <table className="mkt-table">
             <thead>
               <tr>
-                <th>Plan</th>
-                <th>Coaches</th>
-                <th>Students per coach</th>
-                <th>Per month</th>
+                <th>{tr("Plan")}</th>
+                <th>{tr("Coaches")}</th>
+                <th>{tr("Students per coach")}</th>
+                <th>{tr("Per month")}</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td><strong>Starter</strong></td><td>Up to 5</td><td>100</td><td>$89 / ₹7,999</td></tr>
-              <tr><td><strong>Growth</strong></td><td>Up to 10</td><td>100</td><td>$129 / ₹11,999</td></tr>
-              <tr><td><strong>Institute</strong></td><td><strong>Unlimited</strong></td><td>100</td><td>$199 / ₹19,999</td></tr>
+              <tr><td><strong>{tr("Starter")}</strong></td><td>{tr("Up to 5")}</td><td>100</td><td>$89 / ₹7,999</td></tr>
+              <tr><td><strong>{tr("Growth")}</strong></td><td>{tr("Up to 10")}</td><td>100</td><td>$129 / ₹11,999</td></tr>
+              <tr><td><strong>{tr("Institute")}</strong></td><td><strong>{tr("Unlimited")}</strong></td><td>100</td><td>$199 / ₹19,999</td></tr>
             </tbody>
           </table>
         </div>
@@ -227,13 +228,13 @@ export default function ChessAcademyPage() {
           All three include unlimited live classes with unlimited students in the room,
           unlimited courses and lessons, premium endgames, the premium blunder library, a
           cloud opening repertoire and elite-coach perks for every coach. Pay monthly or in a
-          3-month term for 10% off. See{" "}
-          <Link to="/chess-academy-pricing">academy pricing</Link> for the full breakdown.
+          {tr("3-month term for 10% off. See")}{" "}
+          <Link to="/chess-academy-pricing">{tr("academy pricing")}</Link> {tr("for the full breakdown.")}
         </p>
       </section>
 
-      <section className="mkt-section" aria-label="FAQ">
-        <h2>Academy questions</h2>
+      <section className="mkt-section" aria-label={"FAQ"}>
+        <h2>{tr("Academy questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div key={q} className="mkt-faq-item">
@@ -244,14 +245,14 @@ export default function ChessAcademyPage() {
         </div>
       </section>
 
-      <section className="mkt-section mkt-cta-section" aria-label="Start">
-        <h2>Bring your academy onto one platform</h2>
+      <section className="mkt-section mkt-cta-section" aria-label={tr("Start")}>
+        <h2>{tr("Bring your academy onto one platform")}</h2>
         <p className="mkt-section-lead">
-          Start as a coach for free, then create your academy when you're ready to add your team.
+          {tr("Start as a coach for free, then create your academy when you're ready to add your team.")}
         </p>
         <div className="mkt-cta-row">
-          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Start free</Link>
-          <Link to="/chess-academy-pricing" className="mkt-btn">See academy pricing</Link>
+          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">{tr("Start free")}</Link>
+          <Link to="/chess-academy-pricing" className="mkt-btn">{tr("See academy pricing")}</Link>
         </div>
       </section>
     </FeaturePageLayout>

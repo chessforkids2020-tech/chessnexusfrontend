@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Chessboard from './Chessboard';
 import { Chess } from 'chess.js';
 import useResponsiveBoardSize from '../hooks/useResponsiveBoardSize';
+import { t as tr } from '../i18n/LanguageContext';
 
 const StudyMode = ({ result, onClose }) => {
   // Responsive board size
@@ -55,7 +56,7 @@ const StudyMode = ({ result, onClose }) => {
 
   const showSolution = () => {
     if (expectedMoves.length === 0) {
-      alert('No solution available for this puzzle');
+      alert(tr('No solution available for this puzzle'));
       return;
     }
     
@@ -146,7 +147,7 @@ const StudyMode = ({ result, onClose }) => {
         {/* Header */}
         <div style={styles.header}>
           <h2 style={styles.title}>
-            Study Mode: Puzzle {result.puzzleId?.toString().slice(-6) || 'Unknown'}
+            {tr("Study Mode: Puzzle")} {result.puzzleId?.toString().slice(-6) || tr('Unknown')}
           </h2>
           <button style={styles.closeButton} onClick={onClose}>
             ✕
@@ -173,30 +174,30 @@ const StudyMode = ({ result, onClose }) => {
           <div style={styles.infoSection}>
             {/* Puzzle Info */}
             <div style={styles.puzzleInfo}>
-              <h3>Puzzle Information</h3>
-              <div><strong>Difficulty:</strong> {result.puzzle?.difficulty || 'medium'}</div>
-              <div><strong>Your Result:</strong> 
+              <h3>{tr("Puzzle Information")}</h3>
+              <div><strong>{tr("Difficulty:")}</strong> {result.puzzle?.difficulty || 'medium'}</div>
+              <div><strong>{tr("Your Result:")}</strong> 
                 <span style={{
                   color: result.correct ? 'var(--color-success)' : 'var(--color-danger)',
                   fontWeight: 'bold'
                 }}>
-                  {result.correct ? ' ✅ Correct' : ' ✗ Incorrect'}
+                  {result.correct ? tr(' ✅ Correct') : tr(' ✗ Incorrect')}
                 </span>
               </div>
             </div>
 
             {/* Move Analysis */}
             <div style={styles.moveAnalysis}>
-              <h3>Move Analysis</h3>
+              <h3>{tr("Move Analysis")}</h3>
               <div style={styles.moveComparison}>
                 <div style={styles.moveSection}>
-                  <strong>Your Moves:</strong>
+                  <strong>{tr("Your Moves:")}</strong>
                   <div style={styles.moveList}>
-                    {userMoves.join(', ') || 'No moves recorded'}
+                    {userMoves.join(', ') || tr('No moves recorded')}
                   </div>
                 </div>
                 <div style={styles.moveSection}>
-                  <strong>Expected Solution:</strong>
+                  <strong>{tr("Expected Solution:")}</strong>
                   <div style={styles.moveList}>
                     {expectedMoves.filter((move, index) => index % 2 === 0).join(', ') || 'No solution available'}
                   </div>
@@ -206,40 +207,40 @@ const StudyMode = ({ result, onClose }) => {
 
             {/* Solution Controls */}
             <div style={styles.solutionControls}>
-              <h3>Solution Replay</h3>
+              <h3>{tr("Solution Replay")}</h3>
               <div style={styles.buttonGroup}>
                 <button 
                   style={styles.controlButton}
                   onClick={showSolution}
                   disabled={expectedMoves.length === 0}
                 >
-                  Show Solution
+                  {tr("Show Solution")}
                 </button>
                 <button 
                   style={styles.controlButton}
                   onClick={previousMove}
                   disabled={!showingSolution || currentMoveIndex === 0}
                 >
-                  ← Previous
+                  {tr("← Previous")}
                 </button>
                 <button 
                   style={styles.controlButton}
                   onClick={nextMove}
                   disabled={!showingSolution || currentMoveIndex >= expectedMoves.length}
                 >
-                  Next →
+                  {tr("Next →")}
                 </button>
                 <button 
                   style={styles.controlButton}
                   onClick={resetPosition}
                 >
-                  Reset
+                  {tr("Reset")}
                 </button>
               </div>
               
               {showingSolution && (
                 <div style={styles.progressInfo}>
-                  Move {currentMoveIndex} of {expectedMoves.length}
+                  {tr("Move")} {currentMoveIndex} {tr("of")} {expectedMoves.length}
                   {currentMoveIndex > 0 && (
                     <div style={styles.currentMove}>
                       Current: {expectedMoves[currentMoveIndex - 1]}
@@ -251,11 +252,11 @@ const StudyMode = ({ result, onClose }) => {
 
             {/* Instructions */}
             <div style={styles.instructions}>
-              <h4>How to Use:</h4>
+              <h4>{tr("How to Use:")}</h4>
               <ul style={styles.instructionsList}>
-                <li>Click "Show Solution" to see the correct moves step by step</li>
-                <li>Use "Previous" and "Next" to navigate through the solution</li>
-                <li>You can also drag pieces to try different moves</li>
+                <li>{tr("Click \"Show Solution\" to see the correct moves step by step")}</li>
+                <li>{tr("Use \"Previous\" and \"Next\" to navigate through the solution")}</li>
+                <li>{tr("You can also drag pieces to try different moves")}</li>
                 <li>Click "Reset" to return to the starting position</li>
               </ul>
             </div>

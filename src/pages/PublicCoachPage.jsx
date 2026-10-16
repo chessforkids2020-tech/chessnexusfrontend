@@ -27,8 +27,9 @@ import api, { resolveApiAssetUrl } from '../api';
 // or it 404s as a broken-image icon on the live site.
 import SEO from '../components/SEO';
 import './PublicCoachPage.css';
+import { t as tr } from '../i18n/LanguageContext';
 
-const LEVEL_LABEL = { beginner: 'Beginners', intermediate: 'Intermediate', advanced: 'Advanced' };
+const LEVEL_LABEL = { beginner: tr('Beginners'), intermediate: tr('Intermediate'), advanced: tr('Advanced') };
 
 function initials(name) {
   return String(name || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
@@ -111,7 +112,7 @@ export default function PublicCoachPage() {
   }, [code]);
 
   if (state.loading) {
-    return <div className="pc-page"><div className="pc-muted">Loading…</div></div>;
+    return <div className="pc-page"><div className="pc-muted">{tr("Loading…")}</div></div>;
   }
 
   if (state.error) {
@@ -119,9 +120,9 @@ export default function PublicCoachPage() {
       <div className="pc-page">
         <div className="pc-empty">
           <div className="pc-empty-ic" aria-hidden="true">🎓</div>
-          <h1>Coach page not available</h1>
+          <h1>{tr("Coach page not available")}</h1>
           <p>{state.error}</p>
-          <Link to="/coaches" className="pc-btn">Browse all coaches</Link>
+          <Link to="/coaches" className="pc-btn">{tr("Browse all coaches")}</Link>
         </div>
       </div>
     );
@@ -143,28 +144,28 @@ export default function PublicCoachPage() {
   // allow-listed server-side. A coach who filled in nothing renders no strip.
   const profileLinks = [
     c.handles?.lichess && {
-      k: 'lichess', icon: '♞', label: 'Lichess',
+      k: 'lichess', icon: '♞', label: tr('Lichess'),
       href: `https://lichess.org/@/${encodeURIComponent(c.handles.lichess)}`,
-      title: `Lichess profile: ${c.handles.lichess}`,
+      title: tr("Lichess profile: {lichess}", { lichess: c.handles.lichess }),
     },
     c.handles?.chesscom && {
-      k: 'chesscom', icon: '♟', label: 'Chess.com',
+      k: 'chesscom', icon: '♟', label: tr('Chess.com'),
       href: `https://www.chess.com/member/${encodeURIComponent(c.handles.chesscom)}`,
-      title: `Chess.com profile: ${c.handles.chesscom}`,
+      title: tr("Chess.com profile: {chesscom}", { chesscom: c.handles.chesscom }),
     },
     c.handles?.fideId && {
-      k: 'fide', icon: '🏅', label: 'FIDE',
+      k: 'fide', icon: '🏅', label: tr('FIDE'),
       href: `https://ratings.fide.com/profile/${encodeURIComponent(c.handles.fideId)}`,
-      title: `FIDE profile: ${c.handles.fideId}`,
+      title: tr("FIDE profile: {fideId}", { fideId: c.handles.fideId }),
     },
     c.links?.website && {
-      k: 'website', icon: '🌐', label: 'Website', href: c.links.website, title: 'Coach website',
+      k: 'website', icon: '🌐', label: tr('Website'), href: c.links.website, title: tr('Coach website'),
     },
     c.links?.instagram && {
-      k: 'instagram', icon: '📸', label: 'Instagram', href: c.links.instagram, title: 'Instagram',
+      k: 'instagram', icon: '📸', label: tr('Instagram'), href: c.links.instagram, title: tr('Instagram'),
     },
     c.links?.youtube && {
-      k: 'youtube', icon: '▶️', label: 'YouTube', href: c.links.youtube, title: 'YouTube channel',
+      k: 'youtube', icon: '▶️', label: tr('YouTube'), href: c.links.youtube, title: tr('YouTube channel'),
     },
   ].filter(Boolean);
 
@@ -200,11 +201,11 @@ export default function PublicCoachPage() {
   return (
     <div className="pc-page">
       <SEO
-        title={`${c.title ? c.title + ' ' : ''}${c.name} — chess coach on Chess Nexus`}
+        title={tr("{v0}{name} — chess coach on Chess Nexus", { v0: c.title ? c.title + ' ' : '', name: c.name })}
         description={
           // htmlToText: the bio is stored as HTML, and a meta description is
           // plain text — without this, search results showed literal tags.
-          (htmlToText(c.bio) || `${c.name} teaches chess on Chess Nexus.`).slice(0, 155)
+          (htmlToText(c.bio) || tr("{name} teaches chess on Chess Nexus.", { name: c.name })).slice(0, 155)
         }
         canonical={`/coaches/${c.code}`}
       />
@@ -234,7 +235,7 @@ export default function PublicCoachPage() {
               >{c.nexusTitle}</span>
             )}
             {c.name}
-            {c.verified && <span className="pc-verified" title="Verified by the Nexus team">✓</span>}
+            {c.verified && <span className="pc-verified" title={tr("Verified by the Nexus team")}>✓</span>}
           </h1>
 
           {/* The coach's one-liner, directly under the name. */}
@@ -246,14 +247,14 @@ export default function PublicCoachPage() {
           <dl className="pc-rows">
             {c.country && (
               <div className="pc-row">
-                <dt>Location</dt>
+                <dt>{tr("Location")}</dt>
                 <dd>{c.country}</dd>
               </div>
             )}
 
             {c.languages.length > 0 && (
               <div className="pc-row">
-                <dt>Languages</dt>
+                <dt>{tr("Languages")}</dt>
                 <dd>{c.languages.join(', ')}</dd>
               </div>
             )}
@@ -263,11 +264,11 @@ export default function PublicCoachPage() {
                 handle but no rating is no longer invisible. */}
             {(c.ratings.fide || c.ratings.lichess || c.ratings.chesscom) && (
               <div className="pc-row">
-                <dt>Rating</dt>
+                <dt>{tr("Rating")}</dt>
                 <dd className="pc-rate-line">
-                  {c.ratings.fide && <span className="pc-hr"><span className="pc-hr-l">FIDE</span> <strong>{c.ratings.fide}</strong></span>}
-                  {c.ratings.lichess && <span className="pc-hr"><span className="pc-hr-l">Lichess</span> <strong>{c.ratings.lichess}</strong></span>}
-                  {c.ratings.chesscom && <span className="pc-hr"><span className="pc-hr-l">Chess.com</span> <strong>{c.ratings.chesscom}</strong></span>}
+                  {c.ratings.fide && <span className="pc-hr"><span className="pc-hr-l">{tr("FIDE")}</span> <strong>{c.ratings.fide}</strong></span>}
+                  {c.ratings.lichess && <span className="pc-hr"><span className="pc-hr-l">{tr("Lichess")}</span> <strong>{c.ratings.lichess}</strong></span>}
+                  {c.ratings.chesscom && <span className="pc-hr"><span className="pc-hr-l">{tr("Chess.com")}</span> <strong>{c.ratings.chesscom}</strong></span>}
                 </dd>
               </div>
             )}
@@ -277,21 +278,21 @@ export default function PublicCoachPage() {
                 their own public page. */}
             {rate && (
               <div className="pc-row">
-                <dt>Rate</dt>
+                <dt>{tr("Rate")}</dt>
                 <dd>{rate}</dd>
               </div>
             )}
 
             {(c.isAcademy && c.academyName) && (
               <div className="pc-row">
-                <dt>Academy</dt>
+                <dt>{tr("Academy")}</dt>
                 <dd>{c.academyName}</dd>
               </div>
             )}
 
             {c.experienceYears != null && (
               <div className="pc-row">
-                <dt>Teaching</dt>
+                <dt>{tr("Teaching")}</dt>
                 <dd>{c.experienceYears} {c.experienceYears === 1 ? 'year' : 'years'}</dd>
               </div>
             )}
@@ -303,8 +304,8 @@ export default function PublicCoachPage() {
               on the DIRECTORY card, where the full bio is not available. */}
           <div className="pc-badges">
             {c.acceptingStudents
-              ? <span className="pc-badge pc-badge-open">● Taking new students</span>
-              : <span className="pc-badge pc-badge-full">Not taking students right now</span>}
+              ? <span className="pc-badge pc-badge-open">{tr("● Taking new students")}</span>
+              : <span className="pc-badge pc-badge-full">{tr("Not taking students right now")}</span>}
             {years && <span className="pc-badge">On Chess Nexus since {years}</span>}
           </div>
 
@@ -319,7 +320,7 @@ export default function PublicCoachPage() {
               They are all the same kind of thing to a visitor ("where else can I
               see this coach?"), so they belong together, above the fold. */}
           {profileLinks.length > 0 && (
-            <div className="pc-links" aria-label="Coach profiles and links">
+            <div className="pc-links" aria-label={tr("Coach profiles and links")}>
               {profileLinks.map(pl => (
                 <a key={pl.k} className="pc-link-chip" href={pl.href} title={pl.title}
                    target="_blank" rel="noopener noreferrer nofollow">
@@ -337,7 +338,7 @@ export default function PublicCoachPage() {
           backend/helpers/coachRichText.js), never at render time. */}
       {c.bio && (
         <section className="pc-section">
-          <h2>About {c.name.split(' ')[0]}</h2>
+          <h2>{tr("About")} {c.name.split(' ')[0]}</h2>
           <CoachProse html={c.bio} />
         </section>
       )}
@@ -350,7 +351,7 @@ export default function PublicCoachPage() {
           below, so no photo is lost and neither column is padded out. */}
       {(c.achievements || asidePhotos.length > 0) && (
         <section className="pc-section">
-          <h2>Achievements</h2>
+          <h2>{tr("Achievements")}</h2>
           <div className={asidePhotos.length > 0 ? 'pc-ach-split' : ''}>
             {c.achievements && (
               <div className="pc-ach-text" ref={achTextRef}>
@@ -359,14 +360,14 @@ export default function PublicCoachPage() {
             )}
 
             {asidePhotos.length > 0 && (
-              <aside className="pc-ach-photos" aria-label="Photos">
+              <aside className="pc-ach-photos" aria-label={tr("Photos")}>
                 {asidePhotos.map((img) => (
                   <figure key={img.id || img.url} className="pc-ach-photo">
                     <button
                       type="button"
                       className="pc-gal-btn"
                       onClick={() => setLightbox(gallery.indexOf(img))}
-                      aria-label={img.caption || 'Open photo'}
+                      aria-label={img.caption || tr('Open photo')}
                     >
                       <img src={resolveApiAssetUrl(img.url)} alt={img.caption || ''} loading="lazy" />
                     </button>
@@ -387,14 +388,14 @@ export default function PublicCoachPage() {
           contact sheet. */}
       {restPhotos.length > 0 && (
         <section className="pc-section">
-          <h2>{asidePhotos.length > 0 ? 'More photos' : 'Gallery'}</h2>
+          <h2>{asidePhotos.length > 0 ? tr('More photos') : tr('Gallery')}</h2>
           <div className="pc-gal-wrap">
             {canScrollGallery && (
               <button
                 type="button"
                 className="pc-gal-nav pc-gal-nav-l"
                 onClick={() => scrollGallery('left')}
-                aria-label="Scroll gallery left"
+                aria-label={tr("Scroll gallery left")}
               >‹</button>
             )}
 
@@ -411,7 +412,7 @@ export default function PublicCoachPage() {
                        lightbox pages through every photo, including the ones
                        shown beside the achievements. */
                     onClick={() => setLightbox(gallery.indexOf(img))}
-                    aria-label={img.caption || 'Open photo'}
+                    aria-label={img.caption || tr('Open photo')}
                   >
                     <img src={resolveApiAssetUrl(img.url)} alt={img.caption || ''} loading="lazy" />
                   </button>
@@ -425,7 +426,7 @@ export default function PublicCoachPage() {
                 type="button"
                 className="pc-gal-nav pc-gal-nav-r"
                 onClick={() => scrollGallery('right')}
-                aria-label="Scroll gallery right"
+                aria-label={tr("Scroll gallery right")}
               >›</button>
             )}
           </div>
@@ -439,13 +440,13 @@ export default function PublicCoachPage() {
           onClick={() => setLightbox(null)}
           role="dialog"
           aria-modal="true"
-          aria-label="Gallery image"
+          aria-label={tr("Gallery image")}
         >
           <button
             type="button"
             className="pc-lightbox-close"
             onClick={() => setLightbox(null)}
-            aria-label="Close"
+            aria-label={tr("Close")}
           >✕</button>
           <figure className="pc-lightbox-fig" onClick={(e) => e.stopPropagation()}>
             <img src={resolveApiAssetUrl(gallery[lightbox].url)} alt={gallery[lightbox].caption || ''} />
@@ -459,17 +460,17 @@ export default function PublicCoachPage() {
       {/* ── At a glance ────────────────────────────────────────────────── */}
       {(c.languages.length > 0 || c.teaches.length > 0) && (
         <section className="pc-section">
-          <h2>Teaching</h2>
+          <h2>{tr("Teaching")}</h2>
           <div className="pc-facts">
             {c.languages.length > 0 && (
               <div className="pc-fact">
-                <span className="pc-fact-k">Languages</span>
+                <span className="pc-fact-k">{tr("Languages")}</span>
                 <span className="pc-fact-v">{c.languages.join(' · ')}</span>
               </div>
             )}
             {c.teaches.length > 0 && (
               <div className="pc-fact">
-                <span className="pc-fact-k">Levels</span>
+                <span className="pc-fact-k">{tr("Levels")}</span>
                 <span className="pc-fact-v">
                   {c.teaches.map(t => LEVEL_LABEL[t] || t).join(' · ')}
                 </span>
@@ -483,26 +484,26 @@ export default function PublicCoachPage() {
       <section className="pc-cta">
         {c.acceptingStudents ? (
           <>
-            <h2>Learn with {c.name.split(' ')[0]}</h2>
+            <h2>{tr("Learn with")} {c.name.split(' ')[0]}</h2>
             <p>
-              Send a request to join. {c.name.split(' ')[0]} decides who joins
+              {tr("Send a request to join.")} {c.name.split(' ')[0]} {tr("decides who joins")}
               their roster — you will hear back either way.
             </p>
             <Link to={`/join-coach/${c.code}`} className="pc-btn pc-btn-primary">
-              Ask to join as a student
+              {tr("Ask to join as a student")}
             </Link>
           </>
         ) : (
           <>
-            <h2>Not taking students right now</h2>
-            <p>This coach's roster is full. Have a look at the other coaches on Chess Nexus.</p>
-            <Link to="/coaches" className="pc-btn">Browse all coaches</Link>
+            <h2>{tr("Not taking students right now")}</h2>
+            <p>{tr("This coach's roster is full. Have a look at the other coaches on Chess Nexus.")}</p>
+            <Link to="/coaches" className="pc-btn">{tr("Browse all coaches")}</Link>
           </>
         )}
       </section>
 
       <div className="pc-foot">
-        <Link to="/coaches">← All coaches</Link>
+        <Link to="/coaches">{tr("← All coaches")}</Link>
       </div>
     </div>
   );

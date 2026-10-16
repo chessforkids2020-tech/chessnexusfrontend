@@ -283,9 +283,24 @@ button.pvs-move-san.active { background: var(--color-accent-a30); }
 }
 .pvs-icon-btn--primary:hover { filter: brightness(1.08); background: var(--color-accent); }
 
+/* Player strips that sit above/below the board on phones only. */
+.pvs-player--m { display: none; }
+.pvs-thinking-dot { color: var(--color-warning); font-size: 12px; margin-left: auto; animation: pvs-pulse 1s ease-in-out infinite; }
+@keyframes pvs-pulse { 50% { opacity: .3; } }
+
 @media (max-width: 900px) {
-  .pvs-page--game { overflow: visible; }
-  /* Single column: board first, then the card. */
-  .pvs-game { grid-template-columns: minmax(0, 1fr); justify-items: center; }
-  .pvs-side { width: 100%; max-width: 560px; }
+  /* Tighter side padding so the board can use nearly the whole width. */
+  .pvs-page--game { overflow: visible; padding: 0 6px 12px; }
+  /* Single column: [opponent] board [you], then the card. */
+  .pvs-game { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 10px; }
+  .pvs-board-col { display: flex; flex-direction: column; gap: 6px; line-height: normal; }
+  .pvs-player--m { display: flex; }
+  /* The floating menu button sits at the top-left of the screen: start the
+     opponent strip to its right instead of underneath it. */
+  .pvs-player--m-top { margin-left: 52px; width: calc(100% - 52px); }
+  .pvs-player--m .pvs-player-clock { font-size: 20px; }
+  .pvs-player--d, .pvs-turn--d { display: none; }
+  .pvs-side { width: 100%; max-width: 560px; padding: 10px; gap: 8px; }
+  /* Short moves list: it grows with the game instead of a fixed 300px box. */
+  .pvs-moves { height: auto; min-height: 40px; max-height: 128px; }
 }

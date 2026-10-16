@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import studySparringSocket from '../../services/studySparringSocket';
 import { motion } from 'framer-motion';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function StudyDuelWaiting() {
   const { roomCode } = useParams();
@@ -19,7 +20,7 @@ export default function StudyDuelWaiting() {
         setRoom(res.data);
         setPlayers(res.data.players || []);
       })
-      .catch(() => setError('Room not found'));
+      .catch(() => setError(tr('Room not found')));
 
     // Connect socket
     studySparringSocket.connect();
@@ -74,16 +75,16 @@ export default function StudyDuelWaiting() {
       <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 50% 30%, var(--color-warning-a12) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
       <div style={{ maxWidth: 480, width: '100%', padding: 24, position: 'relative', zIndex: 1 }}>
         <button onClick={() => navigate(-1)} style={{ padding: '10px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 14, fontWeight: 600, marginBottom: 32 }}>
-          ← Back
+          {tr("← Back")}
         </button>
 
         <div style={{ ...cardStyle, textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>⚔</div>
-          <h2 style={{ fontSize: 24, fontWeight: 900, color: 'var(--color-warning)', marginBottom: 8 }}>Waiting for Opponent</h2>
+          <h2 style={{ fontSize: 24, fontWeight: 900, color: 'var(--color-warning)', marginBottom: 8 }}>{tr("Waiting for Opponent")}</h2>
 
           {/* Room code */}
           <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid var(--color-warning-a30)', borderRadius: 'var(--radius-lg)', padding: 20, marginBottom: 24 }}>
-            <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 6 }}>ROOM CODE</div>
+            <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 6 }}>{tr("ROOM CODE")}</div>
             <div style={{ fontSize: 36, fontWeight: 900, fontFamily: 'monospace', color: 'var(--color-warning)', letterSpacing: 8 }}>{roomCode}</div>
           </div>
 
@@ -92,12 +93,12 @@ export default function StudyDuelWaiting() {
             onClick={handleCopy}
             style={{ width: '100%', padding: '12px 0', background: copied ? 'var(--color-success-a12)' : 'var(--color-white-a04)', border: `1px solid ${copied ? 'var(--color-success-a30)' : 'var(--color-white-a10)'}`, borderRadius: 'var(--radius-md)', color: copied ? 'var(--color-success)' : 'var(--color-text)', cursor: 'pointer', fontSize: 14, fontWeight: 600, marginBottom: 20 }}
           >
-            {copied ? '✅ Link Copied!' : '📋 Copy Invite Link'}
+            {copied ? tr('✅ Link Copied!') : tr('📋 Copy Invite Link')}
           </button>
 
           {/* Players */}
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 13, color: 'var(--color-text-faint)', marginBottom: 12 }}>Players ({players.length}/2)</div>
+            <div style={{ fontSize: 13, color: 'var(--color-text-faint)', marginBottom: 12 }}>{tr("Players (")}{players.length}/2)</div>
             {[0, 1].map(i => {
               const p = players[i];
               return (
@@ -119,11 +120,11 @@ export default function StudyDuelWaiting() {
                   <div style={{ fontSize: 20 }}>{p ? (p.color === 'white' ? '♔' : '♚') : '⏳'}</div>
                   <div style={{ textAlign: 'left' }}>
                     <div style={{ fontWeight: 700, color: p ? 'var(--color-text)' : 'var(--color-text-faint)', fontSize: 14 }}>
-                      {p ? p.username : 'Waiting...'}
+                      {p ? p.username : tr('Waiting...')}
                     </div>
                     {p && <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{p.color === 'white' ? 'White (moves first)' : 'Black'}</div>}
                   </div>
-                  {p?.ready && <span style={{ marginLeft: 'auto', color: 'var(--color-success)', fontSize: 12, fontWeight: 700 }}>✓ Ready</span>}
+                  {p?.ready && <span style={{ marginLeft: 'auto', color: 'var(--color-success)', fontSize: 12, fontWeight: 700 }}>{tr("✓ Ready")}</span>}
                 </motion.div>
               );
             })}
@@ -146,7 +147,7 @@ export default function StudyDuelWaiting() {
               fontWeight: 800,
             }}
           >
-            {players.length >= 2 ? '✓ I\'m Ready — Start!' : 'Waiting for 2nd player...'}
+            {players.length >= 2 ? tr('✓ I\'m Ready — Start!') : tr('Waiting for 2nd player...')}
           </button>
         </div>
       </div>

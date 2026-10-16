@@ -18,6 +18,7 @@
 // the one an AI is most likely to quote verbatim.
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/founding-chess-coaches";
 
@@ -77,7 +78,7 @@ const INCLUDED = [
 const FAQS = [
   {
     q: "What exactly is the founding coach offer?",
-    a: `The first ${SPOTS} coaches to join Chess Nexus get the Pro plan free for one full year. Pro normally costs $${PRO_USD} a month (₹${PRO_INR} in India), so the year is worth $${YEAR_USD} — about ₹${YEAR_INR.toLocaleString("en-IN")}. There is nothing to pay and no card required.`,
+    a: tr("The first {SPOTS} coaches to join Chess Nexus get the Pro plan free for one full year. Pro normally costs ${PRO_USD} a month (₹{PRO_INR} in India), so the year is worth ${YEAR_USD} — about ₹{v4}. There is nothing to pay and no card required.", { SPOTS: SPOTS, PRO_USD: PRO_USD, PRO_INR: PRO_INR, YEAR_USD: YEAR_USD, v4: YEAR_INR.toLocaleString("en-IN") }),
   },
   {
     q: "Is a card required?",
@@ -85,7 +86,7 @@ const FAQS = [
   },
   {
     q: "What happens after the free year ends?",
-    a: `Nothing is charged automatically. Your account moves to the free plan, which is free forever for up to 30 students and keeps your courses, students, attendance history and parent reports. You can upgrade to Pro at $${PRO_USD} a month whenever you want, or carry on free.`,
+    a: tr("Nothing is charged automatically. Your account moves to the free plan, which is free forever for up to 30 students and keeps your courses, students, attendance history and parent reports. You can upgrade to Pro at ${PRO_USD} a month whenever you want, or carry on free.", { PRO_USD: PRO_USD }),
   },
   {
     q: "How do I know if spots are still available?",
@@ -105,7 +106,7 @@ const FAQS = [
   },
   {
     q: "What does it cost after the founding year?",
-    a: `Pro is $${PRO_USD} a month (₹${PRO_INR} in India) for up to 70 students, and Coach is $33 a month (₹2444) for up to 150. Both include the unlimited live classroom. The free plan stays free forever for up to 30 students.`,
+    a: tr("Pro is ${PRO_USD} a month (₹{PRO_INR} in India) for up to 70 students, and Coach is $33 a month (₹2444) for up to 150. Both include the unlimited live classroom. The free plan stays free forever for up to 30 students.", { PRO_USD: PRO_USD, PRO_INR: PRO_INR }),
   },
 ];
 
@@ -120,7 +121,7 @@ const COMPARISON = [
   ["Lessons per course", "3", "Unlimited"],
   ["Premium endgames & repertoire trainer", "First 90 days", "Whole year"],
   ["Team Race & Monthly Focus", "Limited", "Unlimited"],
-  ["Cost", "Free forever", `Free for 12 months, then $${PRO_USD}/mo or stay free`],
+  ["Cost", "Free forever", tr("Free for 12 months, then ${PRO_USD}/mo or stay free", { PRO_USD: PRO_USD })],
 ];
 
 export default function FoundingCoachesPage() {
@@ -129,11 +130,11 @@ export default function FoundingCoachesPage() {
       "@context": "https://schema.org",
       "@type": "Offer",
       name: "Founding Coach — Chess Nexus Pro free for one year",
-      description: `The first ${SPOTS} coaches on Chess Nexus receive the Pro coaching plan free for twelve months: up to 70 students, unlimited live classes with unlimited students in the room, classes up to 120 minutes, unlimited courses, and premium coaching tools. No card required.`,
+      description: tr("The first {SPOTS} coaches on Chess Nexus receive the Pro coaching plan free for twelve months: up to 70 students, unlimited live classes with unlimited students in the room, classes up to 120 minutes, unlimited courses, and premium coaching tools. No card required.", { SPOTS: SPOTS }),
       price: "0",
       priceCurrency: "USD",
       availability: "https://schema.org/LimitedAvailability",
-      eligibleQuantity: { "@type": "QuantitativeValue", value: SPOTS, unitText: "coaches" },
+      eligibleQuantity: { "@type": tr("QuantitativeValue"), value: SPOTS, unitText: "coaches" },
       url: `https://www.chessnexus.in${CANONICAL}`,
       itemOffered: {
         "@type": "Service",
@@ -147,7 +148,7 @@ export default function FoundingCoachesPage() {
       mainEntity: FAQS.map((f) => ({
         "@type": "Question",
         name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
+        acceptedAnswer: { "@type": tr("Answer"), text: f.a },
       })),
     },
   ];
@@ -157,7 +158,7 @@ export default function FoundingCoachesPage() {
       seo={{
         // No " | Chess Nexus" suffix — SEO appends the site name itself.
         title: `Founding Coaches — 1 Year Free Chess Coaching Software`,
-        description: `The first ${SPOTS} coaches on Chess Nexus get the Pro plan free for a full year — up to 70 students, unlimited live classes with unlimited students in the room, classes up to 120 minutes and unlimited courses. Worth $${YEAR_USD}. No card required.`,
+        description: tr("The first {SPOTS} coaches on Chess Nexus get the Pro plan free for a full year — up to 70 students, unlimited live classes with unlimited students in the room, classes up to 120 minutes and unlimited courses. Worth ${YEAR_USD}. No card required.", { SPOTS: SPOTS, YEAR_USD: YEAR_USD }),
         keywords:
           "free chess coaching software, chess coach platform free year, founding coach offer, free online chess classroom for coaches, chess academy software free, teach chess online free",
         canonical: CANONICAL,
@@ -167,13 +168,13 @@ export default function FoundingCoachesPage() {
       hero={{
         icon: "🏆",
         h1: `Founding coaches: a full year of Chess Nexus Pro, free`,
-        sub: `The first ${SPOTS} coaches on Chess Nexus get the complete coaching workspace free for twelve months — unlimited live classes, up to 70 students, and no card required. Worth $${YEAR_USD}.`,
-        primary: { to: "/coach-hub", label: "Claim your founding year →" },
-        secondary: { to: "/chess-coach-pricing", label: "See all plans" },
+        sub: tr("The first {SPOTS} coaches on Chess Nexus get the complete coaching workspace free for twelve months — unlimited live classes, up to 70 students, and no card required. Worth ${YEAR_USD}.", { SPOTS: SPOTS, YEAR_USD: YEAR_USD }),
+        primary: { to: "/coach-hub", label: tr("Claim your founding year →") },
+        secondary: { to: "/chess-coach-pricing", label: tr("See all plans") },
       }}
     >
       <section className="mkt-section">
-        <h2>Why we are giving away the first year</h2>
+        <h2>{tr("Why we are giving away the first year")}</h2>
         <p>
           Chess Nexus is new. A coach choosing where to run their teaching is
           trusting us with their students, their schedule and their income, and
@@ -181,7 +182,7 @@ export default function FoundingCoachesPage() {
           heard of us — is asking a lot.
         </p>
         <p>
-          So the first {SPOTS} coaches do not pay. They get the full Pro plan for
+          {tr("So the first")} {SPOTS} {tr("coaches do not pay. They get the full Pro plan for")}
           twelve months, and in return we get what a new platform actually needs:
           real coaches running real classes, telling us what is missing. Founding
           coaches also appear in our public coach directory, where parents
@@ -190,9 +191,9 @@ export default function FoundingCoachesPage() {
       </section>
 
       <section className="mkt-section">
-        <h2>What the founding year includes</h2>
+        <h2>{tr("What the founding year includes")}</h2>
         <p>
-          Everything in the Pro plan, unchanged and unmetered for twelve months.
+          {tr("Everything in the Pro plan, unchanged and unmetered for twelve months.")}
         </p>
         <div className="mkt-featurelist">
           {INCLUDED.map((f) => (
@@ -205,7 +206,7 @@ export default function FoundingCoachesPage() {
       </section>
 
       <section className="mkt-section">
-        <h2>Free plan vs the founding Pro year</h2>
+        <h2>{tr("Free plan vs the founding Pro year")}</h2>
         <p>
           Every coach on Chess Nexus gets the free plan forever. The founding
           offer lifts the limits that matter most for a full year.
@@ -215,8 +216,8 @@ export default function FoundingCoachesPage() {
             <thead>
               <tr>
                 <th>&nbsp;</th>
-                <th>Free plan</th>
-                <th>Founding year (Pro)</th>
+                <th>{tr("Free plan")}</th>
+                <th>{tr("Founding year (Pro)")}</th>
               </tr>
             </thead>
             <tbody>
@@ -235,25 +236,25 @@ export default function FoundingCoachesPage() {
       </section>
 
       <section className="mkt-section">
-        <h2>How to claim it</h2>
+        <h2>{tr("How to claim it")}</h2>
         <div className="mkt-featurelist">
           <div className="mkt-feat-tx">
-            <h3>1. Open the Coach page</h3>
+            <h3>{tr("1. Open the Coach page")}</h3>
             <p>
-              The <Link to="/coach-hub">Coach page</Link> shows how many founding
+              {tr("The")} <Link to="/coach-hub">{tr("Coach page")}</Link> {tr("shows how many founding")}
               spots are left, live. If the counter is still open, the offer is
               still available.
             </p>
           </div>
           <div className="mkt-feat-tx">
-            <h3>2. Tell us about your coaching</h3>
+            <h3>{tr("2. Tell us about your coaching")}</h3>
             <p>
               A short onboarding: who you coach, where, and how you teach. It
               takes a few minutes and needs no payment details.
             </p>
           </div>
           <div className="mkt-feat-tx">
-            <h3>3. We verify you</h3>
+            <h3>{tr("3. We verify you")}</h3>
             <p>
               Every coach is checked by the Chess Nexus team, usually within 12
               hours, before they can add students. This keeps the platform safe
@@ -261,9 +262,9 @@ export default function FoundingCoachesPage() {
             </p>
           </div>
           <div className="mkt-feat-tx">
-            <h3>4. Your Pro year starts</h3>
+            <h3>{tr("4. Your Pro year starts")}</h3>
             <p>
-              Once you are verified and inside the first {SPOTS}, the Pro plan is
+              {tr("Once you are verified and inside the first")} {SPOTS}{tr(", the Pro plan is")}
               applied to your account. Nothing to pay, nothing to cancel.
             </p>
           </div>
@@ -271,7 +272,7 @@ export default function FoundingCoachesPage() {
       </section>
 
       <section className="mkt-section">
-        <h2>Questions coaches ask</h2>
+        <h2>{tr("Questions coaches ask")}</h2>
         <div className="mkt-faq">
           {FAQS.map((f) => (
             <div key={f.q}>
@@ -283,14 +284,14 @@ export default function FoundingCoachesPage() {
       </section>
 
       <section className="mkt-section">
-        <h2>Claim a founding spot</h2>
+        <h2>{tr("Claim a founding spot")}</h2>
         <p>
-          There are {SPOTS} in total and they are granted in order. The{" "}
-          <Link to="/coach-hub">Coach page</Link> shows how many are left right
+          {tr("There are")} {SPOTS} {tr("in total and they are granted in order. The")}{" "}
+          <Link to="/coach-hub">{tr("Coach page")}</Link> {tr("shows how many are left right")}
           now — when they are gone, the offer closes.
         </p>
         <p>
-          Not ready yet? The <Link to="/free-chess-coaching-software">free plan</Link>{" "}
+          {tr("Not ready yet? The")} <Link to="/free-chess-coaching-software">{tr("free plan")}</Link>{" "}
           is free forever for up to 30 students, with no card and no trial clock.
         </p>
       </section>

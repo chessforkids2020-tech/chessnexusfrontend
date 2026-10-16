@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import AboutFeatureCTA from '../components/marketing/AboutFeatureCTA';
+import { t as tr } from '../i18n/LanguageContext';
 
 function getCountdown(dateStr) {
   if (!dateStr) return 'Open now';
@@ -28,7 +29,7 @@ function RaceCard({ race, onJoin }) {
   }, [race.scheduledStartTime, race.plannedStartTime]);
 
   const isArena = race.type === 'arena';
-  const title = race.name || race.raceName || 'Untitled Race';
+  const title = race.name || race.raceName || tr('Untitled Race');
   const isOpen = countdown === 'Open now';
 
   return (
@@ -46,7 +47,7 @@ function RaceCard({ race, onJoin }) {
             color: isArena ? 'var(--color-warning)' : 'var(--color-accent-2)',
             padding: '2px 9px', borderRadius: 'var(--radius-2xl)', marginBottom: 6,
           }}>
-            {isArena ? '👑 Arena Race' : '👥 Team Race'}
+            {isArena ? tr('👑 Arena Race') : tr('👥 Team Race')}
           </span>
           <div style={{
             color: 'var(--color-text)', fontWeight: 700, fontSize: 15,
@@ -64,25 +65,25 @@ function RaceCard({ race, onJoin }) {
             padding: '8px 16px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
           }}
         >
-          Join
+          {tr("Join")}
         </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
         <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', padding: '6px 8px' }}>
-          <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Topic</div>
+          <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>{tr("Topic")}</div>
           <div style={{ fontSize: 12, color: 'var(--color-text)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {race.topic || '—'}
           </div>
         </div>
         <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', padding: '6px 8px' }}>
-          <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Players</div>
+          <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>{tr("Players")}</div>
           <div style={{ fontSize: 12, color: 'var(--color-text)', fontWeight: 600 }}>
             {race.playerCount !== undefined ? race.playerCount : '—'}
           </div>
         </div>
         <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', padding: '6px 8px' }}>
-          <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Starts in</div>
+          <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>{tr("Starts in")}</div>
           <div style={{ fontSize: 12, color: isOpen ? 'var(--color-success)' : 'var(--color-warning)', fontWeight: 700 }}>
             {countdown}
           </div>
@@ -230,12 +231,12 @@ export default function Race() {
       <div style={styles.contentGrid} className="content-grid">
         <div style={styles.glassCard} className="board-section board-glass-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--color-text)' }}>🏁 Upcoming Races</h2>
+            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--color-text)' }}>{tr("🏁 Upcoming Races")}</h2>
             <button
               onClick={fetchRaces}
               disabled={loadingRaces}
               style={{ background: 'none', border: 'none', color: 'var(--color-text-faint)', cursor: 'pointer', fontSize: 20, lineHeight: 1, transition: 'color 0.2s' }}
-              title="Refresh"
+              title={tr("Refresh")}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--color-accent)'}
               onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-faint)'}
             >↻</button>
@@ -243,12 +244,12 @@ export default function Race() {
 
           {loadingRaces ? (
             <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '50px 0', fontSize: 14 }}>
-              Loading races...
+              {tr("Loading races...")}
             </div>
           ) : races.length === 0 ? (
             <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '50px 0', fontSize: 14, lineHeight: 1.8 }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🏁</div>
-              No upcoming races right now.<br />Check back soon!
+              {tr("No upcoming races right now.")}<br />{tr("Check back soon!")}
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -262,7 +263,7 @@ export default function Race() {
 
         <div style={styles.menuSection} className="menu-section">
           <div style={styles.glassCard}>
-            <h2 style={styles.menuTitle}>Select Race Mode</h2>
+            <h2 style={styles.menuTitle}>{tr("Select Race Mode")}</h2>
           </div>
 
           <motion.div whileHover={{ x: 8 }} transition={{ duration: 0.3 }}>
@@ -270,9 +271,9 @@ export default function Race() {
               <div style={styles.modeCardBefore}></div>
               <div style={styles.modeHeader}>
                 <div style={{...styles.modeIcon, ...styles.mode1}}>⚡</div>
-                <h3 style={styles.modeTitle} className="race-mode-title">Individual Race</h3>
+                <h3 style={styles.modeTitle} className="race-mode-title">{tr("Individual Race")}</h3>
               </div>
-              <p style={styles.modeDesc} className="race-mode-desc">Timed puzzles with topic selection</p>
+              <p style={styles.modeDesc} className="race-mode-desc">{tr("Timed puzzles with topic selection")}</p>
               <div style={styles.modeArrow}>→</div>
             </Link>
           </motion.div>
@@ -282,9 +283,9 @@ export default function Race() {
               <div style={styles.modeCardBefore}></div>
               <div style={styles.modeHeader}>
                 <div style={{...styles.modeIcon, ...styles.mode2}}>👑</div>
-                <h3 style={styles.modeTitle} className="race-mode-title">Arena Race</h3>
+                <h3 style={styles.modeTitle} className="race-mode-title">{tr("Arena Race")}</h3>
               </div>
-              <p style={styles.modeDesc} className="race-mode-desc">Join competitive arena matches</p>
+              <p style={styles.modeDesc} className="race-mode-desc">{tr("Join competitive arena matches")}</p>
               <div style={styles.modeArrow}>→</div>
             </Link>
           </motion.div>
@@ -294,9 +295,9 @@ export default function Race() {
               <div style={styles.modeCardBefore}></div>
               <div style={styles.modeHeader}>
                 <div style={{...styles.modeIcon, ...styles.mode3}}>👥</div>
-                <h3 style={styles.modeTitle} className="race-mode-title">Team Race</h3>
+                <h3 style={styles.modeTitle} className="race-mode-title">{tr("Team Race")}</h3>
               </div>
-              <p style={styles.modeDesc} className="race-mode-desc">Compete with your team</p>
+              <p style={styles.modeDesc} className="race-mode-desc">{tr("Compete with your team")}</p>
               <div style={styles.modeArrow}>→</div>
             </Link>
           </motion.div>
@@ -305,7 +306,7 @@ export default function Race() {
 
       <div style={{ position: 'absolute', bottom: 8, left: 0, right: 0, zIndex: 1 }}>
         <AboutFeatureCTA
-          links={[{ label: "About Race Hub", to: "/chess-tactics-race" }]}
+          links={[{ label: tr("About Race Hub"), to: "/chess-tactics-race" }]}
         />
       </div>
     </div>

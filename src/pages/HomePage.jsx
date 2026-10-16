@@ -11,6 +11,7 @@ import FoundingSupporterCard from "../components/FoundingSupporterCard";
 import { FEATURES } from "../components/marketing/FeatureLinkGrid";
 import { Link, useNavigate } from "react-router-dom";
 import "./HomePage.css";
+import { t as tr } from '../i18n/LanguageContext';
 
 // ── IST helpers ──────────────────────────────────────────────
 const IST_OFFSET_MS = (5 * 60 + 30) * 60000;
@@ -56,20 +57,20 @@ function getNextOccurrence(item) {
 
 // ── Config ───────────────────────────────────────────────────
 const CONTEST_CONFIG = {
-  arena_race:            { icon: '🧩', name: 'Arena Race',            desc: 'Fast-paced puzzle race',        color: 'var(--color-accent-2)' },
-  team_race:             { icon: '👥', name: 'Team Race',             desc: 'Race together with your team',  color: 'var(--color-accent)' },
-  monthly_focus:         { icon: '🎯', name: 'Monthly Focus',         desc: 'Daily focus tasks all month',   color: 'var(--color-warning)' },
-  arena_tournament:      { icon: '🏆', name: 'Arena Tournament',      desc: 'Full competitive tournament',   color: 'var(--color-accent-2)' },
-  '3d_arena_tournament': { icon: '🎮', name: '3D Arena Tournament',   desc: 'Live chess in 3D — feel real!', color: 'var(--color-accent-2)', link: 'http://localhost:5174' },
+  arena_race:            { icon: '🧩', name: tr('Arena Race'),            desc: tr('Fast-paced puzzle race'),        color: 'var(--color-accent-2)' },
+  team_race:             { icon: '👥', name: tr('Team Race'),             desc: tr('Race together with your team'),  color: 'var(--color-accent)' },
+  monthly_focus:         { icon: '🎯', name: tr('Monthly Focus'),         desc: tr('Daily focus tasks all month'),   color: 'var(--color-warning)' },
+  arena_tournament:      { icon: '🏆', name: tr('Arena Tournament'),      desc: tr('Full competitive tournament'),   color: 'var(--color-accent-2)' },
+  '3d_arena_tournament': { icon: '🎮', name: tr('3D Arena Tournament'),   desc: tr('Live chess in 3D — feel real!'), color: 'var(--color-accent-2)', link: 'http://localhost:5174' },
 };
 
 // Arena Tournament formats — each shown as its own row under the tournament card.
 // activityType (DB) → display config. Order defines render order.
 const TOURNAMENT_FORMATS = [
-  { type: 'arena_tournament',      icon: '🏆', name: 'Standard',    desc: 'Classic competitive tournament', color: 'var(--color-accent-2)' },
-  { type: 'team_tournament',       icon: '🥇', name: 'Team Battle', desc: 'Teams clash for the crown',      color: 'var(--color-warning)' },
-  { type: 'chess960',              icon: '🔀', name: 'Chess960',    desc: 'Randomized starting position',   color: 'var(--color-accent)' },
-  { type: 'bullet_blitz_marathon', icon: '⚡', name: 'Marathon',    desc: 'Endurance bullet & blitz',       color: 'var(--color-accent-2)' },
+  { type: 'arena_tournament',      icon: '🏆', name: tr('Standard'),    desc: tr('Classic competitive tournament'), color: 'var(--color-accent-2)' },
+  { type: 'team_tournament',       icon: '🥇', name: tr('Team Battle'), desc: tr('Teams clash for the crown'),      color: 'var(--color-warning)' },
+  { type: 'chess960',              icon: '🔀', name: tr('Chess960'),    desc: tr('Randomized starting position'),   color: 'var(--color-accent)' },
+  { type: 'bullet_blitz_marathon', icon: '⚡', name: tr('Marathon'),    desc: tr('Endurance bullet & blitz'),       color: 'var(--color-accent-2)' },
 ];
 
 const CONTEST_WANTED = ['arena_race', 'team_race', 'monthly_focus', 'arena_tournament', '3d_arena_tournament'];
@@ -158,11 +159,11 @@ const FREE_INCLUDES = [
 // Placeholder testimonials shown until an admin features real ones on the
 // homepage (Admin → Testimonials → ★ Feature on homepage).
 const FALLBACK_TESTIMONIALS = [
-  { av: 'CA', cls: '',  text: "The daily puzzles are my favourite part. I do a few every morning and I've slowly stopped hanging pieces.", name: 'chess_arjun', sub: 'Rating 1412' },
-  { av: 'PP', cls: 'v', text: "I love the tactics races with my friends after class. It doesn't even feel like practice.", name: 'puzzle_priya', sub: 'Rating 1388' },
-  { av: 'KK', cls: 'w', text: "The game analysis actually tells me what went wrong in plain words. It's like a coach is sitting with me.", name: 'knight_kai', sub: 'Rating 1465' },
-  { av: 'RR', cls: '',  text: "I used to get stuck in endgames. The endgame studies here fixed that for me.", name: 'rook_rhea', sub: 'Rating 1430' },
-  { av: 'BB', cls: 'v', text: "Everything is in one place — puzzles, play, studies. I don't jump between apps anymore.", name: 'bishop_ben', sub: 'Rating 1451' },
+  { av: 'CA', cls: '',  text: tr("The daily puzzles are my favourite part. I do a few every morning and I've slowly stopped hanging pieces."), name: 'chess_arjun', sub: tr('Rating 1412') },
+  { av: 'PP', cls: 'v', text: tr("I love the tactics races with my friends after class. It doesn't even feel like practice."), name: 'puzzle_priya', sub: tr('Rating 1388') },
+  { av: 'KK', cls: 'w', text: tr("The game analysis actually tells me what went wrong in plain words. It's like a coach is sitting with me."), name: 'knight_kai', sub: tr('Rating 1465') },
+  { av: 'RR', cls: '',  text: tr("I used to get stuck in endgames. The endgame studies here fixed that for me."), name: 'rook_rhea', sub: tr('Rating 1430') },
+  { av: 'BB', cls: 'v', text: tr("Everything is in one place — puzzles, play, studies. I don't jump between apps anymore."), name: 'bishop_ben', sub: tr('Rating 1451') },
 ];
 
 // Initials for a testimonial avatar. Rotates the accent color by index.
@@ -241,14 +242,14 @@ function ContestRow({ icon, title, desc, time, isLive, onClick, className = '' }
       <div className="hp-contest-body">
         <div className="hp-contest-name-row">
           <span className="hp-contest-title">{title}</span>
-          {isLive && <span className="hp-live-pill">● LIVE</span>}
+          {isLive && <span className="hp-live-pill">{tr("● LIVE")}</span>}
         </div>
         <div className="hp-contest-desc">{desc}</div>
       </div>
       {time}
       {clickable && (
         <button type="button" className="hp-contest-join" onClick={onClick}>
-          {isLive ? 'Join Now' : 'Join'} →
+          {isLive ? tr('Join Now') : tr('Join')} →
         </button>
       )}
     </div>
@@ -326,41 +327,41 @@ function HeroSlider({ user, onStartCoach, onBookDemo }) {
           <div className="hp-hero-grid">
             <div className="hp-hero-copy">
               <span className="hp-hero-kicker"><span className="hp-hero-dot" />For chess coaches &amp; academies</span>
-              <h1 className="hp-hero-title">Run your entire coaching in <span className="hp-hero-accent">one place.</span></h1>
+              <h1 className="hp-hero-title">{tr("Run your entire coaching in")} <span className="hp-hero-accent">{tr("one place.")}</span></h1>
               <p className="hp-hero-sub">
-                Students, assignments, courses, attendance, fees and parent reports — plus a
-                <b> live classroom built right in</b>. <b className="hp-hero-lt">Free forever up to 30 students.</b>
+                {tr("Students, assignments, courses, attendance, fees and parent reports — plus a")}
+                <b> {tr("live classroom built right in")}</b>. <b className="hp-hero-lt">{tr("Free forever up to 30 students.")}</b>
               </p>
               <div className="hp-hero-cta">
                 <button type="button" className="hp-hero-btn hp-hero-btn-primary" onClick={onStartCoach}>{primaryLabel}</button>
                 <button type="button" className="hp-hero-btn hp-hero-btn-ghost" onClick={onBookDemo}>{ghostLabel}</button>
               </div>
               <div className="hp-hero-trust">
-                <span className="hp-hero-trust-item">✓ Free forever — up to 30 students</span>
+                <span className="hp-hero-trust-item">{tr("✓ Free forever — up to 30 students")}</span>
                 <span className="hp-hero-trust-dot">•</span>
-                <span className="hp-hero-trust-item">No card required</span>
+                <span className="hp-hero-trust-item">{tr("No card required")}</span>
               </div>
             </div>
             <div className="hp-hero-shot">
               <div className="hp-hero-frame">
-                <img src="/Screenshot 2026-07-11 142338.png" alt="ChessNexus coach dashboard with students, assignments and activity charts" loading="eager" />
+                <img src="/Screenshot 2026-07-11 142338.png" alt={tr("ChessNexus coach dashboard with students, assignments and activity charts")} loading="eager" />
               </div>
-              <div className="hp-hero-badge"><i />Live coach dashboard</div>
+              <div className="hp-hero-badge"><i />{tr("Live coach dashboard")}</div>
             </div>
           </div>
-          <div className="hp-hero-pilllabel">Your coach workspace</div>
+          <div className="hp-hero-pilllabel">{tr("Your coach workspace")}</div>
           <div className="hp-hero-pillbar">
-            <span className="hp-pill">🏠 Dashboard</span>
-            <span className="hp-pill">📝 Assignments</span>
-            <span className="hp-pill">📚 Courses</span>
-            <span className="hp-pill">📖 Library</span>
+            <span className="hp-pill">{tr("🏠 Dashboard")}</span>
+            <span className="hp-pill">{tr("📝 Assignments")}</span>
+            <span className="hp-pill">{tr("📚 Courses")}</span>
+            <span className="hp-pill">{tr("📖 Library")}</span>
             {/* Live Classroom sits mid-bar: it's the headline capability, so it
                 reads as part of the workspace rather than an afterthought. */}
-            <span className="hp-pill hp-pill-hero">🎥 Live Classroom</span>
-            <span className="hp-pill">👥 Batches</span>
-            <span className="hp-pill">📅 Schedule</span>
-            <span className="hp-pill">🎯 Activities</span>
-            <span className="hp-pill">📋 Attendance</span>
+            <span className="hp-pill hp-pill-hero">{tr("🎥 Live Classroom")}</span>
+            <span className="hp-pill">{tr("👥 Batches")}</span>
+            <span className="hp-pill">{tr("📅 Schedule")}</span>
+            <span className="hp-pill">{tr("🎯 Activities")}</span>
+            <span className="hp-pill">{tr("📋 Attendance")}</span>
           </div>
         </div>
       )}
@@ -370,36 +371,36 @@ function HeroSlider({ user, onStartCoach, onBookDemo }) {
         <div className="hp-slide">
           <div className="hp-hero-grid">
             <div className="hp-hero-copy">
-              <span className="hp-hero-kicker"><span className="hp-hero-dot" style={{ background: 'var(--color-danger)', boxShadow: '0 0 10px 1px rgba(239,68,68,0.85)' }} />Live Classroom · built in</span>
-              <h1 className="hp-hero-title">Teach live, <span className="hp-hero-accent">right inside</span> <span className="hp-hero-brandsm">Chess&nbsp;Nexus.</span></h1>
+              <span className="hp-hero-kicker"><span className="hp-hero-dot" style={{ background: 'var(--color-danger)', boxShadow: '0 0 10px 1px rgba(239,68,68,0.85)' }} />{tr("Live Classroom · built in")}</span>
+              <h1 className="hp-hero-title">{tr("Teach live,")} <span className="hp-hero-accent">{tr("right inside")}</span> <span className="hp-hero-brandsm">Chess&nbsp;Nexus.</span></h1>
               <p className="hp-hero-sub">
-                Teach with <b>HD video, screen-share and one shared board</b> — give a student control, and every attendance mark is written for you as they join. <b className="hp-hero-lt">No Zoom, no extra apps.</b>
+                {tr("Teach with")} <b>{tr("HD video, screen-share and one shared board")}</b> {tr("— give a student control, and every attendance mark is written for you as they join.")} <b className="hp-hero-lt">{tr("No Zoom, no extra apps.")}</b>
               </p>
               <div className="hp-hero-cta">
                 <button type="button" className="hp-hero-btn hp-hero-btn-primary" onClick={onStartCoach}>{primaryLabel}</button>
                 <button type="button" className="hp-hero-btn hp-hero-btn-ghost" onClick={onBookDemo}>{ghostLabel}</button>
               </div>
               <div className="hp-hero-trust">
-                <span className="hp-hero-trust-item">✓ Included on every coach plan</span>
+                <span className="hp-hero-trust-item">{tr("✓ Included on every coach plan")}</span>
                 <span className="hp-hero-trust-dot">•</span>
-                <span className="hp-hero-trust-item">Free to start</span>
+                <span className="hp-hero-trust-item">{tr("Free to start")}</span>
               </div>
             </div>
             <div className="hp-hero-shot">
               <div className="hp-hero-frame">
-                <img src="/features/homepageslide.png" alt="ChessNexus live classroom — coach teaching students with video and a shared board" loading="lazy" />
+                <img src="/features/homepageslide.png" alt={tr("ChessNexus live classroom — coach teaching students with video and a shared board")} loading="lazy" />
               </div>
-              <div className="hp-hero-badge"><i style={{ background: 'var(--color-danger)', boxShadow: '0 0 8px 1px rgba(239,68,68,0.7)' }} />Live class in session</div>
+              <div className="hp-hero-badge"><i style={{ background: 'var(--color-danger)', boxShadow: '0 0 8px 1px rgba(239,68,68,0.7)' }} />{tr("Live class in session")}</div>
             </div>
           </div>
-          <div className="hp-hero-pilllabel">Everything in one live room</div>
+          <div className="hp-hero-pilllabel">{tr("Everything in one live room")}</div>
           <div className="hp-hero-pillbar">
-            <span className="hp-pill">🎥 HD video</span>
-            <span className="hp-pill">🖥️ Screen share</span>
-            <span className="hp-pill">♟ Synced board</span>
-            <span className="hp-pill">🎯 Give / take control</span>
-            <span className="hp-pill">⏳ Waiting room</span>
-            <span className="hp-pill">📋 Auto attendance</span>
+            <span className="hp-pill">{tr("🎥 HD video")}</span>
+            <span className="hp-pill">{tr("🖥️ Screen share")}</span>
+            <span className="hp-pill">{tr("♟ Synced board")}</span>
+            <span className="hp-pill">{tr("🎯 Give / take control")}</span>
+            <span className="hp-pill">{tr("⏳ Waiting room")}</span>
+            <span className="hp-pill">{tr("📋 Auto attendance")}</span>
           </div>
         </div>
       )}
@@ -411,7 +412,7 @@ function HeroSlider({ user, onStartCoach, onBookDemo }) {
             key={i}
             type="button"
             className={`hp-hero-dotbtn${i === idx ? ' on' : ''}`}
-            aria-label={`Go to slide ${i + 1}`}
+            aria-label={tr("Go to slide {v0}", { v0: i + 1 })}
             onClick={() => go(i)}
           />
         ))}
@@ -476,7 +477,7 @@ export default function HomePage() {
 
   const open3DArena = () => {
     if (loading || !user || user.role === 'guest') {
-      navigate('/login', { state: { message: 'Please log in to access the 3D Arena.' } });
+      navigate('/login', { state: { message: tr('Please log in to access the 3D Arena.') } });
       return;
     }
     const base = import.meta.env.VITE_3D_ARENA_URL || 'https://3darena.chessnexus.in';
@@ -508,8 +509,8 @@ export default function HomePage() {
   return (
     <div className="hp-root">
       <SEO
-        title="Chess Coaching Platform with a Built-In Live Classroom — Free for 30 Students"
-        description="Run your whole chess coaching business in one place: a built-in live classroom (no Zoom), 7 assignment types, a course builder, batches, attendance, fee tracking and parent progress reports. Free forever for up to 30 students — no card, no trial clock. Students get puzzles, endgames, analysis, studies and daily races."
+        title={tr("Chess Coaching Platform with a Built-In Live Classroom — Free for 30 Students")}
+        description={tr("Run your whole chess coaching business in one place: a built-in live classroom (no Zoom), 7 assignment types, a course builder, batches, attendance, fee tracking and parent progress reports. Free forever for up to 30 students — no card, no trial clock. Students get puzzles, endgames, analysis, studies and daily races.")}
         keywords="chess coaching platform, chess academy software, online chess classroom, teach chess online without zoom, chess coach software free, chess assignments, chess attendance tracking, chess student progress reports, chess course builder, chess fee tracking"
         canonical="/"
       />
@@ -534,14 +535,14 @@ export default function HomePage() {
             <div className="hp-potd-header">
               <div className="hp-section-label">
                 <span className="hp-section-label-bar" />
-                 Try a Puzzle Now — No Signup Required
+                 {tr("Try a Puzzle Now — No Signup Required")}
               </div>
 
             </div>
             <div className="hp-potd-board">
               <HomepagePuzzle />
             </div>
-            <p className="hp-potd-tagline">Get a feel of Chess Nexus. Track your progress after sign up!</p>
+            <p className="hp-potd-tagline">{tr("Get a feel of Chess Nexus. Track your progress after sign up!")}</p>
           </div>
 
           {/* Right Column */}
@@ -551,7 +552,7 @@ export default function HomePage() {
             <div className="hp-glass hp-contests">
               <div className="hp-section-label">
                 <span className="hp-section-label-bar" />
-                🔥 Live Contests
+                {tr("🔥 Live Contests")}
               </div>
               {contests.map(({ occ, cfg, type }, i) => (
                 <React.Fragment key={type}>
@@ -564,8 +565,8 @@ export default function HomePage() {
                     isLive={occ?.isLive || false}
                     time={
                       occ
-                        ? <LiveTimer target={occ.target} color={cfg.color} label={occ.isLive ? 'Ends in' : 'Starts in'} />
-                        : <span className="hp-contest-ended">No schedule</span>
+                        ? <LiveTimer target={occ.target} color={cfg.color} label={occ.isLive ? tr('Ends in') : tr('Starts in')} />
+                        : <span className="hp-contest-ended">{tr("No schedule")}</span>
                     }
                     onClick={
                       !occ
@@ -587,7 +588,7 @@ export default function HomePage() {
             <span className="hp-stat-icon">🧑‍🤝‍🧑</span>
             <div className="hp-stat-text">
               <span className="hp-stat-value">{activePlayers}</span>
-              <span className="hp-stat-label">Active Players</span>
+              <span className="hp-stat-label">{tr("Active Players")}</span>
             </div>
           </div>
           <div className="hp-stat-divider" />
@@ -595,7 +596,7 @@ export default function HomePage() {
             <span className="hp-stat-icon">🧩</span>
             <div className="hp-stat-text">
               <span className="hp-stat-value">5K+</span>
-              <span className="hp-stat-label">Puzzles Solved</span>
+              <span className="hp-stat-label">{tr("Puzzles Solved")}</span>
             </div>
           </div>
           <div className="hp-stat-divider" />
@@ -603,7 +604,7 @@ export default function HomePage() {
             <span className="hp-stat-icon">🏆</span>
             <div className="hp-stat-text">
               <span className="hp-stat-value">300+</span>
-              <span className="hp-stat-label">Tournaments Held</span>
+              <span className="hp-stat-label">{tr("Tournaments Held")}</span>
             </div>
           </div>
           <div className="hp-stat-divider" />
@@ -611,7 +612,7 @@ export default function HomePage() {
             <span className="hp-stat-icon">⚡</span>
             <div className="hp-stat-text">
               <span className="hp-stat-value">24/7</span>
-              <span className="hp-stat-label">Live Events</span>
+              <span className="hp-stat-label">{tr("Live Events")}</span>
             </div>
           </div>
         </div>
@@ -639,22 +640,22 @@ export default function HomePage() {
             <svg viewBox="0 0 24 24" fill="none"><path d={d} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
           );
           const COACH_FEATS = [
-            { d: 'M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-4A3.5 3.5 0 0 0 5 18.5V20M9 11a3.25 3.25 0 1 0 0-6.5A3.25 3.25 0 0 0 9 11M19 20v-1.4a3.2 3.2 0 0 0-2.4-3.1M15.5 4.7a3.2 3.2 0 0 1 0 6.1', title: 'Roster, Batches & Fees', desc: 'Unlimited batches, private notes, enrollment & payments' },
+            { d: 'M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-4A3.5 3.5 0 0 0 5 18.5V20M9 11a3.25 3.25 0 1 0 0-6.5A3.25 3.25 0 0 0 9 11M19 20v-1.4a3.2 3.2 0 0 0-2.4-3.1M15.5 4.7a3.2 3.2 0 0 1 0 6.1', title: tr('Roster, Batches & Fees'), desc: tr('Unlimited batches, private notes, enrollment & payments') },
             // Video-camera glyph — the classroom is the headline feature, and
             // attendance is now a by-product of it rather than a separate chore.
-            { d: 'M15 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3.5ZM15 10.5 21 7v10l-6-3.5', title: 'Built-in classroom', desc: 'Teach live — attendance marks itself as students join' },
-            { d: 'M4 5.5A2.5 2.5 0 0 1 6.5 3H20v14H6.5A2.5 2.5 0 0 0 4 19.5V5.5ZM4 19.5A2.5 2.5 0 0 0 6.5 22H20', title: 'Assignments & Courses', desc: '7 types: templates, studies & master games' },
-            { d: 'M14 3v4a1 1 0 0 0 1 1h4M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-4-5ZM9 13h6M9 17h4', title: 'Parent Reports', desc: 'One shareable progress link per student' },
+            { d: 'M15 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3.5ZM15 10.5 21 7v10l-6-3.5', title: tr('Built-in classroom'), desc: tr('Teach live — attendance marks itself as students join') },
+            { d: 'M4 5.5A2.5 2.5 0 0 1 6.5 3H20v14H6.5A2.5 2.5 0 0 0 4 19.5V5.5ZM4 19.5A2.5 2.5 0 0 0 6.5 22H20', title: tr('Assignments & Courses'), desc: tr('7 types: templates, studies & master games') },
+            { d: 'M14 3v4a1 1 0 0 0 1 1h4M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-4-5ZM9 13h6M9 17h4', title: tr('Parent Reports'), desc: tr('One shareable progress link per student') },
           ];
           return (
             <div className="hp-glass hp-cshow">
               <div className="hp-cshow-img">
-                <img src="/features/homecoach.png" alt="ChessNexus coach workspace on laptop and tablet with a class notebook" loading="lazy" />
+                <img src="/features/homecoach.png" alt={tr("ChessNexus coach workspace on laptop and tablet with a class notebook")} loading="lazy" />
               </div>
               <div className="hp-cshow-tx">
-                <span className="hp-cshow-eyebrow">For coaches</span>
-                <h2 className="hp-cshow-title">Built for how you <em>actually</em> coach.</h2>
-                <p className="hp-cshow-sub">Everything you juggle across five apps and a spreadsheet — unified in one workspace built for chess coaches.</p>
+                <span className="hp-cshow-eyebrow">{tr("For coaches")}</span>
+                <h2 className="hp-cshow-title">{tr("Built for how you")} <em>{tr("actually")}</em> {tr("coach.")}</h2>
+                <p className="hp-cshow-sub">{tr("Everything you juggle across five apps and a spreadsheet — unified in one workspace built for chess coaches.")}</p>
                 <div className="hp-cshow-grid">
                   {COACH_FEATS.map(f => (
                     <div key={f.title} className="hp-cshow-item">
@@ -664,7 +665,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <div className="hp-cshow-foot">
-                  <div className="hp-cshow-trust"><span>✓ Free forever — up to 30 students</span><span>•</span><span>No card required</span></div>
+                  <div className="hp-cshow-trust"><span>{tr("✓ Free forever — up to 30 students")}</span><span>•</span><span>{tr("No card required")}</span></div>
                   <div className="hp-cshow-btns">
                     <button type="button" className="hp-cshow-btn" onClick={goCoach}>
                       {(user && user.role !== 'guest') ? 'Start coaching free →' : 'Log in to start →'}
@@ -672,7 +673,7 @@ export default function HomePage() {
                     {/* Pricing lives on the coach subscription page, which already
                         splits plans into "With / Without Live Classroom" tabs. */}
                     <button type="button" className="hp-cshow-btn2" onClick={goPricing}>
-                      See coach pricing
+                      {tr("See coach pricing")}
                     </button>
                   </div>
                 </div>
@@ -684,9 +685,9 @@ export default function HomePage() {
         {/* ── FREE FOREVER — the most-asked question, answered in full ── */}
         <div className="hp-glass hp-free">
           <div className="hp-free-head">
-            <span className="hp-free-badge">Free forever</span>
+            <span className="hp-free-badge">{tr("Free forever")}</span>
             <h2 className="hp-free-title">
-              Everything above is <em>free forever</em> for up to 30 students.
+              {tr("Everything above is")} <em>{tr("free forever")}</em> {tr("for up to 30 students.")}
             </h2>
             <p className="hp-free-sub">
               Not a 30-day trial. Not a card on file. If you coach 30 students or fewer,
@@ -712,7 +713,7 @@ export default function HomePage() {
               See all plans &amp; prices →
             </Link>
             <Link to="/chess-academy-software" className="hp-free-btn hp-free-btn-ghost">
-              Running an academy?
+              {tr("Running an academy?")}
             </Link>
           </div>
         </div>
@@ -732,22 +733,22 @@ export default function HomePage() {
           <span className="hp-acad-ic">🏫</span>
           <div className="hp-acad-tx">
             <span className="hp-cshow-eyebrow">For academies &amp; institutions</span>
-            <h2 className="hp-cshow-title">More than one coach? Run the <em>whole academy.</em></h2>
+            <h2 className="hp-cshow-title">{tr("More than one coach? Run the")} <em>{tr("whole academy.")}</em></h2>
             <p>
               An academy sits on top of normal coach accounts. Invite your coaches by email
-              or a join link, pay for all of them on <b>one central bill</b>, and oversee every
+              {tr("or a join link, pay for all of them on")} <b>{tr("one central bill")}</b>{tr(", and oversee every")}
               coach, student and live class from a single dashboard — while still teaching
               your own students from the same login. No coach ever enters a card.
             </p>
             <ul className="hp-acad-list">
-              <li>Plans for <b>5, 10 or unlimited coaches</b> — 100 students each</li>
-              <li>Unlimited live classes for every coach, plus 10% for paying 3 months up front</li>
-              <li>The head coach is still a coach, not locked into admin</li>
-              <li>If a plan lapses, nobody is locked out and no data is lost</li>
+              <li>{tr("Plans for")} <b>{tr("5, 10 or unlimited coaches")}</b> {tr("— 100 students each")}</li>
+              <li>{tr("Unlimited live classes for every coach, plus 10% for paying 3 months up front")}</li>
+              <li>{tr("The head coach is still a coach, not locked into admin")}</li>
+              <li>{tr("If a plan lapses, nobody is locked out and no data is lost")}</li>
             </ul>
             <div className="hp-acad-btns">
-              <Link to="/chess-academy-software" className="hp-cshow-btn">How academies work →</Link>
-              <Link to="/chess-academy-pricing" className="hp-cshow-btn2">Academy pricing</Link>
+              <Link to="/chess-academy-software" className="hp-cshow-btn">{tr("How academies work →")}</Link>
+              <Link to="/chess-academy-pricing" className="hp-cshow-btn2">{tr("Academy pricing")}</Link>
             </div>
           </div>
         </div>
@@ -755,35 +756,35 @@ export default function HomePage() {
         {/* ── HOW IT WORKS — illustrated flow ── */}
         <div className="hp-glass hp-howit">
           <div className="hp-howit-head">
-            <span className="hp-cshow-eyebrow">Up and running in minutes</span>
-            <h2 className="hp-cshow-title">How it <em>works.</em></h2>
+            <span className="hp-cshow-eyebrow">{tr("Up and running in minutes")}</span>
+            <h2 className="hp-cshow-title">{tr("How it")} <em>{tr("works.")}</em></h2>
           </div>
           <div className="hp-flow">
             <div className="hp-flow-line" aria-hidden="true" />
             <div className="hp-flow-step">
               <span className="hp-flow-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a7 7 0 0 1 12-4.9M17 14v6M20 17h-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-              <div><div className="hp-flow-n"><i>1</i><b>Create your free account</b></div><p>Board your coach account in under a minute — no card required.</p></div>
+              <div><div className="hp-flow-n"><i>1</i><b>{tr("Create your free account")}</b></div><p>{tr("Board your coach account in under a minute — no card required.")}</p></div>
             </div>
             <span className="hp-flow-arrow" aria-hidden="true">→</span>
             <div className="hp-flow-step">
               <span className="hp-flow-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-4A3.5 3.5 0 0 0 5 18.5V20M9 11a3.25 3.25 0 1 0 0-6.5A3.25 3.25 0 0 0 9 11M19 20v-1.4a3.2 3.2 0 0 0-2.4-3.1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-              <div><div className="hp-flow-n"><i>2</i><b>Add students &amp; batches</b></div><p>Invite players, group them, set your schedule and fees.</p></div>
+              <div><div className="hp-flow-n"><i>2</i><b>Add students &amp; batches</b></div><p>{tr("Invite players, group them, set your schedule and fees.")}</p></div>
             </div>
             <span className="hp-flow-arrow" aria-hidden="true">→</span>
             <div className="hp-flow-step">
               <span className="hp-flow-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M9 3h6a1 1 0 0 1 1 1v1h2a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h2V4a1 1 0 0 1 1-1ZM9 13l2 2 3.5-3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-              <div><div className="hp-flow-n"><i>3</i><b>Assign, track &amp; report</b></div><p>Push homework, mark attendance, share parent reports.</p></div>
+              <div><div className="hp-flow-n"><i>3</i><b>Assign, track &amp; report</b></div><p>{tr("Push homework, mark attendance, share parent reports.")}</p></div>
             </div>
           </div>
         </div>
 
         {/* ── PLAYER TESTIMONIALS ── */}
         <div className="hp-showcase-head" style={{ marginBottom: 20 }}>
-          <span className="hp-showcase-eyebrow"><span className="hp-showcase-dot" />Loved by players</span>
-          <h2 className="hp-showcase-title">What our players say.</h2>
+          <span className="hp-showcase-eyebrow"><span className="hp-showcase-dot" />{tr("Loved by players")}</span>
+          <h2 className="hp-showcase-title">{tr("What our players say.")}</h2>
         </div>
         <div className="hp-quotes-wrap">
-          <button type="button" className="hp-quotes-arrow" aria-label="Scroll left"
+          <button type="button" className="hp-quotes-arrow" aria-label={tr("Scroll left")}
             onClick={() => document.getElementById('hpQuotes')?.scrollBy({ left: -340, behavior: 'smooth' })}>
             <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
@@ -801,7 +802,7 @@ export default function HomePage() {
               </figure>
             ))}
           </div>
-          <button type="button" className="hp-quotes-arrow next" aria-label="Scroll right"
+          <button type="button" className="hp-quotes-arrow next" aria-label={tr("Scroll right")}
             onClick={() => document.getElementById('hpQuotes')?.scrollBy({ left: 340, behavior: 'smooth' })}>
             <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
@@ -814,9 +815,9 @@ export default function HomePage() {
             here — they're already linked from the player showcase's "See all
             features" and from every marketing page's own cross-link grid. */}
         <div className="hp-deep">
-          <h2 className="hp-deep-title">Want more detail on any of it?</h2>
+          <h2 className="hp-deep-title">{tr("Want more detail on any of it?")}</h2>
           <div className="hp-deep-wrap">
-            <button type="button" className="hp-quotes-arrow" aria-label="Scroll left"
+            <button type="button" className="hp-quotes-arrow" aria-label={tr("Scroll left")}
               onClick={() => document.getElementById('hpDeep')?.scrollBy({ left: -320, behavior: 'smooth' })}>
               <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
@@ -827,7 +828,7 @@ export default function HomePage() {
                 </Link>
               ))}
             </div>
-            <button type="button" className="hp-quotes-arrow next" aria-label="Scroll right"
+            <button type="button" className="hp-quotes-arrow next" aria-label={tr("Scroll right")}
               onClick={() => document.getElementById('hpDeep')?.scrollBy({ left: 320, behavior: 'smooth' })}>
               <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
@@ -838,7 +839,7 @@ export default function HomePage() {
         <div className="hp-callout">
           <span className="hp-callout-icon">🤝</span>
           <div>
-            <h2>Want to collaborate or become an Elite member?</h2>
+            <h2>{tr("Want to collaborate or become an Elite member?")}</h2>
             <p>
               Interested in coaching on Chess Nexus, hosting tournaments, or
               partnering with us? Reach out — we'd love to work with you and help
@@ -846,10 +847,10 @@ export default function HomePage() {
             </p>
             <div className="hp-callout-row">
               <Link to="/contact" className="hp-callout-btn hp-callout-btn-primary">
-                Contact us to collaborate
+                {tr("Contact us to collaborate")}
               </Link>
               <Link to="/features" className="hp-callout-btn hp-callout-btn-ghost">
-                See all features
+                {tr("See all features")}
               </Link>
             </div>
           </div>

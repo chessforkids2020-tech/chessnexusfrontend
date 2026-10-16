@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function ArenaCreate() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ export default function ArenaCreate() {
           setSelectedTopic(response.data.topics[0].id);
         }
       } catch (err) {
-        setError('Failed to load topics. Please refresh the page.');
+        setError(tr('Failed to load topics. Please refresh the page.'));
       } finally {
         setLoadingTopics(false);
       }
@@ -55,12 +56,12 @@ export default function ArenaCreate() {
     e.preventDefault();
     
     if (!user) {
-      setError('Please log in to create a race');
+      setError(tr('Please log in to create a race'));
       return;
     }
 
     if (!selectedTopic) {
-      setError('Please select a topic');
+      setError(tr('Please select a topic'));
       return;
     }
 
@@ -72,7 +73,7 @@ export default function ArenaCreate() {
 
     try {
       const response = await api.post('/api/arena/create', {
-        raceName: raceName.trim() || `${user.displayName || user.username}'s Race`,
+        raceName: raceName.trim() || tr("{v0}'s Race", { v0: user.displayName || user.username }),
         topic: selectedTopic,
         timeLimit,
         maxPlayers,
@@ -308,8 +309,8 @@ export default function ArenaCreate() {
           <div style={styles.card}>
             <div style={{ textAlign: 'center', padding: '40px 0' }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
-              <h2 style={{ color: 'var(--color-text)', marginBottom: '8px' }}>Login Required</h2>
-              <p style={{ color: 'var(--color-text-muted)' }}>Please log in to create an arena race</p>
+              <h2 style={{ color: 'var(--color-text)', marginBottom: '8px' }}>{tr("Login Required")}</h2>
+              <p style={{ color: 'var(--color-text-muted)' }}>{tr("Please log in to create an arena race")}</p>
             </div>
           </div>
         </div>
@@ -347,23 +348,23 @@ export default function ArenaCreate() {
 
             {/* Race Name */}
             <div style={styles.formGroup}>
-              <label style={styles.label}>Race Name (Optional)</label>
+              <label style={styles.label}>{tr("Race Name (Optional)")}</label>
               <input
                 type="text"
                 style={styles.input}
                 value={raceName}
                 onChange={(e) => setRaceName(e.target.value)}
-                placeholder={`${user.displayName || user.username}'s Race`}
+                placeholder={tr("{v0}'s Race", { v0: user.displayName || user.username })}
                 maxLength={50}
               />
-              <div style={styles.hint}>Leave blank for default name</div>
+              <div style={styles.hint}>{tr("Leave blank for default name")}</div>
             </div>
 
             {/* Topic Selection */}
             <div style={styles.formGroup}>
-              <label style={styles.label}>Puzzle Topic *</label>
+              <label style={styles.label}>{tr("Puzzle Topic *")}</label>
               {loadingTopics ? (
-                <div style={{ ...styles.input, color: 'var(--color-text-faint)' }}>Loading topics...</div>
+                <div style={{ ...styles.input, color: 'var(--color-text-faint)' }}>{tr("Loading topics...")}</div>
               ) : (
                 <select
                   style={styles.select}
@@ -371,10 +372,10 @@ export default function ArenaCreate() {
                   onChange={(e) => setSelectedTopic(e.target.value)}
                   required
                 >
-                  <option value="">Select a topic</option>
+                  <option value="">{tr("Select a topic")}</option>
                   {topics.map((topic) => (
                     <option key={topic.id} value={topic.id}>
-                      {topic.icon} {topic.title} ({topic.puzzleCount} puzzles)
+                      {topic.icon} {topic.title} ({topic.puzzleCount} {tr("puzzles)")}
                     </option>
                   ))}
                 </select>
@@ -383,7 +384,7 @@ export default function ArenaCreate() {
 
             {clubId && (
               <div style={styles.formGroup}>
-                <label style={styles.label}>Club Visibility</label>
+                <label style={styles.label}>{tr("Club Visibility")}</label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--color-text)', fontSize: 14 }}>
                   <input
                     type="checkbox"
@@ -391,17 +392,17 @@ export default function ArenaCreate() {
                     onChange={(e) => setLinkToClub(e.target.checked)}
                     style={{ width: 16, height: 16, accentColor: 'var(--color-success)' }}
                   />
-                  Show in this club's Featured Club Events
+                  {tr("Show in this club's Featured Club Events")}
                 </label>
                 <div style={styles.hint}>
-                  Turn this off to create a private/outside-club race from this page.
+                  {tr("Turn this off to create a private/outside-club race from this page.")}
                 </div>
               </div>
             )}
 
             {/* Time Limit */}
             <div style={styles.formGroup}>
-              <label style={styles.label}>Time Limit</label>
+              <label style={styles.label}>{tr("Time Limit")}</label>
               <div style={styles.rangeContainer}>
                 <input
                   type="range"
@@ -411,15 +412,15 @@ export default function ArenaCreate() {
                   value={timeLimit}
                   onChange={(e) => setTimeLimit(parseInt(e.target.value))}
                 />
-                <div style={styles.rangeValue}>{timeLimit} min</div>
+                <div style={styles.rangeValue}>{timeLimit} {tr("min")}</div>
               </div>
-              <div style={styles.hint}>Race duration (1-30 minutes)</div>
+              <div style={styles.hint}>{tr("Race duration (1-30 minutes)")}</div>
             </div>
 
             {/* Max Players — hidden for coach races (auto-sized to the roster) */}
             {!coachMode && (
               <div style={styles.formGroup}>
-                <label style={styles.label}>Max Players</label>
+                <label style={styles.label}>{tr("Max Players")}</label>
                 <div style={styles.rangeContainer}>
                   <input
                     type="range"
@@ -431,63 +432,63 @@ export default function ArenaCreate() {
                   />
                   <div style={styles.rangeValue}>{maxPlayers}</div>
                 </div>
-                <div style={styles.hint}>Maximum players allowed (2-20)</div>
+                <div style={styles.hint}>{tr("Maximum players allowed (2-20)")}</div>
               </div>
             )}
             {coachMode && (
               <div style={{ ...styles.scoringInfo, marginBottom: 24 }}>
                 <div style={{ color: 'var(--color-accent)', fontSize: 14 }}>
-                  🎓 All your accepted students will be able to join this race. No join code is shared — it's private to your class.
+                  {tr("🎓 All your accepted students will be able to join this race. No join code is shared — it's private to your class.")}
                 </div>
               </div>
             )}
 
             {/* Start Delay */}
             <div style={styles.formGroup}>
-              <label style={styles.label}>Race Starts In *</label>
+              <label style={styles.label}>{tr("Race Starts In *")}</label>
               <select
                 style={styles.select}
                 value={startDelay}
                 onChange={(e) => setStartDelay(parseInt(e.target.value))}
               >
-                <option value={5}>⏱ In 5 minutes</option>
-                <option value={10}>⏱ In 10 minutes</option>
-                <option value={15}>⏱ In 15 minutes</option>
-                <option value={30}>⏱ In 30 minutes</option>
-                <option value={60}>⏱ In 1 hour</option>
+                <option value={5}>{tr("⏱ In 5 minutes")}</option>
+                <option value={10}>{tr("⏱ In 10 minutes")}</option>
+                <option value={15}>{tr("⏱ In 15 minutes")}</option>
+                <option value={30}>{tr("⏱ In 30 minutes")}</option>
+                <option value={60}>{tr("⏱ In 1 hour")}</option>
               </select>
             </div>
 
             {/* Start Mode */}
             <div style={styles.formGroup}>
-              <label style={styles.label}>Start Mode</label>
+              <label style={styles.label}>{tr("Start Mode")}</label>
               <select
                 style={styles.select}
                 value={startMode}
                 onChange={(e) => setStartMode(e.target.value)}
               >
-                <option value="auto">Auto start at scheduled time</option>
-                <option value="manual">Manual start by host</option>
+                <option value="auto">{tr("Auto start at scheduled time")}</option>
+                <option value="manual">{tr("Manual start by host")}</option>
               </select>
             </div>
 
             {/* Scoring Information */}
             <div style={styles.scoringInfo}>
-              <div style={styles.scoringTitle}>💰 Scoring System</div>
+              <div style={styles.scoringTitle}>{tr("💰 Scoring System")}</div>
               <div style={styles.scoringItem}>
-                <span style={styles.scoringLabel}>Base Points per Puzzle:</span>
-                <span style={styles.scoringValue}>10 points</span>
+                <span style={styles.scoringLabel}>{tr("Base Points per Puzzle:")}</span>
+                <span style={styles.scoringValue}>{tr("10 points")}</span>
               </div>
               <div style={styles.scoringItem}>
-                <span style={styles.scoringLabel}>Time Bonus Threshold:</span>
-                <span style={styles.scoringValue}>10 seconds</span>
+                <span style={styles.scoringLabel}>{tr("Time Bonus Threshold:")}</span>
+                <span style={styles.scoringValue}>{tr("10 seconds")}</span>
               </div>
               <div style={styles.scoringItem}>
-                <span style={styles.scoringLabel}>Time Bonus Points:</span>
-                <span style={styles.scoringValue}>5 points</span>
+                <span style={styles.scoringLabel}>{tr("Time Bonus Points:")}</span>
+                <span style={styles.scoringValue}>{tr("5 points")}</span>
               </div>
               <div style={styles.scoringNote}>
-                Solve puzzles within 10 seconds to earn bonus points!
+                {tr("Solve puzzles within 10 seconds to earn bonus points!")}
               </div>
             </div>
 
@@ -502,7 +503,7 @@ export default function ArenaCreate() {
               whileHover={!loading && !loadingTopics ? { y: -2, boxShadow: '0 6px 24px var(--color-accent-a40)' } : {}}
               transition={{ duration: 0.2 }}
             >
-              {loading ? '🔄 Creating Race...' : '🚀 Create Race'}
+              {loading ? tr('🔄 Creating Race...') : tr('🚀 Create Race')}
             </motion.button>
           </form>
 
@@ -510,7 +511,7 @@ export default function ArenaCreate() {
             style={styles.backLink}
             onClick={() => navigate('/arena')}
           >
-            ← Back to Arena
+            {tr("← Back to Arena")}
           </div>
         </motion.div>
       </div>

@@ -12,6 +12,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import socket from '../../socket';
 import './CoachDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function CoachArenaTournamentLive() {
   const { id } = useParams();
@@ -134,11 +135,11 @@ export default function CoachArenaTournamentLive() {
     setChatInput('');
   };
 
-  if (loading) return <div className="coach-loading">Loading tournament…</div>;
+  if (loading) return <div className="coach-loading">{tr("Loading tournament…")}</div>;
   if (error) return (
     <div className="coach-dash">
       <div className="coach-error">⚠️ {error}</div>
-      <Link to="/coach/activities" className="btn-ghost">← Back to activities</Link>
+      <Link to="/coach/activities" className="btn-ghost">{tr("← Back to activities")}</Link>
     </div>
   );
 
@@ -173,54 +174,54 @@ export default function CoachArenaTournamentLive() {
 
   let countdown = null;
   if (notStarted && startMs && startMs > now) {
-    countdown = { label: 'Starts in', value: fmtCountdown(startMs - now), color: '#fcd34d' };
+    countdown = { label: tr('Starts in'), value: fmtCountdown(startMs - now), color: '#fcd34d' };
   } else if (status === 'active' && endMs) {
-    countdown = { label: 'Ends in', value: fmtCountdown(Math.max(0, endMs - now)), color: endMs - now < 120000 ? '#f87171' : '#6ee7b7' };
+    countdown = { label: tr('Ends in'), value: fmtCountdown(Math.max(0, endMs - now)), color: endMs - now < 120000 ? '#f87171' : '#6ee7b7' };
   }
 
   return (
     <div className="coach-dash">
       <div className="coach-dash-header">
         <div>
-          <h1>🏆 {tournament?.name || 'Class Tournament'}</h1>
+          <h1>🏆 {tournament?.name || tr('Class Tournament')}</h1>
           <p className="coach-dash-sub">
             {isFinished ? '✅ Finished' : status === 'active' ? '🔴 Live' : '⏳ Not started'}
             {countdown && (
               <> · <strong style={{ color: countdown.color }}>⏱ {countdown.label} {countdown.value}</strong></>
             )}
-            {' · '}{humans.length} student{humans.length === 1 ? '' : 's'} joined
+            {' · '}{humans.length} {tr("student")}{humans.length === 1 ? '' : 's'} {tr("joined")}
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn-ghost" onClick={() => { loadLobby(); loadLeaderboard(); loadGames(); }}>↻ Refresh</button>
-          <Link to="/coach/activities" className="btn-ghost">← Activities</Link>
+          <button className="btn-ghost" onClick={() => { loadLobby(); loadLeaderboard(); loadGames(); }}>{tr("↻ Refresh")}</button>
+          <Link to="/coach/activities" className="btn-ghost">{tr("← Activities")}</Link>
         </div>
       </div>
 
       {isFinished && (
         <div className="coach-trial-banner paid" style={{ marginBottom: 20 }}>
-          <div><strong>🏁 Tournament finished</strong> · final standings below. You can replay every game.</div>
+          <div><strong>{tr("🏁 Tournament finished")}</strong> {tr("· final standings below. You can replay every game.")}</div>
         </div>
       )}
 
       {/* ── Lobby (before start): who has joined ── */}
       {notStarted && (
         <div className="coach-section">
-          <div className="coach-section-head"><h2>Lobby · {humans.length} joined</h2></div>
+          <div className="coach-section-head"><h2>{tr("Lobby ·")} {humans.length} {tr("joined")}</h2></div>
           {startMs && (
             <p className="coach-dash-sub" style={{ margin: '-6px 0 12px' }}>
-              Scheduled to start {new Date(startMs).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' })}
+              {tr("Scheduled to start")} {new Date(startMs).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' })}
               {startMs > now && <> · <strong style={{ color: '#fcd34d' }}>in {fmtCountdown(startMs - now)}</strong></>}
             </p>
           )}
           {humans.length === 0 ? (
-            <div className="coach-empty">Waiting for your students to join from their Activities tab…</div>
+            <div className="coach-empty">{tr("Waiting for your students to join from their Activities tab…")}</div>
           ) : (
             <div className="coach-students-grid">
               {humans.map(p => (
                 <div key={p.userId} className="coach-student-card">
                   <div className="coach-student-name">{p.displayName || p.username}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(226,232,240,0.6)' }}>Ready</div>
+                  <div style={{ fontSize: 12, color: 'rgba(226,232,240,0.6)' }}>{tr("Ready")}</div>
                 </div>
               ))}
             </div>
@@ -233,20 +234,20 @@ export default function CoachArenaTournamentLive() {
         <div className="coach-section">
           <div className="coach-section-head"><h2>{isFinished ? 'Final standings' : 'Live leaderboard'}</h2></div>
           {leaderboard.length === 0 ? (
-            <div className="coach-empty">No scores yet.</div>
+            <div className="coach-empty">{tr("No scores yet.")}</div>
           ) : (
             <div className="coach-students-table-wrap">
               <table className="coach-students-table">
                 <thead>
                   <tr>
                     <th className="cst-player">#</th>
-                    <th className="cst-player">Student</th>
-                    <th className="cst-num">Score</th>
-                    <th className="cst-num">Rating</th>
+                    <th className="cst-player">{tr("Student")}</th>
+                    <th className="cst-num">{tr("Score")}</th>
+                    <th className="cst-num">{tr("Rating")}</th>
                     <th className="cst-num">W</th>
                     <th className="cst-num">L</th>
                     <th className="cst-num">D</th>
-                    <th className="cst-num">Games</th>
+                    <th className="cst-num">{tr("Games")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -262,9 +263,9 @@ export default function CoachArenaTournamentLive() {
                           starts at 1200 for everyone — follows in brackets. */}
                       <td className="cst-num">
                         {p.ratingAtJoin != null && (
-                          <span title="Rating when joined">{p.ratingAtJoin} </span>
+                          <span title={tr("Rating when joined")}>{p.ratingAtJoin} </span>
                         )}
-                        <span title="Tournament rating" style={{ opacity: 0.75 }}>
+                        <span title={tr("Tournament rating")} style={{ opacity: 0.75 }}>
                           {p.ratingAtJoin != null ? '(' : ''}{p.tournamentRating ?? '—'}
                           {chg !== 0 && (
                             <span style={{ color: chg > 0 ? '#6ee7b7' : '#f87171', fontSize: 11, marginLeft: 3 }}>
@@ -290,19 +291,19 @@ export default function CoachArenaTournamentLive() {
       {/* ── Pairings (current active games) ── */}
       {status === 'active' && (
         <div className="coach-section">
-          <div className="coach-section-head"><h2>Now playing · {activeGames.length}</h2></div>
+          <div className="coach-section-head"><h2>{tr("Now playing ·")} {activeGames.length}</h2></div>
           {activeGames.length === 0 ? (
-            <div className="coach-empty">No games in progress right now.</div>
+            <div className="coach-empty">{tr("No games in progress right now.")}</div>
           ) : (
             <div className="coach-students-grid">
               {activeGames.map(g => (
                 <div key={g._id} className="coach-student-card">
                   <div style={{ fontSize: 13 }}>
                     ♟ {g.whitePlayerDisplayName || g.whitePlayerUsername}
-                    <span style={{ color: 'rgba(226,232,240,0.5)' }}> vs </span>
+                    <span style={{ color: 'rgba(226,232,240,0.5)' }}> {tr("vs")} </span>
                     {g.blackPlayerDisplayName || g.blackPlayerUsername}
                   </div>
-                  <div style={{ fontSize: 12, color: '#a78bfa', marginTop: 4 }}>{g.movesCount} moves · in progress</div>
+                  <div style={{ fontSize: 12, color: '#a78bfa', marginTop: 4 }}>{g.movesCount} {tr("moves · in progress")}</div>
                 </div>
               ))}
             </div>
@@ -312,23 +313,23 @@ export default function CoachArenaTournamentLive() {
 
       {/* ── Finished games (replay after each ends) ── */}
       <div className="coach-section">
-        <div className="coach-section-head"><h2>Finished games · {finishedGames.length}</h2></div>
+        <div className="coach-section-head"><h2>{tr("Finished games ·")} {finishedGames.length}</h2></div>
         {finishedGames.length === 0 ? (
-          <div className="coach-empty">Completed games will appear here to replay, move by move.</div>
+          <div className="coach-empty">{tr("Completed games will appear here to replay, move by move.")}</div>
         ) : (
           <div className="coach-students-grid">
             {finishedGames.map(g => (
               <div key={g._id} className="coach-student-card">
                 <div style={{ fontSize: 13 }}>
                   {g.whitePlayerDisplayName || g.whitePlayerUsername}
-                  <span style={{ color: 'rgba(226,232,240,0.5)' }}> vs </span>
+                  <span style={{ color: 'rgba(226,232,240,0.5)' }}> {tr("vs")} </span>
                   {g.blackPlayerDisplayName || g.blackPlayerUsername}
                 </div>
                 <div style={{ fontSize: 13, color: '#a78bfa', margin: '4px 0 8px' }}>
-                  {resultLabel(g)} · {g.movesCount} moves
+                  {resultLabel(g)} · {g.movesCount} {tr("moves")}
                 </div>
                 <button className="btn-ghost" onClick={() => navigate(`/arenatournament/games/${id}`)}>
-                  ▶ Replay games
+                  {tr("▶ Replay games")}
                 </button>
               </div>
             ))}
@@ -338,11 +339,11 @@ export default function CoachArenaTournamentLive() {
 
       {/* ── Chat ── */}
       <div className="coach-section">
-        <div className="coach-section-head"><h2>Tournament chat</h2></div>
+        <div className="coach-section-head"><h2>{tr("Tournament chat")}</h2></div>
         <div style={{ background: 'rgba(20,20,28,0.7)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 'var(--radius-lg)', padding: 12 }}>
           <div style={{ maxHeight: 260, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
             {chat.length === 0 ? (
-              <div style={{ color: 'rgba(226,232,240,0.5)', fontSize: 13, padding: 8 }}>No messages yet. Say hello to your class 👋</div>
+              <div style={{ color: 'rgba(226,232,240,0.5)', fontSize: 13, padding: 8 }}>{tr("No messages yet. Say hello to your class 👋")}</div>
             ) : chat.map(m => (
               <div key={m._id} style={{ fontSize: 13 }}>
                 <strong style={{ color: '#67e8f9' }}>{m.displayName}:</strong>{' '}
@@ -357,10 +358,10 @@ export default function CoachArenaTournamentLive() {
               style={{ flex: 1 }}
               value={chatInput}
               onChange={e => setChatInput(e.target.value)}
-              placeholder="Message your students…"
+              placeholder={tr("Message your students…")}
               maxLength={100}
             />
-            <button type="submit" className="btn-primary" disabled={!chatInput.trim()}>Send</button>
+            <button type="submit" className="btn-primary" disabled={!chatInput.trim()}>{tr("Send")}</button>
           </form>
         </div>
       </div>

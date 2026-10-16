@@ -13,6 +13,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../api';
 import './AcademyDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function AcademyInvite() {
   const navigate = useNavigate();
@@ -48,18 +49,18 @@ export default function AcademyInvite() {
   };
 
   const decline = async () => {
-    if (!window.confirm('Decline this invitation?')) return;
+    if (!window.confirm(tr('Decline this invitation?'))) return;
     setBusy(true); setErr('');
     try {
       await api.post('/api/academy/my-invite/decline');
       setInvite(null);
-      setMsg('Invitation declined.');
+      setMsg(tr('Invitation declined.'));
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not decline.');
     } finally { setBusy(false); }
   };
 
-  if (loading) return <div className="acad-wrap"><div className="acad-empty">Loading…</div></div>;
+  if (loading) return <div className="acad-wrap"><div className="acad-empty">{tr("Loading…")}</div></div>;
 
   return (
     <div className="acad-wrap" style={{ maxWidth: 560 }}>
@@ -71,32 +72,32 @@ export default function AcademyInvite() {
 
         {!invite ? (
           <>
-            <h1>No pending invitation</h1>
+            <h1>{tr("No pending invitation")}</h1>
             <p className="acad-muted">
               You don't have an academy invitation waiting. If you were expecting one,
               ask the academy to send it to your username.
             </p>
-            <Link to="/coach/dashboard" className="btn-ghost">← Back to coaching</Link>
+            <Link to="/coach/dashboard" className="btn-ghost">{tr("← Back to coaching")}</Link>
           </>
         ) : (
           <>
             <h1>{invite.academyName}</h1>
-            <p className="acad-join-sub">has invited you to join as a coach.</p>
+            <p className="acad-join-sub">{tr("has invited you to join as a coach.")}</p>
             {invite.blurb && <p className="acad-muted">{invite.blurb}</p>}
 
             <p className="acad-join-note">
               The academy covers your subscription plan. Your own students, courses and
               data stay yours.
               {invite.needsOnboarding && (
-                <> You'll set up your coach profile first — it only takes a moment.</>
+                <> {tr("You'll set up your coach profile first — it only takes a moment.")}</>
               )}
             </p>
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button className="btn-primary" onClick={accept} disabled={busy}>
-                {busy ? 'Working…' : invite.needsOnboarding ? 'Accept & set up my profile' : 'Accept invitation'}
+                {busy ? tr('Working…') : invite.needsOnboarding ? tr('Accept & set up my profile') : tr('Accept invitation')}
               </button>
-              <button className="btn-ghost" onClick={decline} disabled={busy}>Decline</button>
+              <button className="btn-ghost" onClick={decline} disabled={busy}>{tr("Decline")}</button>
             </div>
           </>
         )}

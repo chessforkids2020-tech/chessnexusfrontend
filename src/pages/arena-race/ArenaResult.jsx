@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import PlayerName from '../../components/PlayerName';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { t as tr } from '../../i18n/LanguageContext';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Filler);
 
@@ -371,7 +372,7 @@ export default function ArenaResult({ isAdminView = false }) {
       
       await refreshUser();
     } catch (err) {
-      setError('Failed to load results');
+      setError(tr('Failed to load results'));
     } finally {
       setLoading(false);
     }
@@ -501,16 +502,16 @@ export default function ArenaResult({ isAdminView = false }) {
     return (
       <div style={adminStyles.page}>
         <button onClick={() => navigate('/admin/arena')} style={adminStyles.backButton}>
-          ← Back to Arena Admin
+          {tr("← Back to Arena Admin")}
         </button>
         
         <div style={adminStyles.container}>
           <div style={adminStyles.header}>
-            <div style={adminStyles.title}>🏆 Final Race Results</div>
-            <div style={{ fontSize: '20px', color: 'var(--color-accent-2)', fontWeight: '700' }}>Room: {roomId}</div>
+            <div style={adminStyles.title}>{tr("🏆 Final Race Results")}</div>
+            <div style={{ fontSize: '20px', color: 'var(--color-accent-2)', fontWeight: '700' }}>{tr("Room:")} {roomId}</div>
             {raceOngoing && (
               <div style={{ color: 'var(--color-danger)', fontWeight: '700', marginTop: '10px' }}>
-                ⚠️ RACE STILL IN PROGRESS (Live View)
+                {tr("⚠️ RACE STILL IN PROGRESS (Live View)")}
               </div>
             )}
           </div>
@@ -519,13 +520,13 @@ export default function ArenaResult({ isAdminView = false }) {
             <table style={adminStyles.table}>
               <thead>
                 <tr>
-                  <th style={adminStyles.th}>Rank</th>
-                  <th style={adminStyles.th}>Player</th>
-                  <th style={adminStyles.th}>Score</th>
-                  <th style={adminStyles.th}>Correct</th>
-                  <th style={adminStyles.th}>Wrong</th>
-                  <th style={adminStyles.th}>Total Done</th>
-                  <th style={adminStyles.th}>Accuracy</th>
+                  <th style={adminStyles.th}>{tr("Rank")}</th>
+                  <th style={adminStyles.th}>{tr("Player")}</th>
+                  <th style={adminStyles.th}>{tr("Score")}</th>
+                  <th style={adminStyles.th}>{tr("Correct")}</th>
+                  <th style={adminStyles.th}>{tr("Wrong")}</th>
+                  <th style={adminStyles.th}>{tr("Total Done")}</th>
+                  <th style={adminStyles.th}>{tr("Accuracy")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -554,7 +555,7 @@ export default function ArenaResult({ isAdminView = false }) {
                 ) : (
                   <tr>
                     <td colSpan="7" style={{ ...adminStyles.td, textAlign: 'center', padding: '40px', color: '#999' }}>
-                      No results found for this race.
+                      {tr("No results found for this race.")}
                     </td>
                   </tr>
                 )}
@@ -575,7 +576,7 @@ export default function ArenaResult({ isAdminView = false }) {
                 cursor: 'pointer'
               }}
             >
-              🔄 Refresh Results
+              {tr("🔄 Refresh Results")}
             </button>
           </div>
         </div>
@@ -593,11 +594,11 @@ export default function ArenaResult({ isAdminView = false }) {
 
       <div style={styles.content}>
         <div style={styles.header}>
-          <h1 style={styles.title}>🏆 Race Results</h1>
-          <p style={styles.subtitle}>Room: <span style={styles.roomId}>{roomId}</span></p>
+          <h1 style={styles.title}>{tr("🏆 Race Results")}</h1>
+          <p style={styles.subtitle}>{tr("Room:")} <span style={styles.roomId}>{roomId}</span></p>
           {raceOngoing && (
             <p style={styles.ongoingWarning}>
-              Race is still ongoing. Your results are preliminary.
+              {tr("Race is still ongoing. Your results are preliminary.")}
             </p>
           )}
         </div>
@@ -607,7 +608,7 @@ export default function ArenaResult({ isAdminView = false }) {
             {results[1] && (
               <div style={{...styles.trophy, ...styles.trophy2}}>
                 <img src="/trophies/silver-trophy.png" alt="2nd" style={{ width: '75px' }} />
-                <span style={{ fontSize: 14, fontWeight: 'bold', marginTop: 6, color: 'var(--color-text)' }}>Rank 2</span>
+                <span style={{ fontSize: 14, fontWeight: 'bold', marginTop: 6, color: 'var(--color-text)' }}>{tr("Rank 2")}</span>
                 <p style={{ fontSize: 14, marginTop: 3, color: 'var(--color-text-muted)' }}><PlayerName displayName={results[1].displayName} username={results[1].username} /></p>
               </div>
             )}
@@ -617,7 +618,7 @@ export default function ArenaResult({ isAdminView = false }) {
                 <img src="/trophies/crown.png" alt="crown" style={styles.crown} />
                 <div style={{...styles.trophy, ...styles.trophy1}}>
                   <img src="/trophies/gold-trophy.png" alt="1st" style={{ width: '100px' }} />
-                  <span style={{ fontSize: 15, fontWeight: 'bold', marginTop: 6, color: 'var(--color-text)' }}>Rank 1</span>
+                  <span style={{ fontSize: 15, fontWeight: 'bold', marginTop: 6, color: 'var(--color-text)' }}>{tr("Rank 1")}</span>
                   <p style={{ fontSize: 15, marginTop: 3, color: 'var(--color-text-muted)' }}><PlayerName displayName={results[0].displayName} username={results[0].username} /></p>
                 </div>
               </div>
@@ -626,7 +627,7 @@ export default function ArenaResult({ isAdminView = false }) {
             {results[2] && (
               <div style={{...styles.trophy, ...styles.trophy3}}>
                 <img src="/trophies/bronze-trophy.png" alt="3rd" style={{ width: '75px' }} />
-                <span style={{ fontSize: 14, fontWeight: 'bold', marginTop: 6, color: 'var(--color-text)' }}>Rank 3</span>
+                <span style={{ fontSize: 14, fontWeight: 'bold', marginTop: 6, color: 'var(--color-text)' }}>{tr("Rank 3")}</span>
                 <p style={{ fontSize: 14, marginTop: 3, color: 'var(--color-text-muted)' }}><PlayerName displayName={results[2].displayName} username={results[2].username} /></p>
               </div>
             )}
@@ -637,10 +638,10 @@ export default function ArenaResult({ isAdminView = false }) {
           <table style={styles.table}>
             <thead>
               <tr>
-                <th style={styles.th}>Rank</th>
-                <th style={styles.th}>Name</th>
-                <th style={styles.th}>Score</th>
-                <th style={styles.th}>Performance</th>
+                <th style={styles.th}>{tr("Rank")}</th>
+                <th style={styles.th}>{tr("Name")}</th>
+                <th style={styles.th}>{tr("Score")}</th>
+                <th style={styles.th}>{tr("Performance")}</th>
               </tr>
             </thead>
             <tbody>
@@ -694,7 +695,7 @@ export default function ArenaResult({ isAdminView = false }) {
             onMouseEnter={() => setButtonHover(true)}
             onMouseLeave={() => setButtonHover(false)}
           >
-            {isAdminView ? '← Back to Arena Admin' : '← Back to Dashboard'}
+            {isAdminView ? tr('← Back to Arena Admin') : tr('← Back to Dashboard')}
           </button>
         </div>
       </div>

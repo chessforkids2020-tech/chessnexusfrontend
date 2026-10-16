@@ -8,6 +8,7 @@ import Chessboard from '../../components/Chessboard';
 import PGNChessboard from '../../components/PGNChessboard';
 import stockfishService from '../../services/stockfishService';
 import './FocusTaskPage.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Map a Stockfish eval (cp or mate, from the side-to-move's perspective) to a
 // single comparable centipawn number. Mate is mapped to a large bounded value
@@ -185,7 +186,7 @@ export default function FocusTaskPage() {
           if (!stockfishService.isReady()) await stockfishService.init();
           if (!cancelled) setEngineReady(true);
         } catch (err) {
-          if (!cancelled) setEngineError('Could not load Stockfish in your browser. Please refresh and try again.');
+          if (!cancelled) setEngineError(tr('Could not load Stockfish in your browser. Please refresh and try again.'));
         }
       })();
       return () => { cancelled = true; };
@@ -564,7 +565,7 @@ export default function FocusTaskPage() {
 
   const analyzePgn = async () => {
     if (!userPgn.trim()) {
-      alert('Please paste a PGN first');
+      alert(tr('Please paste a PGN first'));
       return;
     }
 
@@ -621,7 +622,7 @@ export default function FocusTaskPage() {
         <div className="focus-task-content">
           <div className="focus-task-loading">
             <div className="focus-task-loading-icon">⏳</div>
-            <p className="focus-task-loading-text">Loading task...</p>
+            <p className="focus-task-loading-text">{tr("Loading task...")}</p>
           </div>
         </div>
       </div>
@@ -633,10 +634,10 @@ export default function FocusTaskPage() {
       <div className="focus-task-page">
         <div className="focus-task-content">
           <div className="focus-card focus-error-card">
-            <h2 className="focus-error-title">⚠️ Error</h2>
+            <h2 className="focus-error-title">{tr("⚠️ Error")}</h2>
             <p className="focus-error-message">{error}</p>
             <Link to="/monthly-focus" className="focus-btn focus-btn-primary focus-btn-link">
-              Back to Focus Dashboard
+              {tr("Back to Focus Dashboard")}
             </Link>
           </div>
         </div>
@@ -651,12 +652,12 @@ export default function FocusTaskPage() {
         <div className="focus-task-content">
           <div className="focus-card focus-status-card">
             <div className="focus-status-icon">⏳</div>
-            <h2 className="focus-status-title">Day {dayNumber} - Not Started Yet</h2>
+            <h2 className="focus-status-title">{tr("Day")} {dayNumber} {tr("- Not Started Yet")}</h2>
             <p className="focus-status-message">
-              This day hasn't been activated by the admin yet. Check back later!
+              {tr("This day hasn't been activated by the admin yet. Check back later!")}
             </p>
             <Link to="/monthly-focus" className="focus-btn focus-btn-primary focus-btn-link">
-              Back to Dashboard
+              {tr("Back to Dashboard")}
             </Link>
           </div>
         </div>
@@ -671,16 +672,16 @@ export default function FocusTaskPage() {
         <div className="focus-task-content">
           <div className="focus-card focus-status-card">
             <div className="focus-status-icon">⏱️</div>
-            <h2 className="focus-status-title">Day {dayNumber} - Time Expired</h2>
+            <h2 className="focus-status-title">{tr("Day")} {dayNumber} {tr("- Time Expired")}</h2>
             <p className="focus-status-message">
-              The 24-hour window for this day has ended. You can still complete it, but you'll earn reduced XP (5 XP instead of the full reward).
+              {tr("The 24-hour window for this day has ended. You can still complete it, but you'll earn reduced XP (5 XP instead of the full reward).")}
             </p>
             <div style={{ marginTop: '24px' }}>
               <Link to="/monthly-focus" className="focus-btn focus-btn-secondary focus-btn-link" style={{ marginRight: '16px' }}>
-                Back to Dashboard
+                {tr("Back to Dashboard")}
               </Link>
               <button className="focus-btn focus-btn-primary" onClick={() => window.location.reload()}>
-                Continue Anyway (5 XP)
+                {tr("Continue Anyway (5 XP)")}
               </button>
             </div>
           </div>
@@ -695,23 +696,23 @@ export default function FocusTaskPage() {
       <div className="focus-task-page">
         <div className="focus-task-content">
           <Link to="/monthly-focus" className="focus-back-link">
-            ← Back to Dashboard
+            {tr("← Back to Dashboard")}
           </Link>
           
           <div className={`focus-card focus-result-card ${completedResult.correct === completedResult.total ? 'focus-result-success' : 'focus-result-partial'}`}>
             <div className="focus-result-icon">
               {completedResult.correct === completedResult.total ? '🎉' : '✨'}
             </div>
-            <h2 className="focus-result-title">Already Completed!</h2>
+            <h2 className="focus-result-title">{tr("Already Completed!")}</h2>
             <p className="focus-result-score">{completedResult.correct} / {completedResult.total}</p>
-            <p className="focus-result-xp">+{completedResult.xpEarned} XP Earned</p>
+            <p className="focus-result-xp">+{completedResult.xpEarned} {tr("XP Earned")}</p>
             {completedResult.bonusXp > 0 && (
-              <p className="focus-result-bonus">🎁 Bonus: +{completedResult.bonusXp} XP</p>
+              <p className="focus-result-bonus">{tr("🎁 Bonus: +")}{completedResult.bonusXp} {tr("XP")}</p>
             )}
-            <p className="focus-result-message">You've already completed this day's task.</p>
+            <p className="focus-result-message">{tr("You've already completed this day's task.")}</p>
             
             <Link to="/monthly-focus" className="focus-btn focus-btn-primary focus-btn-link">
-              Back to Dashboard
+              {tr("Back to Dashboard")}
             </Link>
           </div>
         </div>
@@ -725,7 +726,7 @@ export default function FocusTaskPage() {
       <div className="focus-task-page">
         <div className="focus-task-content">
           <Link to="/monthly-focus" className="focus-back-link">
-            ← Back to Dashboard
+            {tr("← Back to Dashboard")}
           </Link>
           
           <div className={`focus-card focus-result-card ${result.correct === result.total ? 'focus-result-success' : 'focus-result-partial'}`}>
@@ -737,18 +738,18 @@ export default function FocusTaskPage() {
             </h2>
             <p className="focus-result-score">{result.correct} / {result.total}</p>
             {result.bonusXp > 0 && (
-              <p className="focus-result-bonus">🎁 Bonus: +{result.bonusXp} XP</p>
+              <p className="focus-result-bonus">{tr("🎁 Bonus: +")}{result.bonusXp} {tr("XP")}</p>
             )}
 
             {/* Educational Review - Show positions with solutions (not for PGN blunder analysis) */}
             {task && task.taskType !== 'pgn_blunder_analysis' && result.correctAnswers && result.correctAnswers.length > 0 && (
               <div className="focus-answer-review" style={{ marginTop: '30px' }}>
-                <h3 className="focus-answer-review-title">📚 Educational Review</h3>
+                <h3 className="focus-answer-review-title">{tr("📚 Educational Review")}</h3>
                 
                 {task.taskType === 'puzzles' && result.correctAnswers.map((item, idx) => (
                   <div key={idx} className={`focus-answer-item ${result.review?.[idx]?.isCorrect ? 'focus-answer-correct' : 'focus-answer-wrong'}`}>
                     <div className="focus-answer-label">
-                      {result.review?.[idx]?.isCorrect ? '✅' : '❌'} Puzzle {idx + 1}
+                      {result.review?.[idx]?.isCorrect ? '✅' : '❌'} {tr("Puzzle")} {idx + 1}
                     </div>
                     
                     {/* Chess position */}
@@ -767,23 +768,23 @@ export default function FocusTaskPage() {
                     </div>
                     
                     <div className="focus-answer-value">
-                      <strong>Your line:</strong> {result.review?.[idx]?.userAnswer || '(no answer)'}
+                      <strong>{tr("Your line:")}</strong> {result.review?.[idx]?.userAnswer || tr('(no answer)')}
                     </div>
                     {result.review?.[idx]?.engineJudged ? (
                       // Engine-judged: multiple lines are valid, so there's no single "expected"
                       // line to show — just the engine's verdict.
                       <div className="focus-answer-correct-value">
-                        <strong>{result.review?.[idx]?.isCorrect ? '🤖 Accepted by Stockfish' : '🤖 Stockfish: this line gave up the advantage'}</strong>
+                        <strong>{result.review?.[idx]?.isCorrect ? tr('🤖 Accepted by Stockfish') : tr('🤖 Stockfish: this line gave up the advantage')}</strong>
                         {!result.review?.[idx]?.isCorrect && (result.review?.[idx]?.engineBestMove || engineBestMoves[idx]) && (
                           <div style={{ marginTop: '6px', color: '#b45309' }}>
-                            💡 Stockfish preferred: <strong>{result.review?.[idx]?.engineBestMove || engineBestMoves[idx]}</strong> instead.
+                            {tr("💡 Stockfish preferred:")} <strong>{result.review?.[idx]?.engineBestMove || engineBestMoves[idx]}</strong> {tr("instead.")}
                           </div>
                         )}
                       </div>
                     ) : (
                       !result.review?.[idx]?.isCorrect && (
                         <div className="focus-answer-correct-value">
-                          <strong>Expected solution:</strong> {item.solution}
+                          <strong>{tr("Expected solution:")}</strong> {item.solution}
                         </div>
                       )
                     )}
@@ -793,7 +794,7 @@ export default function FocusTaskPage() {
                 {task.taskType === 'tactics_identification' && result.correctAnswers.map((item, idx) => (
                   <div key={idx} className={`focus-answer-item ${result.review?.[idx]?.isCorrect ? 'focus-answer-correct' : 'focus-answer-wrong'}`}>
                     <div className="focus-answer-label">
-                      {result.review?.[idx]?.isCorrect ? '✅' : '❌'} Position {idx + 1}
+                      {result.review?.[idx]?.isCorrect ? '✅' : '❌'} {tr("Position")} {idx + 1}
                     </div>
                     
                     <div style={{ margin: '10px 0' }}>
@@ -811,11 +812,11 @@ export default function FocusTaskPage() {
                     </div>
                     
                     <div className="focus-answer-value">
-                      <strong>Your answer:</strong> {result.review?.[idx]?.userAnswer || '(no answer)'}
+                      <strong>{tr("Your answer:")}</strong> {result.review?.[idx]?.userAnswer || tr('(no answer)')}
                     </div>
                     {!result.review?.[idx]?.isCorrect && (
                       <div className="focus-answer-correct-value">
-                        <strong>Expected tactic:</strong> {item.tacticsName}
+                        <strong>{tr("Expected tactic:")}</strong> {item.tacticsName}
                       </div>
                     )}
                   </div>
@@ -824,7 +825,7 @@ export default function FocusTaskPage() {
                 {task.taskType === 'multiple_choice' && result.correctAnswers.map((item, idx) => (
                   <div key={idx} className={`focus-answer-item ${result.review?.[idx]?.isCorrect ? 'focus-answer-correct' : 'focus-answer-wrong'}`}>
                     <div className="focus-answer-label">
-                      {result.review?.[idx]?.isCorrect ? '✅' : '❌'} Question {idx + 1}
+                      {result.review?.[idx]?.isCorrect ? '✅' : '❌'} {tr("Question")} {idx + 1}
                     </div>
                     
                     <div style={{ margin: '10px 0' }}>
@@ -846,12 +847,12 @@ export default function FocusTaskPage() {
                     </div>
                     
                     <div className="focus-answer-value">
-                      <strong>Your answer:</strong> {result.review?.[idx]?.userAnswer || '(no answer)'}
+                      <strong>{tr("Your answer:")}</strong> {result.review?.[idx]?.userAnswer || tr('(no answer)')}
                     </div>
                     {!result.review?.[idx]?.isCorrect && (
                       <>
                         <div className="focus-answer-correct-value">
-                          <strong>Correct answer:</strong> {item.correctAnswer}
+                          <strong>{tr("Correct answer:")}</strong> {item.correctAnswer}
                         </div>
                         {item.explanation && (
                           <div style={{ marginTop: '8px', fontSize: '13px', color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
@@ -866,7 +867,7 @@ export default function FocusTaskPage() {
                 {task.taskType === 'find_mistakes' && result.correctAnswers && result.correctAnswers.length > 0 && (
                   <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-white-a04)', color: 'var(--color-text)', padding: '15px', borderRadius: 'var(--radius-lg)', marginTop: '15px', backdropFilter: 'blur(10px)' }}>
                     <div style={{ marginBottom: '15px' }}>
-                      <strong style={{ color: 'var(--color-accent)' }}>Game PGN:</strong>
+                      <strong style={{ color: 'var(--color-accent)' }}>{tr("Game PGN:")}</strong>
                       <div 
                         style={{ cursor: 'pointer', marginTop: '10px', display: 'inline-block' }}
                         onClick={() => openChessboardPopup(task.content.pgn, task.content.side || 'white', 'pgn')}
@@ -881,10 +882,10 @@ export default function FocusTaskPage() {
                     {result.correctAnswers.map((ans, idx) => (
                       <div key={idx} style={{ marginTop: '15px', padding: '12px', background: ans.type === 'best_move' ? 'var(--color-success-a12)' : 'var(--color-danger-a12)', border: ans.type === 'best_move' ? '1px solid var(--color-success-a30)' : '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)' }}>
                         <div style={{ fontWeight: 'bold', marginBottom: '5px', color: ans.type === 'best_move' ? 'var(--color-success)' : 'var(--color-danger)' }}>
-                          {ans.type === 'best_move' ? '🎯 Best Move' : '💥 Blunder'} - Move {ans.moveNumber}
+                          {ans.type === 'best_move' ? '🎯 Best Move' : '💥 Blunder'} {tr("- Move")} {ans.moveNumber}
                         </div>
-                        <div style={{ color: 'var(--color-text-muted)' }}><strong>Move:</strong> {ans.move}</div>
-                        {ans.betterMove && <div style={{ color: 'var(--color-text-muted)' }}><strong>Better:</strong> {ans.betterMove}</div>}
+                        <div style={{ color: 'var(--color-text-muted)' }}><strong>{tr("Move:")}</strong> {ans.move}</div>
+                        {ans.betterMove && <div style={{ color: 'var(--color-text-muted)' }}><strong>{tr("Better:")}</strong> {ans.betterMove}</div>}
                         {ans.explanation && (
                           <div style={{ marginTop: '5px', fontSize: '13px', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>
                             💡 {ans.explanation}
@@ -899,7 +900,7 @@ export default function FocusTaskPage() {
             
             <div style={{ marginTop: '32px' }}>
               <Link to="/monthly-focus/leaderboard" className="focus-btn focus-btn-primary focus-btn-link">
-                📊 View Leaderboard
+                {tr("📊 View Leaderboard")}
               </Link>
             </div>
           </div>
@@ -916,7 +917,7 @@ export default function FocusTaskPage() {
 
           <div className="focus-card">
             <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-              <span className="focus-day-badge">Day {dayNumber}</span>
+              <span className="focus-day-badge">{tr("Day")} {dayNumber}</span>
               <h1 className="focus-task-title" style={{ marginTop: '20px' }}>{task.title}</h1>
               
               {/* Task Info Badges */}
@@ -932,14 +933,14 @@ export default function FocusTaskPage() {
                 
                 {/* XP Badge */}
                 <div className="focus-info-badge focus-info-badge-xp">
-                  🏅 {task.xpReward} XP
-                  {task.perfectBonus > 0 && ` + ${task.perfectBonus} bonus`}
+                  🏅 {task.xpReward} {tr("XP")}
+                  {task.perfectBonus > 0 && tr(" + {perfectBonus} bonus", { perfectBonus: task.perfectBonus })}
                 </div>
                 
                 {/* Max Points Badge */}
                 {task.maxScore > 0 && (
                   <div className="focus-info-badge focus-info-badge-points">
-                    ⭐ Max {task.maxScore} pts
+                    {tr("⭐ Max")} {task.maxScore} {tr("pts")}
                   </div>
                 )}
               </div>
@@ -948,51 +949,51 @@ export default function FocusTaskPage() {
             {/* Skill Score Breakdown */}
             {task.scoring && (
               <div className="focus-skill-score-breakdown">
-                <h3 className="focus-breakdown-title">⭐ Skill Score System</h3>
+                <h3 className="focus-breakdown-title">{tr("⭐ Skill Score System")}</h3>
                 <div className="focus-scoring-note">
-                  <p>🎯 Start with 0 points • Earn points for correct answers • Wrong answers don't subtract points</p>
+                  <p>{tr("🎯 Start with 0 points • Earn points for correct answers • Wrong answers don't subtract points")}</p>
                 </div>
                 <div className="focus-breakdown-content">
                   {task.taskType === 'puzzles' && task.scoring.puzzlePoints && (
                     <div className="focus-breakdown-item">
-                      <span className="focus-breakdown-label">Each correct puzzle:</span>
-                      <span className="focus-breakdown-value">+{task.scoring.puzzlePoints} pts</span>
+                      <span className="focus-breakdown-label">{tr("Each correct puzzle:")}</span>
+                      <span className="focus-breakdown-value">+{task.scoring.puzzlePoints} {tr("pts")}</span>
                     </div>
                   )}
                   {task.taskType === 'find_mistakes' && task.scoring.bestMovePoints && (
                     <div className="focus-breakdown-item">
-                      <span className="focus-breakdown-label">Each best move found:</span>
-                      <span className="focus-breakdown-value">+{task.scoring.bestMovePoints} pts</span>
+                      <span className="focus-breakdown-label">{tr("Each best move found:")}</span>
+                      <span className="focus-breakdown-value">+{task.scoring.bestMovePoints} {tr("pts")}</span>
                     </div>
                   )}
                   {task.taskType === 'find_mistakes' && task.scoring.blunderPoints && (
                     <div className="focus-breakdown-item">
-                      <span className="focus-breakdown-label">Each blunder found:</span>
-                      <span className="focus-breakdown-value">+{task.scoring.blunderPoints} pts</span>
+                      <span className="focus-breakdown-label">{tr("Each blunder found:")}</span>
+                      <span className="focus-breakdown-value">+{task.scoring.blunderPoints} {tr("pts")}</span>
                     </div>
                   )}
                   {task.taskType === 'tactics_identification' && task.scoring.tacticsPoints && (
                     <div className="focus-breakdown-item">
-                      <span className="focus-breakdown-label">Each correct tactic:</span>
-                      <span className="focus-breakdown-value">+{task.scoring.tacticsPoints} pts</span>
+                      <span className="focus-breakdown-label">{tr("Each correct tactic:")}</span>
+                      <span className="focus-breakdown-value">+{task.scoring.tacticsPoints} {tr("pts")}</span>
                     </div>
                   )}
                   {task.taskType === 'multiple_choice' && task.scoring.multipleChoicePoints && (
                     <div className="focus-breakdown-item">
-                      <span className="focus-breakdown-label">Each correct answer:</span>
-                      <span className="focus-breakdown-value">+{task.scoring.multipleChoicePoints} pts</span>
+                      <span className="focus-breakdown-label">{tr("Each correct answer:")}</span>
+                      <span className="focus-breakdown-value">+{task.scoring.multipleChoicePoints} {tr("pts")}</span>
                     </div>
                   )}
                   {task.taskType === 'pgn_blunder_analysis' && task.scoring.blunderAnalysisPoints && (
                     <div className="focus-breakdown-item">
-                      <span className="focus-breakdown-label">Pass blunder limit:</span>
-                      <span className="focus-breakdown-value">+{task.scoring.blunderAnalysisPoints} pts</span>
+                      <span className="focus-breakdown-label">{tr("Pass blunder limit:")}</span>
+                      <span className="focus-breakdown-value">+{task.scoring.blunderAnalysisPoints} {tr("pts")}</span>
                     </div>
                   )}
                   {task.scoring.perfectMultiplier && task.scoring.perfectMultiplier > 1 && (
                     <div className="focus-breakdown-item">
-                      <span className="focus-breakdown-label">🎉 Perfect score bonus:</span>
-                      <span className="focus-breakdown-value">{task.scoring.perfectMultiplier}x multiplier!</span>
+                      <span className="focus-breakdown-label">{tr("🎉 Perfect score bonus:")}</span>
+                      <span className="focus-breakdown-value">{task.scoring.perfectMultiplier}{tr("x multiplier!")}</span>
                     </div>
                   )}
                 </div>
@@ -1001,61 +1002,61 @@ export default function FocusTaskPage() {
 
             <div className="focus-instructions">
               <h3 className="focus-instructions-title">
-                <span>📖</span> Instructions
+                <span>📖</span> {tr("Instructions")}
               </h3>
               {task.taskType === 'puzzles' && (
                 <ul className="focus-instructions-list">
-                  <li>You will see {task.content.items.length} chess puzzle{task.content.items.length !== 1 ? 's' : ''}</li>
-                  <li>Find the best move or sequence of moves in each position</li>
-                  <li>♟️ <strong>Make your move directly on the chessboard</strong> — drag a piece or click the piece then click the destination square</li>
-                  <li>No typing required — moves are recorded automatically</li>
-                  {task.content.items.some(i => i.moveCount > 1) && <li>For multi-move puzzles, keep playing until all moves are done</li>}
-                  <li>Use the <strong>Undo</strong> button if you want to take back a move</li>
-                  <li>When all puzzles are complete, your solution is submitted automatically</li>
+                  <li>{tr("You will see")} {task.content.items.length} {tr("chess puzzle")}{task.content.items.length !== 1 ? 's' : ''}</li>
+                  <li>{tr("Find the best move or sequence of moves in each position")}</li>
+                  <li>♟️ <strong>{tr("Make your move directly on the chessboard")}</strong> {tr("— drag a piece or click the piece then click the destination square")}</li>
+                  <li>{tr("No typing required — moves are recorded automatically")}</li>
+                  {task.content.items.some(i => i.moveCount > 1) && <li>{tr("For multi-move puzzles, keep playing until all moves are done")}</li>}
+                  <li>{tr("Use the")} <strong>{tr("Undo")}</strong> {tr("button if you want to take back a move")}</li>
+                  <li>{tr("When all puzzles are complete, your solution is submitted automatically")}</li>
                   {task.timerEnabled && <li>⏱️ Timer: {Math.floor(task.timeLimit / 60)} minutes</li>}
-                  <li>🏅 Reward: {task.xpReward} XP{task.perfectBonus > 0 ? ` + ${task.perfectBonus} bonus for perfect` : ''}</li>
+                  <li>🏅 Reward: {task.xpReward} XP{task.perfectBonus > 0 ? tr(" + {perfectBonus} bonus for perfect", { perfectBonus: task.perfectBonus }) : ''}</li>
                 </ul>
               )}
               {task.taskType === 'find_mistakes' && (
                 <ul className="focus-instructions-list">
-                  <li>Analyze the game PGN provided</li>
+                  <li>{tr("Analyze the game PGN provided")}</li>
                   {(task.content.mode === 'best_moves' || task.content.mode === 'both') && 
-                    <li>Find {task.content.bestMovesCount} best moves from the game</li>}
+                    <li>{tr("Find")} {task.content.bestMovesCount} {tr("best moves from the game")}</li>}
                   {(task.content.mode === 'blunders' || task.content.mode === 'both') && 
-                    <li>Identify {task.content.blundersCount} blunders/mistakes</li>}
-                  <li>Format: "12. Nf6" or "Qxd5"</li>
+                    <li>{tr("Identify")} {task.content.blundersCount} {tr("blunders/mistakes")}</li>}
+                  <li>{tr("Format: \"12. Nf6\" or \"Qxd5\"")}</li>
                   {task.timerEnabled && <li>⏱️ Timer: {Math.floor(task.timeLimit / 60)} minutes</li>}
-                  <li>🏅 Reward: {task.xpReward} XP{task.perfectBonus > 0 ? ` + ${task.perfectBonus} bonus for perfect` : ''}</li>
+                  <li>🏅 Reward: {task.xpReward} XP{task.perfectBonus > 0 ? tr(" + {perfectBonus} bonus for perfect", { perfectBonus: task.perfectBonus }) : ''}</li>
                 </ul>
               )}
               {task.taskType === 'tactics_identification' && (
                 <ul className="focus-instructions-list">
-                  <li>You will see {task.content.items.length} positions</li>
-                  <li>Identify the tactical pattern (Fork, Pin, Skewer, etc.)</li>
-                  <li>Use the quick-select buttons or type the tactic name</li>
+                  <li>{tr("You will see")} {task.content.items.length} {tr("positions")}</li>
+                  <li>{tr("Identify the tactical pattern (Fork, Pin, Skewer, etc.)")}</li>
+                  <li>{tr("Use the quick-select buttons or type the tactic name")}</li>
                   {task.timerEnabled && <li>⏱️ Timer: {Math.floor(task.timeLimit / 60)} minutes</li>}
-                  <li>🏅 Reward: {task.xpReward} XP{task.perfectBonus > 0 ? ` + ${task.perfectBonus} bonus for perfect` : ''}</li>
+                  <li>🏅 Reward: {task.xpReward} XP{task.perfectBonus > 0 ? tr(" + {perfectBonus} bonus for perfect", { perfectBonus: task.perfectBonus }) : ''}</li>
                 </ul>
               )}
               {task.taskType === 'multiple_choice' && (
                 <ul className="focus-instructions-list">
-                  <li>You will answer {task.content.items.length} multiple-choice questions</li>
-                  <li>Each question shows a chess position with 2-6 answer options</li>
-                  <li>Select the correct answer for each question</li>
-                  <li>You can optionally explain your reasoning (not graded)</li>
+                  <li>{tr("You will answer")} {task.content.items.length} {tr("multiple-choice questions")}</li>
+                  <li>{tr("Each question shows a chess position with 2-6 answer options")}</li>
+                  <li>{tr("Select the correct answer for each question")}</li>
+                  <li>{tr("You can optionally explain your reasoning (not graded)")}</li>
                   {task.timerEnabled && <li>⏱️ Timer: {Math.floor(task.timeLimit / 60)} minutes</li>}
-                  <li>🏅 Reward: {task.xpReward} XP{task.perfectBonus > 0 ? ` + ${task.perfectBonus} bonus for perfect` : ''}</li>
+                  <li>🏅 Reward: {task.xpReward} XP{task.perfectBonus > 0 ? tr(" + {perfectBonus} bonus for perfect", { perfectBonus: task.perfectBonus }) : ''}</li>
                 </ul>
               )}
               {task.taskType === 'pgn_blunder_analysis' && (
                 <ul className="focus-instructions-list">
-                  <li>Play a chess game on Lichess or Chess.com</li>
-                  <li>Copy the PGN (game notation) and paste it in the task</li>
-                  <li>Select which side you played (White or Black)</li>
-                  <li>Click "Analyze" to check your game with Stockfish</li>
-                  <li>Goal: ≤ {task.content.blunderLimit} blunder{task.content.blunderLimit !== 1 ? 's' : ''} to earn {task.scoring.blunderAnalysisPoints} points</li>
+                  <li>{tr("Play a chess game on Lichess or Chess.com")}</li>
+                  <li>{tr("Copy the PGN (game notation) and paste it in the task")}</li>
+                  <li>{tr("Select which side you played (White or Black)")}</li>
+                  <li>{tr("Click \"Analyze\" to check your game with Stockfish")}</li>
+                  <li>{tr("Goal: ≤")} {task.content.blunderLimit} {tr("blunder")}{task.content.blunderLimit !== 1 ? 's' : ''} {tr("to earn")} {task.scoring.blunderAnalysisPoints} {tr("points")}</li>
                   {task.timerEnabled && <li>⏱️ Timer: {Math.floor(task.timeLimit / 60)} minutes</li>}
-                  <li>🏅 Reward: {task.xpReward} XP for passing the blunder limit</li>
+                  <li>{tr("🏅 Reward:")} {task.xpReward} {tr("XP for passing the blunder limit")}</li>
                 </ul>
               )}
             </div>
@@ -1064,7 +1065,7 @@ export default function FocusTaskPage() {
               className="focus-btn focus-btn-primary focus-btn-large"
               onClick={startTask}
             >
-              🚀 Start Day {dayNumber} Challenge
+              {tr("🚀 Start Day")} {dayNumber} {tr("Challenge")}
             </button>
           </div>
         </div>
@@ -1124,7 +1125,7 @@ export default function FocusTaskPage() {
                   {/* Puzzle header */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
                     <h4 className="focus-puzzle-number" style={{ margin: 0 }}>
-                      Puzzle {index + 1} of {task.content.items.length}
+                      {tr("Puzzle")} {index + 1} {tr("of")} {task.content.items.length}
                     </h4>
                     {isDone && (
                       engineMode ? (
@@ -1138,7 +1139,7 @@ export default function FocusTaskPage() {
                         </span>
                       ) : (
                         <span style={{ background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', padding: '4px 14px', borderRadius: 'var(--radius-2xl)', fontWeight: 700, fontSize: '13px' }}>
-                          ✓ Solution submitted!
+                          {tr("✓ Solution submitted!")}
                         </span>
                       )
                     )}
@@ -1146,8 +1147,8 @@ export default function FocusTaskPage() {
 
                   <p className="focus-puzzle-description" style={{ marginBottom: '16px' }}>
                     {item.moveCount > 1
-                      ? `Find the best ${item.moveCount}-move sequence for ${orientation === 'white' ? 'White' : 'Black'} — make moves directly on the board`
-                      : `Find the best move for ${orientation === 'white' ? 'White' : 'Black'} — drag or click a piece to make your move`
+                      ? tr("Find the best {moveCount}-move sequence for {v1} — make moves directly on the board", { moveCount: item.moveCount, v1: orientation === 'white' ? 'White' : 'Black' })
+                      : tr("Find the best move for {v0} — drag or click a piece to make your move", { v0: orientation === 'white' ? 'White' : 'Black' })
                     }
                   </p>
 
@@ -1168,7 +1169,7 @@ export default function FocusTaskPage() {
                     {/* Moves made chips */}
                     {movesMade.length > 0 && (
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginRight: '4px' }}>Moves:</span>
+                        <span style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginRight: '4px' }}>{tr("Moves:")}</span>
                         {movesMade.map((m, i) => (
                           <span
                             key={i}
@@ -1194,11 +1195,11 @@ export default function FocusTaskPage() {
                       <div style={{ textAlign: 'center' }}>
                         {thinking ? (
                           <p style={{ color: 'var(--color-warning)', fontSize: '13px', margin: '0 0 8px 0', fontWeight: 600 }}>
-                            🤖 Stockfish checking your move…
+                            {tr("🤖 Stockfish checking your move…")}
                           </p>
                         ) : (
                           <p style={{ color: 'var(--color-text-muted)', fontSize: '13px', margin: '0 0 8px 0' }}>
-                            {movesNeeded} move{movesNeeded !== 1 ? 's' : ''} remaining — drag or click a piece to play
+                            {movesNeeded} {tr("move")}{movesNeeded !== 1 ? 's' : ''} {tr("remaining — drag or click a piece to play")}
                           </p>
                         )}
                         {/* Undo is only available in classic mode (engine replies can't be taken back) */}
@@ -1208,7 +1209,7 @@ export default function FocusTaskPage() {
                             style={{ padding: '6px 16px', fontSize: '13px' }}
                             onClick={() => handlePuzzleUndoMove(index)}
                           >
-                            ↩ Undo last move
+                            {tr("↩ Undo last move")}
                           </button>
                         )}
                       </div>
@@ -1219,7 +1220,7 @@ export default function FocusTaskPage() {
                           : '✓ All moves made — auto-submitting when all puzzles complete'}
                         {engineMode && verdict === 'fail' && engineBestMoves[index] && (
                           <div style={{ marginTop: '6px', color: 'var(--color-warning)', fontWeight: 700, fontSize: '13.5px' }}>
-                            💡 Stockfish preferred: <strong>{engineBestMoves[index]}</strong>
+                            {tr("💡 Stockfish preferred:")} <strong>{engineBestMoves[index]}</strong>
                           </div>
                         )}
                       </div>
@@ -1237,11 +1238,11 @@ export default function FocusTaskPage() {
             <div className="focus-pgn-section">
               <div className="focus-section-header">
                 <h4 className="focus-pgn-title">
-                  <span>📜</span> Analyze Game
+                  <span>📜</span> {tr("Analyze Game")}
                 </h4>
                 {task.content.side && (
                   <div className={`focus-side-badge focus-side-${task.content.side}`}>
-                    Side to analyze: <strong>{task.content.side.charAt(0).toUpperCase() + task.content.side.slice(1)}</strong>
+                    {tr("Side to analyze:")} <strong>{task.content.side.charAt(0).toUpperCase() + task.content.side.slice(1)}</strong>
                   </div>
                 )}
               </div>
@@ -1258,14 +1259,14 @@ export default function FocusTaskPage() {
               <div className="focus-card">
                 <h4 className="focus-section-title">
                   <span className="focus-section-title-icon">🎯</span>
-                  Find Best Moves ({task.content.bestMovesCount})
+                  {tr("Find Best Moves (")}{task.content.bestMovesCount})
                 </h4>
                 {[...Array(task.content.bestMovesCount)].map((_, i) => (
                   <div key={i} className="focus-answer-group">
-                    <label className="focus-input-label">Best Move {i + 1}:</label>
+                    <label className="focus-input-label">{tr("Best Move")} {i + 1}:</label>
                     <input 
                       className="focus-input"
-                      placeholder="e.g., Nf6 or 12. Qxd5"
+                      placeholder={tr("e.g., Nf6 or 12. Qxd5")}
                       value={answers.bestMoves?.[i] || ''}
                       onChange={e => updateAnswer(`best_${i}`, e.target.value)}
                     />
@@ -1278,14 +1279,14 @@ export default function FocusTaskPage() {
               <div className="focus-card">
                 <h4 className="focus-section-title">
                   <span className="focus-section-title-icon">💥</span>
-                  Find Blunders ({task.content.blundersCount})
+                  {tr("Find Blunders (")}{task.content.blundersCount})
                 </h4>
                 {[...Array(task.content.blundersCount)].map((_, i) => (
                   <div key={i} className="focus-answer-group">
-                    <label className="focus-input-label">Blunder {i + 1}:</label>
+                    <label className="focus-input-label">{tr("Blunder")} {i + 1}:</label>
                     <input 
                       className="focus-input"
-                      placeholder="e.g., Qxe5?? or 8. Bxh2??"
+                      placeholder={tr("e.g., Qxe5?? or 8. Bxh2??")}
                       value={answers.blunders?.[i] || ''}
                       onChange={e => updateAnswer(`blunder_${i}`, e.target.value)}
                     />
@@ -1318,13 +1319,13 @@ export default function FocusTaskPage() {
                     />
                   </div>
                   <div className="focus-puzzle-details">
-                    <h4 className="focus-puzzle-number">Position {index + 1} of {task.content.items.length}</h4>
+                    <h4 className="focus-puzzle-number">{tr("Position")} {index + 1} {tr("of")} {task.content.items.length}</h4>
                     <p className="focus-puzzle-description">
-                      What tactics pattern is this?
+                      {tr("What tactics pattern is this?")}
                     </p>
                     {/* Pick the tactic below. These are the choices — tap one. The
                         text box is only for a different pattern not listed here. */}
-                    <label className="focus-input-label">Choose the tactic:</label>
+                    <label className="focus-input-label">{tr("Choose the tactic:")}</label>
                     <div className="focus-tactics-buttons">
                       {['Fork', 'Pin', 'Skewer', 'Discovered Attack', 'Double Check',
                         'Deflection', 'Hanging Piece', 'Back Rank Mate', 'Smothered Mate',
@@ -1339,11 +1340,11 @@ export default function FocusTaskPage() {
                       ))}
                     </div>
                     <label className="focus-input-label" style={{ marginTop: '12px', opacity: 0.85 }}>
-                      Or type a different pattern:
+                      {tr("Or type a different pattern:")}
                     </label>
                     <input
                       className="focus-input"
-                      placeholder="Only if it's not one of the choices above"
+                      placeholder={tr("Only if it's not one of the choices above")}
                       value={answers[index] || ''}
                       onChange={e => updateAnswer(index, e.target.value)}
                       onFocus={() => setCurrentIndex(index)}
@@ -1377,7 +1378,7 @@ export default function FocusTaskPage() {
                     />
                   </div>
                   <div className="focus-puzzle-details">
-                    <h4 className="focus-puzzle-number">Question {index + 1} of {task.content.items.length}</h4>
+                    <h4 className="focus-puzzle-number">{tr("Question")} {index + 1} {tr("of")} {task.content.items.length}</h4>
                     <p 
                       className="focus-puzzle-description" 
                       style={{ 
@@ -1435,11 +1436,11 @@ export default function FocusTaskPage() {
                     
                     <details style={{ marginTop: '15px' }}>
                       <summary style={{ cursor: 'pointer', color: 'var(--color-text-faint)', fontSize: '13px' }}>
-                        💭 Add explanation (optional)
+                        {tr("💭 Add explanation (optional)")}
                       </summary>
                       <textarea 
                         className="focus-textarea"
-                        placeholder="Explain your reasoning..."
+                        placeholder={tr("Explain your reasoning...")}
                         value={answers.explanations?.[index] || ''}
                         onChange={e => {
                           const newExplanations = {...(answers.explanations || {})};
@@ -1471,23 +1472,23 @@ export default function FocusTaskPage() {
             <div className="focus-card" style={{ marginBottom: '20px' }}>
               <h4 className="focus-section-title">
                 <span className="focus-section-title-icon">♟️</span>
-                Paste Your Game PGN
+                {tr("Paste Your Game PGN")}
               </h4>
               
               <div style={{ background: '#eff6ff', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '20px', border: '1px solid #93c5fd' }}>
-                <h5 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#1e40af' }}>ℹ️ Instructions:</h5>
+                <h5 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#1e40af' }}>{tr("ℹ️ Instructions:")}</h5>
                 <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: '#1e40af' }}>
-                  <li>Play a chess game on Lichess or Chess.com</li>
-                  <li>Copy the PGN (game notation with moves)</li>
-                  <li>Paste it below and select which side you played</li>
-                  <li>Click "Analyze" — Stockfish analyzes <strong>both sides</strong></li>
-                  <li>After analysis, you can switch between White and Black results</li>
-                  <li>Goal: ≤ {task.content.blunderLimit} blunder{task.content.blunderLimit !== 1 ? 's' : ''} on your side to earn {task.scoring.blunderAnalysisPoints} points</li>
+                  <li>{tr("Play a chess game on Lichess or Chess.com")}</li>
+                  <li>{tr("Copy the PGN (game notation with moves)")}</li>
+                  <li>{tr("Paste it below and select which side you played")}</li>
+                  <li>{tr("Click \"Analyze\" — Stockfish analyzes")} <strong>{tr("both sides")}</strong></li>
+                  <li>{tr("After analysis, you can switch between White and Black results")}</li>
+                  <li>{tr("Goal: ≤")} {task.content.blunderLimit} {tr("blunder")}{task.content.blunderLimit !== 1 ? 's' : ''} {tr("on your side to earn")} {task.scoring.blunderAnalysisPoints} {tr("points")}</li>
                 </ul>
               </div>
 
               <div style={{ marginBottom: '15px' }}>
-                <label className="focus-input-label">PGN Text:</label>
+                <label className="focus-input-label">{tr("PGN Text:")}</label>
                 <textarea 
                   style={{
                     width: '100%',
@@ -1507,7 +1508,7 @@ export default function FocusTaskPage() {
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <label className="focus-input-label">Which side did you play?</label>
+                <label className="focus-input-label">{tr("Which side did you play?")}</label>
                 <select 
                   style={{
                     width: '200px',
@@ -1520,8 +1521,8 @@ export default function FocusTaskPage() {
                   onChange={e => setUserSide(e.target.value)}
                   disabled={analyzingPgn || pgnAnalysisResult}
                 >
-                  <option value="white">⚪ White</option>
-                  <option value="black">⚫ Black</option>
+                  <option value="white">{tr("⚪ White")}</option>
+                  <option value="black">{tr("⚫ Black")}</option>
                 </select>
               </div>
 
@@ -1532,7 +1533,7 @@ export default function FocusTaskPage() {
                   onClick={analyzePgn}
                   disabled={!userPgn.trim() || analyzingPgn}
                 >
-                  {analyzingPgn ? '⏳ Analyzing with Stockfish (60-120s)...' : '🔍 Analyze with Stockfish'}
+                  {analyzingPgn ? tr('⏳ Analyzing with Stockfish (60-120s)...') : tr('🔍 Analyze with Stockfish')}
                 </button>
               )}
 
@@ -1541,9 +1542,9 @@ export default function FocusTaskPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ fontSize: '20px', animation: 'spin 1s linear infinite' }}>⚙️</div>
                     <div>
-                      <div style={{ fontWeight: 'bold', color: '#92400e' }}>Analyzing both sides...</div>
+                      <div style={{ fontWeight: 'bold', color: '#92400e' }}>{tr("Analyzing both sides...")}</div>
                       <div style={{ fontSize: '13px', color: '#92400e', marginTop: '3px' }}>
-                        Stockfish is checking every move for both White and Black. This may take 60-120 seconds.
+                        {tr("Stockfish is checking every move for both White and Black. This may take 60-120 seconds.")}
                       </div>
                     </div>
                   </div>
@@ -1593,7 +1594,7 @@ export default function FocusTaskPage() {
                             {sd.totalBlunders > 0 && <span style={{ color: 'var(--color-danger)' }}>💥{sd.totalBlunders} </span>}
                             {sd.totalMistakes > 0 && <span style={{ color: '#ea580c' }}>⚠️{sd.totalMistakes} </span>}
                             {sd.totalInaccuracies > 0 && <span style={{ color: 'var(--color-accent-2)' }}>❓{sd.totalInaccuracies}</span>}
-                            {sd.totalBlunders === 0 && sd.totalMistakes === 0 && sd.totalInaccuracies === 0 && <span style={{ color: 'var(--color-success)' }}>✅ Clean</span>}
+                            {sd.totalBlunders === 0 && sd.totalMistakes === 0 && sd.totalInaccuracies === 0 && <span style={{ color: 'var(--color-success)' }}>{tr("✅ Clean")}</span>}
                           </div>
                         </button>
                       );
@@ -1611,17 +1612,17 @@ export default function FocusTaskPage() {
                       border: `2px solid ${passed ? 'var(--color-success)' : 'var(--color-danger)'}`
                     }}>
                       <h3 style={{ margin: '0 0 10px 0', fontSize: '24px' }}>
-                        {passed ? '✅ PASSED!' : '❌ FAILED'}
+                        {passed ? tr('✅ PASSED!') : tr('❌ FAILED')}
                       </h3>
                       <div style={{ fontSize: '18px', fontWeight: 'bold', color: passed ? '#166534' : 'var(--color-danger)' }}>
-                        {sideData.totalBlunders} blunder{sideData.totalBlunders !== 1 ? 's' : ''} found on your side
+                        {sideData.totalBlunders} {tr("blunder")}{sideData.totalBlunders !== 1 ? 's' : ''} {tr("found on your side")}
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '8px', fontSize: '13px', color: 'var(--color-text-faint)' }}>
                         {sideData.totalMistakes > 0 && (
-                          <span>⚠️ {sideData.totalMistakes} mistake{sideData.totalMistakes !== 1 ? 's' : ''}</span>
+                          <span>⚠️ {sideData.totalMistakes} {tr("mistake")}{sideData.totalMistakes !== 1 ? 's' : ''}</span>
                         )}
                         {sideData.totalInaccuracies > 0 && (
-                          <span>❓ {sideData.totalInaccuracies} inaccurac{sideData.totalInaccuracies !== 1 ? 'ies' : 'y'}</span>
+                          <span>❓ {sideData.totalInaccuracies} {tr("inaccurac")}{sideData.totalInaccuracies !== 1 ? 'ies' : 'y'}</span>
                         )}
                       </div>
                       <div style={{ fontSize: '13px', color: 'var(--color-text-faint)', marginTop: '5px' }}>
@@ -1641,10 +1642,10 @@ export default function FocusTaskPage() {
                       border: '2px solid var(--color-text-muted)'
                     }}>
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--color-text-faint)' }}>
-                        Opponent's ({viewSide}) analysis
+                        {tr("Opponent's (")}{viewSide}{tr(") analysis")}
                       </div>
                       <div style={{ fontSize: '13px', color: 'var(--color-text-faint)', marginTop: '5px' }}>
-                        {sideData.totalBlunders} blunder{sideData.totalBlunders !== 1 ? 's' : ''}, {sideData.totalMistakes} mistake{sideData.totalMistakes !== 1 ? 's' : ''}, {sideData.totalInaccuracies} inaccurac{sideData.totalInaccuracies !== 1 ? 'ies' : 'y'}
+                        {sideData.totalBlunders} {tr("blunder")}{sideData.totalBlunders !== 1 ? 's' : ''}, {sideData.totalMistakes} {tr("mistake")}{sideData.totalMistakes !== 1 ? 's' : ''}, {sideData.totalInaccuracies} {tr("inaccurac")}{sideData.totalInaccuracies !== 1 ? 'ies' : 'y'}
                       </div>
                     </div>
                   )}
@@ -1653,7 +1654,7 @@ export default function FocusTaskPage() {
                   {sideData.allIssues && sideData.allIssues.length > 0 && (
                     <div>
                       <h5 style={{ marginTop: '20px', marginBottom: '10px', fontSize: '16px', color: '#1f2937' }}>
-                        📊 {viewSide === 'white' ? '⚪ White' : '⚫ Black'} Move Analysis:
+                        📊 {viewSide === 'white' ? '⚪ White' : '⚫ Black'} {tr("Move Analysis:")}
                       </h5>
                       {sideData.allIssues.map((issue, idx) => {
                         const colors = {
@@ -1681,11 +1682,11 @@ export default function FocusTaskPage() {
                                 {c.icon} {issue.classification}
                               </span>
                               <span style={{ fontWeight: 'bold' }}>
-                                Move {issue.moveNumber}: <span style={{ color: c.badge }}>{issue.move}</span>
+                                {tr("Move")} {issue.moveNumber}: <span style={{ color: c.badge }}>{issue.move}</span>
                               </span>
                             </div>
                             <div style={{ fontSize: '13px', color: 'var(--color-text-faint)', marginBottom: '3px' }}>
-                              Win chance: {issue.winChanceBefore}% → {issue.winChanceAfter}%
+                              {tr("Win chance:")} {issue.winChanceBefore}% → {issue.winChanceAfter}%
                               <span style={{ color: c.badge, fontWeight: 'bold' }}> (−{issue.winChanceDrop}%)</span>
                             </div>
                             {issue.evalWhiteBefore !== undefined && issue.evalWhiteAfter !== undefined && (
@@ -1694,7 +1695,7 @@ export default function FocusTaskPage() {
                               </div>
                             )}
                             <div style={{ fontSize: '13px', color: 'var(--color-success)' }}>
-                              <strong>Better move:</strong> {issue.bestMove}
+                              <strong>{tr("Better move:")}</strong> {issue.bestMove}
                             </div>
                           </div>
                         );
@@ -1711,7 +1712,7 @@ export default function FocusTaskPage() {
                       color: '#166534',
                       border: '2px solid var(--color-success)'
                     }}>
-                      🎉 Excellent! No blunders, mistakes, or inaccuracies detected for {viewSide}.
+                      {tr("🎉 Excellent! No blunders, mistakes, or inaccuracies detected for")} {viewSide}.
                     </div>
                   )}
 
@@ -1726,7 +1727,7 @@ export default function FocusTaskPage() {
                       setAnswers({ pgn: '', side: 'white', blundersFound: null });
                     }}
                   >
-                    🔄 Analyze Another Game
+                    {tr("🔄 Analyze Another Game")}
                   </button>
                 </div>
                 );
@@ -1736,7 +1737,7 @@ export default function FocusTaskPage() {
             {pgnAnalysisResult && (
               <div className="focus-card" style={{ background: '#fffbeb', padding: '15px', borderRadius: 'var(--radius-md)' }}>
                 <p style={{ margin: 0, fontSize: '14px', color: '#92400e' }}>
-                  <strong>Ready to submit:</strong> Analysis complete. Click "Submit Answers" below to complete this day.
+                  <strong>{tr("Ready to submit:")}</strong> {tr("Analysis complete. Click \"Submit Answers\" below to complete this day.")}
                 </p>
               </div>
             )}
@@ -1750,7 +1751,7 @@ export default function FocusTaskPage() {
               className="focus-btn focus-btn-success focus-btn-large focus-btn-disabled"
               disabled
             >
-              ⏳ Auto-submitting...
+              {tr("⏳ Auto-submitting...")}
             </button>
           ) : (
             <button 
@@ -1758,7 +1759,7 @@ export default function FocusTaskPage() {
               onClick={handleSubmit}
               disabled={submitting}
             >
-              {submitting ? '⏳ Submitting...' : '✓ Submit Answers'}
+              {submitting ? tr('⏳ Submitting...') : tr('✓ Submit Answers')}
             </button>
           )}
         </div>

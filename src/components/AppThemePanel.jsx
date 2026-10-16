@@ -17,6 +17,7 @@ import api from '../api';
 import { useUiTheme } from '../contexts/UiThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { hasManualBoardChoice } from '../contexts/BoardThemeContext';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Mirrors FREE_THEME_IDS in backend/models/ThemeUnlock.js. Only used when the
 // server cannot be reached — the real list comes from GET /api/auth/themes, and
@@ -81,7 +82,7 @@ export default function AppThemePanel() {
       const d = e?.response?.data;
       setError(
         d?.shortfall
-          ? `${name} costs ${d.price} XP — you need ${d.shortfall} more.`
+          ? tr("{name} costs {price} XP — you need {shortfall} more.", { name: name, price: d.price, shortfall: d.shortfall })
           : (d?.message || 'Could not unlock that theme.')
       );
     } finally {
@@ -106,7 +107,7 @@ export default function AppThemePanel() {
     <section style={S.card}>
       <div style={S.head}>
         <div>
-          <h2 style={S.h2}>✨ App Theme</h2>
+          <h2 style={S.h2}>{tr("✨ App Theme")}</h2>
           <p style={S.sub}>
             Changes the colours of the whole app. Sizes and layout stay the same —
             only the palette changes. Your choice is saved to this account, and
@@ -114,9 +115,9 @@ export default function AppThemePanel() {
           </p>
         </div>
         {!privileged && owned && (
-          <div style={S.wallet} title="Earn XP from puzzles, games and streaks">
+          <div style={S.wallet} title={tr("Earn XP from puzzles, games and streaks")}>
             <span style={S.walletNum}>{walletXp.toLocaleString()}</span>
-            <span style={S.walletLabel}>XP</span>
+            <span style={S.walletLabel}>{"XP"}</span>
           </div>
         )}
       </div>
@@ -176,7 +177,7 @@ export default function AppThemePanel() {
 
                 {unlocked ? (
                   FREE_FALLBACK.includes(t.id) && !privileged
-                    ? <div style={S.freeTag}>Free for everyone</div>
+                    ? <div style={S.freeTag}>{tr("Free for everyone")}</div>
                     : null
                 ) : (
                   <button
@@ -188,9 +189,9 @@ export default function AppThemePanel() {
                       opacity: (busy || !affordable) ? 0.55 : 1,
                       cursor: (busy || !affordable) ? 'not-allowed' : 'pointer',
                     }}
-                    title={affordable ? `Unlock for ${price} XP` : `You need ${price - walletXp} more XP`}
+                    title={affordable ? tr("Unlock for {price} XP", { price: price }) : tr("You need {v0} more XP", { v0: price - walletXp })}
                   >
-                    {busy ? 'Unlocking…' : `🔓 ${price.toLocaleString()} XP`}
+                    {busy ? tr('Unlocking…') : tr("🔓 {v0} XP", { v0: price.toLocaleString() })}
                   </button>
                 )}
               </div>
@@ -204,8 +205,8 @@ export default function AppThemePanel() {
           the pairing no longer applies to them, and the note would be a lie. */}
       {boardUntouched && (
         <p style={S.boardNote}>
-          ♟ Each theme brings its own chessboard. Pick your own in{' '}
-          <strong>Board Colours</strong> and it stays yours from then on,
+          {tr("♟ Each theme brings its own chessboard. Pick your own in")}{' '}
+          <strong>{tr("Board Colours")}</strong> {tr("and it stays yours from then on,")}
           whatever theme you choose.
         </p>
       )}
@@ -213,7 +214,7 @@ export default function AppThemePanel() {
       {!privileged && (
         <p style={S.foot}>
           Earn XP from puzzles, games, streaks and studies. Each theme unlocks
-          permanently — {price.toLocaleString()} XP once, then it is yours.
+          {tr("permanently —")} {price.toLocaleString()} {tr("XP once, then it is yours.")}
         </p>
       )}
     </section>

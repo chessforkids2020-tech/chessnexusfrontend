@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Chess } from 'chess.js';
 import Chessboard from './Chessboard';
+import { t as tr } from '../i18n/LanguageContext';
 
 const PGNChessboard = ({ pgn, boardWidth = 400, orientation = 'white', coordinateSides }) => {
   const [chess, setChess] = useState(new Chess());
@@ -18,7 +19,7 @@ const PGNChessboard = ({ pgn, boardWidth = 400, orientation = 'white', coordinat
         // Build history of FENs
         const fens = [];
         const tempChess = new Chess();
-        fens.push({ fen: tempChess.fen(), move: 'Start' });
+        fens.push({ fen: tempChess.fen(), move: tr('Start') });
         
         for (const move of moves) {
           tempChess.move(move);
@@ -83,7 +84,7 @@ const PGNChessboard = ({ pgn, boardWidth = 400, orientation = 'white', coordinat
           onClick={firstMove} 
           disabled={currentIndex <= 0}
           className="pgn-btn"
-          title="First Move"
+          title={tr("First Move")}
         >
           «
         </button>
@@ -91,14 +92,14 @@ const PGNChessboard = ({ pgn, boardWidth = 400, orientation = 'white', coordinat
           onClick={prevMove} 
           disabled={currentIndex <= 0}
           className="pgn-btn"
-          title="Previous Move"
+          title={tr("Previous Move")}
         >
           ‹
         </button>
         
         <div className="pgn-move-info" style={{ minWidth: '100px', textAlign: 'center', fontWeight: 'bold', color: '#fff' }}>
           {currentIndex === 0 ? 'Starting Position' : 
-           (currentIndex > 0 && history[currentIndex]) ? `Move ${currentIndex}: ${history[currentIndex].move}` : 
+           (currentIndex > 0 && history[currentIndex]) ? tr("Move {currentIndex}: {v1}", { currentIndex: currentIndex, v1: history[currentIndex].move }) : 
            'No PGN Loaded'}
         </div>
         
@@ -106,7 +107,7 @@ const PGNChessboard = ({ pgn, boardWidth = 400, orientation = 'white', coordinat
           onClick={nextMove} 
           disabled={currentIndex >= history.length - 1}
           className="pgn-btn"
-          title="Next Move"
+          title={tr("Next Move")}
         >
           ›
         </button>
@@ -114,7 +115,7 @@ const PGNChessboard = ({ pgn, boardWidth = 400, orientation = 'white', coordinat
           onClick={lastMove} 
           disabled={currentIndex >= history.length - 1}
           className="pgn-btn"
-          title="Last Move"
+          title={tr("Last Move")}
         >
           »
         </button>

@@ -7,6 +7,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
+import { t as tr } from '../i18n/LanguageContext';
 
 const FEATURES = [
   ['💡', 'Lights show the way', 'Squares light up to show where pieces go and which moves to play.'],
@@ -30,10 +31,10 @@ function ComingSoon() {
           letterSpacing: 1.4, textTransform: 'uppercase', background: 'var(--color-accent)', color: 'var(--color-bg)',
           marginBottom: 12,
         }}>
-          Coming soon
+          {tr("Coming soon")}
         </span>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-text)', margin: '0 0 6px' }}>
-          ♟ The ChessNexus Smart Chessboard
+          {tr("♟ The ChessNexus Smart Chessboard")}
         </h2>
         <p style={{ color: 'var(--color-text-muted)', fontSize: 14, lineHeight: 1.6, margin: 0 }}>
           A real chessboard that lights up, talks and senses every piece — screen-free
@@ -55,7 +56,7 @@ function ComingSoon() {
         ))}
       </div>
       <p style={{ ...p, margin: 0, padding: '0 24px 22px' }}>
-        We're testing the first boards now. Once it's ready, you'll connect it right here.
+        {tr("We're testing the first boards now. Once it's ready, you'll connect it right here.")}
       </p>
     </section>
   );
@@ -69,8 +70,8 @@ function timeAgo(d) {
   if (!d) return 'never';
   const s = Math.max(0, (Date.now() - new Date(d).getTime()) / 1000);
   if (s < 60) return 'just now';
-  if (s < 3600) return `${Math.floor(s / 60)} min ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)} h ago`;
+  if (s < 3600) return tr("{v0} min ago", { v0: Math.floor(s / 60) });
+  if (s < 86400) return tr("{v0} h ago", { v0: Math.floor(s / 3600) });
   return new Date(d).toLocaleDateString();
 }
 
@@ -95,7 +96,7 @@ export default function ChessboardDevicePanel() {
     e.preventDefault();
     setError(''); setSuccess('');
     const digits = code.replace(/\D/g, '');
-    if (digits.length !== 6) { setError('Enter the 6-digit code shown on the board.'); return; }
+    if (digits.length !== 6) { setError(tr('Enter the 6-digit code shown on the board.')); return; }
     setBusy(true);
     try {
       await api.post('/api/board/pair', { code: digits });
@@ -110,7 +111,7 @@ export default function ChessboardDevicePanel() {
   };
 
   const release = async (boardId) => {
-    if (!window.confirm('Disconnect this board from your account? It will show a new code.')) return;
+    if (!window.confirm(tr('Disconnect this board from your account? It will show a new code.'))) return;
     try {
       await api.delete(`/api/board/${boardId}`);
       load();
@@ -126,7 +127,7 @@ export default function ChessboardDevicePanel() {
     <>
       <ComingSoon />
       <section style={card}>
-        <h2 style={h2}>♟ Connect your ChessNexus board</h2>
+        <h2 style={h2}>{tr("♟ Connect your ChessNexus board")}</h2>
         <p style={p}>
           Switch on the board. Its screen shows a 6-digit code — type it below.
           Puzzles solved on the board then count on this account, just like on the website.
@@ -138,7 +139,7 @@ export default function ChessboardDevicePanel() {
             inputMode="numeric"
             autoComplete="one-time-code"
             placeholder="123 456"
-            aria-label="Board code"
+            aria-label={tr("Board code")}
             style={{
               flex: '1 1 160px', maxWidth: 220, padding: '12px 14px', fontSize: 22, letterSpacing: 4,
               fontWeight: 700, textAlign: 'center', borderRadius: 'var(--radius-md)',
@@ -153,7 +154,7 @@ export default function ChessboardDevicePanel() {
               background: 'var(--color-accent)', color: 'var(--color-bg)', fontWeight: 700, fontSize: 15, opacity: busy ? 0.6 : 1,
             }}
           >
-            {busy ? 'Connecting…' : 'Connect board'}
+            {busy ? tr('Connecting…') : tr('Connect board')}
           </button>
         </form>
         {error && <div style={{ color: 'var(--color-danger)', fontSize: 13, marginTop: 10 }}>{error}</div>}
@@ -161,11 +162,11 @@ export default function ChessboardDevicePanel() {
       </section>
 
       <section style={card}>
-        <h2 style={h2}>My boards</h2>
+        <h2 style={h2}>{tr("My boards")}</h2>
         {loading ? (
-          <p style={{ ...p, marginBottom: 0 }}>Loading…</p>
+          <p style={{ ...p, marginBottom: 0 }}>{tr("Loading…")}</p>
         ) : boards.length === 0 ? (
-          <p style={{ ...p, marginBottom: 0 }}>No board connected yet.</p>
+          <p style={{ ...p, marginBottom: 0 }}>{tr("No board connected yet.")}</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {boards.map(b => (
@@ -180,7 +181,7 @@ export default function ChessboardDevicePanel() {
                 <div style={{ flex: '1 1 180px', minWidth: 0 }}>
                   <div style={{ fontWeight: 600, color: 'var(--color-text)' }}>{b.name}</div>
                   <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
-                    {b.boardId} · {b.online ? 'online now' : `last seen ${timeAgo(b.lastSeen)}`}{b.fw ? ` · fw ${b.fw}` : ''}
+                    {b.boardId} · {b.online ? tr('online now') : tr("last seen {v0}", { v0: timeAgo(b.lastSeen) })}{b.fw ? tr(" · fw {fw}", { fw: b.fw }) : ''}
                   </div>
                 </div>
                 <button
@@ -190,7 +191,7 @@ export default function ChessboardDevicePanel() {
                     border: '1px solid var(--color-border)', background: 'transparent', color: 'var(--color-text-muted)',
                   }}
                 >
-                  Disconnect
+                  {tr("Disconnect")}
                 </button>
               </div>
             ))}

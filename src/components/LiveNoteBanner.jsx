@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Show the live note on exactly the same pages as the floating schedule button.
 const ALLOWED_PATHS = new Set(['/', '/dashboard', '/puzzles-hub', '/race', '/arcade', '/study', '/games', '/game-analysis']);
@@ -110,7 +111,7 @@ export default function LiveNoteBanner() {
                 padding: '1px 8px', borderRadius: 'var(--radius-pill)',
                 background: 'rgba(34,197,94,0.18)', border: '1px solid rgba(34,197,94,0.6)',
                 textShadow: '0 0 8px rgba(34,197,94,0.9)',
-              }}>● LIVE NOW</span>
+              }}>{tr("● LIVE NOW")}</span>
             ) : (
               <span style={{
                 color: 'var(--color-warning)', fontWeight: 700,
@@ -125,7 +126,7 @@ export default function LiveNoteBanner() {
         {/* Close (session only — comes back on reload) */}
         <button
           onClick={() => setClosed(true)}
-          aria-label="Close"
+          aria-label={tr("Close")}
           style={{
             flexShrink: 0,
             background: 'transparent',

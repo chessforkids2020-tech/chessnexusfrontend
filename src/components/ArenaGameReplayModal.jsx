@@ -8,6 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Chess } from 'chess.js';
 import Chessboard from './Chessboard';
+import { t as tr } from '../i18n/LanguageContext';
 
 const DEFAULT_START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -84,10 +85,10 @@ export default function ArenaGameReplayModal({ moves, startFen, finalFen, white,
       <div style={S.modal} onClick={e => e.stopPropagation()}>
         <div style={S.head}>
           <div style={{ fontWeight: 800, color: 'var(--color-text)', fontSize: 15 }}>
-            {white || 'White'} <span style={{ color: 'var(--color-text-faint)' }}>vs</span> {black || 'Black'}
+            {white || 'White'} <span style={{ color: 'var(--color-text-faint)' }}>{tr("vs")}</span> {black || 'Black'}
             {result ? <span style={{ marginLeft: 8, color: 'var(--color-text-muted)', fontWeight: 700 }}>{resultLabel(result)}</span> : null}
           </div>
-          <button onClick={onClose} style={S.closeBtn} title="Close (Esc)">✕</button>
+          <button onClick={onClose} style={S.closeBtn} title={tr("Close (Esc)")}>✕</button>
         </div>
 
         {!hasGame ? (
@@ -97,12 +98,12 @@ export default function ArenaGameReplayModal({ moves, startFen, finalFen, white,
                 <Chessboard position={finalFen} boardWidth={boardW} orientation={orientation} draggable={false} />
               </div>
               <div style={{ marginTop: 10, color: 'var(--color-text-muted)', fontSize: 13 }}>
-                Final position. Move-by-move replay isn’t available for this game.
+                {tr("Final position. Move-by-move replay isn’t available for this game.")}
               </div>
             </div>
           ) : (
             <div style={{ padding: '28px 8px', color: 'var(--color-text-muted)', textAlign: 'center', fontSize: 14 }}>
-              Moves aren’t available for this game.
+              {tr("Moves aren’t available for this game.")}
             </div>
           )
         ) : (
@@ -119,7 +120,7 @@ export default function ArenaGameReplayModal({ moves, startFen, finalFen, white,
             </div>
 
             <div style={S.movesCol}>
-              <div style={S.movesTitle}>Moves</div>
+              <div style={S.movesTitle}>{tr("Moves")}</div>
               <div style={S.movesScroll}>
                 {rows.map((row) => (
                   <div key={row.num} style={S.moveRow}>

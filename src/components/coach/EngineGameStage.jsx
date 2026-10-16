@@ -10,6 +10,7 @@ import React from 'react';
 import { Chess } from 'chess.js';
 import Chessboard, { gutterFor } from '../Chessboard';
 import useClassEngineGame from '../../hooks/useClassEngineGame';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ── COACH: every student's board at once, click one to spotlight it ──────────
 export function EngineCoachStage({ game, boardWidth, onFocus, onEnd, onReview, onClear }) {
@@ -51,21 +52,21 @@ export function EngineCoachStage({ game, boardWidth, onFocus, onEnd, onReview, o
           be walked through — the activity is over, the games are not. */}
       <div style={S.head}>
         <span style={S.title}>
-          {ended ? '♟️ Games to review' : '♟️ Class vs Computer'}
+          {ended ? tr('♟️ Games to review') : tr('♟️ Class vs Computer')}
         </span>
         <span style={S.meta}>
           {ended
-            ? `${boards.length} game${boards.length === 1 ? '' : 's'} · ${game?.skill || 'medium'}`
-            : `${boards.length} playing · ${done} finished · ${game?.skill || 'medium'}`}
+            ? tr("{length} game{v1} · {v2}", { length: boards.length, v1: boards.length === 1 ? '' : 's', v2: game?.skill || 'medium' })
+            : tr("{length} playing · {done} finished · {v2}", { length: boards.length, done: done, v2: game?.skill || 'medium' })}
         </span>
         {ended
-          ? <button type="button" style={S.endBtn} onClick={onClear}>Close review</button>
-          : <button type="button" style={S.endBtn} onClick={onEnd}>End activity</button>}
+          ? <button type="button" style={S.endBtn} onClick={onClear}>{tr("Close review")}</button>
+          : <button type="button" style={S.endBtn} onClick={onEnd}>{tr("End activity")}</button>}
       </div>
 
       {ended && (
         <div style={S.reviewHint}>
-          Play is over. Hit <b>🔎 Review</b> on any game to load it on the teaching
+          {tr("Play is over. Hit")} <b>{tr("🔎 Review")}</b> {tr("on any game to load it on the teaching")}
           board — the whole class follows along.
         </div>
       )}
@@ -91,7 +92,7 @@ export function EngineCoachStage({ game, boardWidth, onFocus, onEnd, onReview, o
               onClick={() => onFocus?.(b.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onFocus?.(b.id); } }}
               style={S.cellHit}
-              title="Show this board to the class"
+              title={tr("Show this board to the class")}
             >
               <Chessboard position={b.fen} boardWidth={cellBoard} draggable={false} />
               <div style={S.cellName}>
@@ -100,7 +101,7 @@ export function EngineCoachStage({ game, boardWidth, onFocus, onEnd, onReview, o
                   <span style={S.cellDone}> · {b.result}</span>
                 )}
               </div>
-              <div style={S.cellMoves}>{b.moves?.length || 0} moves</div>
+              <div style={S.cellMoves}>{b.moves?.length || 0} {tr("moves")}</div>
             </div>
             {/* Review needs moves to step through — a board with none has
                 nothing to show, so the button only appears once there are. */}
@@ -109,14 +110,14 @@ export function EngineCoachStage({ game, boardWidth, onFocus, onEnd, onReview, o
                 type="button"
                 style={S.reviewBtn}
                 onClick={(e) => { e.stopPropagation(); onReview(b); }}
-                title="Load this game on the teaching board to analyse with the class"
+                title={tr("Load this game on the teaching board to analyse with the class")}
               >
-                🔍 Review on board
+                {tr("🔍 Review on board")}
               </button>
             )}
           </div>
         ))}
-        {boards.length === 0 && <div style={S.empty}>No students joined.</div>}
+        {boards.length === 0 && <div style={S.empty}>{tr("No students joined.")}</div>}
       </div>
     </div>
   );
@@ -148,13 +149,13 @@ export function EngineStudentStage({ game, myBoard, socket, sessionId, boardWidt
     return (
       <div style={S.wrap}>
         <div style={S.head}>
-          <span style={S.title}>♟️ Class vs Computer</span>
-          <span style={S.meta}>Your game: {myBoard.result}</span>
+          <span style={S.title}>{tr("♟️ Class vs Computer")}</span>
+          <span style={S.meta}>{tr("Your game:")} {myBoard.result}</span>
         </div>
         <Chessboard position={spotlight.fen} boardWidth={boardWidth} draggable={false} />
-        <div style={S.watching}>Watching {spotlight.studentName}</div>
+        <div style={S.watching}>{tr("Watching")} {spotlight.studentName}</div>
         <button type="button" style={S.switchBtn} onClick={() => setReviewMine(true)}>
-          ← Review my game
+          {tr("← Review my game")}
         </button>
       </div>
     );
@@ -164,13 +165,13 @@ export function EngineStudentStage({ game, myBoard, socket, sessionId, boardWidt
   if (!myBoard) {
     return (
       <div style={S.wrap}>
-        <div style={S.head}><span style={S.title}>♟️ Class vs Computer</span></div>
+        <div style={S.head}><span style={S.title}>{tr("♟️ Class vs Computer")}</span></div>
         {spotlight ? (
           <>
             <Chessboard position={spotlight.fen} boardWidth={boardWidth} draggable={false} />
-            <div style={S.watching}>Watching {spotlight.studentName}</div>
+            <div style={S.watching}>{tr("Watching")} {spotlight.studentName}</div>
           </>
-        ) : <div style={S.empty}>Waiting for the coach…</div>}
+        ) : <div style={S.empty}>{tr("Waiting for the coach…")}</div>}
       </div>
     );
   }
@@ -189,7 +190,7 @@ export function EngineStudentStage({ game, myBoard, socket, sessionId, boardWidt
   return (
     <div style={S.wrap}>
       <div style={S.head}>
-        <span style={S.title}>♟️ You vs Computer</span>
+        <span style={S.title}>{tr("♟️ You vs Computer")}</span>
         <span style={S.meta}>
           {finished ? myBoard.result
             : thinking ? 'Computer is thinking…'
@@ -209,7 +210,7 @@ export function EngineStudentStage({ game, myBoard, socket, sessionId, boardWidt
           is highlighting somebody else's board. */}
       {iAmFinished && spotlight && !spotlightIsMine && (
         <button type="button" style={S.switchBtn} onClick={() => setReviewMine(false)}>
-          Back to class board →
+          {tr("Back to class board →")}
         </button>
       )}
     </div>

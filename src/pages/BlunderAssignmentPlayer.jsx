@@ -4,6 +4,7 @@ import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
 import api from '../api';
 import './BlunderAssignmentPlayer.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Student player for a coach "find the blunders" assignment. Steps through each
 // game's moves; the student types the blunder moves they spot into slots, then
@@ -47,7 +48,7 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
   }, [games, gi]);
 
   const maxPly = parsed.sans.length;
-  const fen = parsed.fens[ply] || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  const fen = parsed.fens[ply] || tr('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
   const lastSan = ply > 0 ? parsed.sans[ply - 1] : null;
 
   const gameTarget = Math.max(1, games[gi]?.blunderCount || 1);
@@ -88,7 +89,7 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
         <div className="bap-head">
           <div>
             <div className="bap-title">🔍 {assignment.title}</div>
-            <div className="bap-sub">{games.length} game{games.length > 1 ? 's' : ''} · solve every game to finish</div>
+            <div className="bap-sub">{games.length} {tr("game")}{games.length > 1 ? 's' : ''} {tr("· solve every game to finish")}</div>
           </div>
           <button className="bap-x" onClick={onClose}>✕</button>
         </div>
@@ -96,12 +97,12 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
         {result ? (
           <div className="bap-result">
             <div className="bap-result-icon">{result.passed ? '🎉' : '🔍'}</div>
-            <h2>{result.passed ? 'Assignment complete!' : 'Keep looking'}</h2>
-            <p>You found <strong>{result.foundCount}</strong> of the {result.findTarget} blunders needed.</p>
+            <h2>{result.passed ? tr('Assignment complete!') : tr('Keep looking')}</h2>
+            <p>{tr("You found")} <strong>{result.foundCount}</strong> {tr("of the")} {result.findTarget} {tr("blunders needed.")}</p>
             {result.correctMoves?.length > 0 && (
-              <div className="bap-correct">Correct: {result.correctMoves.join(', ')}</div>
+              <div className="bap-correct">{tr("Correct:")} {result.correctMoves.join(', ')}</div>
             )}
-            <button className="bap-btn" onClick={onClose}>Back to assignments</button>
+            <button className="bap-btn" onClick={onClose}>{tr("Back to assignments")}</button>
           </div>
         ) : (
           <div className="bap-body">
@@ -118,7 +119,7 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
                         key={i}
                         className={i === gi ? 'bap-game-active' : ''}
                         onClick={() => { setGi(i); setPly(0); }}
-                      >{answered ? '✓ ' : ''}Game {i + 1}</button>
+                      >{answered ? '✓ ' : ''}{tr("Game")} {i + 1}</button>
                     );
                   })}
                 </div>
@@ -141,7 +142,7 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
                   be on one. `side` is null on legacy assignments built before
                   the side migration, which keep the old wording. */}
               <div className="bap-finds-label">
-                Game {gi + 1}: find {gameTarget} blunder{gameTarget > 1 ? 's' : ''}
+                {tr("Game")} {gi + 1}{tr(": find")} {gameTarget} {tr("blunder")}{gameTarget > 1 ? 's' : ''}
                 {games[gi]?.side
                   ? <> by <strong>{games[gi].side === 'w' ? 'White' : 'Black'}</strong></>
                   : null}
@@ -150,7 +151,7 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
                 <input
                   key={i}
                   className="bap-find-input"
-                  placeholder={`Blunder ${i + 1} (e.g. Qh5)`}
+                  placeholder={tr("Blunder {v0} (e.g. Qh5)", { v0: i + 1 })}
                   value={v}
                   onChange={e => setSlot(i, e.target.value)}
                 />
@@ -175,17 +176,17 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
                       setPly(0);
                     }}
                   >
-                    Next game ▶
+                    {tr("Next game ▶")}
                   </button>
                   <div className="bap-finds-hint">
                     {thisGameAnswered
-                      ? `${remainingGames} game${remainingGames > 1 ? 's' : ''} left`
+                      ? tr("{remainingGames} game{v1} left", { remainingGames: remainingGames, v1: remainingGames > 1 ? 's' : '' })
                       : 'Fill in this game to continue'}
                   </div>
                 </>
               ) : (
                 <button className="bap-btn" disabled={submitting} onClick={submit}>
-                  {submitting ? 'Submitting…' : 'Submit assignment'}
+                  {submitting ? tr('Submitting…') : tr('Submit assignment')}
                 </button>
               )}
             </div>

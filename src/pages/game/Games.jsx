@@ -7,6 +7,7 @@ import CoffeeCta from '../../components/CoffeeCta';
 import AboutFeatureCTA from '../../components/marketing/AboutFeatureCTA';
 import FriendGameSetup from './FriendGameSetup';
 import './Games.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function Games() {
   const navigate = useNavigate();
@@ -104,7 +105,7 @@ export default function Games() {
   // returned handle, and we need it to navigate the tab once the token arrives.
   const open3DArena = () => {
     if (!user || user.role === 'guest') {
-      navigate('/login', { state: { message: 'Please log in to access the 3D Arena.' } });
+      navigate('/login', { state: { message: tr('Please log in to access the 3D Arena.') } });
       return;
     }
     const base = import.meta.env.VITE_3D_ARENA_URL || 'https://3darena.chessnexus.in';
@@ -123,8 +124,8 @@ export default function Games() {
   const playOptions = [
     {
       id: 'friend',
-      title: "Play with a Friend",
-      blurb: "Share a code and talk while you play — free voice call built in.",
+      title: tr("Play with a Friend"),
+      blurb: tr("Share a code and talk while you play — free voice call built in."),
       icon: "🤝",
       color: "var(--color-success)",
       action: () => setShowFriendSetup(true)
@@ -133,24 +134,24 @@ export default function Games() {
       // Play vs the engine, entirely in the browser (Stockfish WASM) — no
       // server game, no opponent needed, so it always has something to offer.
       id: 'stockfish',
-      title: "Play vs Stockfish",
-      blurb: "Six strength levels, any time control, from any position.",
+      title: tr("Play vs Stockfish"),
+      blurb: tr("Six strength levels, any time control, from any position."),
       icon: "🤖",
       color: "var(--color-accent)",
       action: () => navigate('/play/ai')
     },
     {
       id: 'replay',
-      title: "Replay Training",
-      blurb: "Replay a real game and find the winning side's moves yourself.",
+      title: tr("Replay Training"),
+      blurb: tr("Replay a real game and find the winning side's moves yourself."),
       icon: "🎬",
       color: "var(--color-accent-2)",
       action: () => navigate('/replay-training')
     },
     {
       id: 3,
-      title: "Arena Tournament",
-      blurb: "Back-to-back games against new opponents. Climb the board.",
+      title: tr("Arena Tournament"),
+      blurb: tr("Back-to-back games against new opponents. Climb the board."),
       icon: "🏆",
       color: "#FFD166",
       action: () => navigate('/arenatournament')
@@ -160,8 +161,8 @@ export default function Games() {
       // belongs beside the other play options rather than in the app's global
       // navigation, where it competed with Puzzles, Study and Race.
       id: '3darena',
-      title: "3D Arena",
-      blurb: "Offline while we rebuild the 3D board for smoother, faster play.",
+      title: tr("3D Arena"),
+      blurb: tr("Offline while we rebuild the 3D board for smoother, faster play."),
       icon: "🎮",
       color: "var(--color-accent-2)",
       // Temporarily taken down (the 3D board runs on its own server and was
@@ -176,8 +177,8 @@ export default function Games() {
       // Not built yet. `disabled` blocks the click, dims the card and swaps the
       // CTA for a Coming Soon pill — no separate placeholder handling needed.
       id: 'broadcast',
-      title: "Live Broadcasting",
-      blurb: "Follow Indian FIDE-rated tournaments live, board by board.",
+      title: tr("Live Broadcasting"),
+      blurb: tr("Follow Indian FIDE-rated tournaments live, board by board."),
       icon: "📡",
       color: "var(--color-danger)",
       disabled: true,
@@ -189,7 +190,7 @@ export default function Games() {
   const quickPlayOptions = [
     {
       id: 'blitz',
-      title: "Blitz",
+      title: tr("Blitz"),
       time: "3+2 min",
       icon: "⚡",
       badge: "Fast",
@@ -198,7 +199,7 @@ export default function Games() {
     },
     {
       id: 'rapid',
-      title: "Rapid",
+      title: tr("Rapid"),
       time: "10+0 min",
       icon: "⏱️",
       badge: "Popular",
@@ -207,7 +208,7 @@ export default function Games() {
     },
     {
       id: 'bullet',
-      title: "Bullet",
+      title: tr("Bullet"),
       time: "1+0 min",
       icon: "💨",
       badge: "Extreme",
@@ -308,7 +309,7 @@ export default function Games() {
                       padding: '3px 11px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em',
                     }}>
                       <span style={{ width: 7, height: 7, borderRadius: 'var(--radius-circle)', background: 'var(--color-danger)', display: 'inline-block', animation: 'heroBlink 1.2s infinite' }} />
-                      Live now
+                      {tr("Live now")}
                     </span>
                   ) : (
                     <span style={{
@@ -316,17 +317,17 @@ export default function Games() {
                       border: '1px solid rgba(255,209,102,0.5)', borderRadius: 'var(--radius-pill)',
                       padding: '3px 11px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em',
                     }}>
-                      Upcoming Tournament
+                      {tr("Upcoming Tournament")}
                     </span>
                   )}
                   {tc && <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱ {tc}</span>}
-                  <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 {featured.participantCount ?? 0} joined</span>
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 {featured.participantCount ?? 0} {tr("joined")}</span>
                 </div>
                 <div style={{ color: 'var(--color-text)', fontWeight: 800, fontSize: 28, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 520 }} title={displayName}>
                   {displayName}
                 </div>
                 <div style={{ color: accent, fontWeight: 700, fontSize: 17, marginTop: 4 }}>
-                  {isLive ? '🔴 Join the action now' : countdown ? `Starts in ${countdown}` : 'Starting soon'}
+                  {isLive ? tr('🔴 Join the action now') : countdown ? tr("Starts in {countdown}", { countdown: countdown }) : tr('Starting soon')}
                 </div>
               </div>
             </div>
@@ -342,7 +343,7 @@ export default function Games() {
                   boxShadow: `0 6px 22px ${accent}44`, whiteSpace: 'nowrap',
                 }}
               >
-                {isLive ? 'Join now →' : 'Join tournament →'}
+                {isLive ? tr('Join now →') : tr('Join tournament →')}
               </button>
               <button
                 onClick={() => navigate('/arenatournament')}
@@ -352,7 +353,7 @@ export default function Games() {
                   padding: '12px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
                 }}
               >
-                All tournaments
+                {tr("All tournaments")}
               </button>
             </div>
           </div>
@@ -408,7 +409,7 @@ export default function Games() {
         <div className="glass-card" style={{ width: '100%', boxSizing: 'border-box' }}>
           <div className="section-header" style={{ marginBottom: '16px' }}>
             <div className="section-icon">🏁</div>
-            <h2 className="section-title">Recently Finished Tournaments</h2>
+            <h2 className="section-title">{tr("Recently Finished Tournaments")}</h2>
           </div>
           <div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
             {recentFinished.map((t) => {
@@ -438,14 +439,14 @@ export default function Games() {
                       🏆 {(t.name || '').replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim()}
                     </span>
                     <span style={{ background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)', color: 'var(--color-accent-2)', borderRadius: 'var(--radius-pill)', padding: '2px 9px', fontSize: '11px', fontWeight: '700', flexShrink: 0 }}>
-                      FINISHED
+                      {tr("FINISHED")}
                     </span>
                   </div>
                   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                     <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>⏱ {timeControl}</span>
-                    <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>👥 {t.participantCount ?? 0} players</span>
+                    <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>👥 {t.participantCount ?? 0} {tr("players")}</span>
                   </div>
-                  <div style={{ marginTop: '2px', color: '#6366f1', fontSize: '12px', fontWeight: '600' }}>View Results →</div>
+                  <div style={{ marginTop: '2px', color: '#6366f1', fontSize: '12px', fontWeight: '600' }}>{tr("View Results →")}</div>
                 </div>
               );
             })}
@@ -456,22 +457,22 @@ export default function Games() {
       {/* Tournament Rewards Card - full width below layout */}
       <div className="glass-card trophy-showcase-card" style={{ width: '100%', boxSizing: 'border-box' }}>
         <div className="trophy-header">
-          <h3 className="trophy-title">🏆 Tournament Rewards</h3>
+          <h3 className="trophy-title">{tr("🏆 Tournament Rewards")}</h3>
         </div>
 
         <div style={{ marginTop: '18px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
 
           {/* Left column — point events */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ color: 'var(--color-text-faint)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Points</div>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>{tr("Points")}</div>
 
             {[
-              { icon: '✅', label: 'Win',              desc: null,                              value: '+2 pts' },
-              { icon: '🤝', label: 'Draw',             desc: null,                              value: '+1 pt' },
-              { icon: '🐦', label: 'Early Bird',       desc: 'Join before tournament starts',   value: '+3 pts' },
-              { icon: '⚡', label: 'Comeback Surge',   desc: 'Last place → 2 wins in a row',   value: '+4 pts' },
-              { icon: '👑', label: 'Beat Crown holder',desc: null,                              value: '+4 pts' },
-              { icon: '🎁', label: 'Carry Bonus',      desc: 'From previous tournament',        value: 'up to +4' },
+              { icon: '✅', label: tr('Win'),              desc: null,                              value: tr('+2 pts') },
+              { icon: '🤝', label: tr('Draw'),             desc: null,                              value: tr('+1 pt') },
+              { icon: '🐦', label: tr('Early Bird'),       desc: tr('Join before tournament starts'),   value: tr('+3 pts') },
+              { icon: '⚡', label: tr('Comeback Surge'),   desc: tr('Last place → 2 wins in a row'),   value: tr('+4 pts') },
+              { icon: '👑', label: tr('Beat Crown holder'),desc: null,                              value: tr('+4 pts') },
+              { icon: '🎁', label: tr('Carry Bonus'),      desc: tr('From previous tournament'),        value: tr('up to +4') },
             ].map(({ icon, label, desc, value }) => (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a07)' }}>
                 <span style={{ fontSize: '15px', width: '20px', textAlign: 'center', flexShrink: 0 }}>{icon}</span>
@@ -486,12 +487,12 @@ export default function Games() {
 
           {/* Right column — crowns + carry */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ color: 'var(--color-text-faint)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Crown Tiers</div>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>{tr("Crown Tiers")}</div>
 
             {[
-              { emoji: '👑', label: 'Gold Crown',     req: '1 tournament win',    color: 'var(--color-warning)' },
-              { emoji: '👑', label: 'Platinum Crown', req: '3 consecutive wins',  color: 'var(--color-text-muted)' },
-              { emoji: '💎', label: 'Gem Crown',      req: '5 tournament wins',   color: 'var(--color-accent-2)' },
+              { emoji: '👑', label: tr('Gold Crown'),     req: tr('1 tournament win'),    color: 'var(--color-warning)' },
+              { emoji: '👑', label: tr('Platinum Crown'), req: tr('3 consecutive wins'),  color: 'var(--color-text-muted)' },
+              { emoji: '💎', label: tr('Gem Crown'),      req: tr('5 tournament wins'),   color: 'var(--color-accent-2)' },
             ].map(({ emoji, label, req, color }) => (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a07)' }}>
                 <span style={{ fontSize: '18px', filter: `drop-shadow(0 0 6px ${color})`, width: '20px', textAlign: 'center', flexShrink: 0 }}>{emoji}</span>
@@ -503,17 +504,17 @@ export default function Games() {
             ))}
 
             <div style={{ color: 'var(--color-text-faint)', fontSize: '11px', padding: '0 4px' }}>
-              ⚠️ Crown is only lost if you participate and don't finish 1st
+              {tr("⚠️ Crown is only lost if you participate and don't finish 1st")}
             </div>
             <div style={{ color: 'var(--color-text-faint)', fontSize: '11px', padding: '0 4px' }}>
-              Any player who beats a crowned player gets <span style={{ color: 'var(--color-warning)', fontWeight: '700' }}>+4 pts</span> for that win
+              {tr("Any player who beats a crowned player gets")} <span style={{ color: 'var(--color-warning)', fontWeight: '700' }}>{tr("+4 pts")}</span> {tr("for that win")}
             </div>
 
-            <div style={{ color: 'var(--color-text-faint)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '6px', marginBottom: '2px' }}>Carry-Forward Bonus 🎁</div>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '6px', marginBottom: '2px' }}>{tr("Carry-Forward Bonus 🎁")}</div>
 
             <div style={{ padding: '12px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-md)' }}>
               <div style={{ color: 'var(--color-text)', fontSize: '13px', lineHeight: '1.6' }}>
-                Play <strong style={{ color: 'var(--color-accent-2)' }}>≥ 3 games</strong> in <strong style={{ color: 'var(--color-accent-2)' }}>3 separate tournaments</strong> → earn <strong style={{ color: 'var(--color-accent-2)' }}>+2 carry pts</strong> (max +4). Auto-applied as your starting score next tournament. Expires in <strong style={{ color: 'var(--color-accent-2)' }}>5 days</strong>.
+                {tr("Play")} <strong style={{ color: 'var(--color-accent-2)' }}>{tr("≥ 3 games")}</strong> {tr("in")} <strong style={{ color: 'var(--color-accent-2)' }}>{tr("3 separate tournaments")}</strong> {tr("→ earn")} <strong style={{ color: 'var(--color-accent-2)' }}>{tr("+2 carry pts")}</strong> {tr("(max +4). Auto-applied as your starting score next tournament. Expires in")} <strong style={{ color: 'var(--color-accent-2)' }}>{tr("5 days")}</strong>.
               </div>
             </div>
           </div>
@@ -525,8 +526,8 @@ export default function Games() {
       <div style={{ position: 'absolute', bottom: 8, left: 0, right: 0, zIndex: 1 }}>
         <AboutFeatureCTA
           links={[
-            { label: "About Games", to: "/play-chess-online" },
-            { label: "About 3D Arena", to: "/3d-chess-arena-tournament" },
+            { label: tr("About Games"), to: "/play-chess-online" },
+            { label: tr("About 3D Arena"), to: "/3d-chess-arena-tournament" },
           ]}
         />
       </div>

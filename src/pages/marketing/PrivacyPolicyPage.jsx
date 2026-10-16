@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import SEO from "../../components/SEO";
+import { getLanguage } from '../../i18n/LanguageContext';
 import "../../components/marketing/marketing.css";
 
 const CANONICAL = "/privacy-policy";
@@ -43,6 +44,13 @@ export default function PrivacyPolicyPage() {
         <header className="mkt-hero">
           <img src="/logo.png" alt="Chess Nexus logo" className="mkt-hero-logo" />
           <h1>Privacy Policy</h1>
+          {/* Legal text is kept in English on purpose: a machine translation of a
+              legal document could change its meaning. Spanish readers are told so. */}
+          {getLanguage() === 'es' && (
+            <p style={{ color: "#fbbf24", fontSize: 14, marginTop: 8 }} lang="es">
+              Este documento legal solo está disponible en inglés.
+            </p>
+          )}
           <p className="mkt-hero-sub">
             Your privacy matters to us. This policy explains what information Chess
             Nexus collects, why we collect it, how we protect it, and the choices

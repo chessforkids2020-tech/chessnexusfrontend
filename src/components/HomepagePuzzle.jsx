@@ -5,6 +5,7 @@ import Chessboard from '../components/Chessboard';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
 import stockfishService from '../services/stockfishService';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Map a Stockfish eval (cp or mate, side-to-move perspective) to a single
 // comparable number so "mate in 1" > "mate in 4" > any normal advantage.
@@ -143,7 +144,7 @@ export default function HomepagePuzzle() {
         
         // Check if puzzle is complete
         if (currentIndex + 1 >= solutionMoves.length) {
-          setStatus('Puzzle complete! 🎉');
+          setStatus(tr('Puzzle complete! 🎉'));
           setShowLoginPrompt(true);
           const today = new Date().toDateString();
           localStorage.setItem(attemptKey(), today);
@@ -191,7 +192,7 @@ export default function HomepagePuzzle() {
             puzzleData.orientation = newChess.turn() === 'w' ? 'white' : 'black';
           }
           
-          setStatus('Your turn! Find the best move.');
+          setStatus(tr('Your turn! Find the best move.'));
           setLoading(false);
         } else {
           // Fetch new daily puzzle
@@ -212,15 +213,15 @@ export default function HomepagePuzzle() {
               puzzleData.orientation = newChess.turn() === 'w' ? 'white' : 'black';
             }
             
-            setStatus('Your turn! Find the best move.');
+            setStatus(tr('Your turn! Find the best move.'));
           } else {
-            setStatus('No puzzles available today.');
+            setStatus(tr('No puzzles available today.'));
           }
           setLoading(false);
         }
       } catch (error) {
         setHasError(true);
-        setStatus('Failed to load puzzle. Try again later.');
+        setStatus(tr('Failed to load puzzle. Try again later.'));
         setLoading(false);
       }
     };
@@ -310,12 +311,12 @@ export default function HomepagePuzzle() {
         const acceptMove = () => {
           setChess(newChess);
           setMoveIndex(moveIndex + 1);
-          setStatus('Correct! ✓');
+          setStatus(tr('Correct! ✓'));
           // Checkmate ends the puzzle immediately, even if the recorded solution
           // had more moves queued.
           if (isAltMate || moveIndex + 1 >= solutionMoves.length) {
             setTimeout(() => {
-              setStatus('Puzzle solved! 🎉');
+              setStatus(tr('Puzzle solved! 🎉'));
               setShowLoginPrompt(true);
               const today = new Date().toDateString();
               localStorage.setItem(attemptKey(), today);
@@ -331,14 +332,14 @@ export default function HomepagePuzzle() {
         const rejectMove = () => {
           const newWrongAttempts = wrongAttempts + 1;
           setWrongAttempts(newWrongAttempts);
-          setStatus(`Incorrect! Try again. (${newWrongAttempts} attempts)`);
+          setStatus(tr("Incorrect! Try again. ({newWrongAttempts} attempts)", { newWrongAttempts: newWrongAttempts }));
           setTimeout(() => {
             const resetChess = new Chess(puzzle.fen);
             for (let i = 0; i < moveIndex; i++) {
               resetChess.move(solutionMoves[i]);
             }
             setChess(resetChess);
-            setStatus('Your turn! Find the best move.');
+            setStatus(tr('Your turn! Find the best move.'));
           }, 1500);
         };
 
@@ -351,7 +352,7 @@ export default function HomepagePuzzle() {
         // ── Alternative line: let Stockfish decide if it still forces mate. ──
         // Show the move on the board while the engine thinks, then resolve.
         setChess(newChess);
-        setStatus('Checking your move…');
+        setStatus(tr('Checking your move…'));
         setJudging(true);
         engineAcceptsMove(fenBefore, newChess)
           .then((accepted) => {
@@ -381,7 +382,7 @@ export default function HomepagePuzzle() {
 
   const handleShowSolution = () => {
     setShowSolution(true);
-    setStatus('Follow the solution moves below!');
+    setStatus(tr('Follow the solution moves below!'));
   };
 
   const handleLogin = () => {
@@ -395,7 +396,7 @@ export default function HomepagePuzzle() {
   if (loading) {
     return (
       <div className="homepage-puzzle-loading">
-        <img src="/logo.png" alt="Chess Nexus" className="loading-logo-image" />
+        <img src="/logo.png" alt={tr("Chess Nexus")} className="loading-logo-image" />
         <div className="loading-spinner"></div>
         <p>{status}</p>
       </div>
@@ -437,7 +438,7 @@ export default function HomepagePuzzle() {
           width: '100%' // Ensure it takes full width
         }}>
           <p style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 'bold', color: '#856404' }}>
-            Having trouble? View the solution!
+            {tr("Having trouble? View the solution!")}
           </p>
           <button 
             onClick={handleShowSolution}
@@ -456,7 +457,7 @@ export default function HomepagePuzzle() {
             onMouseEnter={(e) => e.target.style.backgroundColor = '#45a049'}
             onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-success)'}
           >
-            💡 Show Solution
+            {tr("💡 Show Solution")}
           </button>
         </div>
       )}
@@ -478,8 +479,8 @@ export default function HomepagePuzzle() {
             gap: '10px',
           }}>
             <span style={{ fontSize: '48px', lineHeight: 1 }}>😞</span>
-            <p style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: '15px', margin: 0 }}>Puzzle unavailable</p>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '12px', margin: 0 }}>Try again later</p>
+            <p style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: '15px', margin: 0 }}>{tr("Puzzle unavailable")}</p>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '12px', margin: 0 }}>{tr("Try again later")}</p>
           </div>
         )}
         <Chessboard
@@ -509,24 +510,24 @@ export default function HomepagePuzzle() {
           <div className="hp-puzzle-win-overlay">
             <div className="hp-puzzle-win-card">
               <div className="hp-puzzle-win-icon">🎉</div>
-              <h4 className="hp-puzzle-win-title">Great Job!</h4>
-              <p className="hp-puzzle-win-text">You solved today's puzzle!</p>
+              <h4 className="hp-puzzle-win-title">{tr("Great Job!")}</h4>
+              <p className="hp-puzzle-win-text">{tr("You solved today's puzzle!")}</p>
               {!user ? (
                 <>
-                  <p className="hp-puzzle-win-sub">Login to access more puzzles and track your progress.</p>
+                  <p className="hp-puzzle-win-sub">{tr("Login to access more puzzles and track your progress.")}</p>
                   <div className="hp-puzzle-win-buttons">
                     <button className="hp-puzzle-win-btn primary" onClick={handleLogin}>
-                      Login Now
+                      {tr("Login Now")}
                     </button>
                     <button className="hp-puzzle-win-btn ghost" onClick={dismissPrompt}>
-                      Maybe Later
+                      {tr("Maybe Later")}
                     </button>
                   </div>
                 </>
               ) : (
                 <div className="hp-puzzle-win-buttons">
                   <button className="hp-puzzle-win-btn primary" onClick={dismissPrompt}>
-                    Close
+                    {tr("Close")}
                   </button>
                 </div>
               )}

@@ -4,6 +4,7 @@ import api from '../api';
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import mockEvents from '../data/mockEvents';
 import './EventForm.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 function EventForm({ onClose }) {
   const nav = useNavigate();
@@ -81,10 +82,10 @@ function EventForm({ onClose }) {
       <div className="event-form-page">
         <div className="event-success">
           <div className="success-icon">✓</div>
-          <h1>Thank you for submitting!</h1>
+          <h1>{tr("Thank you for submitting!")}</h1>
           <p>
             {formData.eventName
-              ? `You are registered for ${formData.eventName}. `
+              ? tr("You are registered for {eventName}. ", { eventName: formData.eventName })
               : ''}
             You will receive the Zoom link and other details via email shortly.
           </p>
@@ -96,7 +97,7 @@ function EventForm({ onClose }) {
               nav('/');
             }
           }}>
-            {onClose ? 'Close' : 'Return to Home'}
+            {onClose ? tr('Close') : tr('Return to Home')}
           </button>
         </div>
       </div>
@@ -106,39 +107,39 @@ function EventForm({ onClose }) {
   return (
     <div className="event-form-page">
       <div className="event-form-container">
-        <h1>Event Registration</h1>
+        <h1>{tr("Event Registration")}</h1>
         {event.name && <h2 className="event-name-title">{event.name}</h2>}
         <form onSubmit={handleSubmit} className="event-form">
           <div className="form-group">
-            <label htmlFor="name">Name *</label>
+            <label htmlFor="name">{tr("Name *")}</label>
             <input type="text" id="name" name="name" value={formData.name} onChange={handleChange}
               className={errors.name ? 'error' : ''} />
             {errors.name && <span className="error-msg">{errors.name}</span>}
           </div>
           <div className="form-group">
-            <label htmlFor="age">Age *</label>
+            <label htmlFor="age">{tr("Age *")}</label>
             <input type="number" id="age" name="age" value={formData.age} onChange={handleChange}
               className={errors.age ? 'error' : ''} />
             {errors.age && <span className="error-msg">{errors.age}</span>}
           </div>
           <div className="form-group">
-            <label htmlFor="lichessUsername">Lichess Username</label>
+            <label htmlFor="lichessUsername">{tr("Lichess Username")}</label>
             <input type="text" id="lichessUsername" name="lichessUsername" value={formData.lichessUsername} onChange={handleChange} />
           </div>
           <div className="form-group">
-            <label htmlFor="country">Country *</label>
+            <label htmlFor="country">{tr("Country *")}</label>
             <input type="text" id="country" name="country" value={formData.country} onChange={handleChange}
               className={errors.country ? 'error' : ''} />
             {errors.country && <span className="error-msg">{errors.country}</span>}
           </div>
           <div className="form-group">
-            <label htmlFor="timeZone">Time Zone *</label>
+            <label htmlFor="timeZone">{tr("Time Zone *")}</label>
             <input type="text" id="timeZone" name="timeZone" value={formData.timeZone} onChange={handleChange}
               className={errors.timeZone ? 'error' : ''} />
             {errors.timeZone && <span className="error-msg">{errors.timeZone}</span>}
           </div>
           <div className="form-group">
-            <label htmlFor="email">Email *</label>
+            <label htmlFor="email">{tr("Email *")}</label>
             <input type="email" id="email" name="email" value={formData.email} onChange={handleChange}
               className={errors.email ? 'error' : ''} />
             {errors.email && <span className="error-msg">{errors.email}</span>}
@@ -146,9 +147,9 @@ function EventForm({ onClose }) {
           <div className="form-actions">
             <button className="btn-primary" disabled={loading}>{loading ? 'Submitting...' : 'Submit'}</button>
             {onClose ? (
-            <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
+            <button type="button" className="btn-secondary" onClick={onClose}>{tr("Cancel")}</button>
           ) : (
-            <button type="button" className="btn-secondary" onClick={() => nav('/')}>Cancel</button>
+            <button type="button" className="btn-secondary" onClick={() => nav('/')}>{tr("Cancel")}</button>
           )}
           </div>
         </form>

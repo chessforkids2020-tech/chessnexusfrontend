@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import useResponsiveBoardSize from '../hooks/useResponsiveBoardSize';
 import api from '../api';
 import './MasterMoveBoard.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 /**
  * "Guess the Master's Move" — an inline daily widget.
@@ -104,7 +105,7 @@ export default function MasterMoveBoard({ maxBoard = 360 }) {
     return (
       <div className="mmb-card mmb-card--loading">
         <div className="mmb-skeleton" />
-        <div className="mmb-caption-sub">Loading today’s master move…</div>
+        <div className="mmb-caption-sub">{tr("Loading today’s master move…")}</div>
       </div>
     );
   }
@@ -115,37 +116,37 @@ export default function MasterMoveBoard({ maxBoard = 360 }) {
   return (
     <div className="mmb-card">
       <div className="mmb-head">
-        <span className="mmb-badge">👑 Daily</span>
-        <h3 className="mmb-title">Guess the Master’s Move</h3>
+        <span className="mmb-badge">{tr("👑 Daily")}</span>
+        <h3 className="mmb-title">{tr("Guess the Master’s Move")}</h3>
         <p className="mmb-sub">
           {reveal
             ? 'Here’s what the master played:'
             : done
               ? 'You’ve already played today — come back tomorrow!'
-              : `${sideLabel} to move — drag a piece to guess.`}
+              : tr("{sideLabel} to move — drag a piece to guess.", { sideLabel: sideLabel })}
         </p>
       </div>
 
-      {feedback === 'correct' && <div className="mmb-fb mmb-fb-correct">✓ Brilliant — you found the master’s move!</div>}
-      {feedback === 'wrong' && <div className="mmb-fb mmb-fb-wrong">Not this time — here’s what the master played.</div>}
+      {feedback === 'correct' && <div className="mmb-fb mmb-fb-correct">{tr("✓ Brilliant — you found the master’s move!")}</div>}
+      {feedback === 'wrong' && <div className="mmb-fb mmb-fb-wrong">{tr("Not this time — here’s what the master played.")}</div>}
 
       {reveal && (
         <div className="mmb-reveal">
           <div className="mmb-move">
-            The master played <strong>{reveal.masterMove}</strong>
+            {tr("The master played")} <strong>{reveal.masterMove}</strong>
             {reveal.bestMove && reveal.bestMove !== reveal.masterMove && (
-              <span className="mmb-best"> (engine prefers {reveal.bestMove})</span>
+              <span className="mmb-best"> {tr("(engine prefers")} {reveal.bestMove})</span>
             )}
           </div>
           {reveal.comment && <p className="mmb-comment">{reveal.comment}</p>}
           {reveal.bestLine?.length > 0 && (
             <div className="mmb-line">
-              <span className="mmb-line-label">Line:</span>
+              <span className="mmb-line-label">{tr("Line:")}</span>
               {reveal.bestLine.map((m, i) => <span key={i} className="mmb-line-move">{m}</span>)}
             </div>
           )}
           <div className="mmb-context">
-            <span className="mmb-context-players">{reveal.context.white} vs {reveal.context.black}</span>
+            <span className="mmb-context-players">{reveal.context.white} {tr("vs")} {reveal.context.black}</span>
             <span className="mmb-context-meta">
               {[reveal.context.event, reveal.context.year].filter(Boolean).join(' · ')}
               {reveal.context.result ? ` · ${reveal.context.result}` : ''}

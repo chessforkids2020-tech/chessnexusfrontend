@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api, { resolveApiAssetUrl } from '../../api';
 import GameAnalysisModal from '../../components/masterGames/GameAnalysisModal';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Featured photos are frontend public/ assets at /players/<file> — keep that path
 // as-is (browser resolves it against the frontend origin); resolve everything else.
@@ -54,7 +55,7 @@ export default function MasterPlayer() {
   return (
     <div style={st.wrap}>
       <div style={st.inner}>
-        <button style={st.back} onClick={() => navigate('/master-games')}>‹ Master Games</button>
+        <button style={st.back} onClick={() => navigate('/master-games')}>{tr("‹ Master Games")}</button>
 
         {/* ── Player header ── */}
         <div style={st.header}>
@@ -70,23 +71,23 @@ export default function MasterPlayer() {
             <div style={st.playerMeta}>
               {player?.country && <span>{player.country}</span>}
               {player?.peakRating && <span>Peak {player.peakRating}</span>}
-              <span>{gameCount.toLocaleString()} game{gameCount === 1 ? '' : 's'}</span>
+              <span>{gameCount.toLocaleString()} {tr("game")}{gameCount === 1 ? '' : 's'}</span>
             </div>
             {player?.bio
               ? <div style={st.playerBio}>{player.bio}</div>
-              : <div style={st.playerBioEmpty}>Player information coming soon.</div>}
+              : <div style={st.playerBioEmpty}>{tr("Player information coming soon.")}</div>}
           </div>
         </div>
 
         {/* ── Games (25/page) ── */}
-        <div style={st.listMeta}>{loading ? 'Loading…' : `${gameCount.toLocaleString()} game${gameCount === 1 ? '' : 's'}`}</div>
+        <div style={st.listMeta}>{loading ? 'Loading…' : tr("{v0} game{v1}", { v0: gameCount.toLocaleString(), v1: gameCount === 1 ? '' : 's' })}</div>
         <div style={st.table}>
           <div style={{ ...st.row, ...st.headRow }}>
-            <span style={st.cPlayers}>Players</span>
-            <span style={st.cResult}>Result</span>
-            <span style={st.cOpening}>Opening</span>
-            <span style={st.cEvent}>Event</span>
-            <span style={st.cYear}>Year</span>
+            <span style={st.cPlayers}>{tr("Players")}</span>
+            <span style={st.cResult}>{tr("Result")}</span>
+            <span style={st.cOpening}>{tr("Opening")}</span>
+            <span style={st.cEvent}>{tr("Event")}</span>
+            <span style={st.cYear}>{tr("Year")}</span>
           </div>
           {games.map(g => (
             <div key={g._id} style={st.row} onClick={() => setOpenGameId(g._id)}
@@ -102,15 +103,15 @@ export default function MasterPlayer() {
               <span style={st.cYear}>{g.year || '—'}</span>
             </div>
           ))}
-          {!loading && games.length === 0 && <div style={st.empty}>No games found for this player.</div>}
+          {!loading && games.length === 0 && <div style={st.empty}>{tr("No games found for this player.")}</div>}
         </div>
 
         {/* ── Pagination ── */}
         {totalPages > 1 && (
           <div style={st.pager}>
-            <button style={st.pageBtn} disabled={page <= 1} onClick={() => setPage(p => p - 1)}>‹ Prev</button>
-            <span style={st.pageInfo}>Page {page} of {totalPages}</span>
-            <button style={st.pageBtn} disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next ›</button>
+            <button style={st.pageBtn} disabled={page <= 1} onClick={() => setPage(p => p - 1)}>{tr("‹ Prev")}</button>
+            <span style={st.pageInfo}>{tr("Page")} {page} {tr("of")} {totalPages}</span>
+            <button style={st.pageBtn} disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>{tr("Next ›")}</button>
           </div>
         )}
 

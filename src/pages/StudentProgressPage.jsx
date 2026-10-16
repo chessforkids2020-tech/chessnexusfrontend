@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import "./StudentProgressPage.css";
+import { t as tr } from '../i18n/LanguageContext';
 
 /**
  * PARENT PROGRESS REPORT — clean, read-only, share-friendly.
@@ -48,7 +49,7 @@ function ProgressChart({ points }) {
   return (
     <div className="sp-chart-wrap">
       <svg viewBox={`0 0 ${W} ${H}`} className="sp-chart" role="img"
-           aria-label="Progress over the last six months">
+           aria-label={tr("Progress over the last six months")}>
         {/* Three faint guides. Unlabelled — they give the eye a reference for
             rise and fall without implying the numbers mean something. */}
         {[0.25, 0.5, 0.75].map(f => (
@@ -68,7 +69,7 @@ function ProgressChart({ points }) {
             {r.map(p => (
               <circle key={p.key} cx={x(p.i)} cy={y(p.score)} r="5"
                       className="sp-chart-dot">
-                <title>{`${p.label}: ${p.puzzleCount} puzzles, ${p.gameCount} games`}</title>
+                <title>{tr("{label}: {puzzleCount} puzzles, {gameCount} games", { label: p.label, puzzleCount: p.puzzleCount, gameCount: p.gameCount })}</title>
               </circle>
             ))}
           </g>
@@ -97,7 +98,7 @@ export default function StudentProgressPage() {
         const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
         const res = await fetch(`${apiBase}/api/public/report/${encodeURIComponent(token)}`);
         if (res.status === 404) {
-          if (alive) { setErr("This progress link is invalid or has expired."); setLoading(false); }
+          if (alive) { setErr(tr("This progress link is invalid or has expired.")); setLoading(false); }
           return;
         }
         if (!res.ok) throw new Error("Could not load this progress report.");
@@ -116,7 +117,7 @@ export default function StudentProgressPage() {
     return (
       <div className="sp-root">
         <div className="sp-bg" />
-        <div className="sp-loading">Loading progress…</div>
+        <div className="sp-loading">{tr("Loading progress…")}</div>
       </div>
     );
   }
@@ -128,7 +129,7 @@ export default function StudentProgressPage() {
         <div className="sp-error">
           <div className="sp-error-icon">🔒</div>
           <p>{err}</p>
-          <Link to="/" className="sp-btn sp-btn-ghost">Go to Chess Nexus</Link>
+          <Link to="/" className="sp-btn sp-btn-ghost">{tr("Go to Chess Nexus")}</Link>
         </div>
       </div>
     );
@@ -188,8 +189,8 @@ export default function StudentProgressPage() {
     : null;
 
   const paymentMeta = {
-    paid: { label: "Paid", cls: "sp-pay-paid", icon: "✓" },
-    due: { label: "Payment due", cls: "sp-pay-due", icon: "•" },
+    paid: { label: tr("Paid"), cls: "sp-pay-paid", icon: "✓" },
+    due: { label: tr("Payment due"), cls: "sp-pay-due", icon: "•" },
   }[payment.status] || null; // 'na'/'unknown' → don't show the payment card
 
   return (
@@ -200,8 +201,8 @@ export default function StudentProgressPage() {
         {/* Header */}
         <header className="sp-head">
           <div className="sp-brand">
-            <img src="/logo.png" alt="Chess Nexus" className="sp-brand-logo" />
-            <span className="sp-brand-name">Chess<span>Nexus</span></span>
+            <img src="/logo.png" alt={tr("Chess Nexus")} className="sp-brand-logo" />
+            <span className="sp-brand-name">{tr("Chess")}<span>{tr("Nexus")}</span></span>
           </div>
           {month && <span className="sp-month-pill">📅 {month}</span>}
         </header>
@@ -213,7 +214,7 @@ export default function StudentProgressPage() {
             <div className="sp-hero-eyebrow">Progress report{month ? ` · ${month}` : ""}</div>
             <h1 className="sp-hero-name">{name}</h1>
             <p className="sp-hero-sub">
-              {memberSince ? `Training on Chess Nexus since ${memberSince}` : "Training on Chess Nexus"}
+              {memberSince ? tr("Training on Chess Nexus since {memberSince}", { memberSince: memberSince }) : tr("Training on Chess Nexus")}
             </p>
           </div>
         </section>
@@ -245,7 +246,7 @@ export default function StudentProgressPage() {
               <p className="sp-verdict-progress">{summary.progress}</p>
             )}
             {summary.effort && (
-              <p className="sp-verdict-effort">This month: {summary.effort}.</p>
+              <p className="sp-verdict-effort">{tr("This month:")} {summary.effort}.</p>
             )}
           </section>
         )}
@@ -282,7 +283,7 @@ export default function StudentProgressPage() {
             <div className="sp-coachnote-head">
               <span className="sp-coachnote-icon" aria-hidden="true">💬</span>
               <div>
-                <div className="sp-coachnote-title">A note from your coach</div>
+                <div className="sp-coachnote-title">{tr("A note from your coach")}</div>
                 {coachNoteAt && (
                   <div className="sp-coachnote-date">
                     {new Date(coachNoteAt).toLocaleDateString(undefined,
@@ -306,7 +307,7 @@ export default function StudentProgressPage() {
             values: "68" means nothing to them, and rising does. */}
         {progress?.points?.some(p => p.score !== null) && (
           <section className="sp-card sp-trend">
-            <div className="sp-section-title">📈 Progress over 6 months</div>
+            <div className="sp-section-title">{tr("📈 Progress over 6 months")}</div>
             <p className="sp-trend-lead">
               {progress.direction === 'up'
                 ? 'The line is going up — they are getting better.'
@@ -328,7 +329,7 @@ export default function StudentProgressPage() {
 
         {/* ── This month's class summary (attendance / payment / assignments) ── */}
         <section className="sp-card sp-month">
-          <div className="sp-section-title">📋 This month's class summary</div>
+          <div className="sp-section-title">{tr("📋 This month's class summary")}</div>
           <div className="sp-month-grid">
             {/* 1 — Attendance (this month) */}
             <div className="sp-month-item">
@@ -336,7 +337,7 @@ export default function StudentProgressPage() {
               <div className="sp-month-value">
                 {attendance.present}<span className="sp-month-of">/{attendance.total || 0}</span>
               </div>
-              <div className="sp-month-label">Classes attended<br /><span className="sp-month-sub">this month</span></div>
+              <div className="sp-month-label">{tr("Classes attended")}<br /><span className="sp-month-sub">{tr("this month")}</span></div>
             </div>
 
             {/* 2 — Payment */}
@@ -349,7 +350,7 @@ export default function StudentProgressPage() {
               ) : (
                 <div className="sp-month-value sp-month-na">—</div>
               )}
-              <div className="sp-month-label">Fee status<br /><span className="sp-month-sub">this month</span></div>
+              <div className="sp-month-label">{tr("Fee status")}<br /><span className="sp-month-sub">{tr("this month")}</span></div>
             </div>
 
             {/* 3 — Assignments done */}
@@ -358,25 +359,25 @@ export default function StudentProgressPage() {
               <div className="sp-month-value">
                 {assignments.completed}<span className="sp-month-of">/{assignments.total || 0}</span>
               </div>
-              <div className="sp-month-label">Assignments done<br /><span className="sp-month-sub">last 30 days</span></div>
+              <div className="sp-month-label">{tr("Assignments done")}<br /><span className="sp-month-sub">{tr("last 30 days")}</span></div>
             </div>
 
             {/* 4 — Assignments pending */}
             <div className="sp-month-item">
               <div className="sp-month-icon">⏳</div>
               <div className="sp-month-value">{assignments.pending}</div>
-              <div className="sp-month-label">Assignments pending<br /><span className="sp-month-sub">last 30 days</span></div>
+              <div className="sp-month-label">{tr("Assignments pending")}<br /><span className="sp-month-sub">{tr("last 30 days")}</span></div>
             </div>
           </div>
           {assignments.avgAccuracy != null && (
             <p className="sp-month-note">
-              Assignment accuracy: <strong>{assignments.avgAccuracy}%</strong> (last 30 days).
+              {tr("Assignment accuracy:")} <strong>{assignments.avgAccuracy}%</strong> {tr("(last 30 days).")}
             </p>
           )}
         </section>
 
         {/* ── Puzzle training detail ── */}
-        <div className="sp-section-title sp-stats-title">🧩 Puzzle training</div>
+        <div className="sp-section-title sp-stats-title">{tr("🧩 Puzzle training")}</div>
         <section className="sp-stats">
           {puzzleRating != null && (
             <div className="sp-card sp-stat">
@@ -389,80 +390,80 @@ export default function StudentProgressPage() {
                   </span>
                 )}
               </div>
-              <div className="sp-stat-label">Puzzle rating</div>
+              <div className="sp-stat-label">{tr("Puzzle rating")}</div>
             </div>
           )}
           {puzzleAccuracy != null && (
             <div className="sp-card sp-stat">
               <div className="sp-stat-icon">🎯</div>
               <div className="sp-stat-value">{puzzleAccuracy}%</div>
-              <div className="sp-stat-label">Puzzle accuracy</div>
+              <div className="sp-stat-label">{tr("Puzzle accuracy")}</div>
             </div>
           )}
           <div className="sp-card sp-stat">
             <div className="sp-stat-icon">✅</div>
             <div className="sp-stat-value">{puzzlesSolved}</div>
-            <div className="sp-stat-label">Puzzles solved</div>
+            <div className="sp-stat-label">{tr("Puzzles solved")}</div>
           </div>
           {puzzleAttempts != null && (
             <div className="sp-card sp-stat">
               <div className="sp-stat-icon">📊</div>
               <div className="sp-stat-value">{puzzleAttempts}</div>
-              <div className="sp-stat-label">Puzzles attempted</div>
+              <div className="sp-stat-label">{tr("Puzzles attempted")}</div>
             </div>
           )}
           {puzzleStreak > 0 && (
             <div className="sp-card sp-stat">
               <div className="sp-stat-icon">🔥</div>
               <div className="sp-stat-value">{puzzleStreak}</div>
-              <div className="sp-stat-label">Best solve streak</div>
+              <div className="sp-stat-label">{tr("Best solve streak")}</div>
             </div>
           )}
           {puzzleFailed != null && puzzleFailed > 0 && (
             <div className="sp-card sp-stat">
               <div className="sp-stat-icon">❌</div>
               <div className="sp-stat-value">{puzzleFailed}</div>
-              <div className="sp-stat-label">Puzzles missed</div>
+              <div className="sp-stat-label">{tr("Puzzles missed")}</div>
             </div>
           )}
           <div className="sp-card sp-stat">
             <div className="sp-stat-icon">📅</div>
             <div className="sp-stat-value">{activeDays}</div>
-            <div className="sp-stat-label">Active days<br /><span className="sp-month-sub">this month</span></div>
+            <div className="sp-stat-label">{tr("Active days")}<br /><span className="sp-month-sub">{tr("this month")}</span></div>
           </div>
         </section>
 
         {/* ── Tournaments (last 30 days) — 3 cards ── */}
-        <div className="sp-section-title sp-stats-title">🏆 Tournaments (last 30 days)</div>
+        <div className="sp-section-title sp-stats-title">{tr("🏆 Tournaments (last 30 days)")}</div>
         <section className="sp-stats">
           <div className="sp-card sp-stat">
             <div className="sp-stat-icon">🏆</div>
             <div className="sp-stat-value">{tournamentsPlayed}</div>
-            <div className="sp-stat-label">Tournaments played</div>
+            <div className="sp-stat-label">{tr("Tournaments played")}</div>
           </div>
           <div className="sp-card sp-stat">
             <div className="sp-stat-icon">♟️</div>
             <div className="sp-stat-value">{tournamentGames}</div>
-            <div className="sp-stat-label">Games played</div>
+            <div className="sp-stat-label">{tr("Games played")}</div>
           </div>
           <div className="sp-card sp-stat">
             <div className="sp-stat-icon">🎯</div>
             <div className="sp-stat-value">{tournamentWinRate != null ? `${tournamentWinRate}%` : "—"}</div>
-            <div className="sp-stat-label">Win rate</div>
+            <div className="sp-stat-label">{tr("Win rate")}</div>
           </div>
         </section>
 
         {/* ── Online games on Lichess / Chess.com (last 30 days) ── */}
         {ext && (lichessGames != null || chesscomGames != null) && (
           <>
-            <div className="sp-section-title sp-stats-title">🌐 Online games (last 30 days)</div>
+            <div className="sp-section-title sp-stats-title">{tr("🌐 Online games (last 30 days)")}</div>
             <section className="sp-stats">
               {lichessGames != null && (
                 <div className="sp-card sp-stat">
                   <div className="sp-stat-icon">♞</div>
                   <div className="sp-stat-value">{lichessGames}</div>
                   <div className="sp-stat-label">
-                    Lichess games
+                    {tr("Lichess games")}
                     {ext.lichess?.username ? <><br /><span className="sp-month-sub">@{ext.lichess.username}</span></> : null}
                   </div>
                 </div>
@@ -472,7 +473,7 @@ export default function StudentProgressPage() {
                   <div className="sp-stat-icon">♟️</div>
                   <div className="sp-stat-value">{chesscomGames}</div>
                   <div className="sp-stat-label">
-                    Chess.com games
+                    {tr("Chess.com games")}
                     {ext.chesscom?.username ? <><br /><span className="sp-month-sub">@{ext.chesscom.username}</span></> : null}
                   </div>
                 </div>
@@ -484,17 +485,17 @@ export default function StudentProgressPage() {
         {/* Encouraging note + CTA */}
         <section className="sp-card sp-note">
           <p>
-            This report is generated from {name}'s activity on Chess Nexus — a
+            {tr("This report is generated from")} {name}{tr("'s activity on Chess Nexus — a")}
             platform for learning chess through puzzles, games and guided,
             coach-led practice.
           </p>
           <div className="sp-note-actions">
-            <Link to="/" className="sp-btn sp-btn-primary">About Chess Nexus →</Link>
+            <Link to="/" className="sp-btn sp-btn-primary">{tr("About Chess Nexus →")}</Link>
           </div>
         </section>
 
         <footer className="sp-foot">
-          Powered by <Link to="/">Chess Nexus</Link> · A private, read-only progress report
+          {tr("Powered by")} <Link to="/">{tr("Chess Nexus")}</Link> {tr("· A private, read-only progress report")}
         </footer>
       </div>
     </div>

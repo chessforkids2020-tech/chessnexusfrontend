@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 import './ThemesPicker.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Compact a count for the badge: 11186 → "11.2k", 980 → "980".
 const fmtCount = (n) => {
@@ -27,7 +28,7 @@ export default function ThemesPicker() {
     const order = [];
     const byGroup = {};
     for (const t of themes) {
-      const g = t.group || 'Other';
+      const g = t.group || tr('Other');
       if (!byGroup[g]) { byGroup[g] = []; order.push(g); }
       byGroup[g].push(t);
     }
@@ -42,27 +43,27 @@ export default function ThemesPicker() {
     <div className="tp-page">
       <div className="tp-header">
         <div>
-          <Link to="/training" className="tp-back">← Back to Training</Link>
-          <h1 className="tp-title">Pick a Theme 🧩</h1>
+          <Link to="/training" className="tp-back">{tr("← Back to Training")}</Link>
+          <h1 className="tp-title">{tr("Pick a Theme 🧩")}</h1>
           <p className="tp-subtitle">
-            Train a single pattern. You'll get puzzles <strong>only from the theme you
-            pick</strong>, right around your current rating (±100).
+            {tr("Train a single pattern. You'll get puzzles")} <strong>{tr("only from the theme you")}
+            {tr("pick")}</strong>{tr(", right around your current rating (±100).")}
           </p>
         </div>
       </div>
 
       {loading && (
-        <div className="tp-state">Loading themes…</div>
+        <div className="tp-state">{tr("Loading themes…")}</div>
       )}
 
       {error && !loading && (
         <div className="tp-state tp-error">
-          Couldn't load themes. Please try again later.
+          {tr("Couldn't load themes. Please try again later.")}
         </div>
       )}
 
       {!loading && !error && themes.length === 0 && (
-        <div className="tp-state">No themes available yet.</div>
+        <div className="tp-state">{tr("No themes available yet.")}</div>
       )}
 
       {!loading && !error && groups.map(group => {
@@ -83,7 +84,7 @@ export default function ThemesPicker() {
                 <span className="tp-card-text">
                   <span className="tp-card-top">
                     <span className="tp-card-label">{t.label}</span>
-                    <span className="tp-card-count">{fmtCount(t.count)} puzzles</span>
+                    <span className="tp-card-count">{fmtCount(t.count)} {tr("puzzles")}</span>
                   </span>
                   {t.desc && <span className="tp-card-desc">{t.desc}</span>}
                 </span>

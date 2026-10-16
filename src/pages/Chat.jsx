@@ -7,6 +7,7 @@ import socket from '../socket';
 import soundManager from '../utils/soundManager';
 import { linkify } from '../utils/linkify';
 import './Chat.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -317,7 +318,7 @@ const Chat = () => {
     // In club chats, only chessnexus.in links are allowed — tell the user instead
     // of silently doing nothing.
     if (containsBlockedLink(newMessage, selectedChat)) {
-      alert('Only chessnexus.in links are allowed in club chats.');
+      alert(tr('Only chessnexus.in links are allowed in club chats.'));
       return;
     }
 
@@ -469,7 +470,7 @@ const Chat = () => {
     
     // Don't allow removing self if admin (unless we want that)
     if (String(targetUserId) === String(user._id || user.id)) {
-      alert("You cannot remove yourself from the group.");
+      alert(tr("You cannot remove yourself from the group."));
       return;
     }
 
@@ -536,18 +537,18 @@ const Chat = () => {
       {/* Sidebar */}
       <div className="chat-sidebar">
         <div className="chat-sidebar-header">
-          <h3>Chats</h3>
+          <h3>{"Chats"}</h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
             <button 
               onClick={() => setIsMuted(!isMuted)} 
               className="btn-secondary" 
               style={{ padding: '4px 8px', fontSize: '0.8em' }}
-              title={isMuted ? "Unmute" : "Mute"}
+              title={isMuted ? tr("Unmute") : tr("Mute")}
             >
               {isMuted ? '🔇' : '🔊'}
             </button>
-            <button onClick={() => setShowNewChatModal(true)} className="btn-primary" style={{ padding: '4px 8px', fontSize: '0.8em' }}>+ New</button>
-            <button onClick={() => setShowGroupModal(true)} className="btn-primary" style={{ padding: '4px 8px', fontSize: '0.8em' }}>Grp</button>
+            <button onClick={() => setShowNewChatModal(true)} className="btn-primary" style={{ padding: '4px 8px', fontSize: '0.8em' }}>{tr("+ New")}</button>
+            <button onClick={() => setShowGroupModal(true)} className="btn-primary" style={{ padding: '4px 8px', fontSize: '0.8em' }}>{tr("Grp")}</button>
           </div>
         </div>
         {isAdmin && (() => {
@@ -558,7 +559,7 @@ const Chat = () => {
                 className={`chat-tab ${chatTab === 'conversations' ? 'active' : ''}`}
                 onClick={() => setChatTab('conversations')}
               >
-                Conversations
+                {tr("Conversations")}
               </button>
               <button
                 className={`chat-tab ${chatTab === 'welcomes' ? 'active' : ''}`}
@@ -593,7 +594,7 @@ const Chat = () => {
             >
               <div className="chat-item-name-row">
                 {isOnline(getOtherParticipant(chat)) && (
-                  <span className="chat-online-dot" title="Online" />
+                  <span className="chat-online-dot" title={tr("Online")} />
                 )}
                 <div className="chat-item-name" title={getChatName(chat)}>{getChatName(chat)}</div>
                 {(chat.unreadCount || 0) > 0 && selectedChat?._id !== chat._id && (
@@ -625,14 +626,14 @@ const Chat = () => {
                 <button
                   className="chat-back-btn"
                   onClick={() => setSelectedChat(null)}
-                  title="Back to chats"
-                  aria-label="Back to chats"
+                  title={tr("Back to chats")}
+                  aria-label={tr("Back to chats")}
                 >
                   ‹
                 </button>
               )}
               {selectedChat && isOnline(getOtherParticipant(selectedChat)) && (
-                <span className="chat-online-dot" title="Online" />
+                <span className="chat-online-dot" title={tr("Online")} />
               )}
               {/* The person's name opens their profile, the way clicking a
                   username does on Lichess. Groups and the ChessNexus admin
@@ -642,7 +643,7 @@ const Chat = () => {
                   chat header stops being one of the surfaces that shows a bare
                   name. */}
               {(() => {
-                if (!selectedChat) return <div className="chat-header-name">Select a chat</div>;
+                if (!selectedChat) return <div className="chat-header-name">{tr("Select a chat")}</div>;
                 const other = getOtherParticipant(selectedChat);
                 const linkable = selectedChat.type !== 'group' && other && other.role !== 'admin';
                 if (!linkable) {
@@ -662,14 +663,14 @@ const Chat = () => {
                   style={{ fontSize: '0.8em', padding: '4px 8px' }}
                   onClick={() => setShowParticipantsModal(true)}
                 >
-                  Participants ({selectedChat.participants?.length || 0})
+                  {tr("Participants (")}{selectedChat.participants?.length || 0})
                 </button>
                 <button 
                     className="btn-primary" 
                     style={{ fontSize: '0.8em', padding: '4px 8px' }}
                     onClick={() => setShowAddUserModal(true)}
                   >
-                    + User
+                    {tr("+ User")}
                   </button>
               </div>
             )}
@@ -679,11 +680,11 @@ const Chat = () => {
         <div className={messagesAreaClass} ref={messagesAreaRef}>
           <div className={`messages-inner ${shouldCenterMessagesInner ? 'centered' : ''}`}>
             {loadingMessages ? (
-              <div className="loading-messages">Loading messages...</div>
+              <div className="loading-messages">{tr("Loading messages...")}</div>
             ) : (!selectedChat ? (
-              <div className="empty-messages">Select a chat to view messages</div>
+              <div className="empty-messages">{tr("Select a chat to view messages")}</div>
             ) : messages.length === 0 ? (
-              <div className="empty-messages">No messages yet. Start the conversation!</div>
+              <div className="empty-messages">{tr("No messages yet. Start the conversation!")}</div>
             ) : (
               // Standard chat order: oldest at top, newest at the bottom.
               messages.map((msg, index) => (
@@ -712,7 +713,7 @@ const Chat = () => {
           <textarea
             ref={messageInputRef}
             className="message-input"
-            placeholder={selectedChat ? 'Type a message... (Shift+Enter for a new line)' : 'Select a chat to start messaging'}
+            placeholder={selectedChat ? tr('Type a message... (Shift+Enter for a new line)') : tr('Select a chat to start messaging')}
             value={newMessage}
             onChange={(e) => {
               setNewMessage(e.target.value);
@@ -731,7 +732,7 @@ const Chat = () => {
             disabled={!selectedChat}
           />
           <button type="submit" className="send-button" disabled={!selectedChat || !newMessage.trim()}>
-            Send
+            {tr("Send")}
           </button>
         </form>
       </div>
@@ -740,11 +741,11 @@ const Chat = () => {
       {showNewChatModal && (
         <div className="modal-overlay" onClick={() => setShowNewChatModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>New Chat</h3>
+            <h3>{tr("New Chat")}</h3>
             <input
               type="text"
               className="search-input"
-              placeholder="Search users..."
+              placeholder={tr("Search users...")}
               value={searchQuery}
               onChange={(e) => handleSearchUsers(e.target.value)}
             />
@@ -755,7 +756,7 @@ const Chat = () => {
                 </div>
               ))}
             </div>
-            <button className="btn-secondary" onClick={() => setShowNewChatModal(false)} style={{ marginTop: '10px' }}>Cancel</button>
+            <button className="btn-secondary" onClick={() => setShowNewChatModal(false)} style={{ marginTop: '10px' }}>{tr("Cancel")}</button>
           </div>
         </div>
       )}
@@ -764,11 +765,11 @@ const Chat = () => {
       {showAddUserModal && (
         <div className="modal-overlay" onClick={() => setShowAddUserModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>Add User to Group</h3>
+            <h3>{tr("Add User to Group")}</h3>
             <input
               type="text"
               className="search-input"
-              placeholder="Search users to add..."
+              placeholder={tr("Search users to add...")}
               value={searchQuery}
               onChange={(e) => handleSearchUsers(e.target.value)}
             />
@@ -785,12 +786,12 @@ const Chat = () => {
                     style={{ opacity: isAlreadyInGroup ? 0.5 : 1, cursor: isAlreadyInGroup ? 'default' : 'pointer' }}
                   >
                     <span>{u.role === 'admin' ? 'chessnexus' : <PlayerName displayName={u.displayName} username={u.username} />}</span>
-                    {isAlreadyInGroup && <span style={{ fontSize: '0.8em', color: '#888' }}>(Joined)</span>}
+                    {isAlreadyInGroup && <span style={{ fontSize: '0.8em', color: '#888' }}>{tr("(Joined)")}</span>}
                   </div>
                 );
               })}
             </div>
-            <button className="btn-secondary" onClick={() => setShowAddUserModal(false)} style={{ marginTop: '10px' }}>Cancel</button>
+            <button className="btn-secondary" onClick={() => setShowAddUserModal(false)} style={{ marginTop: '10px' }}>{tr("Cancel")}</button>
           </div>
         </div>
       )}
@@ -799,23 +800,23 @@ const Chat = () => {
       {showGroupModal && (
         <div className="modal-overlay" onClick={() => setShowGroupModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>Create Group Chat</h3>
+            <h3>{tr("Create Group Chat")}</h3>
             <input
               type="text"
               className="search-input"
-              placeholder="Group Name"
+              placeholder={tr("Group Name")}
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
             />
             <input
               type="text"
               className="search-input"
-              placeholder="Search users to add..."
+              placeholder={tr("Search users to add...")}
               value={searchQuery}
               onChange={(e) => handleSearchUsers(e.target.value)}
             />
             <div style={{ marginBottom: '10px' }}>
-              <strong>Selected:</strong> {groupParticipants.map(p => p.displayName || p.username).join(', ')}
+              <strong>{tr("Selected:")}</strong> {groupParticipants.map(p => p.displayName || p.username).join(', ')}
             </div>
             <div className="user-list">
               {searchResults.map(u => (
@@ -831,8 +832,8 @@ const Chat = () => {
               ))}
             </div>
             <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
-              <button className="btn-secondary" onClick={() => setShowGroupModal(false)}>Cancel</button>
-              <button className="btn-primary" onClick={createGroupChat}>Create Group</button>
+              <button className="btn-secondary" onClick={() => setShowGroupModal(false)}>{tr("Cancel")}</button>
+              <button className="btn-primary" onClick={createGroupChat}>{tr("Create Group")}</button>
             </div>
           </div>
         </div>
@@ -842,7 +843,7 @@ const Chat = () => {
       {showParticipantsModal && selectedChat && (
         <div className="modal-overlay" onClick={() => setShowParticipantsModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>Group Participants</h3>
+            <h3>{tr("Group Participants")}</h3>
             <div className="user-list">
               {selectedChat.participants?.map(p => (
                 <div key={p._id} className="user-list-item" style={{ justifyContent: 'space-between' }}>
@@ -853,13 +854,13 @@ const Chat = () => {
                       style={{ backgroundColor: 'var(--color-danger)' }}
                       onClick={() => handleRemoveUserFromGroup(p._id)}
                     >
-                      Remove
+                      {tr("Remove")}
                     </button>
                   )}
                 </div>
               ))}
             </div>
-            <button className="btn-secondary" onClick={() => setShowParticipantsModal(false)} style={{ marginTop: '10px' }}>Close</button>
+            <button className="btn-secondary" onClick={() => setShowParticipantsModal(false)} style={{ marginTop: '10px' }}>{tr("Close")}</button>
           </div>
         </div>
       )}

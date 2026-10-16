@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/play-chess-online";
 
@@ -33,7 +34,7 @@ export default function PlayChessOnlinePage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
   const webPageSchema = {
@@ -49,7 +50,7 @@ export default function PlayChessOnlinePage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "Play Chess Online — Free Live Games & vs Computer",
+        title: tr("Play Chess Online — Free Live Games & vs Computer"),
         description:
           "Play chess online for free on Chess Nexus — live games against real people or against the Stockfish engine. Watch live games and review your own. No ads, no downloads.",
         keywords:
@@ -60,60 +61,60 @@ export default function PlayChessOnlinePage() {
       hero={{
         icon: "♟️",
         h1: "Play Chess Online — Free, No Ads",
-        sub: "Sit down at the board whenever you like. Play live games against other members, challenge the powerful Stockfish engine, watch live games and review every move — all free in your browser.",
-        primary: { label: "Play a Game", to: "/play" },
-        secondary: { label: "Browse all features", to: "/features" },
+        sub: tr("Sit down at the board whenever you like. Play live games against other members, challenge the powerful Stockfish engine, watch live games and review every move — all free in your browser."),
+        primary: { label: tr("Play a Game"), to: "/play" },
+        secondary: { label: tr("Browse all features"), to: "/features" },
       }}
     >
       <section className="mkt-section">
         <div className="mkt-split">
           <div className="mkt-split-media">
-            <img src="/features/playonline.png" alt="Play Chess Online — free live games and vs computer" loading="lazy" width="220" height="220" />
+            <img src="/features/playonline.png" alt={tr("Play Chess Online — free live games and vs computer")} loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
-            <h2>Ways to play</h2>
+            <h2>{tr("Ways to play")}</h2>
             <p>
-              People or engine, playing or watching — chess your way.
+              {tr("People or engine, playing or watching — chess your way.")}
             </p>
             <ul className="mkt-featurelist">
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🌐</span>
                 <span className="mkt-feat-tx">
-                  <strong>Live games vs real people</strong>
-                  <span>Challenge other Chess Nexus members and test your skills against a real person in real time.</span>
+                  <strong>{tr("Live games vs real people")}</strong>
+                  <span>{tr("Challenge other Chess Nexus members and test your skills against a real person in real time.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🤖</span>
                 <span className="mkt-feat-tx">
-                  <strong>Play vs Stockfish</strong>
-                  <span>Sharpen up against one of the strongest engines in the world — practise openings, endgames and full games at a level that pushes you.</span>
+                  <strong>{tr("Play vs Stockfish")}</strong>
+                  <span>{tr("Sharpen up against one of the strongest engines in the world — practise openings, endgames and full games at a level that pushes you.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">👀</span>
                 <span className="mkt-feat-tx">
-                  <strong>Spectate live games</strong>
-                  <span>Watch games as they happen and learn from how other players handle key positions.</span>
+                  <strong>{tr("Spectate live games")}</strong>
+                  <span>{tr("Watch games as they happen and learn from how other players handle key positions.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">📼</span>
                 <span className="mkt-feat-tx">
                   <strong>Game history &amp; analysis</strong>
-                  <span>Every game is saved — revisit past games, replay the moves and feed them straight into the analysis tool.</span>
+                  <span>{tr("Every game is saved — revisit past games, replay the moves and feed them straight into the analysis tool.")}</span>
                 </span>
               </li>
             </ul>
             <Link to="/play" className="mkt-card-cta">
-              Play a live game →
+              {tr("Play a live game →")}
             </Link>
           </div>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Why play on Chess Nexus</h2>
+        <h2>{tr("Why play on Chess Nexus")}</h2>
         <p className="mkt-section-lead">
           No ads interrupting your game, no downloads, no clutter — just chess.
           Play a quick game against the engine to test an idea, take on a real
@@ -122,19 +123,19 @@ export default function PlayChessOnlinePage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <Link to="/play/ai" className="mkt-btn mkt-btn-primary">
-            Play vs computer
+            {tr("Play vs computer")}
           </Link>
           <Link to="/play" className="mkt-btn mkt-btn-ghost">
-            Find an opponent
+            {tr("Find an opponent")}
           </Link>
           <Link to="/play-chess-with-friends" className="mkt-btn mkt-btn-ghost">
-            Play with a friend
+            {tr("Play with a friend")}
           </Link>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

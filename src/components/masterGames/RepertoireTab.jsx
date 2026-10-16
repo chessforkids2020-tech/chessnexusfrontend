@@ -13,6 +13,7 @@ import api from '../../api';
 import Chessboard from '../Chessboard';
 import EnginePanel from '../EnginePanel';
 import { buildTreeFromGame, applyMove, pathToNode, fenAt, lastMoveAt, firstNode, nextNode, prevNode, lastNode, rehydrateTree, hasVariations } from './moveTree';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // localStorage key for the in-progress (unsaved) build, so a reload doesn't lose it.
 const DRAFT_KEY = 'repertoireBuildDraft';
@@ -67,7 +68,7 @@ function VariationInline({ tree, nodeId, ply, activeId, onGo, first }) {
 function MoveList({ tree, activeId, onGo }) {
   const root = tree?.nodes?.[tree?.rootId];
   if (!root || (root.children || []).length === 0) {
-    return <div style={{ ...mt.wrap, color: '#5d6577', padding: 14 }}>Play moves on the board to build your line.</div>;
+    return <div style={{ ...mt.wrap, color: '#5d6577', padding: 14 }}>{tr("Play moves on the board to build your line.")}</div>;
   }
   // Walk the main line (firstborn chain) collecting nodes.
   const main = [];
@@ -198,7 +199,7 @@ export default function RepertoireTab() {
   const unlock = async () => {
     setErr('');
     try { await api.post('/api/opening-repertoire/unlock'); await loadAccess(); }
-    catch (e) { setErr(e.response?.data?.message || 'Could not unlock.'); }
+    catch (e) { setErr(e.response?.data?.message || tr('Could not unlock.')); }
   };
 
   if (!access) return null;
@@ -206,23 +207,23 @@ export default function RepertoireTab() {
   if (access.locked) {
     return (
       <div style={st.locked}>
-        <div style={{ fontSize: 22, fontWeight: 900, color: C.gold }}>⭐ Opening Repertoire Trainer</div>
+        <div style={{ fontSize: 22, fontWeight: 900, color: C.gold }}>{tr("⭐ Opening Repertoire Trainer")}</div>
         <p style={{ color: C.textMut, maxWidth: 460, margin: '10px auto 0', fontSize: 14 }}>
           Build your own opening lines, get drilled on them with spaced repetition, and see exactly
           where you left your prep in real games.
         </p>
         <div style={{ color: C.text, marginTop: 12, fontWeight: 700 }}>
-          Unlock for {access.xpPrice} XP · you have {access.walletXp} XP
+          {tr("Unlock for")} {access.xpPrice} {tr("XP · you have")} {access.walletXp} {tr("XP")}
         </div>
         <button
           style={{ ...st.goldBtn, opacity: access.walletXp < access.xpPrice ? 0.55 : 1 }}
           disabled={access.walletXp < access.xpPrice}
           onClick={unlock}
         >
-          🔓 Unlock ({access.xpPrice} XP)
+          {tr("🔓 Unlock (")}{access.xpPrice} {tr("XP)")}
         </button>
         {err && <div style={{ color: C.bad, marginTop: 10, fontSize: 13 }}>{err}</div>}
-        <div style={{ color: C.textFaint, fontSize: 12, marginTop: 10 }}>Supporters and subscribed coaches have free access. Free coaches get it free for their first 3 months.</div>
+        <div style={{ color: C.textFaint, fontSize: 12, marginTop: 10 }}>{tr("Supporters and subscribed coaches have free access. Free coaches get it free for their first 3 months.")}</div>
       </div>
     );
   }
@@ -235,10 +236,10 @@ export default function RepertoireTab() {
           background: 'rgba(250,204,21,0.10)', border: '1px solid rgba(250,204,21,0.35)',
           color: C.text, fontSize: 13, lineHeight: 1.5,
         }}>
-          🎁 <strong>Coach free trial</strong> — the Repertoire Trainer is free for you for{' '}
-          <strong>{access.coach.daysLeft} more day{access.coach.daysLeft === 1 ? '' : 's'}</strong>.
-          After that, unlocking and saving lines costs XP — or{' '}
-          <a href="/coach/subscription" style={{ color: C.gold, fontWeight: 700 }}>subscribe</a>{' '}
+          🎁 <strong>{tr("Coach free trial")}</strong> {tr("— the Repertoire Trainer is free for you for")}{' '}
+          <strong>{access.coach.daysLeft} {tr("more day")}{access.coach.daysLeft === 1 ? '' : 's'}</strong>.
+          {tr("After that, unlocking and saving lines costs XP — or")}{' '}
+          <a href="/coach/subscription" style={{ color: C.gold, fontWeight: 700 }}>{tr("subscribe")}</a>{' '}
           to keep it free forever.
         </div>
       )}
@@ -393,22 +394,22 @@ function BuildMode({ access, onWalletChange }) {
       setTree(t); setCurrentId(nodeId === t.rootId ? null : nodeId);
     }
     setName(l.name || '');
-    setMsg(`Loaded "${l.name || l.openingName || 'line'}" — extend it and Save to update, or Reset.`);
+    setMsg(tr("Loaded \"{v0}\" — extend it and Save to update, or Reset.", { v0: l.name || l.openingName || 'line' }));
   };
 
   const save = async () => {
-    if (!hasMoves) { setMsg('Play some moves first.'); return; }
+    if (!hasMoves) { setMsg(tr('Play some moves first.')); return; }
     if (savePrice > 0 && (access?.walletXp || 0) < savePrice) {
-      setMsg(`Saving a line costs ${savePrice} XP — you have ${access?.walletXp || 0}.`);
+      setMsg(tr("Saving a line costs {savePrice} XP — you have {v1}.", { savePrice: savePrice, v1: access?.walletXp || 0 }));
       return;
     }
     try {
       const r = await api.post('/api/opening-repertoire/lines', { side, name: name.trim(), tree });
       const charged = r.data?.xpCharged || 0;
-      setMsg(charged > 0 ? `✓ Saved · −${charged} XP.` : '✓ Saved to your repertoire.');
+      setMsg(charged > 0 ? tr("✓ Saved · −{charged} XP.", { charged: charged }) : tr('✓ Saved to your repertoire.'));
       setName(''); reset(); loadLines();
       if (charged > 0) onWalletChange?.(); // refresh wallet balance shown in the header
-    } catch (e) { setMsg(e.response?.data?.message || 'Could not save.'); }
+    } catch (e) { setMsg(e.response?.data?.message || tr('Could not save.')); }
   };
 
   const del = async (id) => { try { await api.delete(`/api/opening-repertoire/lines/${id}`); loadLines(); } catch { /* */ } };
@@ -420,7 +421,7 @@ function BuildMode({ access, onWalletChange }) {
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8 }}>
         {engineOn && (
           <label style={{ ...st.sub, margin: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-            Lines:
+            {tr("Lines:")}
             <select
               style={{ ...st.input, padding: '4px 8px' }}
               value={engineLines}
@@ -434,14 +435,14 @@ function BuildMode({ access, onWalletChange }) {
           style={{ ...st.engineBtnSm, ...(engineOn ? st.engineBtnOn : {}) }}
           onClick={() => setEngineOn(v => !v)}
         >
-          ⚙ Stockfish {engineOn ? 'on' : 'off'}
+          {tr("⚙ Stockfish")} {engineOn ? 'on' : 'off'}
         </button>
         <button
           style={st.engineBtnSm}
           onClick={toggleFullscreen}
-          title={isFull ? 'Exit fullscreen' : 'Fullscreen'}
+          title={isFull ? tr('Exit fullscreen') : tr('Fullscreen')}
         >
-          {isFull ? '✕ Exit' : '⛶ Full'}
+          {isFull ? tr('✕ Exit') : tr('⛶ Full')}
         </button>
       </div>
     </div>
@@ -453,8 +454,8 @@ function BuildMode({ access, onWalletChange }) {
           {/* Shared grip — double-click still resets to the default size. */}
         </div>
         <div style={{ ...st.row, marginTop: 10, marginBottom: 0 }}>
-          <button style={st.ghostSm} onClick={() => setSide(s => s === 'white' ? 'black' : 'white')}>⇅ Flip</button>
-          <button style={st.ghostSm} onClick={reset}>↺ Reset</button>
+          <button style={st.ghostSm} onClick={() => setSide(s => s === 'white' ? 'black' : 'white')}>{tr("⇅ Flip")}</button>
+          <button style={st.ghostSm} onClick={reset}>{tr("↺ Reset")}</button>
         </div>
       </div>
 
@@ -471,7 +472,7 @@ function BuildMode({ access, onWalletChange }) {
           <MoveList tree={tree} activeId={currentId} onGo={onGo} />
           {hasMoves && (
             <div style={{ ...st.sub, marginTop: 6 }}>
-              Click a move to go there. To add a <strong>sideline</strong>: click the move to branch from, then play the alternative on the board.
+              {tr("Click a move to go there. To add a")} <strong>{tr("sideline")}</strong>{tr(": click the move to branch from, then play the alternative on the board.")}
             </div>
           )}
         </div>
@@ -479,16 +480,16 @@ function BuildMode({ access, onWalletChange }) {
         {/* Pinned footer: Save + Masters DB on one row (outside the scroll) */}
         <div style={st.rightPinned}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <input style={{ ...st.input, flex: 1, minWidth: 120 }} placeholder="Line name (optional)" value={name} onChange={e => setName(e.target.value)} />
-            <button style={st.btn} onClick={save} title={savePrice > 0 ? `Costs ${savePrice} XP per save` : undefined}>
-              {savePrice > 0 ? `Save line (${savePrice} XP)` : 'Save line'}
+            <input style={{ ...st.input, flex: 1, minWidth: 120 }} placeholder={tr("Line name (optional)")} value={name} onChange={e => setName(e.target.value)} />
+            <button style={st.btn} onClick={save} title={savePrice > 0 ? tr("Costs {savePrice} XP per save", { savePrice: savePrice }) : undefined}>
+              {savePrice > 0 ? tr("Save line ({savePrice} XP)", { savePrice: savePrice }) : tr('Save line')}
             </button>
             <button
               style={{ ...st.engineBtn, ...(dbOn ? st.engineBtnOn : {}) }}
               onClick={() => setDbOn(v => !v)}
-              title="Masters database"
+              title={tr("Masters database")}
             >
-              📚 DB {dbOn ? 'on' : 'off'}
+              {tr("📚 DB")} {dbOn ? 'on' : 'off'}
             </button>
           </div>
           {msg && <div style={{ ...st.sub, margin: '8px 0 0', color: msg.startsWith('✓') ? C.good : C.bad }}>{msg}</div>}
@@ -496,20 +497,20 @@ function BuildMode({ access, onWalletChange }) {
           {dbOn && (
             <div style={{ marginTop: 10, maxHeight: 200, overflowY: 'auto' }}>
                 {!explorer ? (
-                  <div style={st.sub}>Loading…</div>
+                  <div style={st.sub}>{tr("Loading…")}</div>
                 ) : explorer.moves?.length > 0 ? (
                   <>
-                    <div style={{ ...st.sub, marginBottom: 6 }}>Masters play here ({explorer.total} games):</div>
+                    <div style={{ ...st.sub, marginBottom: 6 }}>{tr("Masters play here (")}{explorer.total} {tr("games):")}</div>
                     {explorer.moves.slice(0, 6).map(m => (
                       <div key={m.san} style={st.exRow} onClick={() => onDrop(...uciFromSan(fen, m.san))}>
                         <span style={{ fontWeight: 700, color: 'var(--color-text)' }}>{m.san}</span>
-                        <span style={{ color: C.textMut, fontSize: 12 }}>{m.games} games</span>
+                        <span style={{ color: C.textMut, fontSize: 12 }}>{m.games} {tr("games")}</span>
                         <span style={{ color: C.textFaint, fontSize: 11 }}>{pct(m.white, m.games)}% / {pct(m.draw, m.games)}% / {pct(m.black, m.games)}%</span>
                       </div>
                     ))}
                   </>
                 ) : (
-                  <div style={st.sub}>No master games from this position.</div>
+                  <div style={st.sub}>{tr("No master games from this position.")}</div>
                 )}
             </div>
           )}
@@ -521,10 +522,10 @@ function BuildMode({ access, onWalletChange }) {
     {/* Comment box for the current move — full width, above Your Repertoire. */}
     {currentNode && currentNode.san && (
       <div style={{ marginTop: 14, padding: 12, borderRadius: 'var(--radius-lg)', border: `1px solid ${C.border}`, background: 'var(--color-black-a20)' }}>
-        <div style={{ ...st.sub, marginBottom: 6 }}>💬 Comment on <strong style={{ color: 'var(--color-text)' }}>{currentNode.san}</strong>:</div>
+        <div style={{ ...st.sub, marginBottom: 6 }}>{tr("💬 Comment on")} <strong style={{ color: 'var(--color-text)' }}>{currentNode.san}</strong>:</div>
         <textarea
           style={{ ...st.input, width: '100%', minHeight: 60, resize: 'vertical', boxSizing: 'border-box' }}
-          placeholder="e.g. Spanish Exchange starts here…"
+          placeholder={tr("e.g. Spanish Exchange starts here…")}
           maxLength={400}
           value={currentNode.comment || ''}
           onChange={(e) => setNodeComment(e.target.value)}
@@ -534,9 +535,9 @@ function BuildMode({ access, onWalletChange }) {
 
     {/* Your saved repertoire — full-width section below the board. */}
     <div style={st.repSection}>
-      <h3 style={st.h}>Your Repertoire {lines.length > 0 && <span style={{ color: C.textFaint, fontWeight: 600, fontSize: 13 }}>({lines.length})</span>}</h3>
+      <h3 style={st.h}>{tr("Your Repertoire")} {lines.length > 0 && <span style={{ color: C.textFaint, fontWeight: 600, fontSize: 13 }}>({lines.length})</span>}</h3>
       {lines.length === 0 ? (
-        <div style={st.sub}>No lines saved yet. Build a line above and hit “Save line”.</div>
+        <div style={st.sub}>{tr("No lines saved yet. Build a line above and hit “Save line”.")}</div>
       ) : (
         <div style={st.repGrid}>
           {lines.map(l => (
@@ -553,7 +554,7 @@ function BuildMode({ access, onWalletChange }) {
                 {l.sans.length > 8 && <span style={{ ...st.chipSmall, color: C.textFaint }}>+{l.sans.length - 8}</span>}
               </div>
               <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                <button style={{ ...st.ghost, flex: 1 }} onClick={() => loadLine(l)}>▷ Load</button>
+                <button style={{ ...st.ghost, flex: 1 }} onClick={() => loadLine(l)}>{tr("▷ Load")}</button>
                 <button style={st.ghost} onClick={() => del(l._id)}>🗑</button>
               </div>
             </div>
@@ -590,10 +591,10 @@ function TrainMode() {
 
   if (due === null) return null;
   if (due.length === 0) {
-    return <div style={{ ...st.sub, padding: 20 }}>🎉 Nothing due right now. {total > 0 ? `You have ${total} line(s) scheduled — come back when they're due.` : 'Build some lines first.'}</div>;
+    return <div style={{ ...st.sub, padding: 20 }}>🎉 Nothing due right now. {total > 0 ? tr("You have {total} line(s) scheduled — come back when they're due.", { total: total }) : 'Build some lines first.'}</div>;
   }
   if (idx >= due.length) {
-    return <div style={{ ...st.sub, padding: 20 }}>✓ Review complete! <button style={st.ghost} onClick={load}>Reload</button></div>;
+    return <div style={{ ...st.sub, padding: 20 }}>{tr("✓ Review complete!")} <button style={st.ghost} onClick={load}>{tr("Reload")}</button></div>;
   }
 
   const line = due[idx];
@@ -664,20 +665,20 @@ function DrillLine({ line, remaining, onGraded }) {
         <Chessboard position={fen} boardWidth={360} orientation={side} draggable={!done && myMoveNow()} onDrop={onDrop} />
       </div>
       <div style={st.rightCard}>
-        <h3 style={st.h}>{line.name || line.openingName || 'Line'} <span style={{ color: C.textFaint, fontWeight: 600, fontSize: 12 }}>({remaining} due)</span></h3>
-        <div style={st.sub}>You are <strong style={{ color: 'var(--color-text)' }}>{side}</strong>. Play your repertoire moves from memory.</div>
+        <h3 style={st.h}>{line.name || line.openingName || 'Line'} <span style={{ color: C.textFaint, fontWeight: 600, fontSize: 12 }}>({remaining} {tr("due)")}</span></h3>
+        <div style={st.sub}>{tr("You are")} <strong style={{ color: 'var(--color-text)' }}>{side}</strong>{tr(". Play your repertoire moves from memory.")}</div>
         {!done && myMoveNow() && <div style={{ color: C.active, fontWeight: 700, fontSize: 13 }}>Your move ({Math.floor(ply / 2) + 1}).</div>}
-        {wrong && <div style={st.fb(false)}>Not your line — try again (or use the hint).</div>}
+        {wrong && <div style={st.fb(false)}>{tr("Not your line — try again (or use the hint).")}</div>}
         {lastNote && (
           <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 'var(--radius-md)', background: 'rgba(245,196,81,0.10)', border: `1px solid ${C.gold}44`, fontSize: 13, color: '#fde9b8' }}>
             💬 <strong>{lastNote.san}:</strong> {lastNote.text}
           </div>
         )}
-        {!done && <button style={{ ...st.ghost, marginTop: 10 }} onClick={showHint}>💡 Hint</button>}
+        {!done && <button style={{ ...st.ghost, marginTop: 10 }} onClick={showHint}>{tr("💡 Hint")}</button>}
         {done && (
           <div>
             <div style={st.fb(!usedHint)}>{usedHint ? 'Reviewed — keep practising this line.' : '✓ Perfect recall!'}</div>
-            <button style={{ ...st.btn, marginTop: 12 }} onClick={onGraded}>Next line →</button>
+            <button style={{ ...st.btn, marginTop: 12 }} onClick={onGraded}>{tr("Next line →")}</button>
           </div>
         )}
       </div>
@@ -702,19 +703,19 @@ function CheckMode() {
       else body.timeClass = timeClass;
       const r = await api.post('/api/opening-repertoire/scan', body);
       setResult(r.data);
-    } catch (e) { setErr(e.response?.data?.message || 'Scan failed.'); }
+    } catch (e) { setErr(e.response?.data?.message || tr('Scan failed.')); }
     finally { setLoading(false); }
   };
 
   return (
     <div style={st.rightCard}>
-      <h3 style={st.h}>Check my games for deviations</h3>
-      <div style={st.sub}>We replay your recent games and flag where you left your saved prep.</div>
+      <h3 style={st.h}>{tr("Check my games for deviations")}</h3>
+      <div style={st.sub}>{tr("We replay your recent games and flag where you left your saved prep.")}</div>
       <div style={st.row}>
         <select style={st.input} value={platform} onChange={e => setPlatform(e.target.value)}>
           <option value="chesscom">chess.com</option>
-          <option value="lichess">lichess</option>
-          <option value="chessnexus">ChessNexus</option>
+          <option value="lichess">{tr("lichess")}</option>
+          <option value="chessnexus">{tr("ChessNexus")}</option>
         </select>
         {platform !== 'chessnexus'
           ? <input style={{ ...st.input, flex: 1, minWidth: 140 }} placeholder="username" value={username} onChange={e => setUsername(e.target.value)} />
@@ -726,21 +727,21 @@ function CheckMode() {
       {err && <div style={{ ...st.sub, color: C.bad }}>{err}</div>}
       {result && (
         <div style={{ marginTop: 10 }}>
-          <div style={st.sub}>Scanned {result.scanned} games · {result.deviations.length} deviation(s).</div>
+          <div style={st.sub}>{tr("Scanned")} {result.scanned} {tr("games ·")} {result.deviations.length} deviation(s).</div>
           {result.deviations.map((d, i) => (
             <div key={i} style={st.lineRow}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ color: 'var(--color-text)', fontSize: 13, fontWeight: 700 }}>
-                  {d.lineName || d.opening || 'Your line'} · vs {d.opponent}
+                  {d.lineName || d.opening || tr('Your line')} {tr("· vs")} {d.opponent}
                 </div>
                 <div style={{ color: C.textMut, fontSize: 12 }}>
                   Move {d.moveNumber}: you played <strong style={{ color: C.bad }}>{d.played}</strong>,
-                  prep was <strong style={{ color: C.good }}>{d.expected.join(' / ')}</strong>
+                  {tr("prep was")} <strong style={{ color: C.good }}>{d.expected.join(' / ')}</strong>
                 </div>
               </div>
             </div>
           ))}
-          {result.deviations.length === 0 && <div style={st.sub}>No deviations found — you stuck to your prep. 👏</div>}
+          {result.deviations.length === 0 && <div style={st.sub}>{tr("No deviations found — you stuck to your prep. 👏")}</div>}
         </div>
       )}
     </div>

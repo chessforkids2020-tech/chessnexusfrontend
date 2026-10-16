@@ -18,15 +18,9 @@ import SEO from '../components/SEO';
 import { useAuth } from '../contexts/AuthContext';
 import './Newsletter.css';
 
-// Prefix every server-relative <img src> in the post body with the API host.
-// Only touches paths the upload route produces, so nothing else in the markup
-// can be rewritten by accident.
-function withMediaHosts(html) {
-  return String(html || '').replace(
-    /(<img[^>]*src=")(\/api\/public\/newsletter\/[^"]+)(")/gi,
-    (_m, pre, path, post) => `${pre}${resolveApiAssetUrl(path)}${post}`,
-  );
-}
+// Body <img> paths are server-relative; see utils/newsletterMedia.js.
+import { withNewsletterMediaHosts as withMediaHosts } from '../utils/newsletterMedia';
+import { t as tr } from '../i18n/LanguageContext';
 
 function fmtDate(d) {
   if (!d) return '';
@@ -49,7 +43,7 @@ export default function NewsletterPostPage() {
     setLoading(true);
     api.get(`/api/newsletter/${id}`)
       .then(r => { if (alive) setPost(r.data?.post || null); })
-      .catch(e => { if (alive) setErr(e.response?.data?.message || 'Could not open that post.'); })
+      .catch(e => { if (alive) setErr(e.response?.data?.message || tr('Could not open that post.')); })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
   }, [id]);
@@ -89,12 +83,12 @@ export default function NewsletterPostPage() {
     finally { setBusy(false); }
   }, [id, post?.myReaction, user]);
 
-  if (loading) return <div className="nl-wrap"><div className="nl-note">Loading…</div></div>;
+  if (loading) return <div className="nl-wrap"><div className="nl-note">{tr("Loading…")}</div></div>;
   if (err || !post) {
     return (
       <div className="nl-wrap">
         <div className="nl-note nl-note-err">{err || 'Post not found.'}</div>
-        <Link to="/newsletter" className="nl-back">← All posts</Link>
+        <Link to="/newsletter" className="nl-back">{tr("← All posts")}</Link>
       </div>
     );
   }
@@ -105,7 +99,7 @@ export default function NewsletterPostPage() {
   // preview, because they never run the JavaScript that writes our meta tags.
   const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
   const shareUrl = `${apiBase}/api/newsletter/share/${post.id}`;
-  const shareText = `${post.title} — Chess Nexus`;
+  const shareText = tr("{title} — Chess Nexus", { title: post.title });
   const enc = encodeURIComponent;
 
   const copyLink = async () => {
@@ -121,12 +115,12 @@ export default function NewsletterPostPage() {
   return (
     <div className="nl-wrap nl-post">
       <SEO
-        title={`${post.title} — Chess Nexus Newsletter`}
+        title={tr("{title} — Chess Nexus Newsletter", { title: post.title })}
         description={post.summary || post.title}
         ogImage={post.coverImage || undefined}
       />
 
-      <Link to="/newsletter" className="nl-back">← All posts</Link>
+      <Link to="/newsletter" className="nl-back">{tr("← All posts")}</Link>
 
       {/* 1. TITLE PICTURE, full width at the very top. */}
       {post.coverImage && (
@@ -182,12 +176,12 @@ export default function NewsletterPostPage() {
           publicly dragged down by a handful of dislikes. The reader still sees
           their OWN dislike highlighted, or the button feels broken. */}
       <div className="nl-react">
-        <span className="nl-react-lead">Was this useful?</span>
+        <span className="nl-react-lead">{tr("Was this useful?")}</span>
         <button
           className={`nl-react-btn ${post.myReaction === 'like' ? 'is-on' : ''}`}
           onClick={() => react('like')}
           disabled={busy || !user}
-          title={user ? 'Like this post' : 'Log in to react'}
+          title={user ? tr('Like this post') : tr('Log in to react')}
         >
           👍 <span>{post.likeCount || 0}</span>
         </button>
@@ -195,34 +189,34 @@ export default function NewsletterPostPage() {
           className={`nl-react-btn nl-react-down ${post.myReaction === 'dislike' ? 'is-on' : ''}`}
           onClick={() => react('dislike')}
           disabled={busy || !user}
-          title={user ? 'Not useful' : 'Log in to react'}
+          title={user ? tr('Not useful') : tr('Log in to react')}
         >
           👎
         </button>
         {!user && (
-          <Link to="/login" className="nl-react-login">Log in to react</Link>
+          <Link to="/login" className="nl-react-login">{tr("Log in to react")}</Link>
         )}
       </div>
 
       {/* 7. Share. WhatsApp leads deliberately — it is where coaches actually
           pass things on. */}
       <div className="nl-share">
-        <span className="nl-share-lead">Share this</span>
+        <span className="nl-share-lead">{tr("Share this")}</span>
         <div className="nl-share-btns">
           <a className="nl-share-btn is-wa"
              href={`https://wa.me/?text=${enc(`${shareText}\n${shareUrl}`)}`}
-             target="_blank" rel="noopener noreferrer">WhatsApp</a>
+             target="_blank" rel="noopener noreferrer">{tr("WhatsApp")}</a>
           <a className="nl-share-btn is-x"
              href={`https://twitter.com/intent/tweet?text=${enc(shareText)}&url=${enc(shareUrl)}`}
              target="_blank" rel="noopener noreferrer">X</a>
           <a className="nl-share-btn is-fb"
              href={`https://www.facebook.com/sharer/sharer.php?u=${enc(shareUrl)}`}
-             target="_blank" rel="noopener noreferrer">Facebook</a>
+             target="_blank" rel="noopener noreferrer">{tr("Facebook")}</a>
           <a className="nl-share-btn is-in"
              href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc(shareUrl)}`}
-             target="_blank" rel="noopener noreferrer">LinkedIn</a>
+             target="_blank" rel="noopener noreferrer">{tr("LinkedIn")}</a>
           <button className={`nl-share-btn is-copy ${copied ? 'is-done' : ''}`} onClick={copyLink}>
-            {copied ? '✓ Copied' : 'Copy link'}
+            {copied ? tr('✓ Copied') : tr('Copy link')}
           </button>
         </div>
       </div>

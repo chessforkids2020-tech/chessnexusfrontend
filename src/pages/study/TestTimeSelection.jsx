@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const TestTimeSelection = () => {
   const [selectedTime, setSelectedTime] = useState(null);
@@ -9,12 +10,12 @@ const TestTimeSelection = () => {
   const chapterId = searchParams.get('chapterId');
 
   const timeOptions = [
-    { label: '5 min', value: 300 },
-    { label: '10 min', value: 600 },
-    { label: '15 min', value: 900 },
-    { label: '20 min', value: 1200 },
-    { label: '30 min', value: 1800 },
-    { label: '40 min', value: 2400 },
+    { label: tr('5 min'), value: 300 },
+    { label: tr('10 min'), value: 600 },
+    { label: tr('15 min'), value: 900 },
+    { label: tr('20 min'), value: 1200 },
+    { label: tr('30 min'), value: 1800 },
+    { label: tr('40 min'), value: 2400 },
   ];
 
   const handleTimeSelect = (timeValue) => {
@@ -123,10 +124,10 @@ const TestTimeSelection = () => {
             e.currentTarget.style.borderColor = 'var(--color-white-a10)';
           }}
         >
-          ← Back
+          {tr("← Back")}
         </button>
-        <h1 style={styles.title}>Choose Time Limit</h1>
-        <p style={styles.subtitle}>Select how long you want to test yourself</p>
+        <h1 style={styles.title}>{tr("Choose Time Limit")}</h1>
+        <p style={styles.subtitle}>{tr("Select how long you want to test yourself")}</p>
 
         <div style={styles.timeGrid}>
           {timeOptions.map((option) => (

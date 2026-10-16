@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Chess } from "chess.js";
 import Chessboard from "../components/Chessboard";
 import stockfishService from "../services/stockfishService";
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function StockfishTest() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function StockfishTest() {
         setCurrentTest("Initializing Stockfish engine...");
         await stockfishService.init();
         setStockfishReady(true);
-        setStatusMessage("Stockfish ready! Make your move.");
+        setStatusMessage(tr("Stockfish ready! Make your move."));
         addTestResult("✅ Stockfish initialization", "SUCCESS", "Engine loaded successfully");
       } catch (error) {
         setStatusMessage("❌ Stockfish failed to initialize: " + error.message);
@@ -66,7 +67,7 @@ export default function StockfishTest() {
 
     setIsThinking(true);
     setCurrentTest(`Stockfish analyzing position: ${chess.fen()}`);
-    setStatusMessage("Stockfish is thinking...");
+    setStatusMessage(tr("Stockfish is thinking..."));
 
     try {
       const startTime = Date.now();
@@ -95,7 +96,7 @@ export default function StockfishTest() {
 
           if (gameMode === 'human-vs-stockfish') {
             setIsHumanTurn(true);
-            setStatusMessage("Your turn!");
+            setStatusMessage(tr("Your turn!"));
           } else {
             // Stockfish vs Stockfish - continue automatically
             setTimeout(() => makeStockfishMove(), 1000);
@@ -104,7 +105,7 @@ export default function StockfishTest() {
           throw new Error(`Invalid move from Stockfish: ${result.bestMove}`);
         }
       } else {
-        setStatusMessage("Game over - Stockfish has no moves");
+        setStatusMessage(tr("Game over - Stockfish has no moves"));
         addTestResult("🏁 Game End", "INFO", "Stockfish has no legal moves");
       }
     } catch (error) {
@@ -117,7 +118,7 @@ export default function StockfishTest() {
 
   const onPieceDrop = (sourceSquare, targetSquare) => {
     if (!isHumanTurn || isThinking) {
-      setStatusMessage("Wait for Stockfish!");
+      setStatusMessage(tr("Wait for Stockfish!"));
       return false;
     }
 
@@ -126,8 +127,8 @@ export default function StockfishTest() {
     const moveObj = chess.move(moveAttempt);
     
     if (!moveObj) {
-      setStatusMessage("❌ Illegal move!");
-      addTestResult("❌ Human Move", "ILLEGAL", `${sourceSquare} → ${targetSquare} is not legal`);
+      setStatusMessage(tr("❌ Illegal move!"));
+      addTestResult("❌ Human Move", "ILLEGAL", tr("{sourceSquare} → {targetSquare} is not legal", { sourceSquare: sourceSquare, targetSquare: targetSquare }));
       return false;
     }
 
@@ -144,7 +145,7 @@ export default function StockfishTest() {
       setIsHumanTurn(false);
       setTimeout(() => makeStockfishMove(), 500);
     } else {
-      setStatusMessage("Manual mode - make another move");
+      setStatusMessage(tr("Manual mode - make another move"));
     }
 
     return true;
@@ -203,11 +204,11 @@ export default function StockfishTest() {
   if (!stockfishReady) {
     return (
       <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h2>🧪 Stockfish Test Laboratory</h2>
-        <p>Loading Stockfish... {statusMessage}</p>
+        <h2>{tr("🧪 Stockfish Test Laboratory")}</h2>
+        <p>{tr("Loading Stockfish...")} {statusMessage}</p>
         <div style={{ marginTop: '20px' }}>
           <button onClick={() => navigate('/')} style={{ padding: '10px 20px', backgroundColor: 'var(--color-accent-2)', color: 'white', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
-            ← Back to Dashboard
+            {tr("← Back to Dashboard")}
           </button>
         </div>
       </div>
@@ -217,9 +218,9 @@ export default function StockfishTest() {
   return (
     <div style={styles.page}>
       <div style={styles.header}>
-        <h2>🧪 Stockfish Test Laboratory</h2>
+        <h2>{tr("🧪 Stockfish Test Laboratory")}</h2>
         <button onClick={() => navigate('/')} style={styles.backBtn}>
-          ← Back to Dashboard
+          {tr("← Back to Dashboard")}
         </button>
       </div>
 
@@ -227,17 +228,17 @@ export default function StockfishTest() {
         {/* Left Panel - Controls */}
         <div style={styles.leftPanel}>
           <div style={styles.card}>
-            <h3>🎮 Game Controls</h3>
+            <h3>{tr("🎮 Game Controls")}</h3>
             <div style={styles.statusBox}>
-              <div style={styles.statusTitle}>Status</div>
+              <div style={styles.statusTitle}>{tr("Status")}</div>
               <div style={stockfishReady ? styles.statusReady : styles.statusError}>
-                {stockfishReady ? "✅ Stockfish Ready" : "❌ Stockfish Not Ready"}
+                {stockfishReady ? tr("✅ Stockfish Ready") : tr("❌ Stockfish Not Ready")}
               </div>
               <div style={styles.statusMessage}>{statusMessage}</div>
             </div>
             
             <div style={styles.buttonGroup}>
-              <button onClick={resetGame} style={styles.btn}>🔄 Reset Game</button>
+              <button onClick={resetGame} style={styles.btn}>{tr("🔄 Reset Game")}</button>
               <button 
                 onClick={() => {
                   const newMode = gameMode === 'human-vs-stockfish' ? 'manual' : 'human-vs-stockfish';
@@ -254,14 +255,14 @@ export default function StockfishTest() {
                 style={styles.testBtn}
                 disabled={!stockfishReady}
               >
-                🧪 Run Tests
+                {tr("🧪 Run Tests")}
               </button>
             </div>
 
             <div style={styles.modeInfo}>
-              <strong>Mode:</strong> {gameMode === 'human-vs-stockfish' ? 'Human vs Stockfish' : 'Manual Play'}
+              <strong>{tr("Mode:")}</strong> {gameMode === 'human-vs-stockfish' ? 'Human vs Stockfish' : 'Manual Play'}
               <br />
-              <strong>Turn:</strong> {isHumanTurn ? 'Your turn' : 'Stockfish thinking...'}
+              <strong>{tr("Turn:")}</strong> {isHumanTurn ? tr('Your turn') : tr('Stockfish thinking...')}
               {isThinking && <span style={styles.thinking}> 🤔</span>}
             </div>
           </div>
@@ -269,18 +270,18 @@ export default function StockfishTest() {
           {/* Analysis Panel */}
           {analysis && (
             <div style={styles.card}>
-              <h3>📊 Current Analysis</h3>
+              <h3>{tr("📊 Current Analysis")}</h3>
               <div style={styles.analysisInfo}>
-                <div><strong>Best Move:</strong> {analysis.bestMove}</div>
-                <div><strong>Evaluation:</strong> {
+                <div><strong>{tr("Best Move:")}</strong> {analysis.bestMove}</div>
+                <div><strong>{tr("Evaluation:")}</strong> {
                   analysis.evaluation?.type === 'cp' 
-                    ? `${(analysis.evaluation.value / 100).toFixed(2)} pawns`
+                    ? tr("{v0} pawns", { v0: (analysis.evaluation.value / 100).toFixed(2) })
                     : analysis.evaluation?.type === 'mate'
-                    ? `Mate in ${analysis.evaluation.value}`
+                    ? tr("Mate in {value}", { value: analysis.evaluation.value })
                     : 'Unknown'
                 }</div>
                 {analysis.ponderMove && (
-                  <div><strong>Ponder:</strong> {analysis.ponderMove}</div>
+                  <div><strong>{tr("Ponder:")}</strong> {analysis.ponderMove}</div>
                 )}
               </div>
             </div>
@@ -321,7 +322,7 @@ export default function StockfishTest() {
                     fontSize: '18px',
                     color: 'red'
                   }}>
-                    Chessboard Error: {error.message}
+                    {tr("Chessboard Error:")} {error.message}
                   </div>
                 );
               }
@@ -336,7 +337,7 @@ export default function StockfishTest() {
                 onChange={(e) => setBoardSize(parseInt(e.target.value))}
                 style={styles.sizeSlider}
               />
-              <span style={styles.sizeLabel}>Board Size: {boardSize}px</span>
+              <span style={styles.sizeLabel}>{tr("Board Size:")} {boardSize}px</span>
             </div>
           </div>
         </div>
@@ -344,10 +345,10 @@ export default function StockfishTest() {
         {/* Right Panel - History & Tests */}
         <div style={styles.rightPanel}>
           <div style={styles.card}>
-            <h3>📝 Move History</h3>
+            <h3>{tr("📝 Move History")}</h3>
             <div style={styles.historyBox}>
               {moveHistory.length === 0 ? (
-                <div style={styles.noMoves}>No moves yet</div>
+                <div style={styles.noMoves}>{tr("No moves yet")}</div>
               ) : (
                 moveHistory.map((move, i) => (
                   <div key={i} style={styles.moveItem}>
@@ -360,7 +361,7 @@ export default function StockfishTest() {
           </div>
 
           <div style={styles.card}>
-            <h3>🔬 Test Results</h3>
+            <h3>{tr("🔬 Test Results")}</h3>
             <div style={styles.testBox}>
               {currentTest && (
                 <div style={styles.currentTest}>🔄 {currentTest}</div>

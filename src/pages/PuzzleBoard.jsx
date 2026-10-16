@@ -8,6 +8,7 @@ import { Chess } from "chess.js";
 import Chessboard from "../components/Chessboard";
 import stockfishService from "../services/stockfishService";
 import { useAuth } from '../contexts/AuthContext';
+import { t as tr } from '../i18n/LanguageContext';
 
 
 // Add shake animation CSS
@@ -71,7 +72,7 @@ function TournamentPuzzle() {
   const [isPuzzleCompleted, setIsPuzzleCompleted] = useState(false); // Track when puzzle is complete and waiting for manual submit
 
   // Add move sequence tracking state
-  const [moveSequence, setMoveSequence] = useState([]); // [{move: 'Qxd5', isUser: true}, ...]
+  const [moveSequence, setMoveSequence] = useState([]); // [{move: tr('Qxd5'), isUser: true}, ...]
 
   // Additional state variables for UI
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
@@ -199,14 +200,14 @@ function TournamentPuzzle() {
     }
 
     setIsThinking(true);
-    setStatusMsg("♟️ Opponent replying...");
+    setStatusMsg(tr("♟️ Opponent replying..."));
 
     try {
       // STRICTLY USE ADMIN SOLUTION ONLY
       const solutionMove = getNextSolutionMove();
 
       if (!solutionMove) {
-        setStatusMsg("✅ Puzzle complete! Click Submit Solution.");
+        setStatusMsg(tr("✅ Puzzle complete! Click Submit Solution."));
         setIsPuzzleCompleted(true);
         setIsThinking(false);
         return;
@@ -216,7 +217,7 @@ function TournamentPuzzle() {
       const moveObj = chess.move(solutionMove);
       
       if (!moveObj) {
-        setStatusMsg("❌ Error: Invalid solution move. Please contact admin.");
+        setStatusMsg(tr("❌ Error: Invalid solution move. Please contact admin."));
         setIsThinking(false);
         return;
       }
@@ -248,14 +249,14 @@ function TournamentPuzzle() {
 
       if (hasReachedSolution || chess.isGameOver()) {
         setIsPuzzleCompleted(true);
-        setStatusMsg("✅ SUCCESS! Puzzle completed correctly. Click Submit Solution to continue.");
+        setStatusMsg(tr("✅ SUCCESS! Puzzle completed correctly. Click Submit Solution to continue."));
       } else {
         // Switch back to user turn
         setIsUserTurn(true);
-        setStatusMsg("Your turn! Make your next move.");
+        setStatusMsg(tr("Your turn! Make your next move."));
       }
     } catch (error) {
-      setStatusMsg("❌ Something went wrong — please refresh the page.");
+      setStatusMsg(tr("❌ Something went wrong — please refresh the page."));
     } finally {
       setIsThinking(false);
     }
@@ -301,7 +302,7 @@ function TournamentPuzzle() {
         setStockfishInitialized(false);
         // Don't change gameMode to manual - keep user-vs-stockfish mode
         // The bot will use solution moves when available
-        setStatusMsg('Stockfish unavailable - using solution-based responses.');
+        setStatusMsg(tr('Stockfish unavailable - using solution-based responses.'));
       }
     };
 
@@ -314,7 +315,7 @@ function TournamentPuzzle() {
       }
       
       if (!isAuthenticated || !user) {
-        setAccessError('Please log in to access this puzzle.');
+        setAccessError(tr('Please log in to access this puzzle.'));
         setLoading(false);
         return;
       }
@@ -331,7 +332,7 @@ function TournamentPuzzle() {
         const isAssignedViaBatchUsers = batchData && batchData.users && batchData.users.some(u => u._id === user._id || u._id === user.id);
         
         if (!isAssignedViaBatchField && !isAssignedViaBatchUsers) {
-          setAccessError('You are not assigned to this batch. Please contact an administrator.');
+          setAccessError(tr('You are not assigned to this batch. Please contact an administrator.'));
           setLoading(false);
           return;
         }
@@ -347,7 +348,7 @@ function TournamentPuzzle() {
         if (Array.isArray(batchData.puzzles)) {
           const currentIndex = batchData.puzzles.findIndex(p => p._id === puzzleId);
           if (currentIndex === -1) {
-            setAccessError('Puzzle not found in this batch. Please contact an administrator.');
+            setAccessError(tr('Puzzle not found in this batch. Please contact an administrator.'));
             setLoading(false);
             return;
           }
@@ -369,7 +370,7 @@ function TournamentPuzzle() {
             const resultMsg = existingAttempt.correct 
               ? '✅ You already completed this puzzle correctly!' 
               : '❌ You already attempted this puzzle. First attempt counts!';
-            setStatusMsg(`${resultMsg} Redirecting to next puzzle...`);
+            setStatusMsg(tr("{resultMsg} Redirecting to next puzzle...", { resultMsg: resultMsg }));
             setAccessError(resultMsg); // Block the board completely
             setLoading(false);
             // Immediate redirect - no delay to prevent interaction
@@ -407,7 +408,7 @@ function TournamentPuzzle() {
             // If attempt was made in last 5 minutes and matches this puzzle/batch, restore count
             if (attemptAge < 300000 && attemptData.puzzleId === puzzleId && attemptData.batchId === batchId) {
               setAttempts(attemptData.wrongAttempts);
-              setStatusMsg(`⚠️ You already made ${attemptData.wrongAttempts} wrong attempt(s). Be careful!`);
+              setStatusMsg(tr("⚠️ You already made {wrongAttempts} wrong attempt(s). Be careful!", { wrongAttempts: attemptData.wrongAttempts }));
             } else {
               // Old or mismatched data, clear it
               localStorage.removeItem(attemptKey);
@@ -433,7 +434,7 @@ function TournamentPuzzle() {
           setStatusMsg("");
         }
       } catch (err) {
-        setAccessError('Failed to load puzzle data');
+        setAccessError(tr('Failed to load puzzle data'));
       } finally {
         setLoading(false);
       }
@@ -470,7 +471,7 @@ function TournamentPuzzle() {
       setTimeLeft(t => {
         if (t <= 1) {
           clearInterval(timerRef.current);
-          setStatusMsg('⏰ Batch time has expired! Auto-submitting current puzzle...');
+          setStatusMsg(tr('⏰ Batch time has expired! Auto-submitting current puzzle...'));
           // Auto-submit on client timer expiry and let submission handler redirect to leaderboard
           try {
             onSubmitTimeout();
@@ -549,7 +550,7 @@ function TournamentPuzzle() {
     // Listen for batch timeout events
     const batchTimeoutHandler = (data) => {
       if (data.batchId === batchId) {
-        setStatusMsg('⏰ Batch time has expired! Auto-submitting current puzzle...');
+        setStatusMsg(tr('⏰ Batch time has expired! Auto-submitting current puzzle...'));
         
         // Auto-submit the current puzzle with timeout status
         setTimeout(() => {
@@ -629,7 +630,7 @@ function TournamentPuzzle() {
   const onPieceDrop = (sourceSquare, targetSquare) => {
     // In Stockfish mode, only allow moves on user's turn
     if (gameMode === 'user-vs-stockfish' && !isUserTurn) {
-      setStatusMsg("Wait for the reply!");
+      setStatusMsg(tr("Wait for the reply!"));
       return false;
     }
 
@@ -641,7 +642,7 @@ function TournamentPuzzle() {
       // In user vs stockfish mode during user turn, user should only move pieces of the current turn color
       if (isUserTurn && pieceOnSquare && pieceOnSquare.color !== currentTurn) {
         const colorName = currentTurn === 'w' ? 'white' : 'black';
-        setStatusMsg(`You can only move ${colorName} pieces! Wait for your turn.`);
+        setStatusMsg(tr("You can only move {colorName} pieces! Wait for your turn.", { colorName: colorName }));
         return false;
       }
     }
@@ -652,14 +653,14 @@ function TournamentPuzzle() {
 
     // Check if this move would exceed user's move limit
     if (puzzle && totalMovesForThisMove > puzzle.moveLimit) {
-      setStatusMsg(`Move limit reached! You can make ${puzzle.moveLimit} moves maximum.`);
+      setStatusMsg(tr("Move limit reached! You can make {moveLimit} moves maximum.", { moveLimit: puzzle.moveLimit }));
       return false;
     }
 
     // use chess.js to validate
     const moveObj = chess.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
     if (!moveObj) {
-      setStatusMsg("Illegal move");
+      setStatusMsg(tr("Illegal move"));
       return false;
     }
 
@@ -709,11 +710,11 @@ function TournamentPuzzle() {
           timestamp: Date.now()
         }));
         
-        setStatusMsg('❌ WRONG MOVE! One strike rule - Auto-submitting as failed and moving to next puzzle...');
+        setStatusMsg(tr('❌ WRONG MOVE! One strike rule - Auto-submitting as failed and moving to next puzzle...'));
         
         // CRITICAL: Immediately submit as failed attempt and move to next puzzle
         onSubmit(true, updatedAttempts, updatedMoves, allMoves).then(() => {
-          setStatusMsg('❌ Failed attempt saved. Moving to next puzzle...');
+          setStatusMsg(tr('❌ Failed attempt saved. Moving to next puzzle...'));
           setTimeout(() => {
             navigateToNextPuzzle();
           }, 2000);
@@ -745,7 +746,7 @@ function TournamentPuzzle() {
         if (hasReachedSolution && isUserToPlayLast) {
           // User completed the puzzle with their final move
           setIsPuzzleCompleted(true);
-          setStatusMsg("✅ SUCCESS! Puzzle completed correctly. Click Submit Solution to continue.");
+          setStatusMsg(tr("✅ SUCCESS! Puzzle completed correctly. Click Submit Solution to continue."));
           setAllMoves(prev => [...prev, normalizedMove]); // Store in allMoves without prefix
           setMoveSequence(prev => [...prev, { 
             move: normalizedMove, 
@@ -772,12 +773,12 @@ function TournamentPuzzle() {
             setIsUserTurn(false);
             if (competitionMode) {
               if (usingAdminSolution) {
-                setStatusMsg("✅ Following solution! Opponent replying...");
+                setStatusMsg(tr("✅ Following solution! Opponent replying..."));
               } else {
-                setStatusMsg("♟️ Opponent thinking...");
+                setStatusMsg(tr("♟️ Opponent thinking..."));
               }
             } else {
-              setStatusMsg("Opponent is thinking...");
+              setStatusMsg(tr("Opponent is thinking..."));
             }
           }
           
@@ -811,7 +812,7 @@ function TournamentPuzzle() {
 
     // Check if user has reached their move limit
     if (puzzle && userMoveNumber > puzzle.moveLimit) {
-      setStatusMsg(`You've made ${puzzle.moveLimit} moves. The rest of the solution will play out.`);
+      setStatusMsg(tr("You've made {moveLimit} moves. The rest of the solution will play out.", { moveLimit: puzzle.moveLimit }));
     }
     setUserAttempts(prev => [...prev, { move: normalizedMove, correct: true, fen: chess.fen() }]);
     setChess(new Chess(chess.fen()));
@@ -827,7 +828,7 @@ function TournamentPuzzle() {
     const userMovesAfterThisMove = moves.length + 1; // +1 because we just added a user move above
     if (puzzle && userMovesAfterThisMove >= puzzle.moveLimit) {
       // Move limit reached - show message but don't auto-submit
-      setStatusMsg("Move limit reached - use Submit button when ready!");
+      setStatusMsg(tr("Move limit reached - use Submit button when ready!"));
       return true;
     }
 
@@ -836,18 +837,18 @@ function TournamentPuzzle() {
       setIsUserTurn(false);
       if (competitionMode) {
         if (usingAdminSolution) {
-          setStatusMsg("✅ Following solution! Opponent replying...");
+          setStatusMsg(tr("✅ Following solution! Opponent replying..."));
         } else {
-          setStatusMsg("♟️ Opponent thinking...");
+          setStatusMsg(tr("♟️ Opponent thinking..."));
         }
       } else {
-        setStatusMsg("Opponent is thinking...");
+        setStatusMsg(tr("Opponent is thinking..."));
       }
       
       // Bot move will be triggered automatically by useEffect when isUserTurn changes
     } else {
       // Manual mode - just indicate whose turn it would be
-      setStatusMsg(`Manual mode: ${chess.turn() === 'w' ? 'White' : 'Black'} to move next.`);
+      setStatusMsg(tr("Manual mode: {v0} to move next.", { v0: chess.turn() === 'w' ? 'White' : 'Black' }));
     }
 
     return true;
@@ -873,7 +874,7 @@ function TournamentPuzzle() {
         "Board reset! Following admin solution until deviation." : 
         "Board reset! Your turn to make the first move.");
     } else {
-      setStatusMsg("Board reset! Manual mode - play both sides.");
+      setStatusMsg(tr("Board reset! Manual mode - play both sides."));
     }
   };
 
@@ -896,7 +897,7 @@ function TournamentPuzzle() {
       
       
       // Navigate to Individual Results page after timeout submission
-      setStatusMsg('⏰ Puzzle submitted due to timeout. Redirecting to results...');
+      setStatusMsg(tr('⏰ Puzzle submitted due to timeout. Redirecting to results...'));
       setTimeout(() => {
         navigate(`/results/${batchId}`);
       }, 2000);
@@ -905,7 +906,7 @@ function TournamentPuzzle() {
       
       // Check if puzzle was already submitted
       if (err.response?.data?.alreadySubmitted) {
-        setStatusMsg('⚠️ Puzzle already submitted. Redirecting to results...');
+        setStatusMsg(tr('⚠️ Puzzle already submitted. Redirecting to results...'));
         setTimeout(() => {
           navigate(`/results/${batchId}`);
         }, 1500);
@@ -950,7 +951,7 @@ function TournamentPuzzle() {
       localStorage.removeItem(attemptKey);
       
       if (!silent) {
-        setStatusMsg('✅ Puzzle submitted successfully! Redirecting to next puzzle...');
+        setStatusMsg(tr('✅ Puzzle submitted successfully! Redirecting to next puzzle...'));
         setTimeout(() => {
           navigateToNextPuzzle();
         }, 1500);
@@ -968,7 +969,7 @@ function TournamentPuzzle() {
           const resultMsg = existingResult.correct 
             ? '✅ You already completed this puzzle correctly!' 
             : '❌ You already attempted this puzzle.';
-          setStatusMsg(`${resultMsg} Redirecting to next puzzle...`);
+          setStatusMsg(tr("{resultMsg} Redirecting to next puzzle...", { resultMsg: resultMsg }));
         }
         
         setTimeout(() => {
@@ -978,7 +979,7 @@ function TournamentPuzzle() {
       }
       
       if (!silent) {
-        setStatusMsg("❌ Submission failed. Please try again.");
+        setStatusMsg(tr("❌ Submission failed. Please try again."));
       }
     }
   };
@@ -1008,7 +1009,7 @@ function TournamentPuzzle() {
         <div style={styles.glassLoading}>
           <div style={styles.loadingSpinner}></div>
           <div style={styles.loadingText}>
-            {authLoading ? 'Authenticating...' : 'Loading puzzle...'}
+            {authLoading ? tr('Authenticating...') : tr('Loading puzzle...')}
           </div>
         </div>
       </div>
@@ -1018,13 +1019,13 @@ function TournamentPuzzle() {
     return (
       <div style={styles.page}>
         <div style={styles.glassError}>
-          <h3 style={{color: 'var(--color-danger)', marginBottom: '16px'}}>Access Denied</h3>
+          <h3 style={{color: 'var(--color-danger)', marginBottom: '16px'}}>{tr("Access Denied")}</h3>
           <p style={{color: 'var(--color-text-muted)', marginBottom: '20px'}}>{accessError}</p>
           <button 
             style={styles.glassButton}
             onClick={() => navigate('/')}
           >
-            Back to Dashboard
+            {tr("Back to Dashboard")}
           </button>
         </div>
       </div>
@@ -1034,7 +1035,7 @@ function TournamentPuzzle() {
     return (
       <div style={styles.page}>
         <div style={styles.glassError}>
-          <div style={styles.loadingText}>Puzzle not found</div>
+          <div style={styles.loadingText}>{tr("Puzzle not found")}</div>
         </div>
       </div>
     );
@@ -1055,7 +1056,7 @@ function TournamentPuzzle() {
           <div style={styles.glassSidebar} className="tournament-sidebar">
             {/* Global Batch Time - Big Display */}
             <div style={styles.glassTimeSection}>
-              <div style={styles.glassTimeLabel}>Batch Time Remaining</div>
+              <div style={styles.glassTimeLabel}>{tr("Batch Time Remaining")}</div>
               <div style={styles.glassTimer} className="tournament-timer">
                 {timeLeft != null ? `${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}` : "--:--"}
               </div>
@@ -1063,12 +1064,12 @@ function TournamentPuzzle() {
 
             {/* Current Turn and Game Mode */}
             <div style={styles.glassTurnSection}>
-              <div style={styles.glassSectionTitle}>Game Mode</div>
+              <div style={styles.glassSectionTitle}>{tr("Game Mode")}</div>
               <div style={styles.glassGameModeIndicator}>
-                {competitionMode ? '🏆 Competition' : '🎯 Puzzle Mode'}
+                {competitionMode ? tr('🏆 Competition') : tr('🎯 Puzzle Mode')}
               </div>
               <div style={styles.glassCompetitionModeInfo}>
-                Puzzle {currentPuzzleIndex + 1}
+                {tr("Puzzle")} {currentPuzzleIndex + 1}
               </div>
               <div style={chess.turn() === 'w' ? styles.glassWhiteTurn : styles.glassBlackTurn}>
                 {chess.turn() === 'w' ? "⚪ White to Move" : "⚫ Black to Move"}
@@ -1116,7 +1117,7 @@ function TournamentPuzzle() {
                 <div
                   style={styles.glassResizeHandle}
                   onMouseDown={handleMouseDown}
-                  title="Drag to resize chessboard"
+                  title={tr("Drag to resize chessboard")}
                 >
                   ↕
                 </div>
@@ -1128,10 +1129,10 @@ function TournamentPuzzle() {
           {/* Right Sidebar */}
           <div style={styles.glassSidebar} className="tournament-sidebar">
             <div style={styles.glassNotationSection} className="tournament-notation">
-              <div style={styles.glassNotationTitle}>Move History</div>
+              <div style={styles.glassNotationTitle}>{tr("Move History")}</div>
               <div style={styles.glassNotationList} className="tournament-notation-list">
                 {allMoves.length === 0 ? (
-                  <div style={styles.glassNoMoves}>No moves yet</div>
+                  <div style={styles.glassNoMoves}>{tr("No moves yet")}</div>
                 ) : (
                   (() => {
                     const movePairs = [];
@@ -1157,7 +1158,7 @@ function TournamentPuzzle() {
             {/* Status Messages */}
             <div style={styles.glassStatusSection}>
               <div style={styles.glassStatusMessage}>
-                {statusMsg || "Ready to play!"}
+                {statusMsg || tr("Ready to play!")}
               </div>
             </div>
 
@@ -1177,7 +1178,7 @@ function TournamentPuzzle() {
                   onSubmit();
                 }}
               >
-                {isPuzzleCompleted ? '🎉 Continue to Next Puzzle' : '📤 Submit Puzzle'}
+                {isPuzzleCompleted ? tr('🎉 Continue to Next Puzzle') : tr('📤 Submit Puzzle')}
               </button>
             </div>
           </div>
@@ -1190,7 +1191,7 @@ function TournamentPuzzle() {
           <div style={styles.glassPopupContainer}>
             <div style={styles.glassPopupIcon}></div>
             <div style={styles.glassPopupMessage}>{wrongMoveMessage}</div>
-            <div style={styles.glassPopupButton}>Moving to next puzzle...</div>
+            <div style={styles.glassPopupButton}>{tr("Moving to next puzzle...")}</div>
           </div>
         </div>
       )}

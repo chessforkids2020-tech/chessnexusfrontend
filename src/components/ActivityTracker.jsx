@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import api from '../api';
 import './ActivityTracker.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const DAY_ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -242,7 +243,7 @@ export default function ActivityTracker({ publicData = null }) {
     return (
       <div className="activity-tracker">
         <div className="at-shell">
-          <div className="at-loading">Loading activity...</div>
+          <div className="at-loading">{tr("Loading activity...")}</div>
         </div>
       </div>
     );
@@ -270,7 +271,7 @@ export default function ActivityTracker({ publicData = null }) {
     if (mins <= 0) return '0 min';
     const hours = Math.floor(mins / 60);
     const minutes = mins % 60;
-    if (hours === 0) return `${minutes} min`;
+    if (hours === 0) return tr("{minutes} min", { minutes: minutes });
     if (minutes === 0) return `${hours}h`;
     return `${hours}h ${minutes}m`;
   };
@@ -297,11 +298,11 @@ export default function ActivityTracker({ publicData = null }) {
   const labels = view === 'week' ? weekLabels : monthLabels;
   const yMax = getAxisMax(points, view === 'week' ? 10 : 30);
   const caption = view === 'week'
-    ? `${activeThisWeek} active day${activeThisWeek === 1 ? '' : 's'} • ${fmtTime(weekTotalMinutes)} this week`
-    : `${activeWeeks} active week${activeWeeks === 1 ? '' : 's'} • ${fmtTime(monthTotalMinutes)} in the last 8 weeks`;
+    ? tr("{activeThisWeek} active day{v1} • {v2} this week", { activeThisWeek: activeThisWeek, v1: activeThisWeek === 1 ? '' : 's', v2: fmtTime(weekTotalMinutes) })
+    : tr("{activeWeeks} active week{v1} • {v2} in the last 8 weeks", { activeWeeks: activeWeeks, v1: activeWeeks === 1 ? '' : 's', v2: fmtTime(monthTotalMinutes) });
   const badge = view === 'week'
-    ? (weekPeakMinutes > 0 ? `Peak ${fmtTime(weekPeakMinutes)}` : 'No activity yet')
-    : `${activeWeeks} active weeks`;
+    ? (weekPeakMinutes > 0 ? tr("Peak {v0}", { v0: fmtTime(weekPeakMinutes) }) : tr('No activity yet'))
+    : tr("{activeWeeks} active weeks", { activeWeeks: activeWeeks });
 
   return (
     <div className="activity-tracker">
@@ -311,7 +312,7 @@ export default function ActivityTracker({ publicData = null }) {
             <span className="at-heading-icon">
               <TitleIcon />
             </span>
-            <h2 className="at-title">Practice Activity</h2>
+            <h2 className="at-title">{tr("Practice Activity")}</h2>
           </div>
 
           <div className="at-tabs">
@@ -321,7 +322,7 @@ export default function ActivityTracker({ publicData = null }) {
               type="button"
               aria-pressed={view === 'week'}
             >
-              Week
+              {tr("Week")}
             </button>
             <button
               className={`at-tab${view === 'month' ? ' at-tab--active' : ''}`}
@@ -329,7 +330,7 @@ export default function ActivityTracker({ publicData = null }) {
               type="button"
               aria-pressed={view === 'month'}
             >
-              Month
+              {tr("Month")}
             </button>
           </div>
         </div>
@@ -357,18 +358,18 @@ export default function ActivityTracker({ publicData = null }) {
               <MetricRow
                 icon={<StreakIcon />}
                 value={shownStreak}
-                label="Practice Streak"
+                label={tr("Practice Streak")}
               />
               <MetricRow
                 icon={<TimeIcon />}
                 value={fmtTime(totalMinutes)}
-                label="Time Spent"
+                label={tr("Time Spent")}
                 compactValue={true}
               />
               <MetricRow
                 icon={<DaysIcon />}
                 value={totalDays}
-                label="Days Active"
+                label={tr("Days Active")}
                 compactValue={true}
               />
             </div>

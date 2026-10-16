@@ -3,6 +3,7 @@ import api from '../api';
 import '../pages/EventRegistration.css';
 import './BookDemoModal.css';
 import './FeedbackModal.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 /**
  * First-session feedback modal. Auto-opened once (from UserLayout) after a new
@@ -49,7 +50,7 @@ export default function FeedbackModal({ open, onClose, onSubmitted }) {
     const experience = form.experience.trim();
 
     if (!missing && !wantedFeature) {
-      return setError('Please answer at least one of the first two questions.');
+      return setError(tr('Please answer at least one of the first two questions.'));
     }
 
     setSubmitting(true);
@@ -65,19 +66,19 @@ export default function FeedbackModal({ open, onClose, onSubmitted }) {
 
   return (
     <div className="bdm-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bdm-modal" role="dialog" aria-modal="true" aria-label="Share your feedback">
-        <button className="bdm-close" onClick={onClose} aria-label="Close">×</button>
+      <div className="bdm-modal" role="dialog" aria-modal="true" aria-label={tr("Share your feedback")}>
+        <button className="bdm-close" onClick={onClose} aria-label={tr("Close")}>×</button>
 
         {done ? (
           <div className="bdm-success">
             <div className="bdm-success-icon">🙌</div>
-            <h2>Thank you!</h2>
+            <h2>{tr("Thank you!")}</h2>
             <p>
               Your feedback goes straight to our team and helps shape what we build next.
               We're glad you're here.
             </p>
             <button className="submit-button" onClick={() => { onSubmitted && onSubmitted(); onClose(); }}>
-              Done
+              {tr("Done")}
             </button>
           </div>
         ) : (
@@ -85,7 +86,7 @@ export default function FeedbackModal({ open, onClose, onSubmitted }) {
             <div className="bdm-head">
               <div className="event-icon" style={{ margin: 0 }}>💡</div>
               <div>
-                <h1 className="bdm-title">Help us improve ChessNexus</h1>
+                <h1 className="bdm-title">{tr("Help us improve ChessNexus")}</h1>
                 <p className="bdm-subtitle">
                   You've been exploring for a bit — we'd love to hear from you. It takes 30 seconds
                   and genuinely shapes what we build.
@@ -97,7 +98,7 @@ export default function FeedbackModal({ open, onClose, onSubmitted }) {
               {error && <div className="error-message">⚠️ {error}</div>}
 
               <div className="form-group">
-                <label htmlFor="fb-missing">Is anything missing in ChessNexus for you?</label>
+                <label htmlFor="fb-missing">{tr("Is anything missing in ChessNexus for you?")}</label>
                 <textarea
                   id="fb-missing"
                   className="fbm-textarea"
@@ -105,13 +106,13 @@ export default function FeedbackModal({ open, onClose, onSubmitted }) {
                   value={form.missing}
                   disabled={submitting}
                   maxLength={1000}
-                  placeholder="e.g. I wish there were more openings training, a specific puzzle type…"
+                  placeholder={tr("e.g. I wish there were more openings training, a specific puzzle type…")}
                   onChange={(e) => setForm({ ...form, missing: e.target.value })}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="fb-feature">What one feature would help you improve your games?</label>
+                <label htmlFor="fb-feature">{tr("What one feature would help you improve your games?")}</label>
                 <textarea
                   id="fb-feature"
                   className="fbm-textarea"
@@ -119,13 +120,13 @@ export default function FeedbackModal({ open, onClose, onSubmitted }) {
                   value={form.wantedFeature}
                   disabled={submitting}
                   maxLength={1000}
-                  placeholder="e.g. game analysis, a study plan, tougher opponents, coaching…"
+                  placeholder={tr("e.g. game analysis, a study plan, tougher opponents, coaching…")}
                   onChange={(e) => setForm({ ...form, wantedFeature: e.target.value })}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="fb-experience">Anything else you'd like to share? <span className="fbm-optional">(optional)</span></label>
+                <label htmlFor="fb-experience">{tr("Anything else you'd like to share?")} <span className="fbm-optional">{tr("(optional)")}</span></label>
                 <textarea
                   id="fb-experience"
                   className="fbm-textarea"
@@ -133,17 +134,17 @@ export default function FeedbackModal({ open, onClose, onSubmitted }) {
                   value={form.experience}
                   disabled={submitting}
                   maxLength={1000}
-                  placeholder="Your overall experience so far…"
+                  placeholder={tr("Your overall experience so far…")}
                   onChange={(e) => setForm({ ...form, experience: e.target.value })}
                 />
               </div>
 
               <div className="fbm-actions">
                 <button type="button" className="fbm-skip" onClick={onClose} disabled={submitting}>
-                  No thanks
+                  {tr("No thanks")}
                 </button>
                 <button type="submit" className="submit-button fbm-submit" disabled={submitting}>
-                  {submitting ? 'Sending…' : 'Send feedback'}
+                  {submitting ? tr('Sending…') : tr('Send feedback')}
                 </button>
               </div>
             </form>

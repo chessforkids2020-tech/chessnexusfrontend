@@ -7,6 +7,7 @@ import Chessboard from '../../components/Chessboard';
 import { RACE_MOVE_MS } from '../../contexts/GamePrefsContext';
 import { useAuth } from '../../contexts/AuthContext';
 import socket from '../../socket';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Debug logging function
 const addLog = (message, type = 'info') => {
@@ -377,7 +378,7 @@ export default function ArenaRace({ isAdminView = false }) {
   useEffect(() => {
     // Guard: Don't proceed if roomId is undefined
     if (!roomId) {
-      setError('Invalid race room ID');
+      setError(tr('Invalid race room ID'));
       setLoading(false);
       return;
     }
@@ -388,7 +389,7 @@ export default function ArenaRace({ isAdminView = false }) {
     }
     
     if (!user) {
-      setError('Not authenticated');
+      setError(tr('Not authenticated'));
       setLoading(false);
       return;
     }
@@ -492,7 +493,7 @@ export default function ArenaRace({ isAdminView = false }) {
       // Handle specific error types
       if (data.action === 'REFRESH') {
         // Don't immediately refresh, just warn user - they can retry
-        setError('Session expired - your move still counts. Please refresh if issues continue.');
+        setError(tr('Session expired - your move still counts. Please refresh if issues continue.'));
       } else {
         setError(data.message || 'Move failed - retrying...');
       }
@@ -526,7 +527,7 @@ export default function ArenaRace({ isAdminView = false }) {
     const onRoomDeleted = (data) => {
       if (data && data.roomId === roomId) {
         addLog('Room has been deleted by admin', 'error');
-        setError('This room has been deleted by the administrator');
+        setError(tr('This room has been deleted by the administrator'));
         setTimeout(() => navigate('/arena'), 3000);
       }
     };
@@ -705,7 +706,7 @@ export default function ArenaRace({ isAdminView = false }) {
   const fetchRaceData = async () => {
     // Guard: Don't fetch if roomId is undefined
     if (!roomId) {
-      setError('Invalid race room ID');
+      setError(tr('Invalid race room ID'));
       setLoading(false);
       return;
     }
@@ -773,7 +774,7 @@ export default function ArenaRace({ isAdminView = false }) {
         navigate(getResultPath());
         return;
       } catch (resultErr) {
-        setError('Failed to load race data');
+        setError(tr('Failed to load race data'));
         setLoading(false);
       }
     }
@@ -888,7 +889,7 @@ export default function ArenaRace({ isAdminView = false }) {
           });
           fetchCurrentPuzzle();
         } catch (skipErr) {
-          setError('Invalid puzzle position - please refresh');
+          setError(tr('Invalid puzzle position - please refresh'));
         }
         return;
       }
@@ -944,7 +945,7 @@ export default function ArenaRace({ isAdminView = false }) {
           });
           fetchCurrentPuzzle();
         } catch (skipErr) {
-          setError('Invalid puzzle position - please refresh');
+          setError(tr('Invalid puzzle position - please refresh'));
         }
         return;
       }
@@ -964,7 +965,7 @@ export default function ArenaRace({ isAdminView = false }) {
         
         // Show a more friendly message during retries
         if (retryCount > 2) {
-          setError('Race is initializing... please wait a moment');
+          setError(tr('Race is initializing... please wait a moment'));
         }
         
         setTimeout(() => {
@@ -973,7 +974,7 @@ export default function ArenaRace({ isAdminView = false }) {
         return;
       }
       
-      setError('Failed to load puzzle - please try refreshing the page');
+      setError(tr('Failed to load puzzle - please try refreshing the page'));
       setLoading(false);
     }
   };
@@ -1023,14 +1024,14 @@ export default function ArenaRace({ isAdminView = false }) {
   const handleMove = (sourceSquare, targetSquare, promotion) => {
     const userId = (user?.id || user?._id) || userIdRef.current;
     if (!userId) {
-      setError('Authentication lost. Please refresh the page.');
+      setError(tr('Authentication lost. Please refresh the page.'));
       return false;
     }
 
     // USER-FIRST: user plays EVEN indices (0,2,4…), bot replies at ODD (1,3,5…).
     if (moveIndex % 2 === 1) {
       addLog(`Blocked — opponent turn (moveIndex ${moveIndex})`);
-      setError("Not your turn");
+      setError(tr("Not your turn"));
       setTimeout(() => setError(''), 1200);
       return false;
     }
@@ -1082,7 +1083,7 @@ export default function ArenaRace({ isAdminView = false }) {
     const isAltMate = tempChess.isCheckmate();
     const isCorrect = isAltMate || (!!expectedMove && expectedMove === uci);
 
-    addLog(`${uci} vs ${expectedMove || '?'} → ${isCorrect ? (isAltMate ? '✓ alt-mate' : '✓ correct') : '✗ wrong'}`);
+    addLog(`${uci} vs ${expectedMove || '?'} → ${isCorrect ? (isAltMate ? tr('✓ alt-mate') : tr('✓ correct')) : tr('✗ wrong')}`);
 
     // Report to server for leaderboard — fire-and-forget, no blocking wait
     if (socket && socket.connected) {
@@ -1200,7 +1201,7 @@ export default function ArenaRace({ isAdminView = false }) {
   };
 
   const endRace = async () => {
-    if (!window.confirm('Are you sure you want to end this race early?')) return;
+    if (!window.confirm(tr('Are you sure you want to end this race early?'))) return;
     try {
       await api.post(`/api/admin/arena/complete/${roomId}`, {});
       navigate(getResultPath());
@@ -1213,7 +1214,7 @@ export default function ArenaRace({ isAdminView = false }) {
     return (
       <div style={styles.page}>
         <div style={styles.background}></div>
-        <div style={styles.loading}>Loading race...</div>
+        <div style={styles.loading}>{tr("Loading race...")}</div>
       </div>
     );
   }
@@ -1231,24 +1232,24 @@ export default function ArenaRace({ isAdminView = false }) {
     return (
       <div style={adminStyles.page}>
         <button onClick={() => navigate('/admin/arena')} style={adminStyles.backButton}>
-          ← Back to Arena Admin
+          {tr("← Back to Arena Admin")}
         </button>
         
         <div style={adminStyles.container}>
           <div style={adminStyles.header}>
-            <div style={adminStyles.title}>🏆 Live Race Monitoring</div>
-            <div style={{ fontSize: '20px', color: 'var(--color-accent-2)', fontWeight: '700' }}>Room: {roomId}</div>
+            <div style={adminStyles.title}>{tr("🏆 Live Race Monitoring")}</div>
+            <div style={{ fontSize: '20px', color: 'var(--color-accent-2)', fontWeight: '700' }}>{tr("Room:")} {roomId}</div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px', marginBottom: '30px' }}>
             <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', textAlign: 'center', border: '1px solid var(--color-surface-2)' }}>
-              <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', textTransform: 'uppercase', fontWeight: '600', marginBottom: '5px' }}>Time Left</div>
+              <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', textTransform: 'uppercase', fontWeight: '600', marginBottom: '5px' }}>{tr("Time Left")}</div>
               <div style={{ fontSize: '28px', fontWeight: '800', color: timeLeft < 60 ? 'var(--color-danger)' : 'var(--color-surface)' }}>
                 {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
               </div>
             </div>
             <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', textAlign: 'center', border: '1px solid var(--color-surface-2)' }}>
-              <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', textTransform: 'uppercase', fontWeight: '600', marginBottom: '5px' }}>Active Players</div>
+              <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', textTransform: 'uppercase', fontWeight: '600', marginBottom: '5px' }}>{tr("Active Players")}</div>
               <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-accent-2)' }}>{leaderboard.length}</div>
             </div>
             <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', textAlign: 'center', border: '1px solid var(--color-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
@@ -1264,7 +1265,7 @@ export default function ArenaRace({ isAdminView = false }) {
                   cursor: 'pointer'
                 }}
               >
-                🔄 Refresh
+                {tr("🔄 Refresh")}
               </button>
               <button 
                 onClick={endRace}
@@ -1278,7 +1279,7 @@ export default function ArenaRace({ isAdminView = false }) {
                   cursor: 'pointer'
                 }}
               >
-                🏁 End Race
+                {tr("🏁 End Race")}
               </button>
             </div>
           </div>
@@ -1287,13 +1288,13 @@ export default function ArenaRace({ isAdminView = false }) {
             <table style={adminStyles.table}>
               <thead>
                 <tr>
-                  <th style={adminStyles.th}>Rank</th>
-                  <th style={adminStyles.th}>Player</th>
-                  <th style={adminStyles.th}>Score</th>
-                  <th style={adminStyles.th}>Correct</th>
-                  <th style={adminStyles.th}>Wrong</th>
-                  <th style={adminStyles.th}>Total Done</th>
-                  <th style={adminStyles.th}>Status</th>
+                  <th style={adminStyles.th}>{tr("Rank")}</th>
+                  <th style={adminStyles.th}>{tr("Player")}</th>
+                  <th style={adminStyles.th}>{tr("Score")}</th>
+                  <th style={adminStyles.th}>{tr("Correct")}</th>
+                  <th style={adminStyles.th}>{tr("Wrong")}</th>
+                  <th style={adminStyles.th}>{tr("Total Done")}</th>
+                  <th style={adminStyles.th}>{tr("Status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1384,7 +1385,7 @@ export default function ArenaRace({ isAdminView = false }) {
           ...(isMobileLayout ? { order: 4 } : null),
         }}>
           <div style={styles.leaderboard}>
-            <div style={styles.leaderboardTitle}>🏆 Leaderboard</div>
+            <div style={styles.leaderboardTitle}>{tr("🏆 Leaderboard")}</div>
             {lbSlice.map((player, index) => (
               <div key={player.username || index} style={{
                 ...styles.leaderboardItem,
@@ -1406,11 +1407,11 @@ export default function ArenaRace({ isAdminView = false }) {
                     ...styles.lbPagerBtn,
                     ...(lbCurrentPage === 0 ? styles.lbPagerBtnDisabled : null),
                   }}
-                  aria-label="Previous page"
+                  aria-label={tr("Previous page")}
                 >‹</button>
 
                 <span style={styles.lbPagerLabel}>
-                  {lbStart + 1}-{Math.min(lbStart + LB_PAGE_SIZE, leaderboard.length)} of {leaderboard.length}
+                  {lbStart + 1}-{Math.min(lbStart + LB_PAGE_SIZE, leaderboard.length)} {tr("of")} {leaderboard.length}
                 </span>
 
                 <button
@@ -1421,7 +1422,7 @@ export default function ArenaRace({ isAdminView = false }) {
                     ...styles.lbPagerBtn,
                     ...(lbCurrentPage >= lbTotalPages - 1 ? styles.lbPagerBtnDisabled : null),
                   }}
-                  aria-label="Next page"
+                  aria-label={tr("Next page")}
                 >›</button>
               </div>
             )}
@@ -1434,7 +1435,7 @@ export default function ArenaRace({ isAdminView = false }) {
                 onClick={() => setLbPage(null)}
                 style={styles.lbJumpToMe}
               >
-                Jump to my rank (#{myIndex + 1})
+                {tr("Jump to my rank (#")}{myIndex + 1})
               </button>
             )}
           </div>
@@ -1450,7 +1451,7 @@ export default function ArenaRace({ isAdminView = false }) {
             padding: '10px 0 2px',
             color: chess.turn() === 'w' ? 'var(--color-text)' : 'var(--color-text-muted)',
           }}>
-            {chess.turn() === 'w' ? 'White' : 'Black'} to move
+            {chess.turn() === 'w' ? 'White' : 'Black'} {tr("to move")}
           </div>
         )}
 
@@ -1529,14 +1530,14 @@ export default function ArenaRace({ isAdminView = false }) {
               color: 'var(--color-accent)',
               marginBottom: '8px',
             }}>
-              Puzzle {currentPuzzleIndex + 1}
+              {tr("Puzzle")} {currentPuzzleIndex + 1}
             </div>
             <div style={{
               fontSize: '18px',
               fontWeight: '600',
               color: chess.turn() === 'w' ? 'var(--color-text)' : 'var(--color-text-muted)',
             }}>
-              {chess.turn() === 'w' ? 'White' : 'Black'} to move
+              {chess.turn() === 'w' ? 'White' : 'Black'} {tr("to move")}
             </div>
           </div>
           )}
@@ -1554,7 +1555,7 @@ export default function ArenaRace({ isAdminView = false }) {
               <div style={styles.timer}>
                 {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
               </div>
-              <div style={styles.timerLabel}>Time Left</div>
+              <div style={styles.timerLabel}>{tr("Time Left")}</div>
             </div>
             {!isAdminView && (
             <div style={{
@@ -1562,7 +1563,7 @@ export default function ArenaRace({ isAdminView = false }) {
               ...(isMobileLayout ? { flex: '1 1 0', minWidth: 0, padding: '14px 10px' } : null),
             }}>
               <div style={styles.score}>{score}</div>
-              <div style={styles.scoreLabel}>Score</div>
+              <div style={styles.scoreLabel}>{tr("Score")}</div>
             </div>
             )}
           </div>
@@ -1631,7 +1632,7 @@ export default function ArenaRace({ isAdminView = false }) {
                 e.target.style.borderColor = 'var(--color-danger-a30)';
               }}
             >
-              ⏭️ Skip Puzzle
+              {tr("⏭️ Skip Puzzle")}
             </button>
           </div>
           )}

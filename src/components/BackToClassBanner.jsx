@@ -17,6 +17,7 @@
 // null for a normal visit, so the banner appears ONLY for students who arrived
 // from a class and never bothers anyone else.
 import React, { useEffect, useState } from 'react';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function BackToClassBanner() {
   const [cameFromClass, setCameFromClass] = useState(false);
@@ -49,10 +50,10 @@ export default function BackToClassBanner() {
     <div style={S.bar}>
       <span style={S.text}>
         <span style={S.dot} />
-        Your class is still open in the other tab.
+        {tr("Your class is still open in the other tab.")}
       </span>
       <button style={S.btn} onClick={goBack}>
-        ← Back to class
+        {tr("← Back to class")}
       </button>
     </div>
   );

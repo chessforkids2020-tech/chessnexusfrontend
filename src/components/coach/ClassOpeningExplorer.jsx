@@ -15,6 +15,7 @@
 // external service.
 import React, { useEffect, useState } from 'react';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function ClassOpeningExplorer({ sanPrefix, enabled, onToggle, onPlayMove, canPlay }) {
   const [data, setData] = useState(null);
@@ -32,7 +33,7 @@ export default function ClassOpeningExplorer({ sanPrefix, enabled, onToggle, onP
     setError('');
     api.get('/api/master-games/explorer', { params: { moves: prefixKey, limit: 12 } })
       .then(r => { if (alive) setData(r.data); })
-      .catch(() => { if (alive) { setData(null); setError('Could not load the explorer.'); } })
+      .catch(() => { if (alive) { setData(null); setError(tr('Could not load the explorer.')); } })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
   }, [enabled, prefixKey]);
@@ -43,14 +44,14 @@ export default function ClassOpeningExplorer({ sanPrefix, enabled, onToggle, onP
   return (
     <div style={S.wrap}>
       <div style={S.head}>
-        <span style={S.title}>📖 Opening explorer</span>
+        <span style={S.title}>{tr("📖 Opening explorer")}</span>
         <button
           type="button"
           style={enabled ? S.toggleOn : S.toggle}
           onClick={onToggle}
           title={enabled ? 'Hide the explorer' : 'Show how masters continued from this position'}
         >
-          {enabled ? '✓ On' : 'Off'}
+          {enabled ? tr('✓ On') : tr('Off')}
         </button>
       </div>
 
@@ -60,16 +61,16 @@ export default function ClassOpeningExplorer({ sanPrefix, enabled, onToggle, onP
           on the board.
         </div>
       ) : loading && !data ? (
-        <div style={S.hint}>Loading…</div>
+        <div style={S.hint}>{tr("Loading…")}</div>
       ) : error ? (
         <div style={S.hint}>{error}</div>
       ) : moves.length === 0 ? (
         <div style={S.hint}>
-          No master games reached this position — you are out of the book.
+          {tr("No master games reached this position — you are out of the book.")}
         </div>
       ) : (
         <>
-          <div style={S.total}>{total.toLocaleString()} master games</div>
+          <div style={S.total}>{total.toLocaleString()} {tr("master games")}</div>
           <div style={S.list}>
             {moves.map(m => {
               // The API returns the per-move total as `games` (verified against
@@ -86,7 +87,7 @@ export default function ClassOpeningExplorer({ sanPrefix, enabled, onToggle, onP
                     type="button"
                     style={{ ...S.san, cursor: canPlay ? 'pointer' : 'default' }}
                     onClick={() => canPlay && onPlayMove?.(m.san)}
-                    title={canPlay ? `Play ${m.san} on the class board` : 'Take control of the board to play a move'}
+                    title={canPlay ? tr("Play {san} on the class board", { san: m.san }) : tr('Take control of the board to play a move')}
                     disabled={!canPlay}
                   >
                     {m.san}

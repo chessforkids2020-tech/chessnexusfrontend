@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import api from '../../api';
 import Chessboard from '../Chessboard';
 import './DashGames.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const PAGE_SIZE = 24;
@@ -28,42 +29,42 @@ function useIsDesktop() {
 
 const TYPES = [
   { id: 'all', label: 'All' },
-  { id: 'arena', label: 'Arena' },
-  { id: 'friend', label: 'Friends' },
-  { id: 'stockfish', label: 'Stockfish' },
+  { id: 'arena', label: tr('Arena') },
+  { id: 'friend', label: tr('Friends') },
+  { id: 'stockfish', label: tr('Stockfish') },
 ];
 const RESULTS = [
-  { id: '', label: 'Any result' },
-  { id: 'win', label: 'Wins' },
-  { id: 'loss', label: 'Losses' },
-  { id: 'draw', label: 'Draws' },
+  { id: '', label: tr('Any result') },
+  { id: 'win', label: tr('Wins') },
+  { id: 'loss', label: tr('Losses') },
+  { id: 'draw', label: tr('Draws') },
 ];
 const COLORS = [
-  { id: '', label: 'Both colours' },
-  { id: 'white', label: 'White' },
-  { id: 'black', label: 'Black' },
+  { id: '', label: tr('Both colours') },
+  { id: 'white', label: tr('White') },
+  { id: 'black', label: tr('Black') },
 ];
 const STAT_ROWS = [
-  { id: 'arena', label: '🏟 Arena' },
-  { id: 'friend', label: '🤝 vs Friends' },
-  { id: 'stockfish', label: '🤖 vs Stockfish' },
+  { id: 'arena', label: tr('🏟 Arena') },
+  { id: 'friend', label: tr('🤝 vs Friends') },
+  { id: 'stockfish', label: tr('🤖 vs Stockfish') },
 ];
-const TYPE_BADGE ={ arena: '🏟 Arena', friend: '🤝 Friend', stockfish: '🤖 Stockfish' };
-const OUTCOME = { win: 'Won', loss: 'Lost', draw: 'Draw' };
-const SPEED = { bullet: 'Bullet', blitz: 'Blitz', rapid: 'Rapid', classical: 'Classical', friendly: 'Friendly' };
+const TYPE_BADGE ={ arena: tr('🏟 Arena'), friend: tr('🤝 Friend'), stockfish: tr('🤖 Stockfish') };
+const OUTCOME = { win: tr('Won'), loss: tr('Lost'), draw: tr('Draw') };
+const SPEED = { bullet: tr('Bullet'), blitz: tr('Blitz'), rapid: tr('Rapid'), classical: tr('Classical'), friendly: tr('Friendly') };
 
 // "Italian Game: Two Knights Defense, Knight Attack, Normal Variation" →
 // "Italian Game: Two Knights Defense". The full name stays in the tooltip.
 const shortOpening = (name) => name.split(',')[0].trim();
-const tcText = (tc) => (!tc || tc.minutes == null ? 'Unlimited' : `${tc.minutes}+${tc.increment || 0}`);
+const tcText = (tc) => (!tc || tc.minutes == null ? tr('Unlimited') : `${tc.minutes}+${tc.increment || 0}`);
 const scoreText = (r) => (r === 'white_won' ? '1-0' : r === 'black_won' ? '0-1' : r === 'draw' ? '½-½' : '*');
 
 function ago(d) {
   if (!d) return '';
   const s = Math.max(0, (Date.now() - new Date(d).getTime()) / 1000);
-  if (s < 3600) return `${Math.max(1, Math.round(s / 60))} min ago`;
-  if (s < 86400) return `${Math.round(s / 3600)} h ago`;
-  if (s < 86400 * 30) return `${Math.round(s / 86400)} d ago`;
+  if (s < 3600) return tr("{v0} min ago", { v0: Math.max(1, Math.round(s / 60)) });
+  if (s < 86400) return tr("{v0} h ago", { v0: Math.round(s / 3600) });
+  if (s < 86400 * 30) return tr("{v0} d ago", { v0: Math.round(s / 86400) });
   return new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
@@ -124,7 +125,7 @@ export default function AllGamesTab({ who }) {
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       })
-      .catch(() => setError('Could not export games.'))
+      .catch(() => setError(tr('Could not export games.')))
       .finally(() => setExporting(false));
   };
 
@@ -143,7 +144,7 @@ export default function AllGamesTab({ who }) {
         setTotal(data.total || 0);
         setCounts(data.counts || null);
       })
-      .catch(() => { if (req === reqRef.current) setError('Could not load games.'); })
+      .catch(() => { if (req === reqRef.current) setError(tr('Could not load games.')); })
       .finally(() => { if (req === reqRef.current) setLoading(false); });
   };
 
@@ -160,7 +161,7 @@ export default function AllGamesTab({ who }) {
   return (
     <div className="dg-wrap">
       {stats && (
-        <div className="dg-summary" aria-label={`Games, last ${stats.months || 6} months`}>
+        <div className="dg-summary" aria-label={tr("Games, last {v0} months", { v0: stats.months || 6 })}>
           {STAT_ROWS.map(t => {
             const g = stats[t.id] || {};
             const n = g.games || 0;
@@ -188,7 +189,7 @@ export default function AllGamesTab({ who }) {
       )}
 
       <div className="dg-filters">
-        <div className="dg-chips" role="group" aria-label="Game type">
+        <div className="dg-chips" role="group" aria-label={tr("Game type")}>
           {TYPES.map(t => (
             <button
               key={t.id}
@@ -202,16 +203,16 @@ export default function AllGamesTab({ who }) {
           ))}
         </div>
         <div className="dg-filter-row">
-          <select className="dg-select" value={result} onChange={e => setResult(e.target.value)} aria-label="Result">
+          <select className="dg-select" value={result} onChange={e => setResult(e.target.value)} aria-label={tr("Result")}>
             {RESULTS.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
           </select>
-          <select className="dg-select" value={color} onChange={e => setColor(e.target.value)} aria-label="Colour">
+          <select className="dg-select" value={color} onChange={e => setColor(e.target.value)} aria-label={tr("Colour")}>
             {COLORS.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
           </select>
           <input
             className="dg-search"
             type="search"
-            placeholder="Search opponent…"
+            placeholder={tr("Search opponent…")}
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -220,9 +221,9 @@ export default function AllGamesTab({ who }) {
             className="dg-export"
             onClick={exportPgn}
             disabled={exporting || total === 0}
-            title="Download the games shown below (current filters) as a PGN file"
+            title={tr("Download the games shown below (current filters) as a PGN file")}
           >
-            {exporting ? 'Exporting…' : '⬇ Export PGN'}
+            {exporting ? tr('Exporting…') : tr('⬇ Export PGN')}
           </button>
         </div>
       </div>
@@ -239,7 +240,7 @@ export default function AllGamesTab({ who }) {
 
       {games.length > 0 && (
         <>
-          <div className="dg-total">{total} game{total === 1 ? '' : 's'} in the last 6 months</div>
+          <div className="dg-total">{total} {tr("game")}{total === 1 ? '' : 's'} {tr("in the last 6 months")}</div>
           <div className="dg-list">
             {games.map(g => (
               <Link
@@ -262,7 +263,7 @@ export default function AllGamesTab({ who }) {
                     <span className="dg-tc">
                       {tcText(g.timeControl)}
                       {g.speed && <> · <span className={`dg-speed dg-speed--${g.speed}`}>{SPEED[g.speed]}</span></>}
-                      {g.rated ? ' · Rated' : ''}{g.chess960 ? ' · 960' : ''}
+                      {g.rated ? tr(' · Rated') : ''}{g.chess960 ? ' · 960' : ''}
                     </span>
                     <span className="dg-when">{ago(g.finishedAt)}</span>
                   </div>
@@ -271,7 +272,7 @@ export default function AllGamesTab({ who }) {
                       <span className="dg-dot dg-dot--white" />{g.white}
                       {g.whiteRating != null && <span className="dg-prating">({g.whiteRating})</span>}
                     </span>
-                    <span className="dg-vs">vs</span>
+                    <span className="dg-vs">{tr("vs")}</span>
                     <span className="dg-p">
                       <span className="dg-dot dg-dot--black" />{g.black}
                       {g.blackRating != null && <span className="dg-prating">({g.blackRating})</span>}
@@ -280,7 +281,7 @@ export default function AllGamesTab({ who }) {
                   <div className="dg-opening">
                     {g.myColor && (
                       <span className={`dg-side dg-side--${g.myColor}`}>
-                        as {g.myColor === 'white' ? 'White' : 'Black'}
+                        {tr("as")} {g.myColor === 'white' ? 'White' : 'Black'}
                       </span>
                     )}
                     {g.opening && (
@@ -299,7 +300,7 @@ export default function AllGamesTab({ who }) {
                         {g.ratingChange > 0 ? `+${g.ratingChange}` : g.ratingChange}
                       </span>
                     )}
-                    <span className="dg-plies">{Math.ceil((g.plies || 0) / 2)} moves</span>
+                    <span className="dg-plies">{Math.ceil((g.plies || 0) / 2)} {tr("moves")}</span>
                   </div>
                 </div>
               </Link>
@@ -308,9 +309,9 @@ export default function AllGamesTab({ who }) {
         </>
       )}
 
-      {loading && <div className="dg-loading">Loading…</div>}
+      {loading && <div className="dg-loading">{tr("Loading…")}</div>}
       {!loading && hasMore && (
-        <button type="button" className="dg-more" onClick={() => load(page + 1)}>Load more</button>
+        <button type="button" className="dg-more" onClick={() => load(page + 1)}>{tr("Load more")}</button>
       )}
     </div>
   );

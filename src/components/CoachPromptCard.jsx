@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function CoachPromptCard() {
   const navigate = useNavigate();
@@ -41,13 +42,13 @@ export default function CoachPromptCard() {
           <div style={{ fontSize: '28px' }}>🎓</div>
           <div>
             <div style={{ color: 'var(--color-accent)', fontWeight: 600, fontSize: '15px' }}>
-              You're set up as a coach
+              {tr("You're set up as a coach")}
             </div>
             <div style={{ color: 'rgba(226,232,240,0.65)', fontSize: '12.5px', marginTop: '2px' }}>
               {coachStatus.access?.downgraded
                 ? 'Coach plan ended — you\'re on the Free plan'
                 : coachStatus.access?.daysRemaining != null
-                  ? `${coachStatus.access.daysRemaining} day(s) remaining`
+                  ? tr("{daysRemaining} day(s) remaining", { daysRemaining: coachStatus.access.daysRemaining })
                   : 'Free coach plan — no expiry'}
             </div>
           </div>
@@ -65,7 +66,7 @@ export default function CoachPromptCard() {
             cursor: 'pointer'
           }}
         >
-          Open coach dashboard →
+          {tr("Open coach dashboard →")}
         </button>
       </div>
     );
@@ -89,7 +90,7 @@ export default function CoachPromptCard() {
     }}>
       <button
         onClick={() => { localStorage.setItem('coachPromptDismissed', '1'); setDismissed(true); }}
-        title="Dismiss"
+        title={tr("Dismiss")}
         style={{
           position: 'absolute', top: '8px', right: '12px',
           background: 'transparent', border: 'none', color: 'rgba(226,232,240,0.4)',
@@ -103,11 +104,11 @@ export default function CoachPromptCard() {
           background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
           WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent'
         }}>
-          Are you a chess coach?
+          {tr("Are you a chess coach?")}
         </div>
         <div style={{ color: 'rgba(226,232,240,0.7)', fontSize: '13.5px', lineHeight: 1.5 }}>
-          Manage your students, give assignments, and track progress — all in one place.
-          <strong style={{ color: 'var(--color-warning)' }}> Free forever</strong> for up to 30 students. No card required.
+          {tr("Manage your students, give assignments, and track progress — all in one place.")}
+          <strong style={{ color: 'var(--color-warning)' }}> {tr("Free forever")}</strong> {tr("for up to 30 students. No card required.")}
         </div>
       </div>
       <button
@@ -124,7 +125,7 @@ export default function CoachPromptCard() {
           boxShadow: '0 6px 20px var(--color-accent-a30)'
         }}
       >
-        Yes — I'm a coach →
+        {tr("Yes — I'm a coach →")}
       </button>
     </div>
   );

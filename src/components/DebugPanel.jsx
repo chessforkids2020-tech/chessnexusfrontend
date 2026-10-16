@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Global debug context
 export const DebugContext = React.createContext();
@@ -57,7 +58,7 @@ function DebugPanel({ logs, onClose }) {
   const copyLogs = () => {
     const logText = (logs || []).map(log => `[${log.timestamp}] ${log.message}`).join('\n');
     navigator.clipboard.writeText(logText).then(() => {
-      alert('Logs copied to clipboard!');
+      alert(tr('Logs copied to clipboard!'));
     }).catch(err => {
       // Fallback: select all text
       const range = document.createRange();
@@ -119,7 +120,7 @@ function DebugPanel({ logs, onClose }) {
         }}
         onMouseDown={handleMouseDown}
       >
-        <span>Debug Panel (Ctrl+Shift+D to toggle)</span>
+        <span>{tr("Debug Panel (Ctrl+Shift+D to toggle)")}</span>
         <div>
           <button
             onClick={copyLogs}
@@ -134,7 +135,7 @@ function DebugPanel({ logs, onClose }) {
               borderRadius: 'var(--radius-sm)',
             }}
           >
-            Copy Logs
+            {tr("Copy Logs")}
           </button>
           <button
             onClick={onClose}

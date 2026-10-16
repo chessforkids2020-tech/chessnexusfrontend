@@ -13,6 +13,7 @@ import useSquareEvals from '../../hooks/useSquareEvals';
 import { analyzeGame } from '../../components/masterGames/analyzeGame';
 import UserAvatar from '../../components/UserAvatar';
 import './FriendGame.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // NOTE: `import.meta.env.X` must be written EXACTLY like this — plain, with no
 // optional chaining. Vite performs a literal TEXT substitution of that pattern at
@@ -50,9 +51,9 @@ function fmtClock(secs) {
 }
 
 const MOVE_MARKS = {
-  blunder: { color: '#ef4444', symbol: '??', label: 'Blunders' },
-  mistake: { color: '#f97316', symbol: '?', label: 'Mistakes' },
-  inaccuracy: { color: '#eab308', symbol: '?!', label: 'Inaccuracies' },
+  blunder: { color: '#ef4444', symbol: '??', label: tr('Blunders') },
+  mistake: { color: '#f97316', symbol: '?', label: tr('Mistakes') },
+  inaccuracy: { color: '#eab308', symbol: '?!', label: tr('Inaccuracies') },
 };
 
 // Clickable move list (Lichess-style): White/Black columns. `current` is the ply
@@ -92,7 +93,7 @@ function MoveList({ moves, current, onSelect, marks = {} }) {
   return (
     <div className="fg-moves-list" ref={listRef}>
       {rows.length === 0 ? (
-        <div className="fg-moves-empty">No moves yet</div>
+        <div className="fg-moves-empty">{tr("No moves yet")}</div>
       ) : (
         rows.map((r) => (
           <div className="fg-move-row" key={r.no}>
@@ -202,6 +203,16 @@ export default function FriendGame() {
   const [rematchState, setRematchState] = useState(null);   // null | 'sent' | 'offered'
   const [friendLeftRoom, setFriendLeftRoom] = useState(false);
   const [engineOn, setEngineOn] = useState(false);
+  // Phone/tablet layout (same line as the board's touch layout). After the game
+  // the controls are rearranged there: see the `is-over` rules in FriendGame.css.
+  const [isPhone, setIsPhone] = useState(() => typeof window !== 'undefined' && window.innerWidth <= MOBILE_MAX_PX);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${MOBILE_MAX_PX}px)`);
+    const on = () => setIsPhone(mq.matches);
+    on();
+    mq.addEventListener ? mq.addEventListener('change', on) : mq.addListener(on);
+    return () => { mq.removeEventListener ? mq.removeEventListener('change', on) : mq.removeListener(on); };
+  }, []);
   const [squaresOn, setSquaresOn] = useState(false);
   // { status: idle|running|done|error, done, total, marks: { ply: class } }
   const [analysis, setAnalysis] = useState({ status: 'idle' });
@@ -547,10 +558,10 @@ export default function FriendGame() {
         timeControlLabel: room?.timeControlLabel || '',
         variant: room?.variant || 'standard',
       });
-      setInviteMsg({ ok: true, text: `Invite sent to ${res.data.inviteeName}!` });
+      setInviteMsg({ ok: true, text: tr("Invite sent to {inviteeName}!", { inviteeName: res.data.inviteeName }) });
       setInviteDisplayName('');
     } catch (err) {
-      setInviteMsg({ ok: false, text: err?.response?.data?.message || 'Failed to send invite' });
+      setInviteMsg({ ok: false, text: err?.response?.data?.message || tr('Failed to send invite') });
     } finally {
       setInviteSending(false);
     }
@@ -668,7 +679,7 @@ export default function FriendGame() {
           } : player)}
         />
         <span className="fg-pname">
-          {(player?.displayName || (isYou ? me.displayName : 'Waiting…'))}{isYou ? ' (you)' : ''}
+          {(player?.displayName || (isYou ? me.displayName : tr('Waiting…')))}{isYou ? ' (you)' : ''}
         </span>
       </div>
       <span className="fg-clock">{fmtClock(clocks[color])}</span>
@@ -677,7 +688,7 @@ export default function FriendGame() {
 
   return (
     <div className="fg-room">
-      <div className={`fg-room-inner ${phase === 'waiting' || phase === 'connecting' ? 'is-waiting' : ''}`}>
+      <div className={`fg-room-inner ${phase === 'waiting' || phase === 'connecting' ? 'is-waiting' : ''}${gameOver ? ' is-over' : ''}`}>
 
         {/* LEFT CARD: controls + chat */}
         <div className="fg-card fg-left">
@@ -689,11 +700,11 @@ export default function FriendGame() {
                 fontWeight: 700,
                 color: room?.isRated ? 'var(--color-success)' : 'var(--color-text-muted)',
               }}>
-                {room?.isRated ? 'Rated' : 'Casual'}
+                {room?.isRated ? tr('Rated') : tr('Casual')}
               </span>
               {spectatorCount > 0 && (
-                <span className="fg-watch-count" title={`${spectatorCount} watching`}>
-                  {' • '}👁 {spectatorCount} watching
+                <span className="fg-watch-count" title={tr("{spectatorCount} watching", { spectatorCount: spectatorCount })}>
+                  {' • '}👁 {spectatorCount} {tr("watching")}
                 </span>
               )}
             </span>
@@ -705,25 +716,25 @@ export default function FriendGame() {
             <button
               className="fg-icon-btn"
               onClick={() => (gameOver && !isSpectator ? leaveRoom() : navigate('/games'))}
-              title="Back to Games"
-              aria-label="Back to Games"
+              title={tr("Back to Games")}
+              aria-label={tr("Back to Games")}
             >🏠</button>
             {isSpectator ? (
-              <span className="fg-watching-label">👁 You're watching</span>
+              <span className="fg-watching-label">{tr("👁 You're watching")}</span>
             ) : (
               <>
                 <button
                   className="fg-icon-btn"
                   onClick={() => socketRef.current.emit('resign', { roomCode })}
-                  title="Resign"
-                  aria-label="Resign"
+                  title={tr("Resign")}
+                  aria-label={tr("Resign")}
                   disabled={phase !== 'active'}
                 >🏳️</button>
                 <button
                   className="fg-icon-btn"
                   onClick={() => socketRef.current.emit('offer_draw', { roomCode })}
-                  title="Offer draw"
-                  aria-label="Offer draw"
+                  title={tr("Offer draw")}
+                  aria-label={tr("Offer draw")}
                   disabled={phase !== 'active'}
                 >🤝</button>
               </>
@@ -733,17 +744,17 @@ export default function FriendGame() {
           {/* Players can share a link for others to watch (guests too). */}
           {!isSpectator && roomCode && ['waiting', 'active', 'finished'].includes(phase) && (
             <button className="fg-watch-link" onClick={copyWatchLink}>
-              {watchCopied ? '✓ Watch link copied' : '👁 Copy watch link'}
+              {watchCopied ? tr('✓ Watch link copied') : tr('👁 Copy watch link')}
             </button>
           )}
 
           {isSpectator && roomClosed && (
-            <div className="fg-banner fg-warn">Both players have left — this game room is closed.</div>
+            <div className="fg-banner fg-warn">{tr("Both players have left — this game room is closed.")}</div>
           )}
 
           {isSpectator && phase === 'waiting' && !roomClosed && (
             <div className="fg-invite">
-              <p className="fg-waiting">Waiting for the second player to join…</p>
+              <p className="fg-waiting">{tr("Waiting for the second player to join…")}</p>
             </div>
           )}
 
@@ -753,16 +764,16 @@ export default function FriendGame() {
                 {connectError ? (
                   <>
                     <p className="fg-invite-label" style={{ color: 'var(--color-danger)' }}>
-                      Connection failed — retrying…
+                      {tr("Connection failed — retrying…")}
                     </p>
                     <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', margin: '4px 0 0' }}>
-                      The server may be starting up. Please wait a moment.
+                      {tr("The server may be starting up. Please wait a moment.")}
                     </p>
                   </>
                 ) : (
                   <>
                     <span className="fg-spinner" />
-                    <p className="fg-invite-label">Creating room…</p>
+                    <p className="fg-invite-label">{tr("Creating room…")}</p>
                   </>
                 )}
               </div>
@@ -771,21 +782,21 @@ export default function FriendGame() {
 
           {phase === 'waiting' && roomCode && !isSpectator && (
             <div className="fg-invite">
-              <p className="fg-invite-label">Share this code with your friend</p>
+              <p className="fg-invite-label">{tr("Share this code with your friend")}</p>
               <div className="fg-code-box" onClick={copyCode}>
                 <span className="fg-code-text">{roomCode}</span>
                 <button className="fg-copy-btn">{copied ? '✓ Copied' : 'Copy code'}</button>
               </div>
-              <p className="fg-waiting">Waiting for opponent to join…</p>
+              <p className="fg-waiting">{tr("Waiting for opponent to join…")}</p>
 
               {isCreator && user && (
                 <div className="fg-invite-friend">
-                  <p className="fg-invite-friend-label">Invite friend</p>
+                  <p className="fg-invite-friend-label">{tr("Invite friend")}</p>
                   <div className="fg-invite-friend-row">
                     <input
                       className="fg-invite-friend-input"
                       type="text"
-                      placeholder="Enter display name"
+                      placeholder={tr("Enter display name")}
                       value={inviteDisplayName}
                       onChange={(e) => { setInviteDisplayName(e.target.value); setInviteMsg(null); }}
                       onKeyDown={(e) => e.key === 'Enter' && !inviteSending && sendGameInvite()}
@@ -796,7 +807,7 @@ export default function FriendGame() {
                       onClick={sendGameInvite}
                       disabled={inviteSending || !inviteDisplayName.trim()}
                     >
-                      {inviteSending ? '…' : 'Invite'}
+                      {inviteSending ? '…' : tr('Invite')}
                     </button>
                   </div>
                   {inviteMsg && (
@@ -811,13 +822,13 @@ export default function FriendGame() {
 
           {drawOffered && phase === 'active' && (
             <div className="fg-banner">
-              Opponent offers a draw.
-              <button className="fg-link" onClick={() => socketRef.current.emit('accept_draw', { roomCode })}>Accept</button>
+              {tr("Opponent offers a draw.")}
+              <button className="fg-link" onClick={() => socketRef.current.emit('accept_draw', { roomCode })}>{tr("Accept")}</button>
             </div>
           )}
 
           {opponentLeft && phase !== 'finished' && (
-            <div className="fg-banner fg-warn">Opponent disconnected.</div>
+            <div className="fg-banner fg-warn">{tr("Opponent disconnected.")}</div>
           )}
 
           {gameOver && (
@@ -827,23 +838,23 @@ export default function FriendGame() {
                   ? (isSpectator ? 'Game ended — a player left' : 'Game ended — opponent left')
                   : (result?.text || 'Game over')}
                 {phase === 'finished' && result && (
-                  <span className="fg-post-sub">{result.winnerName ? `${result.winnerName} wins` : 'Draw'}</span>
+                  <span className="fg-post-sub">{result.winnerName ? tr("{winnerName} wins", { winnerName: result.winnerName }) : 'Draw'}</span>
                 )}
               </div>
 
-              {!isSpectator && (
+              {!isSpectator && !isPhone && (
                 <>
                   <button className="fg-primary fg-post-btn" onClick={playAgain}
                     disabled={friendLeftRoom || rematchState === 'sent'}>
                     {rematchState === 'sent' ? '⏳ Waiting for your friend…'
                       : rematchState === 'offered' ? '✓ Accept rematch' : '↻ Play again'}
                   </button>
-                  {rematchState === 'offered' && <p className="fg-post-note ok">Your friend wants a rematch!</p>}
-                  {friendLeftRoom && <p className="fg-post-note">Your friend left the room.</p>}
+                  {rematchState === 'offered' && <p className="fg-post-note ok">{tr("Your friend wants a rematch!")}</p>}
+                  {friendLeftRoom && <p className="fg-post-note">{tr("Your friend left the room.")}</p>}
                 </>
               )}
               {isSpectator && !roomClosed && (
-                <p className="fg-post-note">Stay here — if they play again, you'll keep watching.</p>
+                <p className="fg-post-note">{tr("Stay here — if they play again, you'll keep watching.")}</p>
               )}
 
               <button className="fg-secondary fg-post-btn" onClick={runAnalysis}
@@ -856,7 +867,7 @@ export default function FriendGame() {
                   <div style={{ width: `${Math.round(100 * (analysis.done || 0) / Math.max(1, analysis.total || 1))}%` }} />
                 </div>
               )}
-              {analysis.status === 'error' && <p className="fg-post-note">Analysis failed — try again.</p>}
+              {analysis.status === 'error' && <p className="fg-post-note">{tr("Analysis failed — try again.")}</p>}
               {analysis.status === 'done' && (
                 <div className="fg-post-summary">
                   {['white', 'black'].map(side => {
@@ -872,32 +883,53 @@ export default function FriendGame() {
                       </div>
                     );
                   })}
-                  <p className="fg-post-hint">Coloured moves in the move list are clickable.</p>
+                  <p className="fg-post-hint">{tr("Coloured moves in the move list are clickable.")}</p>
                 </div>
               )}
 
               <div className="fg-post-tools">
+                {/* On a phone Stockfish is the middle button under the board. */}
+                {!isPhone && (
                 <button className={`fg-secondary fg-post-btn ${engineOn ? 'on' : ''}`} onClick={toggleEngine}
                   aria-pressed={engineOn}
-                  disabled={analysis.status === 'running'}>⚙️ Stockfish</button>
+                  disabled={analysis.status === 'running'}>{tr("⚙️ Stockfish")}</button>
+                )}
                 <button className={`fg-secondary fg-post-btn ${squaresOn ? 'on' : ''}`} onClick={toggleSquares}
                   aria-pressed={squaresOn}
-                  disabled={analysis.status === 'running'}>🎯 Square evals</button>
+                  disabled={analysis.status === 'running'}>{tr("🎯 Square evals")}</button>
               </div>
-              {squaresOn && <p className="fg-post-hint">Click a piece — every square it can reach gets a score.</p>}
-              {engineOn && analysis.status !== 'running' && (
+              {squaresOn && <p className="fg-post-hint">{tr("Click a piece — every square it can reach gets a score.")}</p>}
+              {engineOn && analysis.status !== 'running' && !isPhone && (
                 <EnginePanel fen={displayFen} numLines={3} enabled onToggle={toggleEngine} />
               )}
               {explore && (
                 <p className="fg-post-hint">
                   Exploring: {explore.sans.join(' ')}{' '}
-                  <button className="fg-link" onClick={() => setExplore(null)}>back to game</button>
+                  <button className="fg-link" onClick={() => setExplore(null)}>{tr("back to game")}</button>
                 </p>
               )}
 
-              {isSpectator
-                ? <button className="fg-secondary fg-post-btn" onClick={() => navigate('/games')}>🚪 Stop watching</button>
-                : <button className="fg-secondary fg-post-btn" onClick={leaveRoom}>🚪 Leave room</button>}
+              {!isPhone ? (isSpectator
+                ? <button className="fg-secondary fg-post-btn" onClick={() => navigate('/games')}>{tr("🚪 Stop watching")}</button>
+                : <button className="fg-secondary fg-post-btn" onClick={leaveRoom}>{tr("🚪 Leave room")}</button>
+              ) : (
+                <>
+                  {/* Phone: Home and Play again side by side, last. */}
+                  <div className="fg-post-final">
+                    <button className="fg-secondary fg-post-btn" data-testid="fg-home"
+                      onClick={() => (isSpectator ? navigate('/games') : leaveRoom())}>{tr("🏠 Home")}</button>
+                    {!isSpectator && (
+                      <button className="fg-primary fg-post-btn" data-testid="fg-play-again" onClick={playAgain}
+                        disabled={friendLeftRoom || rematchState === 'sent'}>
+                        {rematchState === 'sent' ? '⏳ Waiting…'
+                          : rematchState === 'offered' ? '✓ Accept rematch' : '↻ Play again'}
+                      </button>
+                    )}
+                  </div>
+                  {!isSpectator && rematchState === 'offered' && <p className="fg-post-note ok">{tr("Your friend wants a rematch!")}</p>}
+                  {!isSpectator && friendLeftRoom && <p className="fg-post-note">{tr("Your friend left the room.")}</p>}
+                </>
+              )}
             </div>
           )}
 
@@ -918,7 +950,7 @@ export default function FriendGame() {
         {room?.chatEnabled && (isSpectator ? ['waiting', 'active', 'finished', 'aborted'] : ['active', 'finished', 'aborted']).includes(phase) && (
           <>
             <div className="fg-chat-float" style={{ display: chatOpen ? 'block' : 'none' }}>
-              <button className="fg-chat-close" onClick={() => setChatOpen(false)} aria-label="Close chat">✕</button>
+              <button className="fg-chat-close" onClick={() => setChatOpen(false)} aria-label={tr("Close chat")}>✕</button>
               {isSpectator ? (
                 <FriendGameChat
                   key="watchers"
@@ -926,8 +958,8 @@ export default function FriendGame() {
                   roomCode={roomCode}
                   myName={me.displayName}
                   event="spectatorChatMessage"
-                  title="👁 Watchers' chat"
-                  emptyText="Chat with other watchers — the players can't see this."
+                  title={tr("👁 Watchers' chat")}
+                  emptyText={tr("Chat with other watchers — the players can't see this.")}
                   initialMessages={specChat}
                 />
               ) : (
@@ -935,8 +967,8 @@ export default function FriendGame() {
               )}
             </div>
             {!chatOpen && (
-              <button className="fg-chat-fab" onClick={() => { setChatOpen(true); setChatUnread(0); }} aria-label="Open chat">
-                {isSpectator ? '👁 Watchers\' chat' : '💬 Chat'}
+              <button className="fg-chat-fab" onClick={() => { setChatOpen(true); setChatUnread(0); }} aria-label={tr("Open chat")}>
+                {isSpectator ? tr('👁 Watchers\' chat') : tr('💬 Chat')}
                 {chatUnread > 0 && <span className="fg-chat-badge">{chatUnread}</span>}
               </button>
             )}
@@ -964,14 +996,14 @@ export default function FriendGame() {
             {phase === 'finished' && result && !popupHidden && (
               <div className="fg-result-overlay">
                 <h3>{result.text}</h3>
-                <p>{result.winnerName ? `${result.winnerName} wins` : 'Draw'}</p>
+                <p>{result.winnerName ? tr("{winnerName} wins", { winnerName: result.winnerName }) : tr('Draw')}</p>
                 {!isSpectator && result.ratingChanges && (() => {
                   const mine = myColor === 'black' ? result.ratingChanges.black : result.ratingChanges.white;
                   if (!mine) return null;
                   const up = mine.change >= 0;
                   return (
                     <p style={{ margin: '2px 0 8px', fontSize: '14px' }}>
-                      <span style={{ color: 'var(--color-text-muted)' }}>Your {result.ratingChanges.category} rating: </span>
+                      <span style={{ color: 'var(--color-text-muted)' }}>{tr("Your")} {result.ratingChanges.category} {tr("rating:")} </span>
                       <strong style={{ color: 'var(--color-text)' }}>{mine.new} </strong>
                       <strong style={{ color: up ? 'var(--color-success)' : 'var(--color-danger)' }}>
                         ({up ? '+' : ''}{mine.change})
@@ -985,28 +1017,28 @@ export default function FriendGame() {
                       {rematchState === 'offered' ? '✓ Accept rematch' : '↻ Play again'}
                     </button>
                   )}
-                  <button className="fg-secondary" onClick={runAnalysis} disabled={!moves.length}>🔍 Analyze</button>
+                  <button className="fg-secondary" onClick={runAnalysis} disabled={!moves.length}>{tr("🔍 Analyze")}</button>
                 </div>
-                <button className="fg-link" style={{ marginTop: 8 }} onClick={() => setPopupHidden(true)}>Close</button>
+                <button className="fg-link" style={{ marginTop: 8 }} onClick={() => setPopupHidden(true)}>{tr("Close")}</button>
               </div>
             )}
 
             {phase === 'aborted' && !popupHidden && (
               <div className="fg-result-overlay">
-                <h3>Game ended</h3>
-                <p>{isSpectator ? 'A player left the game.' : 'Your opponent left the game.'}</p>
+                <h3>{tr("Game ended")}</h3>
+                <p>{isSpectator ? tr('A player left the game.') : tr('Your opponent left the game.')}</p>
                 <div className="fg-result-actions">
-                  {moves.length > 0 && <button className="fg-secondary" onClick={runAnalysis}>🔍 Analyze</button>}
-                  <button className="fg-secondary" onClick={() => setPopupHidden(true)}>Close</button>
+                  {moves.length > 0 && <button className="fg-secondary" onClick={runAnalysis}>{tr("🔍 Analyze")}</button>}
+                  <button className="fg-secondary" onClick={() => setPopupHidden(true)}>{tr("Close")}</button>
                 </div>
               </div>
             )}
 
             {phase === 'error' && (
               <div className="fg-result-overlay">
-                <h3>Can't join</h3>
+                <h3>{tr("Can't join")}</h3>
                 <p>{result?.text}</p>
-                <button className="fg-secondary" onClick={() => navigate('/games')}>Back to Games</button>
+                <button className="fg-secondary" onClick={() => navigate('/games')}>{tr("Back to Games")}</button>
               </div>
             )}
           </div>
@@ -1019,11 +1051,23 @@ export default function FriendGame() {
             marks={gameOver && analysis.status === 'done' ? analysis.marks : undefined} />
           {/* Move navigation — attached below the moves list */}
           <div className="fg-nav">
-            <button className="fg-nav-btn" onClick={navFirst} disabled={moves.length === 0} title="First">⏮</button>
-            <button className="fg-nav-btn" onClick={navPrev} disabled={(viewPly ?? moves.length) <= 0} title="Previous">◀</button>
-            <button className="fg-nav-btn" onClick={navNext} disabled={isLive && !explore} title="Next">▶</button>
-            <button className="fg-nav-btn" onClick={navLast} disabled={isLive && !explore} title="Latest">⏭</button>
+            <button className="fg-nav-btn" onClick={navFirst} disabled={moves.length === 0} title={tr("First")}>⏮</button>
+            <button className="fg-nav-btn" onClick={navPrev} disabled={(viewPly ?? moves.length) <= 0} title={tr("Previous")}>◀</button>
+            {isPhone && gameOver && (
+              <button className={`fg-nav-btn fg-nav-sf${engineOn ? ' on' : ''}`} data-testid="fg-nav-sf"
+                onClick={toggleEngine} aria-pressed={engineOn}
+                disabled={analysis.status === 'running'} title={tr("Stockfish analysis")}>
+                🐟 {engineOn ? tr('On') : tr('Off')}
+              </button>
+            )}
+            <button className="fg-nav-btn" onClick={navNext} disabled={isLive && !explore} title={tr("Next")}>▶</button>
+            <button className="fg-nav-btn" onClick={navLast} disabled={isLive && !explore} title={tr("Latest")}>⏭</button>
           </div>
+          {isPhone && gameOver && engineOn && analysis.status !== 'running' && (
+            <div className="fg-engine-m" data-testid="fg-engine-m">
+              <EnginePanel fen={displayFen} numLines={3} enabled onToggle={toggleEngine} />
+            </div>
+          )}
           {pbar(bottomPlayer, bottomColor, !isSpectator)}
         </div>
 

@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import api from '../api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
+import { t as tr } from '../i18n/LanguageContext';
 
 const typeColors = {
   basics:     { color: 'var(--color-success)', bg: 'var(--color-success-a12)', gradient: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent))' },
@@ -55,7 +56,7 @@ const UserStudyDetailPage = () => {
       const fresh = await api.get(`/api/user-studies/${id}`);
       setStudy(fresh.data);
       // Brief confirmation in the same place chapter errors appear.
-      setChapterError(`✓ Imported “${r.data.chapter}” — ${r.data.positions} position(s).`);
+      setChapterError(tr("✓ Imported “{chapter}” — {positions} position(s).", { chapter: r.data.chapter, positions: r.data.positions }));
       setTimeout(() => setChapterError(''), 4000);
     } catch (e) {
       setImportErr(e.response?.data?.error || 'Could not import that study.');
@@ -94,7 +95,7 @@ const UserStudyDetailPage = () => {
   };
 
   const handleDeleteChapter = async (chapterId) => {
-    if (!window.confirm('Delete this chapter and all its positions?')) return;
+    if (!window.confirm(tr('Delete this chapter and all its positions?'))) return;
     try {
       await api.delete(`/api/user-studies/${id}/chapters/${chapterId}`);
       setStudy(prev => ({ ...prev, chapters: prev.chapters.filter(c => c._id !== chapterId) }));
@@ -102,7 +103,7 @@ const UserStudyDetailPage = () => {
   };
 
   const handleAddChapter = async () => {
-    if (!chapterName.trim()) { setChapterError('Chapter name is required'); return; }
+    if (!chapterName.trim()) { setChapterError(tr('Chapter name is required')); return; }
     setChapterSaving(true);
     setChapterError('');
     try {
@@ -142,14 +143,14 @@ const UserStudyDetailPage = () => {
 
   if (loading) return (
     <div style={{ fontFamily: "'Segoe UI', sans-serif", background: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-faint)', fontSize: 16 }}>
-      Loading study...
+      {tr("Loading study...")}
     </div>
   );
 
   if (error) return (
     <div style={{ fontFamily: "'Segoe UI', sans-serif", background: 'var(--color-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
       <div style={{ fontSize: 16, color: 'var(--color-danger)' }}>{error}</div>
-      <button onClick={() => navigate(basePath)} style={{ background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)', color: 'var(--color-text)', borderRadius: 'var(--radius-md)', padding: '7px 14px', cursor: 'pointer', fontSize: 13 }}>← Back to Studies</button>
+      <button onClick={() => navigate(basePath)} style={{ background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)', color: 'var(--color-text)', borderRadius: 'var(--radius-md)', padding: '7px 14px', cursor: 'pointer', fontSize: 13 }}>{tr("← Back to Studies")}</button>
     </div>
   );
 
@@ -164,7 +165,7 @@ const UserStudyDetailPage = () => {
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 1000, margin: '0 auto', padding: '28px 20px' }}>
         {/* Top bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32, flexWrap: 'wrap' }}>
-          <button style={btnBase} onClick={() => navigate(basePath)}>← Back</button>
+          <button style={btnBase} onClick={() => navigate(basePath)}>{tr("← Back")}</button>
 
           {editingName && isOwner ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
@@ -176,13 +177,13 @@ const UserStudyDetailPage = () => {
                 autoFocus
               />
               <button onClick={handleSaveName} disabled={saving} style={{ background: 'var(--color-accent-2)', border: 'none', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '6px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>{saving ? '...' : 'Save'}</button>
-              <button onClick={() => { setEditingName(false); setNameError(''); }} style={{ ...btnBase }}>Cancel</button>
+              <button onClick={() => { setEditingName(false); setNameError(''); }} style={{ ...btnBase }}>{tr("Cancel")}</button>
               {nameError && <span style={{ fontSize: 12, color: 'var(--color-danger)' }}>{nameError}</span>}
             </div>
           ) : (
             <div
               style={{ fontSize: 22, fontWeight: 800, flex: 1, cursor: isOwner ? 'pointer' : 'default', background: tc.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-              title={isOwner ? 'Click to rename' : ''}
+              title={isOwner ? tr('Click to rename') : ''}
               onClick={() => isOwner && setEditingName(true)}
             >
               {study.name} {isOwner && <span style={{ fontSize: 13, WebkitTextFillColor: 'var(--color-text-faint)' }}>✏️</span>}
@@ -190,13 +191,13 @@ const UserStudyDetailPage = () => {
           )}
 
           <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-lg)', background: tc.bg, color: tc.color, fontSize: 12, fontWeight: 600, textTransform: 'capitalize' }}>{study.studyType}</span>
-          <span style={{ fontSize: 13, color: 'var(--color-text-faint)' }}>by <strong style={{ color: 'var(--color-text-muted)' }}>{study.username}</strong></span>
+          <span style={{ fontSize: 13, color: 'var(--color-text-faint)' }}>{tr("by")} <strong style={{ color: 'var(--color-text-muted)' }}>{study.username}</strong></span>
           {isOwner && (
             <>
               <button onClick={handleTogglePublic} style={{ ...btnBase, background: study.isPublic ? 'var(--color-success-a12)' : 'rgba(100,116,139,0.15)', border: `1px solid ${study.isPublic ? 'var(--color-success)' : 'var(--color-text-faint)'}`, color: study.isPublic ? 'var(--color-success)' : 'var(--color-text-muted)', fontWeight: 600 }}>
-                {study.isPublic ? '🌐 Public' : '🔒 Private'}
+                {study.isPublic ? tr('🌐 Public') : tr('🔒 Private')}
               </button>
-              <button onClick={() => setDeleteConfirm(true)} style={{ ...btnBase, background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)', color: 'var(--color-danger)', fontWeight: 600 }}>🗑️ Delete Study</button>
+              <button onClick={() => setDeleteConfirm(true)} style={{ ...btnBase, background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)', color: 'var(--color-danger)', fontWeight: 600 }}>{tr("🗑️ Delete Study")}</button>
             </>
           )}
         </div>
@@ -204,8 +205,8 @@ const UserStudyDetailPage = () => {
         {/* Summary row */}
         <div style={{ display: 'flex', gap: 16, marginBottom: 32, flexWrap: 'wrap' }}>
           {[
-            { label: 'Chapters', value: study.chapters?.length ?? 0, icon: '📚' },
-            { label: 'Total Positions', value: totalPositions, icon: '♟️' },
+            { label: tr('Chapters'), value: study.chapters?.length ?? 0, icon: '📚' },
+            { label: tr('Total Positions'), value: totalPositions, icon: '♟️' },
           ].map(stat => (
             <div key={stat.label} style={{ background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', padding: '14px 20px', minWidth: 120 }}>
               <div style={{ fontSize: 22 }}>{stat.icon}</div>
@@ -218,19 +219,19 @@ const UserStudyDetailPage = () => {
         {/* Chapter cards */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Select a Chapter
+            {tr("Select a Chapter")}
           </div>
           {isOwner && !addingChapter && !importOpen && (
             <div style={{ display: 'flex', gap: 8 }}>
               <button
                 onClick={() => { setImportOpen(true); setImportErr(''); }}
-                title="Import a Lichess study — its chapters become positions here"
+                title={tr("Import a Lichess study — its chapters become positions here")}
                 style={{ ...btnBase, fontWeight: 600 }}
-              >♞ Import from Lichess</button>
+              >{tr("♞ Import from Lichess")}</button>
               <button
                 onClick={() => { setAddingChapter(true); setChapterError(''); }}
                 style={{ ...btnBase, background: tc.bg, border: `1px solid ${tc.color}`, color: tc.color, fontWeight: 600 }}
-              >➕ Add Chapter</button>
+              >{tr("➕ Add Chapter")}</button>
             </div>
           )}
         </div>
@@ -241,12 +242,12 @@ const UserStudyDetailPage = () => {
               value={chapterName}
               onChange={e => { setChapterName(e.target.value); setChapterError(''); }}
               onKeyDown={e => { if (e.key === 'Enter') handleAddChapter(); if (e.key === 'Escape') { setAddingChapter(false); setChapterName(''); setChapterError(''); } }}
-              placeholder={`New chapter name (e.g. Chapter ${(study.chapters?.length ?? 0) + 1})`}
+              placeholder={tr("New chapter name (e.g. Chapter {v0})", { v0: (study.chapters?.length ?? 0) + 1 })}
               autoFocus
               style={{ flex: 1, minWidth: 220, background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a20)', borderRadius: 'var(--radius-md)', padding: '8px 12px', color: 'var(--color-text)', fontSize: 14, outline: 'none' }}
             />
             <button onClick={handleAddChapter} disabled={chapterSaving} style={{ background: 'var(--color-accent-2)', border: 'none', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '8px 14px', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: chapterSaving ? 0.6 : 1 }}>{chapterSaving ? '...' : 'Add'}</button>
-            <button onClick={() => { setAddingChapter(false); setChapterName(''); setChapterError(''); }} style={{ ...btnBase }}>Cancel</button>
+            <button onClick={() => { setAddingChapter(false); setChapterName(''); setChapterError(''); }} style={{ ...btnBase }}>{tr("Cancel")}</button>
             {chapterError && <span style={{ fontSize: 12, color: 'var(--color-danger)', width: '100%' }}>{chapterError}</span>}
           </div>
         )}
@@ -257,9 +258,9 @@ const UserStudyDetailPage = () => {
             topic — a chapter here — and its chapters become the positions. */}
         {isOwner && importOpen && (
           <div style={{ marginBottom: 20, padding: 14, background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Import a Lichess study as a chapter</div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>{tr("Import a Lichess study as a chapter")}</div>
             <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 10, lineHeight: 1.5 }}>
-              Each Lichess chapter becomes a <strong>position</strong> in this chapter.
+              {tr("Each Lichess chapter becomes a")} <strong>{tr("position")}</strong> {tr("in this chapter.")}
               Private studies won’t import — make it public or unlisted on Lichess first.
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -273,7 +274,7 @@ const UserStudyDetailPage = () => {
               <input
                 value={importName}
                 onChange={e => setImportName(e.target.value)}
-                placeholder="Chapter name (optional)"
+                placeholder={tr("Chapter name (optional)")}
                 style={{ flex: 1, minWidth: 180, background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a20)', borderRadius: 'var(--radius-md)', padding: '8px 12px', color: 'var(--color-text)', fontSize: 14, outline: 'none' }}
               />
               <button
@@ -281,9 +282,9 @@ const UserStudyDetailPage = () => {
                 disabled={importBusy || !importUrl.trim()}
                 style={{ background: 'var(--color-accent-2)', border: 'none', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '8px 14px', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: (importBusy || !importUrl.trim()) ? 0.6 : 1 }}
               >
-                {importBusy ? 'Importing…' : 'Import'}
+                {importBusy ? tr('Importing…') : tr('Import')}
               </button>
-              <button onClick={() => { setImportOpen(false); setImportErr(''); }} style={{ ...btnBase }}>Cancel</button>
+              <button onClick={() => { setImportOpen(false); setImportErr(''); }} style={{ ...btnBase }}>{tr("Cancel")}</button>
             </div>
             {importErr && <div style={{ fontSize: 12, color: 'var(--color-danger)', marginTop: 8 }}>{importErr}</div>}
           </div>
@@ -291,7 +292,7 @@ const UserStudyDetailPage = () => {
 
         {(!study.chapters || study.chapters.length === 0) ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--color-text-faint)', fontSize: 14 }}>
-            No chapters yet
+            {tr("No chapters yet")}
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
@@ -310,19 +311,19 @@ const UserStudyDetailPage = () => {
 
                 <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8, paddingRight: isOwner ? 24 : 0 }}>{ch.name}</div>
                 <div style={{ fontSize: 13, color: tc.color, fontWeight: 600 }}>
-                  {ch.puzzles?.length ?? 0} position{(ch.puzzles?.length ?? 0) !== 1 ? 's' : ''}
+                  {ch.puzzles?.length ?? 0} {tr("position")}{(ch.puzzles?.length ?? 0) !== 1 ? 's' : ''}
                 </div>
                 {ch.puzzles?.length > 0 ? (
-                  <div style={{ fontSize: 12, color: 'var(--color-text-faint)', marginTop: 6 }}>Click to study →</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-faint)', marginTop: 6 }}>{tr("Click to study →")}</div>
                 ) : (
-                  <div style={{ fontSize: 12, color: '#334155', marginTop: 6, fontStyle: 'italic' }}>No positions yet</div>
+                  <div style={{ fontSize: 12, color: '#334155', marginTop: 6, fontStyle: 'italic' }}>{tr("No positions yet")}</div>
                 )}
 
                 {isOwner && (
                   <button
                     style={{ position: 'absolute', top: 12, right: 12, background: 'transparent', border: 'none', color: 'var(--color-danger)', cursor: 'pointer', fontSize: 13, padding: '2px 4px', opacity: 0.6 }}
                     onClick={e => { e.stopPropagation(); handleDeleteChapter(ch._id); }}
-                    title="Delete chapter"
+                    title={tr("Delete chapter")}
                   >✕</button>
                 )}
               </motion.div>
@@ -337,12 +338,12 @@ const UserStudyDetailPage = () => {
           <motion.div style={{ position: 'fixed', inset: 0, background: 'var(--color-black-a65)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.div style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-lg)', padding: 24, maxWidth: 360, width: '90%', textAlign: 'center' }} initial={{ scale: 0.85 }} animate={{ scale: 1 }} exit={{ scale: 0.85 }}>
               <div style={{ fontSize: 22, marginBottom: 8 }}>🗑️</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>Delete Study?</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>{tr("Delete Study?")}</div>
               <div style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 20 }}>
-                This will permanently delete "<strong>{study.name}</strong>" and all its chapters and positions.
+                {tr("This will permanently delete \"")}<strong>{study.name}</strong>{tr("\" and all its chapters and positions.")}
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-                <button onClick={() => setDeleteConfirm(false)} disabled={deleting} style={{ ...btnBase, padding: '8px 18px', fontSize: 13 }}>Cancel</button>
+                <button onClick={() => setDeleteConfirm(false)} disabled={deleting} style={{ ...btnBase, padding: '8px 18px', fontSize: 13 }}>{tr("Cancel")}</button>
                 <button onClick={handleDeleteStudy} disabled={deleting} style={{ ...btnBase, background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)', color: 'var(--color-danger)', padding: '8px 18px', fontSize: 13, opacity: deleting ? 0.6 : 1 }}>{deleting ? 'Deleting...' : 'Delete'}</button>
               </div>
             </motion.div>

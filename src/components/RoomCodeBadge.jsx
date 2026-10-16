@@ -7,6 +7,7 @@
 // race. /arena/join accepts any room code, coach-created ones included.
 import React, { useState, useRef, useEffect } from 'react';
 import { copyText } from '../utils/clipboard';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Build the full waiting-room URL for a race code. /arena/join already reads
 // ?code= and pre-fills the box (see ArenaJoin.jsx), so this needs no new route —
@@ -72,7 +73,7 @@ export default function RoomCodeBadge({ code, label = 'Room code', style, showLi
       </code>
       <button
         onClick={onCopy}
-        title="Copy room code"
+        title={tr("Copy room code")}
         style={{
           padding: '6px 14px', borderRadius: 'var(--radius-md)', fontSize: 12.5, fontWeight: 600,
           cursor: 'pointer', whiteSpace: 'nowrap',
@@ -86,7 +87,7 @@ export default function RoomCodeBadge({ code, label = 'Room code', style, showLi
       {showLink && (
         <button
           onClick={onCopyLink}
-          title="Copy the full waiting-room link to paste into class chat"
+          title={tr("Copy the full waiting-room link to paste into class chat")}
           style={{
             padding: '6px 14px', borderRadius: 'var(--radius-md)', fontSize: 12.5, fontWeight: 600,
             cursor: 'pointer', whiteSpace: 'nowrap',

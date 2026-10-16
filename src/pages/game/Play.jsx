@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import { motion } from 'framer-motion';
 import './Play.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const timeControlGroups = [
   {
     id: 'bullet',
     name: '⚡ BULLET',
-    description: 'Less than 3 minutes',
+    description: tr('Less than 3 minutes'),
     color: '#FF6B6B',
     gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FF9E7D 100%)',
     timeControls: [
@@ -20,7 +21,7 @@ const timeControlGroups = [
   {
     id: 'blitz',
     name: '🔥 BLITZ',
-    description: '3 to 5 minutes',
+    description: tr('3 to 5 minutes'),
     color: '#FFD166',
     gradient: 'linear-gradient(135deg, #FFD166 0%, #FFE99C 100%)',
     timeControls: [
@@ -32,7 +33,7 @@ const timeControlGroups = [
   {
     id: 'rapid',
     name: '🏃 RAPID',
-    description: '10 to 15 minutes',
+    description: tr('10 to 15 minutes'),
     color: '#06D6A0',
     gradient: 'linear-gradient(135deg, #06D6A0 0%, #4ECDC4 100%)',
     timeControls: [
@@ -44,7 +45,7 @@ const timeControlGroups = [
   {
     id: 'classical',
     name: '👑 CLASSICAL',
-    description: 'Over 30 minutes',
+    description: tr('Over 30 minutes'),
     color: '#118AB2',
     gradient: 'linear-gradient(135deg, #118AB2 0%, var(--color-accent) 100%)',
     timeControls: [
@@ -183,7 +184,7 @@ export default function Play() {
           <div className="header-content">
             <div className="chess-icons">
               <span className="chess-piece">♔</span>
-              <h1 className="main-title">Chess Games Arena</h1>
+              <h1 className="main-title">{tr("Chess Games Arena")}</h1>
               <span className="chess-piece">♕</span>
             </div>
             
@@ -292,7 +293,7 @@ export default function Play() {
         >
           <h2 className="section-title">
             <span className="section-icon">📈</span>
-            Your Statistics
+            {tr("Your Statistics")}
           </h2>
           
           <div className="stats-grid">
@@ -308,15 +309,15 @@ export default function Play() {
                 <h3 className="stat-title">{gameType.toUpperCase()}</h3>
                 <div className="stat-numbers">
                   <div className="stat-row">
-                    <span className="stat-label">Wins:</span>
+                    <span className="stat-label">{tr("Wins:")}</span>
                     <span className="stat-value win">{stats.wins}</span>
                   </div>
                   <div className="stat-row">
-                    <span className="stat-label">Losses:</span>
+                    <span className="stat-label">{tr("Losses:")}</span>
                     <span className="stat-value loss">{stats.losses}</span>
                   </div>
                   <div className="stat-row">
-                    <span className="stat-label">Draws:</span>
+                    <span className="stat-label">{tr("Draws:")}</span>
                     <span className="stat-value draw">{stats.draws}</span>
                   </div>
                 </div>
@@ -359,7 +360,7 @@ export default function Play() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="modal-content">
-                <h2 className="modal-title">Finding Opponent...</h2>
+                <h2 className="modal-title">{tr("Finding Opponent...")}</h2>
                 
                 <div className="selected-control-display">
                   <div className="control-icon">
@@ -379,14 +380,14 @@ export default function Play() {
                     <div className="stat-icon">⏱️</div>
                     <div className="stat-content">
                       <div className="stat-value">{formatTime(searchTime)}</div>
-                      <div className="stat-label">Search Time</div>
+                      <div className="stat-label">{tr("Search Time")}</div>
                     </div>
                   </div>
                   <div className="match-stat">
                     <div className="stat-icon">👥</div>
                     <div className="stat-content">
                       <div className="stat-value">{foundPlayers}</div>
-                      <div className="stat-label">In Queue</div>
+                      <div className="stat-label">{tr("In Queue")}</div>
                     </div>
                   </div>
                 </div>
@@ -398,7 +399,7 @@ export default function Play() {
                       <div key={i} className="loader-square"></div>
                     ))}
                   </div>
-                  <div className="searching-text">Searching for opponent...</div>
+                  <div className="searching-text">{tr("Searching for opponent...")}</div>
                 </div>
 
                 {/* Opponent Animation */}
@@ -408,11 +409,11 @@ export default function Play() {
                       <div className="avatar-pulse"></div>
                       <div className="avatar-icon">♔</div>
                     </div>
-                    <div className="player-label">You</div>
+                    <div className="player-label">{tr("You")}</div>
                   </div>
                   
                   <div className="vs-container">
-                    <div className="vs-text">VS</div>
+                    <div className="vs-text">{"VS"}</div>
                     <div className="searching-pieces">
                       {['♔', '♕', '♖', '♗', '♘'].map((piece, i) => (
                         <div 
@@ -431,7 +432,7 @@ export default function Play() {
                       <div className="avatar-pulse"></div>
                       <div className="avatar-icon">♚</div>
                     </div>
-                    <div className="player-label">Finding...</div>
+                    <div className="player-label">{tr("Finding...")}</div>
                   </div>
                 </div>
 
@@ -441,7 +442,7 @@ export default function Play() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  Cancel Search
+                  {tr("Cancel Search")}
                 </motion.button>
               </div>
             </motion.div>

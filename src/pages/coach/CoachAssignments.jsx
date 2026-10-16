@@ -8,45 +8,46 @@ import './CoachDashboard.css';
 import './CoachOnboarding.css';
 import './CoachStudentDetail.css';
 import './CoachAssignments.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Time options mirror the Study Test feature (UserTestTimeSelection).
 const TEST_TIME_OPTIONS = [
-  { value: 60,   label: '1 minute' },
-  { value: 120,  label: '2 minutes' },
-  { value: 180,  label: '3 minutes' },
-  { value: 300,  label: '5 minutes' },
-  { value: 600,  label: '10 minutes' },
-  { value: 900,  label: '15 minutes' },
-  { value: 1200, label: '20 minutes' },
-  { value: 1800, label: '30 minutes' },
+  { value: 60,   label: tr('1 minute') },
+  { value: 120,  label: tr('2 minutes') },
+  { value: 180,  label: tr('3 minutes') },
+  { value: 300,  label: tr('5 minutes') },
+  { value: 600,  label: tr('10 minutes') },
+  { value: 900,  label: tr('15 minutes') },
+  { value: 1200, label: tr('20 minutes') },
+  { value: 1800, label: tr('30 minutes') },
 ];
 
 const ASSIGNMENT_TYPES = [
-  { id: 'puzzle_topic', label: '🧩 Puzzle topic', hint: 'Assign puzzles from a specific topic' },
-  { id: 'puzzle_rush',  label: '⚡ Timed race', hint: 'Beat the clock — solve as many as possible in time' },
-  { id: 'arena_tournament', label: '🏆 Play a tournament', hint: 'Play a real-game Arena Tournament — wins, losses & score' },
-  { id: 'custom',       label: '🔍 Find the blunders', hint: 'Post PGNs with blunder answers — students find them' },
-  { id: 'fen_solution', label: '♟️ Play vs Stockfish', hint: 'Post positions (FEN) — student plays them out; Stockfish scores' }
+  { id: 'puzzle_topic', label: tr('🧩 Puzzle topic'), hint: tr('Assign puzzles from a specific topic') },
+  { id: 'puzzle_rush',  label: tr('⚡ Timed race'), hint: tr('Beat the clock — solve as many as possible in time') },
+  { id: 'arena_tournament', label: tr('🏆 Play a tournament'), hint: tr('Play a real-game Arena Tournament — wins, losses & score') },
+  { id: 'custom',       label: tr('🔍 Find the blunders'), hint: tr('Post PGNs with blunder answers — students find them') },
+  { id: 'fen_solution', label: tr('♟️ Play vs Stockfish'), hint: 'Post positions (FEN) — student plays them out; Stockfish scores' }
 ];
 
 // Puzzle Rush durations (minutes), mirroring the Timed Race options.
 const RUSH_TIME_OPTIONS = [
-  { value: 1,  label: '1 minute' },
-  { value: 3,  label: '3 minutes' },
-  { value: 5,  label: '5 minutes' },
-  { value: 10, label: '10 minutes' },
+  { value: 1,  label: tr('1 minute') },
+  { value: 3,  label: tr('3 minutes') },
+  { value: 5,  label: tr('5 minutes') },
+  { value: 10, label: tr('10 minutes') },
 ];
 
 // Difficulty bands a coach can pick for a puzzle assignment. Chosen so a coach
 // never has to reason about Elo numbers: a beginner gets 400-800 regardless of
 // what the student's own rating happens to be.
 const RATING_BANDS = [
-  { min: 400,  max: 800,  label: '400 – 800 · Beginner' },
-  { min: 801,  max: 1200, label: '801 – 1200 · Improving' },
-  { min: 1201, max: 1600, label: '1201 – 1600 · Intermediate' },
-  { min: 1601, max: 2000, label: '1601 – 2000 · Advanced' },
-  { min: 2001, max: 2400, label: '2001 – 2400 · Strong' },
-  { min: 2401, max: 3000, label: '2401+ · Expert' },
+  { min: 400,  max: 800,  label: tr('400 – 800 · Beginner') },
+  { min: 801,  max: 1200, label: tr('801 – 1200 · Improving') },
+  { min: 1201, max: 1600, label: tr('1201 – 1600 · Intermediate') },
+  { min: 1601, max: 2000, label: tr('1601 – 2000 · Advanced') },
+  { min: 2001, max: 2400, label: tr('2001 – 2400 · Strong') },
+  { min: 2401, max: 3000, label: tr('2401+ · Expert') },
 ];
 
 export default function CoachAssignments() {
@@ -233,12 +234,12 @@ export default function CoachAssignments() {
       if (positions.length === 0) return { error: 'Add at least one position first.' };
       return { fenTask: { engineToleranceCp: Number(form.fenTolerance) || 80, engineDepth: 12, positions } };
     }
-    return { error: 'This assignment type cannot be saved.' };
+    return { error: tr('This assignment type cannot be saved.') };
   };
 
   const saveAsTemplate = async () => {
     setTplMsg('');
-    if (!form.title.trim()) { setCreateErr('Give the assignment a title before saving it as a template.'); return; }
+    if (!form.title.trim()) { setCreateErr(tr('Give the assignment a title before saving it as a template.')); return; }
     const built = buildTaskFromForm();
     if (built.error) { setCreateErr(built.error); return; }
     setSavingTpl(true);
@@ -248,7 +249,7 @@ export default function CoachAssignments() {
         title: form.title, description: form.description,
         ...built
       });
-      setTplMsg('Saved to your templates.');
+      setTplMsg(tr('Saved to your templates.'));
       const r = await api.get('/api/coach/assignment-templates');
       setTemplates(r.data?.templates || []);
     } catch (err) {
@@ -302,7 +303,7 @@ export default function CoachAssignments() {
   // custom blunder task — one pgnGames entry per game in the set.
   const applyLibraryItem = (item) => {
     if (!item) return;
-    if (item.locked) { setCreateErr('That set is Premium — subscribe to use built-in premium content.'); return; }
+    if (item.locked) { setCreateErr(tr('That set is Premium — subscribe to use built-in premium content.')); return; }
     const games = (item.games || []).map(g => ({
       pgn: g.pgn || '',
       blunders: (g.blunders || []).map(b => ({ move: b.move || '', betterMove: b.betterMove || '', explanation: b.explanation || '' }))
@@ -370,7 +371,7 @@ export default function CoachAssignments() {
   // Append a premium endgame position (by FEN) as a new fen_solution position.
   const addPremiumFen = (pick) => {
     if (!pick?.fen) return;
-    const label = pick.title || (pick.white || pick.black ? `${pick.white || 'White'} vs ${pick.black || 'Black'}` : 'Premium endgame');
+    const label = pick.title || (pick.white || pick.black ? tr("{v0} vs {v1}", { v0: pick.white || tr('White'), v1: pick.black || tr('Black') }) : tr('Premium endgame'));
     const positions = form.fenPositions.filter(p => String(p.fen || '').trim());
     setFenPositions([...positions, { fen: pick.fen, solution: '', userMoveCount: 1, tag: label.slice(0, 80) }]);
   };
@@ -381,8 +382,8 @@ export default function CoachAssignments() {
   const create = async (e) => {
     e.preventDefault();
     setCreateErr('');
-    if (!form.title.trim()) return setCreateErr('Please enter a title.');
-    if (form.studentIds.length === 0) return setCreateErr('Pick at least one student.');
+    if (!form.title.trim()) return setCreateErr(tr('Please enter a title.'));
+    if (form.studentIds.length === 0) return setCreateErr(tr('Pick at least one student.'));
 
     // Build the PGN task payload for the "Find the blunders" (custom) type.
     let pgnTask;
@@ -396,7 +397,7 @@ export default function CoachAssignments() {
         }))
         .filter(g => g.pgn && g.blunders.length > 0);
       const totalBlunders = games.reduce((n, g) => n + g.blunders.length, 0);
-      if (games.length === 0 || totalBlunders === 0) return setCreateErr('Add at least one PGN with at least one blunder move.');
+      if (games.length === 0 || totalBlunders === 0) return setCreateErr(tr('Add at least one PGN with at least one blunder move.'));
       // Derived, never typed: every blunder in every game must be found.
       const findTarget = totalBlunders || 1;
       pgnTask = { findTarget, games };
@@ -414,19 +415,19 @@ export default function CoachAssignments() {
           tag: (p.tag || '').trim()
         }))
         .filter(p => p.fen);
-      if (positions.length === 0) return setCreateErr('Add at least one position (FEN).');
+      if (positions.length === 0) return setCreateErr(tr('Add at least one position (FEN).'));
       // Basic FEN shape check: 8 ranks separated by "/" and a side-to-move field.
       const bad = positions.find(p => !/^\s*([pnbrqkPNBRQK1-8]+\/){7}[pnbrqkPNBRQK1-8]+\s+[wb]\s/.test(p.fen + ' '));
-      if (bad) return setCreateErr('One of the FENs looks invalid. Paste a full FEN (e.g. "r1bqkbnr/... w KQkq - 0 1").');
+      if (bad) return setCreateErr(tr('One of the FENs looks invalid. Paste a full FEN (e.g. "r1bqkbnr/... w KQkq - 0 1").'));
       fenTask = { engineToleranceCp: Number(form.fenTolerance) || 80, engineDepth: 12, positions };
     }
 
     if (form.assignmentType === 'study_chapter' && (!form.studyId || !form.chapterId)) {
-      return setCreateErr('Pick a study and a chapter for the test.');
+      return setCreateErr(tr('Pick a study and a chapter for the test.'));
     }
 
     if (form.assignmentType === 'arena_tournament' && !form.arenaTournamentCode.trim()) {
-      return setCreateErr('Paste a tournament code or join link.');
+      return setCreateErr(tr('Paste a tournament code or join link.'));
     }
 
     // Resolve the rush topic's display label so the coach UI/student card can
@@ -449,7 +450,7 @@ export default function CoachAssignments() {
             // coach can tell two similar assignments apart in the list.
             ? `${themes.find(t => t.key === form.puzzleTheme)?.label || form.puzzleTheme} · ${form.puzzleMinRating}–${form.puzzleMaxRating}`
             : form.puzzleMode === 'rating'
-              ? `Rating ${form.puzzleMinRating}–${form.puzzleMaxRating}`
+              ? tr("Rating {puzzleMinRating}–{puzzleMaxRating}", { puzzleMinRating: form.puzzleMinRating, puzzleMaxRating: form.puzzleMaxRating })
               : 'Healthy Mix';
 
       await api.post('/api/coach/assignments', {
@@ -509,7 +510,7 @@ export default function CoachAssignments() {
     setEditSel(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
 
   const saveEditStudents = async (id) => {
-    if (!editSel.length) { alert('Select at least one student.'); return; }
+    if (!editSel.length) { alert(tr('Select at least one student.')); return; }
     setEditBusy(true);
     try {
       const r = await api.put(`/api/coach/assignments/${id}/students`, { studentIds: editSel });
@@ -524,7 +525,7 @@ export default function CoachAssignments() {
   };
 
   const removeAssignment = async (id) => {
-    if (!window.confirm('Delete this assignment?')) return;
+    if (!window.confirm(tr('Delete this assignment?'))) return;
     try {
       await api.delete(`/api/coach/assignments/${id}`);
       setAssignments(prev => prev.filter(a => a._id !== id));
@@ -533,28 +534,28 @@ export default function CoachAssignments() {
     }
   };
 
-  if (loading) return <div className="coach-loading">Loading assignments…</div>;
+  if (loading) return <div className="coach-loading">{tr("Loading assignments…")}</div>;
   if (error) return <div className="coach-error">⚠️ {error}</div>;
 
   return (
     <div className="coach-dash">
       <div className="coach-dash-header">
         <div>
-          <h1>📝 Assignments</h1>
-          <p className="coach-dash-sub">Give your students structured work and track completion.</p>
+          <h1>{tr("📝 Assignments")}</h1>
+          <p className="coach-dash-sub">{tr("Give your students structured work and track completion.")}</p>
         </div>
         <button className="btn-primary" onClick={() => setShowCreate(true)} disabled={students.length === 0}>
-          ＋ New assignment
+          {tr("＋ New assignment")}
         </button>
       </div>
 
       {students.length === 0 ? (
         <div className="coach-empty">
-          You don't have any students yet. <a href="/coach/dashboard" style={{ color: '#06b6d4' }}>Add a student</a> first.
+          {tr("You don't have any students yet.")} <a href="/coach/dashboard" style={{ color: '#06b6d4' }}>{tr("Add a student")}</a> {tr("first.")}
         </div>
       ) : assignments.length === 0 ? (
         <div className="coach-empty">
-          No assignments yet. Click <strong>New assignment</strong> above.
+          {tr("No assignments yet. Click")} <strong>{tr("New assignment")}</strong> {tr("above.")}
         </div>
       ) : (
         <div className="ca-list">
@@ -584,7 +585,7 @@ export default function CoachAssignments() {
                       {isFen && a.fenTask?.positions?.length > 0 && <span>· ♟️ {a.fenTask.positions.length} position{a.fenTask.positions.length > 1 ? 's' : ''}</span>}
                       {isStudyTest && <span>· ⏱ {fmtSecs(a.testTimeLimit || 300)}</span>}
                       {isStudyTest && a.targetGrade > 0 && <span>· goal {a.targetGrade}%</span>}
-                      {isRush && <span>· {a.rushTopicLabel || a.rushTopic || 'Mixed'}</span>}
+                      {isRush && <span>· {a.rushTopicLabel || a.rushTopic || tr('Mixed')}</span>}
                       {isRush && <span>· ⚡ {a.rushMinutes || 5} min</span>}
                       {isRush && a.rushTargetSolved > 0 && <span>· goal {a.rushTargetSolved} solved</span>}
                       {isArena && a.arenaTournamentCode && <span>· 🏆 {a.arenaTournamentCode}</span>}
@@ -599,7 +600,7 @@ export default function CoachAssignments() {
                           otherwise a scheduled item is indistinguishable from a
                           live one and looks like nobody has started it. */}
                       {a.releaseAt && new Date(a.releaseAt) > new Date() && (
-                        <span className="ca-scheduled-chip" title="Preset — students cannot see this yet">
+                        <span className="ca-scheduled-chip" title={tr("Preset — students cannot see this yet")}>
                           📅 Preset · {new Date(a.releaseAt).toLocaleString([], {
                             day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
                           })}
@@ -611,20 +612,20 @@ export default function CoachAssignments() {
                     <button
                       className="btn-secondary"
                       onClick={() => (editingIds === a._id ? setEditingIds(null) : openEditStudents(a))}
-                      title="Add or remove students for this assignment"
+                      title={tr("Add or remove students for this assignment")}
                     >
-                      👥 Students ({(a.studentIds || []).length})
+                      {tr("👥 Students (")}{(a.studentIds || []).length})
                     </button>
-                    <button className="btn-danger" onClick={() => removeAssignment(a._id)}>Delete</button>
+                    <button className="btn-danger" onClick={() => removeAssignment(a._id)}>{tr("Delete")}</button>
                   </div>
                 </div>
 
                 {editingIds === a._id && (
                   <div className="ca-edit-students">
                     <div className="ca-edit-students-head">
-                      Who gets this assignment?
+                      {tr("Who gets this assignment?")}
                       <span className="ca-edit-hint">
-                        Removing a student hides it from them — their progress is kept if you add them back.
+                        {tr("Removing a student hides it from them — their progress is kept if you add them back.")}
                       </span>
                     </div>
                     <div className="ca-edit-students-list">
@@ -632,7 +633,7 @@ export default function CoachAssignments() {
                         const sid = String(s.studentId?._id || '');
                         if (!sid) return null;
                         const on = editSel.includes(sid);
-                        const name = s.studentId?.displayName || s.studentId?.username || s.studentName || 'Student';
+                        const name = s.studentId?.displayName || s.studentId?.username || s.studentName || tr('Student');
                         return (
                           <label key={sid} className={`ca-edit-student ${on ? 'on' : ''}`}>
                             <input type="checkbox" checked={on} onChange={() => toggleEditStudent(sid)} />
@@ -642,18 +643,18 @@ export default function CoachAssignments() {
                       })}
                     </div>
                     <div className="ca-edit-students-foot">
-                      <span className="ca-edit-count">{editSel.length} selected</span>
+                      <span className="ca-edit-count">{editSel.length} {tr("selected")}</span>
                       <button className="btn-primary" disabled={editBusy} onClick={() => saveEditStudents(a._id)}>
-                        {editBusy ? 'Saving…' : 'Save students'}
+                        {editBusy ? tr('Saving…') : tr('Save students')}
                       </button>
-                      <button className="btn-secondary" onClick={() => setEditingIds(null)}>Cancel</button>
+                      <button className="btn-secondary" onClick={() => setEditingIds(null)}>{tr("Cancel")}</button>
                     </div>
                   </div>
                 )}
                 {a.description && <p className="ca-desc">{a.description}</p>}
                 <div className="ca-progress">
                   <div className="ca-progress-label">
-                    <span>{completed} / {total} students completed</span>
+                    <span>{completed} / {total} {tr("students completed")}</span>
                     <span>{pct}%</span>
                   </div>
                   <div className="stat-bar"><div style={{ width: `${pct}%` }} /></div>
@@ -663,7 +664,7 @@ export default function CoachAssignments() {
                     student's status — visible even before anyone starts. */}
                 {completions.length > 0 && (
                   <div className="ca-assigned">
-                    <span className="ca-assigned-label">Assigned to:</span>
+                    <span className="ca-assigned-label">{tr("Assigned to:")}</span>
                     {completions.map(c => (
                       <span key={c.studentId} className={`ca-assigned-pill ca-status-${c.status}`}>
                         {c.studentName} · {statusLabel(c.status)}
@@ -674,7 +675,7 @@ export default function CoachAssignments() {
 
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                   <button className="ca-results-toggle" onClick={() => toggleExpand(a._id)}>
-                    {isOpen ? '▾ Hide student results' : `▸ View student results (${withResults.length})`}
+                    {isOpen ? tr('▾ Hide student results') : tr("▸ View student results ({length})", { length: withResults.length })}
                   </button>
                   {/* Board review — for every type where a position means something:
                       Play vs Stockfish (which class homework uses), find-the-blunders,
@@ -682,7 +683,7 @@ export default function CoachAssignments() {
                       finished; this shows WHICH position and WHAT they played. */}
                   {(a.assignmentType === 'fen_solution' || isBlunder || a.assignmentType === 'puzzle_topic') && (
                     <button className="ca-results-toggle" onClick={() => setReviewing(a)}>
-                      ♟️ Show assignment
+                      {tr("♟️ Show assignment")}
                     </button>
                   )}
                 </div>
@@ -690,12 +691,12 @@ export default function CoachAssignments() {
                 {isOpen && (
                   <div className="ca-results">
                     {withResults.length === 0 ? (
-                      <div className="ca-results-empty">No student has started this assignment yet.</div>
+                      <div className="ca-results-empty">{tr("No student has started this assignment yet.")}</div>
                     ) : isBlunder ? (
                       // ── Find the blunders: show attempts + what each student submitted ──
                       <table className="ca-results-table">
                         <thead><tr>
-                          <th>Student</th><th>Found</th><th>Attempts</th><th>Their answers (last try)</th><th>Status</th>
+                          <th>{tr("Student")}</th><th>{tr("Found")}</th><th>{tr("Attempts")}</th><th>{tr("Their answers (last try)")}</th><th>{tr("Status")}</th>
                         </tr></thead>
                         <tbody>
                           {withResults.map(c => {
@@ -716,7 +717,7 @@ export default function CoachAssignments() {
                                     {triesToSolve != null
                                       ? <span className="ca-solved-note"> · done on #{triesToSolve}</span>
                                       : (c.status !== 'completed' && (c.attempts || history.length)
-                                          ? <span className="ca-stopped-note"> · not yet</span>
+                                          ? <span className="ca-stopped-note"> {tr("· not yet")}</span>
                                           : null)}
                                     {history.length > 0 && (
                                       <button className="ca-hist-btn" onClick={() => toggleExpand(histKey)}>
@@ -742,14 +743,14 @@ export default function CoachAssignments() {
                                       <ol className="ca-hist-list">
                                         {history.map((h, hi) => (
                                           <li key={hi} className={h.passed ? 'passed' : ''}>
-                                            <span className="ca-hist-idx">Try {hi + 1}</span>
+                                            <span className="ca-hist-idx">{tr("Try")} {hi + 1}</span>
                                             <span className="ca-hist-moves">
                                               {(h.submittedMoves || []).length
                                                 ? h.submittedMoves.map((m, mi) => <span key={mi} className="ca-move-chip">{m}</span>)
-                                                : <span className="ca-muted">— (nothing submitted)</span>}
+                                                : <span className="ca-muted">{tr("— (nothing submitted)")}</span>}
                                             </span>
                                             <span className="ca-hist-result">
-                                              {h.foundCount}/{target} found {h.passed ? '✓' : ''}
+                                              {h.foundCount}/{target} {tr("found")} {h.passed ? '✓' : ''}
                                             </span>
                                           </li>
                                         ))}
@@ -766,8 +767,8 @@ export default function CoachAssignments() {
                       // ── Study Test: grade % + points + time per student ──
                       <table className="ca-results-table">
                         <thead><tr>
-                          <th>Student</th><th>Grade</th><th>Points</th><th>Solved</th>
-                          <th>Time</th><th>Runs</th><th>Status</th>
+                          <th>{tr("Student")}</th><th>{tr("Grade")}</th><th>{tr("Points")}</th><th>{tr("Solved")}</th>
+                          <th>{tr("Time")}</th><th>{tr("Runs")}</th><th>{tr("Status")}</th>
                         </tr></thead>
                         <tbody>
                           {withResults.map(c => {
@@ -795,8 +796,8 @@ export default function CoachAssignments() {
                       // ── Puzzle Rush: solved / streak / accuracy per student ──
                       <table className="ca-results-table">
                         <thead><tr>
-                          <th>Student</th><th>Solved</th><th>Wrong</th><th>Best streak</th>
-                          <th>Accuracy</th><th>Runs</th><th>Status</th>
+                          <th>{tr("Student")}</th><th>{tr("Solved")}</th><th>{tr("Wrong")}</th><th>{tr("Best streak")}</th>
+                          <th>{tr("Accuracy")}</th><th>{tr("Runs")}</th><th>{tr("Status")}</th>
                         </tr></thead>
                         <tbody>
                           {withResults.map(c => {
@@ -824,8 +825,8 @@ export default function CoachAssignments() {
                       // ── Arena Tournament: score / W-L-D / games / rank per student ──
                       <table className="ca-results-table">
                         <thead><tr>
-                          <th>Student</th><th>Score</th><th>W-L-D</th><th>Games</th>
-                          <th>Rank</th><th>🔥</th><th>Status</th>
+                          <th>{tr("Student")}</th><th>{tr("Score")}</th><th>W-L-D</th><th>{tr("Games")}</th>
+                          <th>{tr("Rank")}</th><th>🔥</th><th>{tr("Status")}</th>
                         </tr></thead>
                         <tbody>
                           {withResults.map(c => {
@@ -872,7 +873,7 @@ export default function CoachAssignments() {
                       // ── Play vs Stockfish: positions solved / accuracy per student ──
                       <table className="ca-results-table">
                         <thead><tr>
-                          <th>Student</th><th>Solved</th><th>Accuracy</th><th>Runs</th><th>Per position</th><th>Status</th>
+                          <th>{tr("Student")}</th><th>{tr("Solved")}</th><th>{tr("Accuracy")}</th><th>{tr("Runs")}</th><th>{tr("Per position")}</th><th>{tr("Status")}</th>
                         </tr></thead>
                         <tbody>
                           {withResults.map(c => {
@@ -902,8 +903,8 @@ export default function CoachAssignments() {
                       // ── Puzzle / study: solved / failed / streak per student ──
                       <table className="ca-results-table">
                         <thead><tr>
-                          <th>Student</th><th>Progress</th><th>Solved</th><th>Failed</th>
-                          <th>Best streak</th><th>Accuracy</th><th>Status</th>
+                          <th>{tr("Student")}</th><th>{tr("Progress")}</th><th>{tr("Solved")}</th><th>{tr("Failed")}</th>
+                          <th>{tr("Best streak")}</th><th>{tr("Accuracy")}</th><th>{tr("Status")}</th>
                         </tr></thead>
                         <tbody>
                           {withResults.map(c => (
@@ -931,22 +932,22 @@ export default function CoachAssignments() {
       {showCreate && (
         <div className="coach-modal-overlay" onClick={() => setShowCreate(false)}>
           <div className="coach-modal ca-modal" onClick={e => e.stopPropagation()}>
-            <h2>Create assignment</h2>
+            <h2>{tr("Create assignment")}</h2>
             <form onSubmit={create}>
               <label className="field">
-                <span>Title *</span>
+                <span>{tr("Title *")}</span>
                 <input
                   type="text"
                   value={form.title}
                   onChange={e => update('title', e.target.value)}
-                  placeholder="e.g. Daily puzzles week 1"
+                  placeholder={tr("e.g. Daily puzzles week 1")}
                   maxLength={200}
                   required
                 />
               </label>
 
               <div className="field">
-                <span>Type *</span>
+                <span>{tr("Type *")}</span>
                 <div className="ca-type-grid">
                   {ASSIGNMENT_TYPES.map(t => (
                     <label
@@ -974,19 +975,19 @@ export default function CoachAssignments() {
                       on the theme picker with no idea what to choose. */}
                   <div className="field-row">
                     <label className="field">
-                      <span>Which puzzles</span>
+                      <span>{tr("Which puzzles")}</span>
                       <select
                         value={form.puzzleMode}
                         onChange={e => update('puzzleMode', e.target.value)}
                       >
-                        <option value="mix">Healthy Mix — a bit of everything</option>
-                        <option value="theme">A specific theme</option>
-                        <option value="rating">A rating range</option>
-                        <option value="theme_rating">A theme at a set difficulty</option>
+                        <option value="mix">{tr("Healthy Mix — a bit of everything")}</option>
+                        <option value="theme">{tr("A specific theme")}</option>
+                        <option value="rating">{tr("A rating range")}</option>
+                        <option value="theme_rating">{tr("A theme at a set difficulty")}</option>
                       </select>
                     </label>
                     <label className="field" style={{ maxWidth: 140 }}>
-                      <span>Target count</span>
+                      <span>{tr("Target count")}</span>
                       <input
                         type="number"
                         min="1"
@@ -998,12 +999,12 @@ export default function CoachAssignments() {
 
                   {(form.puzzleMode === 'theme' || form.puzzleMode === 'theme_rating') && (
                     <label className="field">
-                      <span>Theme</span>
+                      <span>{tr("Theme")}</span>
                       <select
                         value={form.puzzleTheme}
                         onChange={e => update('puzzleTheme', e.target.value)}
                       >
-                        <option value="">Choose a theme…</option>
+                        <option value="">{tr("Choose a theme…")}</option>
                         {themes.map(t => (
                           <option key={t.key} value={t.key}>
                             {t.icon ? `${t.icon} ` : ''}{t.label}
@@ -1016,7 +1017,7 @@ export default function CoachAssignments() {
 
                   {form.puzzleMode === 'theme_rating' && (
                     <label className="field">
-                      <span>Difficulty</span>
+                      <span>{tr("Difficulty")}</span>
                       <select
                         value={`${form.puzzleMinRating}-${form.puzzleMaxRating}`}
                         onChange={e => {
@@ -1039,7 +1040,7 @@ export default function CoachAssignments() {
                   {form.puzzleMode === 'rating' && (
                     <div className="field-row">
                       <label className="field" style={{ maxWidth: 160 }}>
-                        <span>From rating</span>
+                        <span>{tr("From rating")}</span>
                         <input
                           type="number" min="400" max="3000" step="50"
                           value={form.puzzleMinRating}
@@ -1047,7 +1048,7 @@ export default function CoachAssignments() {
                         />
                       </label>
                       <label className="field" style={{ maxWidth: 160 }}>
-                        <span>To rating</span>
+                        <span>{tr("To rating")}</span>
                         <input
                           type="number" min="400" max="3000" step="50"
                           value={form.puzzleMaxRating}
@@ -1062,25 +1063,25 @@ export default function CoachAssignments() {
               {form.assignmentType === 'study_chapter' && (
                 <div className="field-row">
                   <label className="field">
-                    <span>Study</span>
+                    <span>{tr("Study")}</span>
                     <select
                       value={form.studyId}
                       onChange={e => handleStudyChange(e.target.value)}
                     >
-                      <option value="">— Select a study —</option>
+                      <option value="">{tr("— Select a study —")}</option>
                       {studies.map(s => (
                         <option key={s._id} value={s._id}>{s.title}</option>
                       ))}
                     </select>
                   </label>
                   <label className="field">
-                    <span>Chapter</span>
+                    <span>{tr("Chapter")}</span>
                     <select
                       value={form.chapterId}
                       onChange={e => update('chapterId', e.target.value)}
                       disabled={!form.studyId || loadingChapters}
                     >
-                      <option value="">{loadingChapters ? 'Loading…' : '— Select a chapter —'}</option>
+                      <option value="">{loadingChapters ? tr('Loading…') : tr('— Select a chapter —')}</option>
                       {chapters.map(c => (
                         <option key={c._id} value={c._id}>
                           {c.title}{c.puzzleCount != null ? ` (${c.puzzleCount} puzzles)` : ''}
@@ -1094,7 +1095,7 @@ export default function CoachAssignments() {
               {form.assignmentType === 'study_chapter' && (
                 <div className="field-row">
                   <label className="field">
-                    <span>Time limit</span>
+                    <span>{tr("Time limit")}</span>
                     <select
                       value={form.testTimeLimit}
                       onChange={e => update('testTimeLimit', Number(e.target.value))}
@@ -1105,7 +1106,7 @@ export default function CoachAssignments() {
                     </select>
                   </label>
                   <label className="field" style={{ maxWidth: 180 }}>
-                    <span>Target grade % (optional)</span>
+                    <span>{tr("Target grade % (optional)")}</span>
                     <input
                       type="number" min="0" max="100"
                       value={form.targetGrade}
@@ -1120,12 +1121,12 @@ export default function CoachAssignments() {
               {form.assignmentType === 'puzzle_rush' && (
                 <div className="field-row">
                   <label className="field">
-                    <span>Topic</span>
+                    <span>{tr("Topic")}</span>
                     <select
                       value={form.rushTopic}
                       onChange={e => update('rushTopic', e.target.value)}
                     >
-                      {rushTopics.length === 0 && <option value="mixed">Mixed</option>}
+                      {rushTopics.length === 0 && <option value="mixed">{tr("Mixed")}</option>}
                       {rushTopics.map(t => {
                         const name = t.title || t.label || t.id;
                         return (
@@ -1137,7 +1138,7 @@ export default function CoachAssignments() {
                     </select>
                   </label>
                   <label className="field">
-                    <span>Duration</span>
+                    <span>{tr("Duration")}</span>
                     <select
                       value={form.rushMinutes}
                       onChange={e => update('rushMinutes', Number(e.target.value))}
@@ -1148,7 +1149,7 @@ export default function CoachAssignments() {
                     </select>
                   </label>
                   <label className="field" style={{ maxWidth: 180 }}>
-                    <span>Goal solved (optional)</span>
+                    <span>{tr("Goal solved (optional)")}</span>
                     <input
                       type="number" min="0"
                       value={form.rushTargetSolved}
@@ -1163,16 +1164,16 @@ export default function CoachAssignments() {
               {form.assignmentType === 'arena_tournament' && (
                 <div className="ca-arena-builder">
                   <label className="field">
-                    <span>Tournament code or join link</span>
+                    <span>{tr("Tournament code or join link")}</span>
                     <input
                       type="text"
                       value={form.arenaTournamentCode}
                       onChange={e => update('arenaTournamentCode', e.target.value)}
-                      placeholder="e.g. AB12CD34  —  or paste a join link"
+                      placeholder={tr("e.g. AB12CD34  —  or paste a join link")}
                     />
                   </label>
                   <div style={{ fontSize: 13, color: '#9ca3af', margin: '-4px 0 10px' }}>
-                    Paste the code or full link of an existing tournament, or{' '}
+                    {tr("Paste the code or full link of an existing tournament, or")}{' '}
                     <button
                       type="button"
                       className="ca-link"
@@ -1184,7 +1185,7 @@ export default function CoachAssignments() {
                       onClick={() => window.open('/arenatournament/create?coach=1', '_blank')}
                       style={{ background: 'none', border: 'none', color: '#06b6d4', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
                     >
-                      create a new tournament
+                      {tr("create a new tournament")}
                     </button>{' '}
                     and copy its code back here.
                   </div>
@@ -1192,25 +1193,25 @@ export default function CoachAssignments() {
                   <div className="ca-blunder-label">Goals (optional — leave 0 to skip; finishing always completes the assignment)</div>
                   <div className="field-row">
                     <label className="field" style={{ maxWidth: 150 }}>
-                      <span>Min games</span>
+                      <span>{tr("Min games")}</span>
                       <input type="number" min="0" value={form.targetGames} onChange={e => update('targetGames', e.target.value)} placeholder="0" />
                     </label>
                     <label className="field" style={{ maxWidth: 150 }}>
-                      <span>Min score</span>
+                      <span>{tr("Min score")}</span>
                       <input type="number" min="0" value={form.targetScore} onChange={e => update('targetScore', e.target.value)} placeholder="0" />
                     </label>
                     <label className="field" style={{ maxWidth: 150 }}>
-                      <span>Finish top-N</span>
+                      <span>{tr("Finish top-N")}</span>
                       <input type="number" min="0" value={form.targetRank} onChange={e => update('targetRank', e.target.value)} placeholder="0" />
                     </label>
                   </div>
                   <div className="field-row">
                     <label className="field" style={{ maxWidth: 150 }}>
-                      <span>Min wins</span>
+                      <span>{tr("Min wins")}</span>
                       <input type="number" min="0" value={form.targetWins} onChange={e => update('targetWins', e.target.value)} placeholder="0" />
                     </label>
                     <label className="field" style={{ maxWidth: 150 }}>
-                      <span>Max losses</span>
+                      <span>{tr("Max losses")}</span>
                       <input type="number" min="0" value={form.targetMaxLosses} onChange={e => update('targetMaxLosses', e.target.value)} placeholder="0" />
                     </label>
                   </div>
@@ -1250,7 +1251,7 @@ export default function CoachAssignments() {
                             one would have replaced the form with a task of the
                             wrong kind. */}
                         {myTemplates.length > 0 && (
-                          <optgroup label="My templates">
+                          <optgroup label={tr("My templates")}>
                             {myTemplates.map(t => (
                               <option key={t._id} value={`tpl:${t._id}`}>
                                 {t.assignmentType === 'custom' ? '🔎' : '♟'} {t.title}
@@ -1262,10 +1263,10 @@ export default function CoachAssignments() {
                             answers — meaningless for a position-based
                             play-vs-Stockfish task, so it is hidden there. */}
                         {!isFen && library.length > 0 && (
-                          <optgroup label="Blunder library (built-in)">
+                          <optgroup label={tr("Blunder library (built-in)")}>
                             {library.map(l => (
                               <option key={l._id} value={`lib:${l._id}`} disabled={l.locked}>
-                                {l.locked ? '🔒' : '🔎'} {l.title}{l.premium ? ' 💎' : ''} · {l.gameCount} game{l.gameCount === 1 ? '' : 's'}, {l.blunderCount} blunder{l.blunderCount === 1 ? '' : 's'}{l.locked ? ' — Subscribe to use' : ''}
+                                {l.locked ? '🔒' : '🔎'} {l.title}{l.premium ? ' 💎' : ''} · {l.gameCount} {tr("game")}{l.gameCount === 1 ? '' : 's'}, {l.blunderCount} {tr("blunder")}{l.blunderCount === 1 ? '' : 's'}{l.locked ? ' — Subscribe to use' : ''}
                               </option>
                             ))}
                           </optgroup>
@@ -1277,9 +1278,9 @@ export default function CoachAssignments() {
                       className="btn-ghost"
                       onClick={saveAsTemplate}
                       disabled={savingTpl || templates.length >= templateMax}
-                      title={templates.length >= templateMax ? `Template limit reached (${templateMax})` : 'Save this task to reuse later'}
+                      title={templates.length >= templateMax ? tr("Template limit reached ({templateMax})", { templateMax: templateMax }) : tr('Save this task to reuse later')}
                     >
-                      {savingTpl ? 'Saving…' : `💾 Save as template (${templates.length}/${templateMax})`}
+                      {savingTpl ? tr('Saving…') : tr("💾 Save as template ({length}/{templateMax})", { length: templates.length, templateMax: templateMax })}
                     </button>
                   </div>
                   {tplMsg && <div className="ca-reuse-msg">✅ {tplMsg}</div>}
@@ -1288,7 +1289,7 @@ export default function CoachAssignments() {
                       {myTemplates.map(t => (
                         <span key={t._id} className="ca-reuse-chip">
                           {t.assignmentType === 'custom' ? '🔎' : '♟'} {t.title}
-                          <button type="button" onClick={() => deleteTemplate(t._id)} title="Delete template">✕</button>
+                          <button type="button" onClick={() => deleteTemplate(t._id)} title={tr("Delete template")}>✕</button>
                         </span>
                       ))}
                     </div>
@@ -1305,49 +1306,49 @@ export default function CoachAssignments() {
                       old free-text field is also what produced "find 2" on a
                       2-game set with 1 blunder each. */}
                   <div className="ca-pgn-target">
-                    Students must find <strong>every blunder in every game</strong>
+                    {tr("Students must find")} <strong>{tr("every blunder in every game")}</strong>
                     {' — '}
                     {form.pgnGames.reduce((n, g) => n + (g.blunders || []).filter(b => b && b.move.trim()).length, 0)}
-                    {' in total across '}{form.pgnGames.length} game{form.pgnGames.length > 1 ? 's' : ''}.
+                    {' in total across '}{form.pgnGames.length} {tr("game")}{form.pgnGames.length > 1 ? 's' : ''}.
                   </div>
 
                   {form.pgnGames.map((g, gi) => (
                     <div key={gi} className="ca-pgn-game">
                       <div className="ca-pgn-game-head">
-                        <strong>Game {gi + 1}</strong>
+                        <strong>{tr("Game")} {gi + 1}</strong>
                         {form.pgnGames.length > 1 && (
-                          <button type="button" className="ca-link-danger" onClick={() => removeGame(gi)}>Remove game</button>
+                          <button type="button" className="ca-link-danger" onClick={() => removeGame(gi)}>{tr("Remove game")}</button>
                         )}
                       </div>
                       <label className="field">
-                        <span>PGN</span>
+                        <span>{"PGN"}</span>
                         <textarea
                           rows={3}
                           value={g.pgn}
                           onChange={e => updateGamePgn(gi, e.target.value)}
-                          placeholder="1. e4 e5 2. Nf3 Nc6 ..."
+                          placeholder={tr("1. e4 e5 2. Nf3 Nc6 ...")}
                         />
                       </label>
-                      <div className="ca-blunder-label">Blunder answers (the moves students must spot)</div>
+                      <div className="ca-blunder-label">{tr("Blunder answers (the moves students must spot)")}</div>
                       {g.blunders.map((b, bi) => (
                         <div key={bi} className="ca-blunder-row">
-                          <input placeholder="Blunder move e.g. Qh5??" value={b.move} onChange={e => updateBlunder(gi, bi, 'move', e.target.value)} />
-                          <input placeholder="Better move (opt.)" value={b.betterMove} onChange={e => updateBlunder(gi, bi, 'betterMove', e.target.value)} />
-                          <input placeholder="Why (opt.)" value={b.explanation} onChange={e => updateBlunder(gi, bi, 'explanation', e.target.value)} />
+                          <input placeholder={tr("Blunder move e.g. Qh5??")} value={b.move} onChange={e => updateBlunder(gi, bi, 'move', e.target.value)} />
+                          <input placeholder={tr("Better move (opt.)")} value={b.betterMove} onChange={e => updateBlunder(gi, bi, 'betterMove', e.target.value)} />
+                          <input placeholder={tr("Why (opt.)")} value={b.explanation} onChange={e => updateBlunder(gi, bi, 'explanation', e.target.value)} />
                           {g.blunders.length > 1 && (
                             <button type="button" className="ca-link-danger" onClick={() => removeBlunder(gi, bi)}>✕</button>
                           )}
                         </div>
                       ))}
-                      <button type="button" className="ca-link-add" onClick={() => addBlunder(gi)}>+ Add blunder</button>
+                      <button type="button" className="ca-link-add" onClick={() => addBlunder(gi)}>{tr("+ Add blunder")}</button>
                     </div>
                   ))}
                   {subscribed || form.pgnGames.length < FREE_MAX_BLUNDER_GAMES ? (
-                    <button type="button" className="ca-link-add" onClick={addGame}>+ Add another game</button>
+                    <button type="button" className="ca-link-add" onClick={addGame}>{tr("+ Add another game")}</button>
                   ) : (
                     <p className="ca-muted" style={{ margin: '6px 0 0', fontSize: 12 }}>
-                      Free plan allows up to {FREE_MAX_BLUNDER_GAMES} games per blunder assignment.{' '}
-                      <a href="/coach/subscription">Subscribe</a> to add more.
+                      {tr("Free plan allows up to")} {FREE_MAX_BLUNDER_GAMES} {tr("games per blunder assignment.")}{' '}
+                      <a href="/coach/subscription">{tr("Subscribe")}</a> {tr("to add more.")}
                     </p>
                   )}
                 </div>
@@ -1361,35 +1362,35 @@ export default function CoachAssignments() {
                     and plays a reply; a position is solved when the student plays enough good moves.
                   </p>
                   <label className="field" style={{ maxWidth: 260 }}>
-                    <span>Move tolerance (centipawns)</span>
+                    <span>{tr("Move tolerance (centipawns)")}</span>
                     <select value={form.fenTolerance} onChange={e => update('fenTolerance', e.target.value)}>
-                      <option value={40}>Strict (40cp — near-best moves only)</option>
-                      <option value={80}>Normal (80cp — good moves accepted)</option>
-                      <option value={150}>Lenient (150cp — reasonable moves)</option>
+                      <option value={40}>{tr("Strict (40cp — near-best moves only)")}</option>
+                      <option value={80}>{tr("Normal (80cp — good moves accepted)")}</option>
+                      <option value={150}>{tr("Lenient (150cp — reasonable moves)")}</option>
                     </select>
                   </label>
 
                   {form.fenPositions.map((p, i) => (
                     <div key={i} className="ca-pgn-game">
                       <div className="ca-pgn-game-head">
-                        <strong>Position {i + 1}</strong>
+                        <strong>{tr("Position")} {i + 1}</strong>
                         {form.fenPositions.length > 1 && (
-                          <button type="button" className="ca-link-danger" onClick={() => removeFenPosition(i)}>Remove</button>
+                          <button type="button" className="ca-link-danger" onClick={() => removeFenPosition(i)}>{tr("Remove")}</button>
                         )}
                       </div>
                       <label className="field">
-                        <span>FEN *</span>
+                        <span>{tr("FEN *")}</span>
                         <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
                           <input
                             style={{ flex: 1 }}
                             value={p.fen}
                             onChange={e => updateFenPosition(i, 'fen', e.target.value)}
-                            placeholder="r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+                            placeholder={tr("r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4")}
                           />
                           <button
                             type="button"
                             onClick={() => setFenEditorOpen(fenEditorOpen === i ? null : i)}
-                            title="Set up the position on a board instead of typing a FEN"
+                            title={tr("Set up the position on a board instead of typing a FEN")}
                             style={{
                               whiteSpace: 'nowrap',
                               padding: '0 14px',
@@ -1421,20 +1422,20 @@ export default function CoachAssignments() {
                             no way to ask for "play out this rook endgame",
                             where a fixed move count is meaningless. */}
                         <label className="field" style={{ flex: 1 }}>
-                          <span>How far the student must play</span>
+                          <span>{tr("How far the student must play")}</span>
                           <select
                             value={Number(p.userMoveCount) === 0 ? 'end' : 'count'}
                             onChange={e => updateFenPosition(
                               i, 'userMoveCount', e.target.value === 'end' ? 0 : 1
                             )}
                           >
-                            <option value="count">A set number of moves</option>
-                            <option value="end">Play to the end (checkmate)</option>
+                            <option value="count">{tr("A set number of moves")}</option>
+                            <option value="end">{tr("Play to the end (checkmate)")}</option>
                           </select>
                         </label>
                         {Number(p.userMoveCount) !== 0 && (
                           <label className="field" style={{ flex: 1 }}>
-                            <span>Good moves required</span>
+                            <span>{tr("Good moves required")}</span>
                             <input
                               type="number" min="1" max="12"
                               value={p.userMoveCount}
@@ -1443,36 +1444,36 @@ export default function CoachAssignments() {
                           </label>
                         )}
                         <label className="field" style={{ flex: 2 }}>
-                          <span>Label (optional)</span>
+                          <span>{tr("Label (optional)")}</span>
                           <input
                             value={p.tag}
                             onChange={e => updateFenPosition(i, 'tag', e.target.value)}
-                            placeholder="e.g. Win the queen"
+                            placeholder={tr("e.g. Win the queen")}
                           />
                         </label>
                       </div>
                       <label className="field">
-                        <span>Solution line (optional — for your reference, not shown to students)</span>
+                        <span>{tr("Solution line (optional — for your reference, not shown to students)")}</span>
                         <input
                           value={p.solution}
                           onChange={e => updateFenPosition(i, 'solution', e.target.value)}
-                          placeholder="e.g. Nxf7+ Rxf7 Qxc3"
+                          placeholder={tr("e.g. Nxf7+ Rxf7 Qxc3")}
                         />
                       </label>
                     </div>
                   ))}
-                  <button type="button" className="ca-link-add" onClick={addFenPosition}>+ Add another position</button>
+                  <button type="button" className="ca-link-add" onClick={addFenPosition}>{tr("+ Add another position")}</button>
 
                   {/* Premium endgame picker — paid coaches pull admin trainer positions. */}
                   {subscribed ? (
                     <div className="ca-eg-premium" style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>⭐ Add from premium endgames</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>{tr("⭐ Add from premium endgames")}</div>
                       <select
                         value={egFam}
                         onChange={async e => { const f = e.target.value; setEgFam(f); await loadPremiumEndgames(); }}
                         style={{ maxWidth: 280 }}
                       >
-                        <option value="">Pick an endgame type…</option>
+                        <option value="">{tr("Pick an endgame type…")}</option>
                         {['pawn','knight','bishop','bishop_knight','rook','queen','queen_rook','other_mixed'].map(k => (
                           <option key={k} value={k}>{k.replace('_', ' + ')}</option>
                         ))}
@@ -1482,35 +1483,35 @@ export default function CoachAssignments() {
                           <div style={{ maxHeight: 200, overflowY: 'auto', marginTop: 6 }}>
                             {(egPremium[egFam] || []).map((p) => (
                               <div key={p._id} className="ca-blunder-row" style={{ alignItems: 'center', justifyContent: 'space-between', padding: '4px 0' }}>
-                                <span style={{ fontSize: 12.5 }}>{p.title || (p.white || p.black ? `${p.white || 'White'} vs ${p.black || 'Black'}` : 'Position')}</span>
-                                <button type="button" className="ca-link-add" onClick={() => addPremiumFen(p)}>+ Add</button>
+                                <span style={{ fontSize: 12.5 }}>{p.title || (p.white || p.black ? tr("{v0} vs {v1}", { v0: p.white || 'White', v1: p.black || 'Black' }) : 'Position')}</span>
+                                <button type="button" className="ca-link-add" onClick={() => addPremiumFen(p)}>{tr("+ Add")}</button>
                               </div>
                             ))}
                           </div>
-                        ) : <p className="ca-muted" style={{ fontSize: 12, marginTop: 6 }}>No premium positions in this type.</p>
+                        ) : <p className="ca-muted" style={{ fontSize: 12, marginTop: 6 }}>{tr("No premium positions in this type.")}</p>
                       )}
                     </div>
                   ) : (
                     <p className="ca-muted" style={{ fontSize: 12, marginTop: 10 }}>
-                      ⭐ <a href="/coach/subscription">Subscribe</a> to add positions from the premium endgame library.
+                      ⭐ <a href="/coach/subscription">{tr("Subscribe")}</a> {tr("to add positions from the premium endgame library.")}
                     </p>
                   )}
                 </div>
               )}
 
               <label className="field">
-                <span>Description / instructions</span>
+                <span>{tr("Description / instructions")}</span>
                 <textarea
                   rows={3}
                   value={form.description}
                   onChange={e => update('description', e.target.value)}
-                  placeholder="What should the student do?"
+                  placeholder={tr("What should the student do?")}
                   maxLength={2000}
                 />
               </label>
 
               <label className="field">
-                <span>Due date (optional)</span>
+                <span>{tr("Due date (optional)")}</span>
                 <input
                   type="date"
                   value={form.dueDate}
@@ -1536,7 +1537,7 @@ export default function CoachAssignments() {
                   extra publishing step they had to remember to come back and
                   perform, which is the opposite of the point. */}
               <div className="field">
-                <span>📅 Preset assignment (optional)</span>
+                <span>{tr("📅 Preset assignment (optional)")}</span>
                 <div className="ca-release-row">
                   <input
                     type="datetime-local"
@@ -1548,38 +1549,38 @@ export default function CoachAssignments() {
                       type="button"
                       className="btn-ghost"
                       onClick={() => update('releaseAt', '')}
-                      title="Send this assignment straight away instead"
+                      title={tr("Send this assignment straight away instead")}
                     >
-                      Clear
+                      {tr("Clear")}
                     </button>
                   )}
                 </div>
                 <div className="ca-release-hint">
                   {form.releaseAt
-                    ? <>🕒 Preset — students see this on <strong>{new Date(form.releaseAt).toLocaleString()}</strong>. Until then it stays hidden from them.</>
-                    : <>Leave empty to send it now. Or preset it: pick a day and time, and it reaches your students by itself — so you can set up a whole week in one sitting.</>}
+                    ? <>{tr("🕒 Preset — students see this on")} <strong>{new Date(form.releaseAt).toLocaleString()}</strong>{tr(". Until then it stays hidden from them.")}</>
+                    : <>{tr("Leave empty to send it now. Or preset it: pick a day and time, and it reaches your students by itself — so you can set up a whole week in one sitting.")}</>}
                 </div>
               </div>
 
               <div className="field">
-                <span>Assign to *</span>
+                <span>{tr("Assign to *")}</span>
                 <div className="ca-student-controls">
-                  <button type="button" className="btn-ghost" onClick={selectAllStudents}>Select all</button>
-                  <button type="button" className="btn-ghost" onClick={clearStudents}>Clear</button>
+                  <button type="button" className="btn-ghost" onClick={selectAllStudents}>{tr("Select all")}</button>
+                  <button type="button" className="btn-ghost" onClick={clearStudents}>{tr("Clear")}</button>
                   {groups.length > 0 && (
                     <select
                       className="btn-ghost"
                       value=""
                       onChange={e => { applyBatch(e.target.value); e.target.value = ''; }}
-                      title="Add all students in a batch"
+                      title={tr("Add all students in a batch")}
                     >
-                      <option value="">＋ Add a batch…</option>
+                      <option value="">{tr("＋ Add a batch…")}</option>
                       {groups.map(g => (
                         <option key={g._id} value={g._id}>{g.name} ({g.memberCount})</option>
                       ))}
                     </select>
                   )}
-                  <span className="ca-selected-count">{form.studentIds.length} selected</span>
+                  <span className="ca-selected-count">{form.studentIds.length} {tr("selected")}</span>
                 </div>
                 <div className="ca-student-list">
                   {students.map(s => {
@@ -1593,7 +1594,7 @@ export default function CoachAssignments() {
                           checked={active}
                           onChange={() => toggleStudent(sid)}
                         />
-                        {s.studentName || s.studentId?.displayName || s.studentId?.username || 'Student'}
+                        {s.studentName || s.studentId?.displayName || s.studentId?.username || tr('Student')}
                       </label>
                     );
                   })}
@@ -1604,10 +1605,10 @@ export default function CoachAssignments() {
 
               <div className="modal-actions">
                 <button type="button" className="btn-ghost" onClick={() => setShowCreate(false)} disabled={creating}>
-                  Cancel
+                  {tr("Cancel")}
                 </button>
                 <button type="submit" className="btn-primary" disabled={creating}>
-                  {creating ? 'Creating…' : 'Create assignment'}
+                  {creating ? tr('Creating…') : tr('Create assignment')}
                 </button>
               </div>
             </form>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function RacerResult() {
   // Get results from URL params or state
@@ -22,7 +23,7 @@ export default function RacerResult() {
       defense: 'Defensive Skills',
       mixed: 'Mixed Puzzles'
     };
-    return topics[id] || 'Mixed Puzzles';
+    return topics[id] || tr('Mixed Puzzles');
   };
 
   const styles = {
@@ -182,35 +183,35 @@ export default function RacerResult() {
       <div style={styles.background}></div>
       
       <div style={styles.content}>
-        <Link to="/choose-topic" style={styles.backButton}>← Back to Choose Topic</Link>
+        <Link to="/choose-topic" style={styles.backButton}>{tr("← Back to Choose Topic")}</Link>
 
         <div style={styles.header}>
           <div style={styles.trophyIcon}>🏆</div>
-          <h1 style={styles.title}>Race Complete!</h1>
+          <h1 style={styles.title}>{tr("Race Complete!")}</h1>
           <p style={styles.subtitle}>
-            {getTopicName(topicId)} • {timeParam} Minute Race
+            {getTopicName(topicId)} • {timeParam} {tr("Minute Race")}
           </p>
         </div>
 
         <div style={styles.resultsGrid}>
         <div style={styles.resultCard}>
           <div style={styles.resultValue}>{totalPoints}</div>
-          <div style={styles.resultLabel}>Total Points</div>
+          <div style={styles.resultLabel}>{tr("Total Points")}</div>
         </div>
 
         <div style={styles.resultCard}>
           <div style={styles.resultValue}>{correctPuzzles}</div>
-          <div style={styles.resultLabel}>Correct Puzzles</div>
+          <div style={styles.resultLabel}>{tr("Correct Puzzles")}</div>
         </div>
 
         <div style={styles.resultCard}>
           <div style={styles.resultValue}>{wrongPuzzles}</div>
-          <div style={styles.resultLabel}>Wrong Puzzles</div>
+          <div style={styles.resultLabel}>{tr("Wrong Puzzles")}</div>
         </div>
 
         <div style={styles.resultCard}>
           <div style={styles.resultValue}>{maxStreak}</div>
-          <div style={styles.resultLabel}>Max Streak</div>
+          <div style={styles.resultLabel}>{tr("Max Streak")}</div>
         </div>
       </div>
 
@@ -227,13 +228,13 @@ export default function RacerResult() {
                 to={`/timed-race?topic=${topicId}&time=${timeParam}&assignment=${assignmentId}`}
                 style={{...styles.button, ...styles.primaryButton}}
               >
-                🚀 Race Again
+                {tr("🚀 Race Again")}
               </Link>
               <Link
                 to="/my-coach"
                 style={{...styles.button, ...styles.secondaryButton}}
               >
-                📋 Back to Assignments
+                {tr("📋 Back to Assignments")}
               </Link>
             </>
           ) : (
@@ -242,13 +243,13 @@ export default function RacerResult() {
                 to={`/timed-race?topic=${topicId}&time=${timeParam}`}
                 style={{...styles.button, ...styles.primaryButton}}
               >
-                🚀 Race Again
+                {tr("🚀 Race Again")}
               </Link>
               <Link
                 to="/choose-topic"
                 style={{...styles.button, ...styles.secondaryButton}}
               >
-                📚 Choose Different Topic
+                {tr("📚 Choose Different Topic")}
               </Link>
             </>
           )}

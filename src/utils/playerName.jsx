@@ -11,6 +11,8 @@
  *
  * Bots never carry a title.
  */
+import { t as tr } from '../i18n/LanguageContext';
+
 const TITLES = ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM'];
 const TITLE_SET = new Set(TITLES);
 
@@ -80,7 +82,7 @@ export function PlayerName({ user, className, titleClassName, style }) {
           <span
             className={titleClassName || 'chess-title'}
             style={{ fontWeight: 700, color: '#b45309' }}
-            title={`FIDE title: ${title}`}
+            title={tr("FIDE title: {title}", { title: title })}
           >
             {title}
           </span>

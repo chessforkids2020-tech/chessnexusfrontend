@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/improve-at-chess";
 
@@ -33,7 +34,7 @@ export default function ImproveAtChessPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
@@ -50,7 +51,7 @@ export default function ImproveAtChessPage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "Improve at Chess — Your Personal Nexus Guide",
+        title: tr("Improve at Chess — Your Personal Nexus Guide"),
         description:
           "Improve faster with the Nexus Guide: it studies your own games, finds your weak tactics, replays your mistakes and drills them for you. A free personal training buddy on Chess Nexus.",
         keywords:
@@ -61,18 +62,18 @@ export default function ImproveAtChessPage() {
       hero={{
         icon: "🧭",
         h1: "Improve at Chess — Meet Your Nexus Guide",
-        sub: "Most players do random puzzles and never fix what's actually losing them games. The Nexus Guide studies your own games, finds your real weaknesses, and trains you on them — your personal chess training buddy, free.",
-        primary: { label: "Open your Nexus Guide", to: "/dashboard" },
-        secondary: { label: "Browse all features", to: "/features" },
+        sub: tr("Most players do random puzzles and never fix what's actually losing them games. The Nexus Guide studies your own games, finds your real weaknesses, and trains you on them — your personal chess training buddy, free."),
+        primary: { label: tr("Open your Nexus Guide"), to: "/dashboard" },
+        secondary: { label: tr("Browse all features"), to: "/features" },
       }}
     >
       <section className="mkt-section">
         <div className="mkt-split">
           <div className="mkt-split-media">
-            <img src="/features/improveatchess.png" alt="Improve at Chess — Nexus Guide" loading="lazy" width="220" height="220" />
+            <img src="/features/improveatchess.png" alt={tr("Improve at Chess — Nexus Guide")} loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
-            <h2>A training buddy that knows your game</h2>
+            <h2>{tr("A training buddy that knows your game")}</h2>
             <p>
               The Nexus Guide isn't a wall of engine lines — it's a coach that
               learns from your own play. Here's how it helps:
@@ -81,34 +82,34 @@ export default function ImproveAtChessPage() {
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🔍</span>
                 <span className="mkt-feat-tx">
-                  <strong>Finds your real weaknesses</strong>
-                  <span>Studies your recent games and spots the patterns you keep missing — forks, pins, skewers, hanging pieces, back-rank mates and more.</span>
+                  <strong>{tr("Finds your real weaknesses")}</strong>
+                  <span>{tr("Studies your recent games and spots the patterns you keep missing — forks, pins, skewers, hanging pieces, back-rank mates and more.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">⚠️</span>
                 <span className="mkt-feat-tx">
-                  <strong>Warns you before you repeat them</strong>
-                  <span>Flags the exact ideas you lose to again and again, so the same mistake stops costing you games.</span>
+                  <strong>{tr("Warns you before you repeat them")}</strong>
+                  <span>{tr("Flags the exact ideas you lose to again and again, so the same mistake stops costing you games.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🔁</span>
                 <span className="mkt-feat-tx">
                   <strong>Replays &amp; drills your mistakes</strong>
-                  <span>Lets you re-solve your own blunders and turns your weakest theme into a focused practice set.</span>
+                  <span>{tr("Lets you re-solve your own blunders and turns your weakest theme into a focused practice set.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">📈</span>
                 <span className="mkt-feat-tx">
-                  <strong>Tracks your progress monthly</strong>
-                  <span>Shows how your weak spots shrink over time — the way a good coach would.</span>
+                  <strong>{tr("Tracks your progress monthly")}</strong>
+                  <span>{tr("Shows how your weak spots shrink over time — the way a good coach would.")}</span>
                 </span>
               </li>
             </ul>
             <Link to="/dashboard" className="mkt-card-cta">
-              Meet your Nexus Guide →
+              {tr("Meet your Nexus Guide →")}
             </Link>
           </div>
         </div>
@@ -117,7 +118,7 @@ export default function ImproveAtChessPage() {
       <div className="mkt-callout">
         <div className="mkt-callout-icon">📈</div>
         <div>
-          <h2>Fix the leak, not the symptom</h2>
+          <h2>{tr("Fix the leak, not the symptom")}</h2>
           <p>
             Rating stuck? It's usually the same handful of mistakes repeating.
             The Nexus Guide finds that pattern from your real games and drills it
@@ -127,7 +128,7 @@ export default function ImproveAtChessPage() {
       </div>
 
       <section className="mkt-section">
-        <h2>Why train with the Nexus Guide</h2>
+        <h2>{tr("Why train with the Nexus Guide")}</h2>
         <p className="mkt-section-lead">
           Improvement comes from working on your weaknesses, not from grinding
           puzzles you're already good at. The Nexus Guide makes that automatic:
@@ -136,19 +137,19 @@ export default function ImproveAtChessPage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <Link to="/dashboard" className="mkt-btn mkt-btn-primary">
-            Open your Nexus Guide
+            {tr("Open your Nexus Guide")}
           </Link>
           <Link to="/analyse-my-chess-game" className="mkt-btn mkt-btn-ghost">
-            Analyse a single game
+            {tr("Analyse a single game")}
           </Link>
           <Link to="/chess-puzzles" className="mkt-btn mkt-btn-ghost">
-            Train tactics
+            {tr("Train tactics")}
           </Link>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-coaching";
 
@@ -33,7 +34,7 @@ export default function ChessCoachingPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
   const webPageSchema = {
@@ -49,7 +50,7 @@ export default function ChessCoachingPage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "Chess Coaching Platform — Run Your Academy on Chess Nexus",
+        title: tr("Chess Coaching Platform — Run Your Academy on Chess Nexus"),
         description:
           "Free chess coaching platform for coaches & academies: manage a student roster in batches, assign puzzles & Play-vs-Stockfish positions, build courses, run private class races, chat with students and send parents progress reports. Free forever up to 30 students.",
         keywords:
@@ -60,18 +61,18 @@ export default function ChessCoachingPage() {
       hero={{
         icon: "🎓",
         h1: "Chess Coaching Platform — Run Your Academy in One Place",
-        sub: "Chess Nexus gives chess coaches and academies a complete free toolkit: a student roster organised into batches, assignments you can build in seconds, a course builder, private class-only races, direct student chat, and progress reports parents actually understand.",
-        primary: { label: "Start coaching free", to: "/coach/onboarding" },
-        secondary: { label: "Read the full coach guide", to: "/chess-coach-guide" },
+        sub: tr("Chess Nexus gives chess coaches and academies a complete free toolkit: a student roster organised into batches, assignments you can build in seconds, a course builder, private class-only races, direct student chat, and progress reports parents actually understand."),
+        primary: { label: tr("Start coaching free"), to: "/coach/onboarding" },
+        secondary: { label: tr("Read the full coach guide"), to: "/chess-coach-guide" },
       }}
     >
       <section className="mkt-section">
         <div className="mkt-split">
           <div className="mkt-split-media">
-            <img src="/features/coaching.png" alt="Chess Coaching Platform — run your academy on Chess Nexus" loading="lazy" width="220" height="220" />
+            <img src="/features/coaching.png" alt={tr("Chess Coaching Platform — run your academy on Chess Nexus")} loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
-            <h2>Everything you need to run a coaching practice</h2>
+            <h2>{tr("Everything you need to run a coaching practice")}</h2>
             <p>
               From your first student to a full academy — one dashboard covers
               rosters, lessons, live activities and parent communication.
@@ -80,7 +81,7 @@ export default function ChessCoachingPage() {
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🎥</span>
                 <span className="mkt-feat-tx">
-                  <strong>Built-in live classroom</strong>
+                  <strong>{tr("Built-in live classroom")}</strong>
                   <span>
                     Teach inside Chess Nexus — HD video, screen share and one board every
                     student sees. Hand a student control to play their move, load studies,
@@ -94,47 +95,47 @@ export default function ChessCoachingPage() {
                 <span className="mkt-feat-ic" aria-hidden="true">👥</span>
                 <span className="mkt-feat-tx">
                   <strong>Student roster &amp; batches</strong>
-                  <span>See ratings, activity and attendance for every student. Group them into batches by level, age or class, and see who's online right now.</span>
+                  <span>{tr("See ratings, activity and attendance for every student. Group them into batches by level, age or class, and see who's online right now.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">📅</span>
                 <span className="mkt-feat-tx">
                   <strong>Class schedule &amp; attendance</strong>
-                  <span>Set a weekly schedule per batch — shown to every student in their own timezone — and mark attendance with catch-ups and CSV export.</span>
+                  <span>{tr("Set a weekly schedule per batch — shown to every student in their own timezone — and mark attendance with catch-ups and CSV export.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">📝</span>
                 <span className="mkt-feat-tx">
-                  <strong>Assign tactics in seconds</strong>
+                  <strong>{tr("Assign tactics in seconds")}</strong>
                   <span>Push Find-the-Blunder puzzles from real games or Play-vs-Stockfish positions — built on a visual board editor, no FEN typing. Solve rate &amp; accuracy tracked per student.</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">📚</span>
                 <span className="mkt-feat-tx">
-                  <strong>Course Builder syllabus</strong>
-                  <span>Build a structured syllabus from your own studies — lessons, videos, master games and endgame positions — that students follow per batch in a "My Syllabus" tab.</span>
+                  <strong>{tr("Course Builder syllabus")}</strong>
+                  <span>{tr("Build a structured syllabus from your own studies — lessons, videos, master games and endgame positions — that students follow per batch in a \"My Syllabus\" tab.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🏁</span>
                 <span className="mkt-feat-tx">
                   <strong>Private races &amp; tournaments</strong>
-                  <span>Run Arena Races and Tournaments that only your own students can join — no outsiders.</span>
+                  <span>{tr("Run Arena Races and Tournaments that only your own students can join — no outsiders.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">💬</span>
                 <span className="mkt-feat-tx">
                   <strong>Coach ↔ student chat &amp; parent reports</strong>
-                  <span>Chat with students in a dedicated space, and send parents shareable progress reports covering puzzle accuracy, games played, blunder trends and monthly focus.</span>
+                  <span>{tr("Chat with students in a dedicated space, and send parents shareable progress reports covering puzzle accuracy, games played, blunder trends and monthly focus.")}</span>
                 </span>
               </li>
             </ul>
             <Link to="/coach/onboarding" className="mkt-card-cta">
-              Set up your roster →
+              {tr("Set up your roster →")}
             </Link>
           </div>
         </div>
@@ -143,7 +144,7 @@ export default function ChessCoachingPage() {
       <div className="mkt-callout">
         <div className="mkt-callout-icon">🔒</div>
         <div>
-          <h2>Your class stays your class</h2>
+          <h2>{tr("Your class stays your class")}</h2>
           <p>
             Every private race, tournament and assignment a coach creates is
             strictly limited to that coach's own accepted students — never open
@@ -154,7 +155,7 @@ export default function ChessCoachingPage() {
       </div>
 
       <section className="mkt-section">
-        <h2>Free forever — no catch</h2>
+        <h2>{tr("Free forever — no catch")}</h2>
         <p className="mkt-section-lead">
           Coach on Chess Nexus for free, permanently, for up to 30 students — no
           card required and no trial countdown. Running a bigger academy or
@@ -165,39 +166,39 @@ export default function ChessCoachingPage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">
-            Start coaching free
+            {tr("Start coaching free")}
           </Link>
           <Link to="/chess-coach-pricing" className="mkt-btn mkt-btn-ghost">
-            See coach pricing
+            {tr("See coach pricing")}
           </Link>
           <Link to="/improve-at-chess" className="mkt-btn mkt-btn-ghost">
-            See student-side training
+            {tr("See student-side training")}
           </Link>
         </div>
       </section>
 
       {/* This page speaks to a SOLO coach. Academies are a separate product, so
           point them there explicitly rather than leaving "academy" ambiguous. */}
-      <section className="mkt-section" aria-label="Academies">
+      <section className="mkt-section" aria-label={tr("Academies")}>
         <div className="mkt-callout">
           <div className="mkt-callout-icon" aria-hidden="true">🏫</div>
           <div>
-            <h2>Running an academy with several coaches?</h2>
+            <h2>{tr("Running an academy with several coaches?")}</h2>
             <p>
               Everything above is for one coach and their own students. If you have a team of
-              coaches, an academy plan covers <strong>5, 10 or unlimited coaches</strong> on a
+              {tr("coaches, an academy plan covers")} <strong>{tr("5, 10 or unlimited coaches")}</strong> {tr("on a")}
               single bill from $89/month — 100 students and an unlimited live classroom for
               every one of them — with one dashboard over every coach, student and class. You
-              still coach your own students as head of the academy.{" "}
-              <Link to="/chess-academy-software">See how academies work</Link> or{" "}
-              <Link to="/chess-academy-pricing">compare academy pricing</Link>.
+              {tr("still coach your own students as head of the academy.")}{" "}
+              <Link to="/chess-academy-software">{tr("See how academies work")}</Link> {tr("or")}{" "}
+              <Link to="/chess-academy-pricing">{tr("compare academy pricing")}</Link>.
             </p>
           </div>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

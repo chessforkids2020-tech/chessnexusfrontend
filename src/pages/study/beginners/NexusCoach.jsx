@@ -1,5 +1,6 @@
 import React from 'react';
 import './beginners.css';
+import { t as tr } from '../../../i18n/LanguageContext';
 
 // The friendly "Nexus Coach" avatar. Simple built-in art (emoji face) with an idle vs
 // talking state — it bobs + the mouth animates while `speaking`. Shows the current
@@ -10,7 +11,7 @@ export default function NexusCoach({ speaking, line, muted, onToggleMute, onRepl
     <div className="nc-wrap">
       {/* Speech bubble */}
       <div className={`nc-bubble ${line ? '' : 'nc-bubble-empty'}`}>
-        {line || 'Hi! I’m your Nexus Coach — let’s learn chess! ♟️'}
+        {line || tr('Hi! I’m your Nexus Coach — let’s learn chess! ♟️')}
         <span className="nc-bubble-tail" />
       </div>
 
@@ -20,18 +21,18 @@ export default function NexusCoach({ speaking, line, muted, onToggleMute, onRepl
           <span className="nc-eyes">{speaking ? '👀' : mood}</span>
           <span className={`nc-mouth ${speaking ? 'nc-mouth-talk' : ''}`} />
         </div>
-        <div className="nc-name">Nexus Coach</div>
+        <div className="nc-name">{tr("Nexus Coach")}</div>
       </div>
 
       {/* Controls */}
       <div className="nc-controls">
-        <button type="button" className="nc-ctl" onClick={onReplay} title="Play again">↻ Replay</button>
+        <button type="button" className="nc-ctl" onClick={onReplay} title={tr("Play again")}>{tr("↻ Replay")}</button>
         <button type="button" className="nc-ctl" onClick={onToggleMute}
-          title={muted ? 'Unmute the coach' : 'Mute the coach'}>
-          {muted ? '🔇 Muted' : '🔊 Voice'}
+          title={muted ? tr('Unmute the coach') : tr('Mute the coach')}>
+          {muted ? tr('🔇 Muted') : tr('🔊 Voice')}
         </button>
       </div>
-      {!hasTTS && <div className="nc-novoice">Voice isn’t available in this browser — read along above.</div>}
+      {!hasTTS && <div className="nc-novoice">{tr("Voice isn’t available in this browser — read along above.")}</div>}
     </div>
   );
 }

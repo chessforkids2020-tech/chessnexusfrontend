@@ -4,13 +4,14 @@
 // "practice my chess openings", "spaced repetition chess openings".
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-opening-repertoire";
 
 const MODES = [
-  { icon: "🏗️", t: "Build", d: "Play your line on the board with the master explorer open beside it — see what strong players actually chose at each point — then save it as your line. Add comments and variations as you go." },
+  { icon: "🏗️", t: tr("Build"), d: tr("Play your line on the board with the master explorer open beside it — see what strong players actually chose at each point — then save it as your line. Add comments and variations as you go.") },
   { icon: "🎯", t: "Train", d: "Spaced-repetition drilling of the lines that are due. You play your side's moves from memory; anything you get wrong comes back sooner." },
-  { icon: "🔍", t: "Check", d: "Scan your real games for the moment you left your own preparation — the exact move where you deviated, and what your line said instead." },
+  { icon: "🔍", t: tr("Check"), d: tr("Scan your real games for the moment you left your own preparation — the exact move where you deviated, and what your line said instead.") },
 ];
 
 const FAQ = [
@@ -39,14 +40,14 @@ export default function OpeningRepertoirePage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
   return (
     <FeaturePageLayout
       seo={{
-        title: "Chess Opening Repertoire Builder & Trainer",
+        title: tr("Chess Opening Repertoire Builder & Trainer"),
         description:
           "Build your chess opening repertoire on the board with a master explorer beside it, drill it with spaced repetition, and scan your real games to find exactly where you left your preparation.",
         keywords:
@@ -58,14 +59,14 @@ export default function OpeningRepertoirePage() {
         h1: "Build a repertoire — then actually remember it",
         sub:
           "Save the lines you intend to play, drill them with spaced repetition, and find the exact move where you left your prep in real games.",
-        primary: { to: "/masters-chess-games", label: "Open the repertoire trainer" },
-        secondary: { to: "/features", label: "See all features" },
+        primary: { to: "/masters-chess-games", label: tr("Open the repertoire trainer") },
+        secondary: { to: "/features", label: tr("See all features") },
       }}
       jsonLd={faqSchema}
       excludeSlug={CANONICAL}
     >
-      <section className="mkt-section" aria-label="Three modes">
-        <h2>Three modes, one loop</h2>
+      <section className="mkt-section" aria-label={tr("Three modes")}>
+        <h2>{tr("Three modes, one loop")}</h2>
         <p className="mkt-section-lead">
           Most players collect opening knowledge and never test it. This closes the
           loop: build a line, drill it, then check whether it survived contact with a
@@ -84,8 +85,8 @@ export default function OpeningRepertoirePage() {
         </ul>
       </section>
 
-      <section className="mkt-section" aria-label="Why it works">
-        <h2>Why "I know this opening" usually isn't true</h2>
+      <section className="mkt-section" aria-label={tr("Why it works")}>
+        <h2>{tr("Why \"I know this opening\" usually isn't true")}</h2>
         <p className="mkt-p">
           Reading a line and recalling it under a clock are different skills. Spaced
           repetition targets the second one: the lines you keep getting wrong come
@@ -95,8 +96,8 @@ export default function OpeningRepertoirePage() {
         </p>
       </section>
 
-      <section className="mkt-section" aria-label="FAQ">
-        <h2>Repertoire FAQ</h2>
+      <section className="mkt-section" aria-label={"FAQ"}>
+        <h2>{tr("Repertoire FAQ")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div key={q} className="mkt-faq-item">
@@ -107,11 +108,11 @@ export default function OpeningRepertoirePage() {
         </div>
       </section>
 
-      <section className="mkt-section mkt-cta-section" aria-label="Start">
-        <h2>Start your repertoire</h2>
+      <section className="mkt-section mkt-cta-section" aria-label={tr("Start")}>
+        <h2>{tr("Start your repertoire")}</h2>
         <div className="mkt-cta-row">
-          <Link to="/masters-chess-games" className="mkt-btn mkt-btn-primary">Open the trainer</Link>
-          <Link to="/chess-endgame-training" className="mkt-btn">Endgame training</Link>
+          <Link to="/masters-chess-games" className="mkt-btn mkt-btn-primary">{tr("Open the trainer")}</Link>
+          <Link to="/chess-endgame-training" className="mkt-btn">{tr("Endgame training")}</Link>
         </div>
       </section>
     </FeaturePageLayout>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Pages where the floating button is visible (exact match only)
 const ALLOWED_PATHS = new Set(['/', '/dashboard', '/puzzles-hub', '/race', '/arcade', '/study', '/games', '/game-analysis']);
@@ -113,21 +114,21 @@ export default function ScheduleFloatingButton() {
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                   <span style={{ width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'sfbLiveDot 1.4s infinite' }} />
-                  <span style={{ color: 'var(--color-success)', fontWeight: 700, fontSize: 12 }}>LIVE NOW</span>
+                  <span style={{ color: 'var(--color-success)', fontWeight: 700, fontSize: 12 }}>{tr("LIVE NOW")}</span>
                 </div>
                 <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 14 }}>{preview.title}</div>
-                <div style={{ color: 'var(--color-text-muted)', fontSize: 12, marginTop: 2 }}>Happening now — tap to join!</div>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: 12, marginTop: 2 }}>{tr("Happening now — tap to join!")}</div>
               </>
             ) : (
               <>
-                <div style={{ color: 'var(--color-text-muted)', fontSize: 11, marginBottom: 4 }}>NEXT ACTIVITY</div>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: 11, marginBottom: 4 }}>{tr("NEXT ACTIVITY")}</div>
                 <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 14 }}>{preview.title}</div>
                 <div style={{ color: 'var(--color-warning)', fontWeight: 600, fontSize: 12, marginTop: 2 }}>
-                  in {formatCountdown(msUntilNext(preview))}
+                  {tr("in")} {formatCountdown(msUntilNext(preview))}
                 </div>
               </>
             )}
-            <div style={{ color: 'var(--color-accent)', fontSize: 12, marginTop: 8, fontWeight: 600 }}>View full schedule →</div>
+            <div style={{ color: 'var(--color-accent)', fontSize: 12, marginTop: 8, fontWeight: 600 }}>{tr("View full schedule →")}</div>
           </div>
         )}
 
@@ -160,7 +161,7 @@ export default function ScheduleFloatingButton() {
             <span style={{ width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'sfbLiveDot 1.4s infinite' }} />
           )}
           <span style={{ fontSize: 16 }}>📅</span>
-          <span>Schedule</span>
+          <span>{tr("Schedule")}</span>
         </button>
       </div>
     </>

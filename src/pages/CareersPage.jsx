@@ -5,6 +5,7 @@ import api from "../api";
 import SEO from "../components/SEO";
 import "../components/marketing/marketing.css";
 import "./CareersPage.css";
+import { t as tr } from '../i18n/LanguageContext';
 
 const CANONICAL = "/careers";
 
@@ -83,10 +84,10 @@ const ROLES = [
 ];
 
 const PERKS = [
-  { icon: "🚀", title: "You ship, people use it", text: "Build something on Monday, watch a coach use it with their class on Thursday." },
-  { icon: "♟", title: "It is all chess", text: "Puzzles, endgames, live classes, tournaments. If you love the game, the work is the hobby." },
-  { icon: "🌍", title: "Remote, properly", text: "Work from anywhere in India. No office, no commute, no one counting your hours." },
-  { icon: "🌱", title: "Early enough to matter", text: "You will not inherit someone else's decisions — you will make the ones that stick." },
+  { icon: "🚀", title: tr("You ship, people use it"), text: tr("Build something on Monday, watch a coach use it with their class on Thursday.") },
+  { icon: "♟", title: tr("It is all chess"), text: tr("Puzzles, endgames, live classes, tournaments. If you love the game, the work is the hobby.") },
+  { icon: "🌍", title: tr("Remote, properly"), text: tr("Work from anywhere in India. No office, no commute, no one counting your hours.") },
+  { icon: "🌱", title: tr("Early enough to matter"), text: tr("You will not inherit someone else's decisions — you will make the ones that stick.") },
 ];
 
 const EMPTY_FORM = {
@@ -124,7 +125,7 @@ export default function CareersPage() {
   const grouped = useMemo(() => {
     const map = new Map();
     visible.forEach((r) => {
-      const k = r.dept || "Other";
+      const k = r.dept || tr("Other");
       if (!map.has(k)) map.set(k, []);
       map.get(k).push(r);
     });
@@ -158,9 +159,9 @@ export default function CareersPage() {
   const submit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!form.name.trim()) return setError("Please tell us your name.");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return setError("Please enter a valid email address.");
-    if (form.message.trim().length < 30) return setError("Please tell us a little more — a couple of sentences is plenty.");
+    if (!form.name.trim()) return setError(tr("Please tell us your name."));
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return setError(tr("Please enter a valid email address."));
+    if (form.message.trim().length < 30) return setError(tr("Please tell us a little more — a couple of sentences is plenty."));
 
     setSending(true);
     try {
@@ -189,24 +190,24 @@ export default function CareersPage() {
         title: r.title,
         description: r.about || r.summary,
         employmentType: r.type,
-        hiringOrganization: { "@type": "Organization", name: "Chess Nexus", sameAs: "https://chessnexus.in" },
+        hiringOrganization: { "@type": tr("Organization"), name: tr("Chess Nexus"), sameAs: "https://chessnexus.in" },
         jobLocationType: /remote/i.test(r.location || "") ? "TELECOMMUTE" : undefined,
-        applicantLocationRequirements: { "@type": "Country", name: "India" },
+        applicantLocationRequirements: { "@type": tr("Country"), name: tr("India") },
         directApply: true,
       }))
     : [{
         "@context": "https://schema.org",
         "@type": "WebPage",
         name: "Careers at Chess Nexus",
-        description: "Open roles and how to apply to work at Chess Nexus.",
+        description: tr("Open roles and how to apply to work at Chess Nexus."),
         url: `https://chessnexus.in${CANONICAL}`,
       }];
 
   return (
     <div className="mkt-page careers-page">
       <SEO
-        title="Careers — Work at Chess Nexus"
-        description="Work at Chess Nexus — we build the platform chess coaches use to run their academies. Remote-first, small team, real ownership. See open roles."
+        title={tr("Careers — Work at Chess Nexus")}
+        description={tr("Work at Chess Nexus — we build the platform chess coaches use to run their academies. Remote-first, small team, real ownership. See open roles.")}
         keywords="chess nexus careers, chess jobs india, chess coach jobs, remote chess jobs, chess startup jobs"
         canonical={CANONICAL}
       />
@@ -219,19 +220,19 @@ export default function CareersPage() {
       <div className="mkt-inner">
         <header className="mkt-hero">
           <div className="mkt-hero-icon">💼</div>
-          <h1>Build the tools <span className="cr-accent">coaches teach with.</span></h1>
+          <h1>{tr("Build the tools")} <span className="cr-accent">{tr("coaches teach with.")}</span></h1>
           <p className="mkt-hero-sub">
             Chess coaches still run their academies on WhatsApp, spreadsheets and
-            Zoom. We are replacing all of it with{" "}
-            <b>one platform they can actually afford</b> — and the kids on the other
+            {tr("Zoom. We are replacing all of it with")}{" "}
+            <b>{tr("one platform they can actually afford")}</b> {tr("— and the kids on the other")}
             end are learning the game because of it.
           </p>
-          <p className="cr-hero-line">Small team. Real users. Your work ships this week.</p>
+          <p className="cr-hero-line">{tr("Small team. Real users. Your work ships this week.")}</p>
         </header>
 
         {/* ── Why work here ── */}
         <section className="cr-section" aria-labelledby="cr-why">
-          <h2 id="cr-why">Why work here</h2>
+          <h2 id="cr-why">{tr("Why work here")}</h2>
           <div className="cr-perks">
             {PERKS.map((p) => (
               <div className="cr-perk" key={p.title}>
@@ -246,7 +247,7 @@ export default function CareersPage() {
         {/* ── Open roles ── */}
         <section className="cr-section" aria-labelledby="cr-roles">
           <h2 id="cr-roles">
-            Open roles{hasRoles && <span className="cr-count">{ROLES.length}</span>}
+            {tr("Open roles")}{hasRoles && <span className="cr-count">{ROLES.length}</span>}
           </h2>
 
           {hasRoles ? (
@@ -254,7 +255,7 @@ export default function CareersPage() {
               {/* Filters. Hidden with a single department — a lone "All" chip
                   next to one group is noise, not navigation. */}
               {depts.length > 1 && (
-                <div className="cr-filters" role="tablist" aria-label="Filter roles by team">
+                <div className="cr-filters" role="tablist" aria-label={tr("Filter roles by team")}>
                   <button
                     type="button"
                     role="tab"
@@ -262,7 +263,7 @@ export default function CareersPage() {
                     className={`cr-chip ${filter === "All" ? "is-active" : ""}`}
                     onClick={() => setFilter("All")}
                   >
-                    All <span className="cr-chip-n">{ROLES.length}</span>
+                    {tr("All")} <span className="cr-chip-n">{ROLES.length}</span>
                   </button>
                   {depts.map((d) => {
                     const n = ROLES.filter((r) => r.dept === d).length;
@@ -318,25 +319,25 @@ export default function CareersPage() {
 
                               {r.skills?.length > 0 && (
                                 <>
-                                  <h4 className="cr-role-sub">What we are looking for</h4>
+                                  <h4 className="cr-role-sub">{tr("What we are looking for")}</h4>
                                   <ul className="cr-list">{r.skills.map((s, i) => <li key={i}>{s}</li>)}</ul>
                                 </>
                               )}
 
                               {r.nice?.length > 0 && (
                                 <>
-                                  <h4 className="cr-role-sub">Nice to have</h4>
+                                  <h4 className="cr-role-sub">{tr("Nice to have")}</h4>
                                   <ul className="cr-list cr-list-muted">{r.nice.map((s, i) => <li key={i}>{s}</li>)}</ul>
                                 </>
                               )}
 
                               {justSent ? (
                                 <p className="cr-sent" role="status">
-                                  ✅ Application sent — thank you. We will be in touch by email.
+                                  {tr("✅ Application sent — thank you. We will be in touch by email.")}
                                 </p>
                               ) : (
                                 <button type="button" className="cr-apply" onClick={() => openModal(r)}>
-                                  Apply for this role →
+                                  {tr("Apply for this role →")}
                                 </button>
                               )}
                             </div>
@@ -351,15 +352,15 @@ export default function CareersPage() {
           ) : (
             <div className="cr-soon">
               <div className="cr-soon-icon" aria-hidden="true">🚧</div>
-              <p className="cr-soon-lead">We are not hiring just yet.</p>
+              <p className="cr-soon-lead">{tr("We are not hiring just yet.")}</p>
               <p className="cr-soon-text">
                 Chess Nexus is still a very small team. When we open roles —
                 coaching, engineering, design and content — they will be listed
                 right here.
               </p>
               <p className="cr-soon-text">
-                In the meantime, if you are a coach, you can already{" "}
-                <Link to="/chess-coaching">teach on the platform for free</Link>.
+                {tr("In the meantime, if you are a coach, you can already")}{" "}
+                <Link to="/chess-coaching">{tr("teach on the platform for free")}</Link>.
               </p>
             </div>
           )}
@@ -368,9 +369,9 @@ export default function CareersPage() {
         {/* ── Note for coaches ── */}
         <section className="cr-section">
           <p className="cr-note">
-            Are you a chess coach looking to <b>teach on the platform</b> rather than
-            join the team? That is a different — and free — route. See{" "}
-            <Link to="/chess-coaching">coaching on Chess Nexus</Link>.
+            {tr("Are you a chess coach looking to")} <b>{tr("teach on the platform")}</b> {tr("rather than")}
+            {tr("join the team? That is a different — and free — route. See")}{" "}
+            <Link to="/chess-coaching">{tr("coaching on Chess Nexus")}</Link>.
           </p>
         </section>
       </div>
@@ -381,59 +382,59 @@ export default function CareersPage() {
           <div className="cr-modal" role="dialog" aria-modal="true" aria-labelledby="cr-modal-title">
             <div className="cr-modal-head">
               <div>
-                <p className="cr-modal-kicker">Apply for</p>
+                <p className="cr-modal-kicker">{tr("Apply for")}</p>
                 <h3 id="cr-modal-title">{applyRole.title}</h3>
               </div>
-              <button ref={closeBtnRef} type="button" className="cr-modal-x" onClick={closeModal} aria-label="Close">×</button>
+              <button ref={closeBtnRef} type="button" className="cr-modal-x" onClick={closeModal} aria-label={tr("Close")}>×</button>
             </div>
 
             <form className="cr-form" onSubmit={submit} noValidate>
               <div className="cr-form-grid">
                 <label className="cr-field">
-                  <span>Your name *</span>
+                  <span>{tr("Your name *")}</span>
                   <input value={form.name} onChange={set("name")} autoComplete="name" required />
                 </label>
                 <label className="cr-field">
-                  <span>Email *</span>
+                  <span>{tr("Email *")}</span>
                   <input type="email" value={form.email} onChange={set("email")} autoComplete="email" required />
                 </label>
                 <label className="cr-field">
-                  <span>Phone / WhatsApp</span>
+                  <span>{tr("Phone / WhatsApp")}</span>
                   <input value={form.phone} onChange={set("phone")} autoComplete="tel" />
                 </label>
                 <label className="cr-field">
-                  <span>Where are you based?</span>
-                  <input value={form.location} onChange={set("location")} placeholder="e.g. Chennai" />
+                  <span>{tr("Where are you based?")}</span>
+                  <input value={form.location} onChange={set("location")} placeholder={tr("e.g. Chennai")} />
                 </label>
                 <label className="cr-field">
-                  <span>Chess rating</span>
-                  <input value={form.chessRating} onChange={set("chessRating")} placeholder="e.g. FIDE 1850" />
+                  <span>{tr("Chess rating")}</span>
+                  <input value={form.chessRating} onChange={set("chessRating")} placeholder={tr("e.g. FIDE 1850")} />
                 </label>
                 <label className="cr-field">
-                  <span>Years of experience</span>
+                  <span>{tr("Years of experience")}</span>
                   <input type="number" min="0" max="70" value={form.experienceYears} onChange={set("experienceYears")} />
                 </label>
                 <label className="cr-field cr-field-wide">
-                  <span>Portfolio, GitHub or LinkedIn</span>
+                  <span>{tr("Portfolio, GitHub or LinkedIn")}</span>
                   <input type="url" value={form.portfolioUrl} onChange={set("portfolioUrl")} placeholder="https://…" />
                 </label>
                 <label className="cr-field cr-field-wide">
-                  <span>Lichess or Chess.com profile</span>
+                  <span>{tr("Lichess or Chess.com profile")}</span>
                   <input type="url" value={form.chessProfileUrl} onChange={set("chessProfileUrl")} placeholder="https://lichess.org/@/yourname" />
                 </label>
                 <label className="cr-field cr-field-wide">
-                  <span>Why you? *</span>
+                  <span>{tr("Why you? *")}</span>
                   <textarea
                     rows={5}
                     value={form.message}
                     onChange={set("message")}
-                    placeholder="What have you built, taught or played? Links are better than a CV."
+                    placeholder={tr("What have you built, taught or played? Links are better than a CV.")}
                     required
                   />
                 </label>
                 <label className="cr-field cr-field-wide">
-                  <span>How did you hear about us?</span>
-                  <input value={form.referrer} onChange={set("referrer")} placeholder="e.g. Instagram, a friend, Google" />
+                  <span>{tr("How did you hear about us?")}</span>
+                  <input value={form.referrer} onChange={set("referrer")} placeholder={tr("e.g. Instagram, a friend, Google")} />
                 </label>
               </div>
 
@@ -449,12 +450,12 @@ export default function CareersPage() {
 
               <div className="cr-form-actions">
                 <button type="submit" className="cr-apply" disabled={sending}>
-                  {sending ? "Sending…" : "Send application"}
+                  {sending ? tr("Sending…") : tr("Send application")}
                 </button>
-                <button type="button" className="cr-cancel" onClick={closeModal}>Cancel</button>
+                <button type="button" className="cr-cancel" onClick={closeModal}>{tr("Cancel")}</button>
               </div>
 
-              <p className="cr-form-note">We read every application and reply to everyone we can.</p>
+              <p className="cr-form-note">{tr("We read every application and reply to everyone we can.")}</p>
             </form>
           </div>
         </div>

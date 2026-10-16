@@ -7,11 +7,12 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../api';
 import './CoachDashboard.css';
 import './CourseBuilder.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CELL = {
-  done: { icon: '✓', bg: 'rgba(34,197,94,0.18)', title: 'Completed' },
-  current: { icon: '●', bg: 'rgba(99,102,241,0.25)', title: 'On this lesson' },
-  locked: { icon: '🔒', bg: 'rgba(255,255,255,0.04)', title: 'Locked' },
+  done: { icon: '✓', bg: 'rgba(34,197,94,0.18)', title: tr('Completed') },
+  current: { icon: '●', bg: 'rgba(99,102,241,0.25)', title: tr('On this lesson') },
+  locked: { icon: '🔒', bg: 'rgba(255,255,255,0.04)', title: tr('Locked') },
 };
 
 export default function CourseProgress() {
@@ -33,7 +34,7 @@ export default function CourseProgress() {
     })();
   }, [courseId]);
 
-  if (loading) return <div className="coach-dash"><p>Loading…</p></div>;
+  if (loading) return <div className="coach-dash"><p>{tr("Loading…")}</p></div>;
   if (error) return <div className="coach-dash"><div className="cb-error">{error}</div></div>;
   if (!data) return null;
 
@@ -44,26 +45,26 @@ export default function CourseProgress() {
       <div className="coach-dash-header">
         <div>
           <h1>📊 {course.title}</h1>
-          <p className="coach-dash-sub">Each student's progress through the syllabus.</p>
+          <p className="coach-dash-sub">{tr("Each student's progress through the syllabus.")}</p>
         </div>
-        <Link to="/coach/courses" className="btn-ghost">← Courses</Link>
+        <Link to="/coach/courses" className="btn-ghost">{tr("← Courses")}</Link>
       </div>
 
-      {rows.length === 0 && <div className="cb-card"><p className="cb-muted">No students enrolled yet. Enroll a group from the course page.</p></div>}
+      {rows.length === 0 && <div className="cb-card"><p className="cb-muted">{tr("No students enrolled yet. Enroll a group from the course page.")}</p></div>}
 
       {rows.length > 0 && (
         <div className="cb-card" style={{ overflowX: 'auto' }}>
           <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 480 }}>
             <thead>
               <tr>
-                <th style={{ textAlign: 'left', padding: '8px 12px', position: 'sticky', left: 0 }}>Student</th>
+                <th style={{ textAlign: 'left', padding: '8px 12px', position: 'sticky', left: 0 }}>{tr("Student")}</th>
                 {lessons.map(l => (
                   <th key={l.lessonIndex} style={{ padding: '8px 6px', fontSize: 12, fontWeight: 600, textAlign: 'center' }}
                     title={l.title}>
                     L{l.lessonIndex}
                   </th>
                 ))}
-                <th style={{ padding: '8px 6px', fontSize: 12, textAlign: 'center' }}>Status</th>
+                <th style={{ padding: '8px 6px', fontSize: 12, textAlign: 'center' }}>{tr("Status")}</th>
               </tr>
             </thead>
             <tbody>
@@ -83,7 +84,7 @@ export default function CourseProgress() {
                   })}
                   <td style={{ padding: '8px 6px', textAlign: 'center', fontSize: 12 }}>
                     {row.status === 'completed'
-                      ? <span style={{ color: '#22c55e' }}>Done 🎉</span>
+                      ? <span style={{ color: '#22c55e' }}>{tr("Done 🎉")}</span>
                       : <span className="cb-muted">Lesson {row.currentLessonIndex}</span>}
                   </td>
                 </tr>

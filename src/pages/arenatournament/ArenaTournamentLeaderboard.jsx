@@ -5,11 +5,12 @@ import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 import PlayerName from '../../components/PlayerName';
 import './ArenaTournamentLeaderboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CROWN_TIERS = {
-  gold:     { emoji: '👑', color: 'var(--color-warning)', bg: 'var(--color-warning-a12)', border: 'rgba(245,158,11,0.5)', glow: '0 0 8px rgba(245,158,11,0.6)', label: 'Gold Crown' },
-  platinum: { emoji: '👑', color: 'var(--color-text)', bg: 'rgba(226,232,240,0.12)', border: 'var(--color-text-faint)', glow: '0 0 10px var(--color-text-faint)', label: 'Platinum Crown' },
-  gem:      { emoji: '💎', color: 'var(--color-accent-2)', bg: 'var(--color-accent-2-a15)', border: 'rgba(96,165,250,0.5)', glow: '0 0 10px rgba(96,165,250,0.6)', label: 'Gem Crown' },
+  gold:     { emoji: '👑', color: 'var(--color-warning)', bg: 'var(--color-warning-a12)', border: 'rgba(245,158,11,0.5)', glow: '0 0 8px rgba(245,158,11,0.6)', label: tr('Gold Crown') },
+  platinum: { emoji: '👑', color: 'var(--color-text)', bg: 'rgba(226,232,240,0.12)', border: 'var(--color-text-faint)', glow: '0 0 10px var(--color-text-faint)', label: tr('Platinum Crown') },
+  gem:      { emoji: '💎', color: 'var(--color-accent-2)', bg: 'var(--color-accent-2-a15)', border: 'rgba(96,165,250,0.5)', glow: '0 0 10px rgba(96,165,250,0.6)', label: tr('Gem Crown') },
 };
 
 function containsBlockedLink(text) {
@@ -150,7 +151,7 @@ export default function ArenaTournamentLeaderboard() {
       
       setLoading(false);
     } catch (err) {
-      setError('Failed to load leaderboard');
+      setError(tr('Failed to load leaderboard'));
       setLoading(false);
     }
   };
@@ -239,7 +240,7 @@ export default function ArenaTournamentLeaderboard() {
     return (
       <div className="tournament-loading">
         <div className="loading-spinner"></div>
-        <div className="loading-text">Loading tournament...</div>
+        <div className="loading-text">{tr("Loading tournament...")}</div>
       </div>
     );
   }
@@ -248,10 +249,10 @@ export default function ArenaTournamentLeaderboard() {
     return (
       <div className="tournament-error">
         <div className="error-content">
-          <h2>Error</h2>
+          <h2>{tr("Error")}</h2>
           <p>{error}</p>
           <button onClick={() => navigate('/arenatournament')} className="error-back-btn">
-            Back to Tournaments
+            {tr("Back to Tournaments")}
           </button>
         </div>
       </div>
@@ -266,7 +267,7 @@ export default function ArenaTournamentLeaderboard() {
       
       {/* Back Button */}
       <button onClick={() => navigate('/arenatournament')} className="back-to-tournaments">
-        ← Back to Tournaments
+        {tr("← Back to Tournaments")}
       </button>
 
       <div className="tournament-content">
@@ -274,29 +275,29 @@ export default function ArenaTournamentLeaderboard() {
         <div className="tournament-left">
           {/* Tournament Details Card */}
           <div className="tournament-details-card">
-            <h3 className="details-title">Tournament Details</h3>
+            <h3 className="details-title">{tr("Tournament Details")}</h3>
             <div className="detail-item">
-              <span className="detail-label">Name</span>
+              <span className="detail-label">{tr("Name")}</span>
               <span className="detail-value">{tournament?.name}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Status</span>
+              <span className="detail-label">{tr("Status")}</span>
               <span className={`detail-value status-${tournament?.status}`}>
                 {tournament?.status?.toUpperCase()}
               </span>
             </div>
             {tournament?.endTime && (
               <div className="detail-item">
-                <span className="detail-label">Ended</span>
+                <span className="detail-label">{tr("Ended")}</span>
                 <span className="detail-value">{formatDate(tournament.endTime)}</span>
               </div>
             )}
             <div className="detail-item">
-              <span className="detail-label">Participants</span>
+              <span className="detail-label">{tr("Participants")}</span>
               <span className="detail-value">{leaderboard.length}</span>
             </div>
             <div className="detail-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
-              <span className="detail-label">Tournament Games</span>
+              <span className="detail-label">{tr("Tournament Games")}</span>
               <button
                 onClick={() => navigate(`/arenatournament/games/${tournamentId}`)}
                 style={{
@@ -309,16 +310,16 @@ export default function ArenaTournamentLeaderboard() {
                   cursor: 'pointer'
                 }}
               >
-                Show Games
+                {tr("Show Games")}
               </button>
             </div>
             {tournament?.tournamentType && tournament.tournamentType !== 'standard' && (
               <div className="detail-item">
-                <span className="detail-label">Type</span>
+                <span className="detail-label">{tr("Type")}</span>
                 <span className="detail-value">
-                  {tournament.tournamentType === 'team_battle' && <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)' }}>⚔️ Team Battle</span>}
-                  {tournament.tournamentType === 'chess960' && <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)' }}>🎲 Chess960</span>}
-                  {tournament.tournamentType === 'bullet_blitz_marathon' && <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)' }}>⚡ Marathon</span>}
+                  {tournament.tournamentType === 'team_battle' && <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)' }}>{tr("⚔️ Team Battle")}</span>}
+                  {tournament.tournamentType === 'chess960' && <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)' }}>{tr("🎲 Chess960")}</span>}
+                  {tournament.tournamentType === 'bullet_blitz_marathon' && <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)' }}>{tr("⚡ Marathon")}</span>}
                 </span>
               </div>
             )}
@@ -327,10 +328,10 @@ export default function ArenaTournamentLeaderboard() {
           {/* Chat Card — visible to logged-in users only */}
           {user ? (
           <div className="tournament-chat-card">
-            <h3 className="chat-title">Tournament Chat</h3>
+            <h3 className="chat-title">{tr("Tournament Chat")}</h3>
             <div className="chat-messages">
               {chatMessages.length === 0 ? (
-                <div className="chat-empty">No messages yet. Start the conversation!</div>
+                <div className="chat-empty">{tr("No messages yet. Start the conversation!")}</div>
               ) : (
                 chatMessages.map((msg, idx) => (
                   <div key={String(msg._id) || idx} className="chat-message">
@@ -347,16 +348,16 @@ export default function ArenaTournamentLeaderboard() {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Type a message..."
+                placeholder={tr("Type a message...")}
                 className="chat-input"
               />
               <button onClick={sendMessage} className="chat-send-btn" disabled={!newMessage.trim() || hasBlockedLink}>
-                Send
+                {tr("Send")}
               </button>
             </div>
             {hasBlockedLink && (
               <div style={{ color: 'var(--color-danger)', fontSize: '12px', marginTop: '6px' }}>
-                Links are not allowed in chat messages.
+                {tr("Links are not allowed in chat messages.")}
               </div>
             )}
           </div>
@@ -364,7 +365,7 @@ export default function ArenaTournamentLeaderboard() {
           <div className="tournament-chat-card" style={{ textAlign: 'center', padding: '24px 16px' }}>
             <div style={{ fontSize: '1.6rem', marginBottom: '8px' }}>💬</div>
             <div style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-              <a href="/login" style={{ color: 'var(--color-warning)', fontWeight: '700' }}>Log in</a> to join the tournament chat.
+              <a href="/login" style={{ color: 'var(--color-warning)', fontWeight: '700' }}>{tr("Log in")}</a> {tr("to join the tournament chat.")}
             </div>
           </div>
           )}
@@ -382,45 +383,45 @@ export default function ArenaTournamentLeaderboard() {
               {teamLeaderboard[1] && (
                 <div className="trophy-item">
                   <div className="trophy-icon">
-                    <img src="/arenatrophies/arenasecond.png" alt="2nd Place Trophy" style={{ width: '180px', height: '180px', objectFit: 'contain' }} />
+                    <img src="/arenatrophies/arenasecond.png" alt={tr("2nd Place Trophy")} style={{ width: '180px', height: '180px', objectFit: 'contain' }} />
                   </div>
                   <div className="trophy-username" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                     <span style={{ color: teamLeaderboard[1].color, fontWeight: '800', fontSize: '17px', textShadow: `0 0 12px ${teamLeaderboard[1].color}88` }}>
                       {teamLeaderboard[1].teamName}
                     </span>
-                    <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{teamLeaderboard[1].memberCount} players</span>
+                    <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{teamLeaderboard[1].memberCount} {tr("players")}</span>
                   </div>
-                  <div className="trophy-score">{teamLeaderboard[1].totalScore} pts</div>
+                  <div className="trophy-score">{teamLeaderboard[1].totalScore} {tr("pts")}</div>
                 </div>
               )}
               {/* Gold — 1st team */}
               {teamLeaderboard[0] && (
                 <div className="trophy-item">
                   <div className="trophy-icon">
-                    <img src="/arenatrophies/arenafirst.png" alt="1st Place Trophy" style={{ width: '210px', height: '210px', objectFit: 'contain' }} />
+                    <img src="/arenatrophies/arenafirst.png" alt={tr("1st Place Trophy")} style={{ width: '210px', height: '210px', objectFit: 'contain' }} />
                   </div>
                   <div className="trophy-username" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                     <span style={{ color: teamLeaderboard[0].color, fontWeight: '800', fontSize: '20px', textShadow: `0 0 14px ${teamLeaderboard[0].color}88` }}>
                       {teamLeaderboard[0].teamName}
                     </span>
-                    <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{teamLeaderboard[0].memberCount} players</span>
+                    <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{teamLeaderboard[0].memberCount} {tr("players")}</span>
                   </div>
-                  <div className="trophy-score">{teamLeaderboard[0].totalScore} pts</div>
+                  <div className="trophy-score">{teamLeaderboard[0].totalScore} {tr("pts")}</div>
                 </div>
               )}
               {/* Bronze — 3rd team */}
               {teamLeaderboard[2] && (
                 <div className="trophy-item">
                   <div className="trophy-icon">
-                    <img src="/arenatrophies/arenathird.png" alt="3rd Place Trophy" style={{ width: '150px', height: '150px', objectFit: 'contain' }} />
+                    <img src="/arenatrophies/arenathird.png" alt={tr("3rd Place Trophy")} style={{ width: '150px', height: '150px', objectFit: 'contain' }} />
                   </div>
                   <div className="trophy-username" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                     <span style={{ color: teamLeaderboard[2].color, fontWeight: '800', fontSize: '15px', textShadow: `0 0 10px ${teamLeaderboard[2].color}88` }}>
                       {teamLeaderboard[2].teamName}
                     </span>
-                    <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{teamLeaderboard[2].memberCount} players</span>
+                    <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{teamLeaderboard[2].memberCount} {tr("players")}</span>
                   </div>
-                  <div className="trophy-score">{teamLeaderboard[2].totalScore} pts</div>
+                  <div className="trophy-score">{teamLeaderboard[2].totalScore} {tr("pts")}</div>
                 </div>
               )}
             </div>
@@ -429,40 +430,40 @@ export default function ArenaTournamentLeaderboard() {
               {topThree[1] && (
                 <div className="trophy-item">
                   <div className="trophy-icon">
-                    <img src="/arenatrophies/arenasecond.png" alt="2nd Place Trophy" style={{ width: '180px', height: '180px', objectFit: 'contain' }} />
+                    <img src="/arenatrophies/arenasecond.png" alt={tr("2nd Place Trophy")} style={{ width: '180px', height: '180px', objectFit: 'contain' }} />
                   </div>
                   <div className="trophy-username">
                     <span style={{ color: CROWN_TIERS[topThree[1].crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[topThree[1].crownTierAtJoin] ? '800' : 'inherit', textShadow: CROWN_TIERS[topThree[1].crownTierAtJoin] ? `0 0 10px ${CROWN_TIERS[topThree[1].crownTierAtJoin].color}66` : 'none' }}><PlayerName displayName={topThree[1].displayName} username={topThree[1].username} userId={topThree[1].userId} /></span>
-                    {String(topThree[1].userId) === String(user?.id || user?._id) && <span className="you-badge-trophy">You</span>}
+                    {String(topThree[1].userId) === String(user?.id || user?._id) && <span className="you-badge-trophy">{tr("You")}</span>}
                     <div style={{ marginTop: '4px' }}><CrownBadge tier={topThree[1].crownTierAtJoin} size="lg" /></div>
                   </div>
-                  <div className="trophy-score">{topThree[1].score} pts</div>
+                  <div className="trophy-score">{topThree[1].score} {tr("pts")}</div>
                 </div>
               )}
               {topThree[0] && (
                 <div className="trophy-item">
                   <div className="trophy-icon">
-                    <img src="/arenatrophies/arenafirst.png" alt="1st Place Trophy" style={{ width: '210px', height: '210px', objectFit: 'contain' }} />
+                    <img src="/arenatrophies/arenafirst.png" alt={tr("1st Place Trophy")} style={{ width: '210px', height: '210px', objectFit: 'contain' }} />
                   </div>
                   <div className="trophy-username">
                     <span style={{ color: CROWN_TIERS[topThree[0].crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[topThree[0].crownTierAtJoin] ? '800' : 'inherit', textShadow: CROWN_TIERS[topThree[0].crownTierAtJoin] ? `0 0 10px ${CROWN_TIERS[topThree[0].crownTierAtJoin].color}66` : 'none' }}><PlayerName displayName={topThree[0].displayName} username={topThree[0].username} userId={topThree[0].userId} /></span>
-                    {String(topThree[0].userId) === String(user?.id || user?._id) && <span className="you-badge-trophy">You</span>}
+                    {String(topThree[0].userId) === String(user?.id || user?._id) && <span className="you-badge-trophy">{tr("You")}</span>}
                     <div style={{ marginTop: '4px' }}><CrownBadge tier={topThree[0].crownTierAtJoin} size="lg" /></div>
                   </div>
-                  <div className="trophy-score">{topThree[0].score} pts</div>
+                  <div className="trophy-score">{topThree[0].score} {tr("pts")}</div>
                 </div>
               )}
               {topThree[2] && (
                 <div className="trophy-item">
                   <div className="trophy-icon">
-                    <img src="/arenatrophies/arenathird.png" alt="3rd Place Trophy" style={{ width: '150px', height: '150px', objectFit: 'contain' }} />
+                    <img src="/arenatrophies/arenathird.png" alt={tr("3rd Place Trophy")} style={{ width: '150px', height: '150px', objectFit: 'contain' }} />
                   </div>
                   <div className="trophy-username">
                     <span style={{ color: CROWN_TIERS[topThree[2].crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[topThree[2].crownTierAtJoin] ? '800' : 'inherit', textShadow: CROWN_TIERS[topThree[2].crownTierAtJoin] ? `0 0 10px ${CROWN_TIERS[topThree[2].crownTierAtJoin].color}66` : 'none' }}><PlayerName displayName={topThree[2].displayName} username={topThree[2].username} userId={topThree[2].userId} /></span>
-                    {String(topThree[2].userId) === String(user?.id || user?._id) && <span className="you-badge-trophy">You</span>}
+                    {String(topThree[2].userId) === String(user?.id || user?._id) && <span className="you-badge-trophy">{tr("You")}</span>}
                     <div style={{ marginTop: '4px' }}><CrownBadge tier={topThree[2].crownTierAtJoin} size="lg" /></div>
                   </div>
-                  <div className="trophy-score">{topThree[2].score} pts</div>
+                  <div className="trophy-score">{topThree[2].score} {tr("pts")}</div>
                 </div>
               )}
             </div>
@@ -472,21 +473,21 @@ export default function ArenaTournamentLeaderboard() {
               a coach's "play this tournament" assignment and actually played. */}
           {assignmentId && mySummary && (
             <div style={{ marginBottom: '24px', padding: '20px 24px', borderRadius: 'var(--radius-xl)', background: 'linear-gradient(135deg, var(--color-accent-2-a15) 0%, rgba(168,85,247,0.08) 100%)', border: '1px solid var(--color-accent-2-a30)' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-accent-2)', marginBottom: '10px' }}>🏆 Coach Assignment</h3>
+              <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-accent-2)', marginBottom: '10px' }}>{tr("🏆 Coach Assignment")}</h3>
               {assignDone ? (
                 <div style={{ color: 'var(--color-success)', fontWeight: '700', fontSize: '15px' }}>
-                  ✓ Assignment submitted to your coach!
+                  {tr("✓ Assignment submitted to your coach!")}
                   {assignResult && (
                     <div style={{ color: 'var(--color-text-muted)', fontWeight: '500', fontSize: '13px', marginTop: '6px' }}>
-                      {assignResult.score} pts · {assignResult.wins}W-{assignResult.losses}L-{assignResult.draws}D · {assignResult.gamesPlayed} games{assignResult.rank > 0 ? ` · rank #${assignResult.rank}` : ''}
-                      {assignResult.allMet ? ' · 🎯 all goals met!' : ''}
+                      {assignResult.score} pts · {assignResult.wins}W-{assignResult.losses}L-{assignResult.draws}D · {assignResult.gamesPlayed} games{assignResult.rank > 0 ? tr(" · rank #{rank}", { rank: assignResult.rank }) : ''}
+                      {assignResult.allMet ? tr(' · 🎯 all goals met!') : ''}
                     </div>
                   )}
                 </div>
               ) : tournament?.status === 'finished' ? (
                 <>
                   <div style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '12px' }}>
-                    This tournament has ended. Submit your result to complete the assignment.
+                    {tr("This tournament has ended. Submit your result to complete the assignment.")}
                   </div>
                   <button
                     onClick={submitAssignment}
@@ -498,13 +499,13 @@ export default function ArenaTournamentLeaderboard() {
                       cursor: assignSubmitting ? 'not-allowed' : 'pointer'
                     }}
                   >
-                    {assignSubmitting ? 'Submitting…' : '✅ Submit assignment to coach'}
+                    {assignSubmitting ? tr('Submitting…') : tr('✅ Submit assignment to coach')}
                   </button>
                   {assignError && <div style={{ color: 'var(--color-danger)', fontSize: '13px', marginTop: '10px' }}>{assignError}</div>}
                 </>
               ) : (
                 <div style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>
-                  Keep playing! You can submit this assignment from here once the tournament ends.
+                  {tr("Keep playing! You can submit this assignment from here once the tournament ends.")}
                 </div>
               )}
             </div>
@@ -513,17 +514,17 @@ export default function ArenaTournamentLeaderboard() {
           {/* Personal Summary Card */}
           {mySummary && (
             <div style={{ marginBottom: '24px', padding: '20px 24px', borderRadius: 'var(--radius-xl)', background: 'linear-gradient(135deg, var(--color-accent-a08) 0%, var(--color-accent-2-a12) 100%)', border: '1px solid var(--color-accent-a20)' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-accent)', marginBottom: '14px', letterSpacing: '0.5px' }}>📊 Your Summary — {mySummary.tournamentName || tournament?.name}</h3>
+              <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-accent)', marginBottom: '14px', letterSpacing: '0.5px' }}>{tr("📊 Your Summary —")} {mySummary.tournamentName || tournament?.name}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                 {[
-                  { label: 'Score', value: mySummary.score, color: 'var(--color-accent)' },
-                  { label: 'Games', value: mySummary.gamesPlayed, color: 'var(--color-text)' },
-                  { label: 'Wins', value: mySummary.wins, color: 'var(--color-success)' },
-                  { label: 'Losses', value: mySummary.losses, color: 'var(--color-danger)' },
-                  { label: 'Draws', value: mySummary.draws, color: 'var(--color-warning)' },
-                  { label: 'Best Streak', value: mySummary.maxStreak, color: '#f97316', suffix: '🔥' },
-                  { label: 'Total Moves', value: mySummary.totalMovesPlayed, color: 'var(--color-accent-2)' },
-                  { label: 'Rank', value: myRank ? `#${myRank}` : '—', color: 'var(--color-warning)' }
+                  { label: tr('Score'), value: mySummary.score, color: 'var(--color-accent)' },
+                  { label: tr('Games'), value: mySummary.gamesPlayed, color: 'var(--color-text)' },
+                  { label: tr('Wins'), value: mySummary.wins, color: 'var(--color-success)' },
+                  { label: tr('Losses'), value: mySummary.losses, color: 'var(--color-danger)' },
+                  { label: tr('Draws'), value: mySummary.draws, color: 'var(--color-warning)' },
+                  { label: tr('Best Streak'), value: mySummary.maxStreak, color: '#f97316', suffix: '🔥' },
+                  { label: tr('Total Moves'), value: mySummary.totalMovesPlayed, color: 'var(--color-accent-2)' },
+                  { label: tr('Rank'), value: myRank ? `#${myRank}` : '—', color: 'var(--color-warning)' }
                 ].map(({ label, value, color, suffix }) => (
                   <div key={label} style={{ textAlign: 'center', padding: '10px', borderRadius: 'var(--radius-md)', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)' }}>
                     <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</div>
@@ -537,14 +538,14 @@ export default function ArenaTournamentLeaderboard() {
           {/* Full team standings table (team_battle — shows all teams including 4th+) */}
           {tournament?.tournamentType === 'team_battle' && teamLeaderboard.length > 0 && (
             <div className="leaderboard-table-container">
-              <h3 className="team-standings-title">⚔️ Team — Final Standings</h3>
+              <h3 className="team-standings-title">{tr("⚔️ Team — Final Standings")}</h3>
               <table className="leaderboard-table">
                 <thead>
                   <tr>
                     <th style={{ width: '60px', textAlign: 'center' }}>#</th>
-                    <th>Team</th>
-                    <th style={{ textAlign: 'center' }}>Players</th>
-                    <th style={{ textAlign: 'right' }}>Score</th>
+                    <th>{tr("Team")}</th>
+                    <th style={{ textAlign: 'center' }}>{tr("Players")}</th>
+                    <th style={{ textAlign: 'right' }}>{tr("Score")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -572,16 +573,16 @@ export default function ArenaTournamentLeaderboard() {
             <table className="leaderboard-table">
               <thead>
                 <tr>
-                  <th>Rank</th>
-                  <th style={{ textAlign: 'left' }}>Player</th>
-                  {tournament?.tournamentType === 'team_battle' && <th>Team</th>}
+                  <th>{tr("Rank")}</th>
+                  <th style={{ textAlign: 'left' }}>{tr("Player")}</th>
+                  {tournament?.tournamentType === 'team_battle' && <th>{tr("Team")}</th>}
                   {/* Chess960 has no rating. */}
-                  {tournament?.tournamentType !== 'chess960' && <th style={{ textAlign: 'center' }}>Rating</th>}
+                  {tournament?.tournamentType !== 'chess960' && <th style={{ textAlign: 'center' }}>{tr("Rating")}</th>}
                   <th>W</th>
                   <th>L</th>
                   <th>D</th>
-                  <th>Games</th>
-                  <th style={{ textAlign: 'right' }}>Score</th>
+                  <th>{tr("Games")}</th>
+                  <th style={{ textAlign: 'right' }}>{tr("Score")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -598,10 +599,10 @@ export default function ArenaTournamentLeaderboard() {
                       </td>
                       <td className="player-cell">
                         {onlineUserIds.includes(participant.userId) && (
-                          <span className="online-dot-small" title="Online" />
+                          <span className="online-dot-small" title={tr("Online")} />
                         )}
                         <span style={{ color: CROWN_TIERS[participant.crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[participant.crownTierAtJoin] ? '700' : 'inherit', textShadow: CROWN_TIERS[participant.crownTierAtJoin] ? `0 0 8px ${CROWN_TIERS[participant.crownTierAtJoin].color}55` : 'none' }}><PlayerName displayName={participant.displayName} username={participant.username} userId={participant.userId} /></span>
-                        {isMe && <span className="you-badge-small">You</span>}
+                        {isMe && <span className="you-badge-small">{tr("You")}</span>}
                         <CrownBadge tier={participant.crownTierAtJoin} />
                       </td>
                       {tournament?.tournamentType === 'team_battle' && (

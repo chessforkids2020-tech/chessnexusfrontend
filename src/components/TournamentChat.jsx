@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
 import PlayerName from './PlayerName';
 import './TournamentChat.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function TournamentChat({ tournamentId }) {
   const [messages, setMessages] = useState([]);
@@ -99,7 +100,7 @@ export default function TournamentChat({ tournamentId }) {
         gap: '10px'
       }}>
         <span style={{ fontSize: '20px' }}>💬</span>
-        Tournament Chat
+        {tr("Tournament Chat")}
       </div>
 
       <div
@@ -114,7 +115,7 @@ export default function TournamentChat({ tournamentId }) {
             fontSize: '14px',
             fontStyle: 'italic'
           }}>
-            No messages yet. Start the conversation!
+            {tr("No messages yet. Start the conversation!")}
           </div>
         ) : (
           messages.map((msg, idx) => (
@@ -177,7 +178,7 @@ export default function TournamentChat({ tournamentId }) {
             color: 'var(--color-accent-2)',
             fontSize: '13px',
           }}>
-            🔒 <strong>Log in</strong> to send messages
+            🔒 <strong>{tr("Log in")}</strong> {tr("to send messages")}
           </div>
         ) : (
           <>
@@ -186,7 +187,7 @@ export default function TournamentChat({ tournamentId }) {
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Type a message..."
+                placeholder={tr("Type a message...")}
                 maxLength={100}
                 style={{
                   flex: 1,
@@ -244,7 +245,7 @@ export default function TournamentChat({ tournamentId }) {
                   }
                 }}
               >
-                Send
+                {tr("Send")}
               </button>
             </div>
             <div style={{
@@ -254,7 +255,7 @@ export default function TournamentChat({ tournamentId }) {
               textAlign: 'right',
               fontStyle: 'italic'
             }}>
-              {inputMessage.length}/100 characters
+              {inputMessage.length}{tr("/100 characters")}
             </div>
           </>
         )}

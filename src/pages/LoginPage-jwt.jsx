@@ -6,6 +6,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -35,12 +36,12 @@ export default function LoginPage() {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Login</h2>
+      <h2 style={styles.title}>{tr("Login")}</h2>
       <form onSubmit={handleLogin} style={styles.form}>
         {error && <div style={styles.error}>{error}</div>}
         <input
           style={styles.input}
-          placeholder="Username"
+          placeholder={tr("Username")}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           autoComplete="username"
@@ -51,7 +52,7 @@ export default function LoginPage() {
         <input
           style={styles.input}
           type="password"
-          placeholder="Password"
+          placeholder={tr("Password")}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="current-password"
@@ -62,7 +63,7 @@ export default function LoginPage() {
           style={styles.button} 
           disabled={loading}
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? tr("Logging in...") : tr("Login")}
         </button>
       </form>
     </div>

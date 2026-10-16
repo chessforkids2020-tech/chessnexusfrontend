@@ -19,6 +19,7 @@ import socket from '../socket';
 import BlunderAssignmentPlayer from '../pages/BlunderAssignmentPlayer';
 import FenAssignmentPlayer from '../pages/FenAssignmentPlayer';
 import '../pages/MyCoachPortal.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const fmtDate = (s) => new Date(s).toLocaleDateString('en-IN', {
@@ -159,8 +160,8 @@ export default function StudentAssignments({ onLoaded, only }) {
       {assignments.length === 0 ? (
         <div className="mcp-empty" style={{ margin: '40px auto' }}>
           <div className="mcp-empty-icon">📋</div>
-          <h2 className="mcp-empty-title">No assignments yet</h2>
-          <p className="mcp-empty-desc">When your coach assigns you work, it will show up here.</p>
+          <h2 className="mcp-empty-title">{tr("No assignments yet")}</h2>
+          <p className="mcp-empty-desc">{tr("When your coach assigns you work, it will show up here.")}</p>
         </div>
       ) : (
         <div className="mcp-assign-list">
@@ -188,11 +189,11 @@ export default function StudentAssignments({ onLoaded, only }) {
                   {isPgn
                     ? <span>· 🔍 Find {a.pgnTask.findTarget || 0} blunder{(a.pgnTask.findTarget || 0) > 1 ? 's' : ''}</span>
                     : isTest
-                      ? <span>· ⏱ Timed test{a.targetGrade > 0 ? ` · goal ${a.targetGrade}%` : ''}</span>
+                      ? <span>· ⏱ Timed test{a.targetGrade > 0 ? tr(" · goal {targetGrade}%", { targetGrade: a.targetGrade }) : ''}</span>
                       : isRush
-                        ? <span>· ⚡ {a.rushTopicLabel || a.rushTopic || 'Mixed'} · {a.rushMinutes || 5} min{a.rushTargetSolved > 0 ? ` · goal ${a.rushTargetSolved}` : ''}</span>
+                        ? <span>· ⚡ {a.rushTopicLabel || a.rushTopic || tr('Mixed')} · {a.rushMinutes || 5} min{a.rushTargetSolved > 0 ? tr(" · goal {rushTargetSolved}", { rushTargetSolved: a.rushTargetSolved }) : ''}</span>
                         : isArena
-                          ? <span>· 🏆 Arena tournament{a.arenaTournamentCode ? ` · code ${a.arenaTournamentCode}` : ''}{a.targetGames > 0 ? ` · ${a.targetGames}+ games` : ''}{a.targetScore > 0 ? ` · ${a.targetScore}+ pts` : ''}{a.targetRank > 0 ? ` · top ${a.targetRank}` : ''}{a.targetWins > 0 ? ` · ${a.targetWins}+ wins` : ''}</span>
+                          ? <span>· 🏆 Arena tournament{a.arenaTournamentCode ? tr(" · code {arenaTournamentCode}", { arenaTournamentCode: a.arenaTournamentCode }) : ''}{a.targetGames > 0 ? tr(" · {targetGames}+ games", { targetGames: a.targetGames }) : ''}{a.targetScore > 0 ? tr(" · {targetScore}+ pts", { targetScore: a.targetScore }) : ''}{a.targetRank > 0 ? tr(" · top {targetRank}", { targetRank: a.targetRank }) : ''}{a.targetWins > 0 ? tr(" · {targetWins}+ wins", { targetWins: a.targetWins }) : ''}</span>
                           : isFen
                             ? <span>· ♟️ Play vs Stockfish · {fenPositions} position{fenPositions > 1 ? 's' : ''}</span>
                             : (a.topicName && <span>· {a.topicName}</span>)}
@@ -206,12 +207,12 @@ export default function StudentAssignments({ onLoaded, only }) {
                 )}
                 {(a.solved > 0 || a.failed > 0) && (
                   <div className="mcp-assign-stats">
-                    ✅ {a.solved} solved · ❌ {a.failed} failed · 🔥 {a.maxStreak} best streak
+                    ✅ {a.solved} {tr("solved · ❌")} {a.failed} {tr("failed · 🔥")} {a.maxStreak} {tr("best streak")}
                   </div>
                 )}
                 {isArena && a.status === 'completed' && (a.arenaGamesPlayed > 0 || a.arenaScore > 0) && (
                   <div className="mcp-assign-stats">
-                    🏆 {a.arenaScore} pts · {a.arenaWins}W-{a.arenaLosses}L-{a.arenaDraws}D · {a.arenaGamesPlayed} games{a.arenaRank > 0 ? ` · rank #${a.arenaRank}` : ''}
+                    🏆 {a.arenaScore} pts · {a.arenaWins}W-{a.arenaLosses}L-{a.arenaDraws}D · {a.arenaGamesPlayed} games{a.arenaRank > 0 ? tr(" · rank #{arenaRank}", { arenaRank: a.arenaRank }) : ''}
                   </div>
                 )}
                 {(a.assignmentType === 'puzzle_topic' || a.assignmentType === 'custom' || a.assignmentType === 'study_chapter' || a.assignmentType === 'puzzle_rush' || isArena || isFen) && a.status !== 'completed' && (

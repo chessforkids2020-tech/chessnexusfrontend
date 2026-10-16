@@ -12,6 +12,7 @@
 // earned and offers to generate it. This one is the road to that moment.
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function StreakReminderModal({ streak, progress, milestone = 5, user, onClose }) {
   const day = streak || 0;
@@ -23,10 +24,10 @@ export default function StreakReminderModal({ streak, progress, milestone = 5, u
 
   const rows = [
     { key: 'puzzles',  icon: '🧩', label: 'puzzles', to: '/training/healthy-mix',
-      note: 'Healthy Mix, themes, pieces or rating — all count' },
-    { key: 'games',    icon: '⚔️', label: 'game — Chess Nexus, Chess.com or Lichess',
-      to: '/arenatournament', note: 'blitz, rapid or classical' },
-    { key: 'endgames', icon: '♟️', label: 'endgame against the computer', to: '/study/endgames' },
+      note: tr('Healthy Mix, themes, pieces or rating — all count') },
+    { key: 'games',    icon: '⚔️', label: tr('game — Chess Nexus, Chess.com or Lichess'),
+      to: '/arenatournament', note: tr('blitz, rapid or classical') },
+    { key: 'endgames', icon: '♟️', label: tr('endgame against the computer'), to: '/study/endgames' },
   ];
 
   const todayDone = rows.every(r => (done[r.key] || 0) >= (need[r.key] || 1));
@@ -36,28 +37,28 @@ export default function StreakReminderModal({ streak, progress, milestone = 5, u
   let title, sub;
   if (day === 0) {
     title = 'Start today to unlock your report';
-    sub = `Practice ${milestone} days in a row and we will analyse every game you played — where your mistakes happen and what to work on next.`;
+    sub = tr("Practice {milestone} days in a row and we will analyse every game you played — where your mistakes happen and what to work on next.", { milestone: milestone });
   } else if (todayDone) {
-    title = `Day ${day} done — ${remaining} to go`;
+    title = tr("Day {day} done — {remaining} to go", { day: day, remaining: remaining });
     sub = remaining === 1
       ? 'One more day and your report unlocks.'
-      : `Keep going. ${remaining} more days and your report unlocks.`;
+      : tr("Keep going. {remaining} more days and your report unlocks.", { remaining: remaining });
   } else {
-    title = `You are on day ${day} — ${remaining} to go`;
+    title = tr("You are on day {day} — {remaining} to go", { day: day, remaining: remaining });
     sub = 'Finish today’s three to keep the streak alive.';
   }
 
   const missingUsernames = !user?.lichessUsername && !user?.chessComUsername;
 
   return (
-    <div style={S.backdrop} role="dialog" aria-modal="true" aria-label="Practice streak">
+    <div style={S.backdrop} role="dialog" aria-modal="true" aria-label={tr("Practice streak")}>
       <div style={S.card}>
-        <button type="button" style={S.x} onClick={onClose} aria-label="Close">×</button>
+        <button type="button" style={S.x} onClick={onClose} aria-label={tr("Close")}>×</button>
 
         <div style={S.flameRow}>
           <span style={S.flame} aria-hidden="true">🔥</span>
           <span style={S.dayCount}>{day}</span>
-          <span style={S.dayLabel}>day{day === 1 ? '' : 's'}</span>
+          <span style={S.dayLabel}>{tr("day")}{day === 1 ? '' : 's'}</span>
         </div>
 
         {/* Five dots — a streak is easier to feel than to read. */}
@@ -97,12 +98,12 @@ export default function StreakReminderModal({ streak, progress, milestone = 5, u
         <p style={{ ...S.foot, ...(missingUsernames ? S.footWarn : {}) }}>
           {missingUsernames ? '⚠️ ' : ''}
           Make sure your Chess.com and Lichess usernames are saved in{' '}
-          <Link to="/settings?tab=profile" style={S.link} onClick={onClose}>Settings → Profile</Link>
-          {' '}so those games count toward your report.
+          <Link to="/settings?tab=profile" style={S.link} onClick={onClose}>{tr("Settings → Profile")}</Link>
+          {' '}{tr("so those games count toward your report.")}
         </p>
 
         <button type="button" style={S.primary} onClick={onClose}>
-          {todayDone ? 'Nice — see you tomorrow' : 'Let’s go'}
+          {todayDone ? tr('Nice — see you tomorrow') : tr('Let’s go')}
         </button>
       </div>
     </div>

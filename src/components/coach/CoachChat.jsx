@@ -4,6 +4,7 @@ import socket from '../../socket';
 import { useAuth } from '../../contexts/AuthContext';
 import { linkify } from '../../utils/linkify';
 import './CoachChat.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Format a message time as "5 Jul 2026, 2:30 PM" (date + month + year + time).
 // Mirrors the Social Hub Chat.jsx formatter.
@@ -259,7 +260,7 @@ export default function CoachChat({ mode = 'student', openThreadId = null }) {
     const other = (t.participants || []).find(p => String(p._id) !== String(myId));
     return other?.displayName || other?.username || 'Chat';
   };
-  const studentName = (s) => s.studentId?.displayName || s.studentName || s.studentId?.username || 'Student';
+  const studentName = (s) => s.studentId?.displayName || s.studentName || s.studentId?.username || tr('Student');
   const studentUserId = (s) => s.studentId?._id;
 
   return (
@@ -269,8 +270,8 @@ export default function CoachChat({ mode = 'student', openThreadId = null }) {
         {isCoach && (
           <div className="cchat-list-head">
             <div className="cchat-actions">
-              <button className="cchat-newbtn" onClick={() => { setShowNew(true); setErr(''); }} title="New message">✉️ New</button>
-              <button className="cchat-newbtn" onClick={() => { setShowGroup(true); setErr(''); }} title="New group">👥 Group</button>
+              <button className="cchat-newbtn" onClick={() => { setShowNew(true); setErr(''); }} title={tr("New message")}>{tr("✉️ New")}</button>
+              <button className="cchat-newbtn" onClick={() => { setShowGroup(true); setErr(''); }} title={tr("New group")}>{tr("👥 Group")}</button>
             </div>
           </div>
         )}
@@ -300,14 +301,14 @@ export default function CoachChat({ mode = 'student', openThreadId = null }) {
       {/* ── Message pane ── */}
       <section className="cchat-pane">
         {!selected ? (
-          <div className="cchat-empty-pane">Select a conversation</div>
+          <div className="cchat-empty-pane">{tr("Select a conversation")}</div>
         ) : (
           <>
             <div className="cchat-messages" ref={messagesRef}>
               {loadingMsgs ? (
-                <div className="cchat-loading">Loading…</div>
+                <div className="cchat-loading">{tr("Loading…")}</div>
               ) : messages.length === 0 ? (
-                <div className="cchat-loading">No messages yet. Say hello!</div>
+                <div className="cchat-loading">{tr("No messages yet. Say hello!")}</div>
               ) : messages.map(m => {
                 const sid = m.sender?._id || m.sender;
                 const mine = String(sid) === String(myId);
@@ -335,10 +336,10 @@ export default function CoachChat({ mode = 'student', openThreadId = null }) {
                   e.target.style.height = `${e.target.scrollHeight}px`;
                 }}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-                placeholder="Type a message…"
+                placeholder={tr("Type a message…")}
                 rows={1}
               />
-              <button onClick={send} disabled={!draft.trim() || sending}>Send</button>
+              <button onClick={send} disabled={!draft.trim() || sending}>{tr("Send")}</button>
             </div>
           </>
         )}
@@ -348,11 +349,11 @@ export default function CoachChat({ mode = 'student', openThreadId = null }) {
       {isCoach && showNew && (
         <div className="cchat-modal-overlay" onClick={e => { if (e.target === e.currentTarget) setShowNew(false); }}>
           <div className="cchat-modal">
-            <div className="cchat-modal-head">New message<button onClick={() => setShowNew(false)}>✕</button></div>
+            <div className="cchat-modal-head">{tr("New message")}<button onClick={() => setShowNew(false)}>✕</button></div>
             {err && <div className="cchat-err">{err}</div>}
             <div className="cchat-modal-list">
               {students.length === 0 ? (
-                <div className="cchat-empty-list">No students on your roster yet.</div>
+                <div className="cchat-empty-list">{tr("No students on your roster yet.")}</div>
               ) : students.map(s => (
                 <button key={s._id} className="cchat-pick" disabled={busy || !studentUserId(s)} onClick={() => startWithStudent(studentUserId(s))}>
                   <span className="cchat-thread-icon">👤</span>{studentName(s)}
@@ -367,13 +368,13 @@ export default function CoachChat({ mode = 'student', openThreadId = null }) {
       {isCoach && showGroup && (
         <div className="cchat-modal-overlay" onClick={e => { if (e.target === e.currentTarget) setShowGroup(false); }}>
           <div className="cchat-modal">
-            <div className="cchat-modal-head">New group<button onClick={() => setShowGroup(false)}>✕</button></div>
+            <div className="cchat-modal-head">{tr("New group")}<button onClick={() => setShowGroup(false)}>✕</button></div>
             {err && <div className="cchat-err">{err}</div>}
             <input
               className="cchat-group-name"
               value={groupName}
               onChange={e => setGroupName(e.target.value)}
-              placeholder="Group name"
+              placeholder={tr("Group name")}
             />
             <div className="cchat-modal-list">
               {students.map(s => {
@@ -393,7 +394,7 @@ export default function CoachChat({ mode = 'student', openThreadId = null }) {
               })}
             </div>
             <button className="cchat-create" disabled={busy || !groupName.trim() || groupPicked.length === 0} onClick={createGroup}>
-              Create group ({groupPicked.length})
+              {tr("Create group (")}{groupPicked.length})
             </button>
           </div>
         </div>

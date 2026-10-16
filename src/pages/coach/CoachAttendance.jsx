@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import './CoachDashboard.css';
 import './CoachAttendance.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const getToday = () => {
   const now = new Date();
@@ -46,7 +47,7 @@ export default function CoachAttendance() {
     setLoadingStudents(true);
     api.get('/api/coach/attendance/students')
       .then(r => setStudents(r.data.students || []))
-      .catch(e => setError(e.response?.data?.message || 'Failed to load students'))
+      .catch(e => setError(e.response?.data?.message || tr('Failed to load students')))
       .finally(() => setLoadingStudents(false));
   }, []);
 
@@ -88,7 +89,7 @@ export default function CoachAttendance() {
         date: markDate,
         status: markStatus
       });
-      setMarkMsg(`✓ ${markStatus} marked for ${fmtDate(markDate)}`);
+      setMarkMsg(tr("✓ {markStatus} marked for {v1}", { markStatus: markStatus, v1: fmtDate(markDate) }));
       loadHistory(selected.mongoId);
       loadSummary();
     } catch (e) {
@@ -100,7 +101,7 @@ export default function CoachAttendance() {
 
   // ── Delete record ──────────────────────────────
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this attendance record?')) return;
+    if (!window.confirm(tr('Delete this attendance record?'))) return;
     try {
       await api.delete(`/api/coach/attendance/${id}`);
       setHistory(h => h.filter(r => r._id !== id));
@@ -131,12 +132,12 @@ export default function CoachAttendance() {
     <div className="coach-dash">
       {/* ── Back ─── */}
       <div className="csd-back">
-        <button onClick={() => navigate('/coach/dashboard')} className="btn-ghost">← Dashboard</button>
+        <button onClick={() => navigate('/coach/dashboard')} className="btn-ghost">{tr("← Dashboard")}</button>
       </div>
 
       <div className="ca-header">
-        <h1>📋 Attendance</h1>
-        <p>Track and mark class attendance for your students</p>
+        <h1>{tr("📋 Attendance")}</h1>
+        <p>{tr("Track and mark class attendance for your students")}</p>
       </div>
 
       {error && <div className="coach-error">⚠ {error}</div>}
@@ -145,11 +146,11 @@ export default function CoachAttendance() {
         {/* ── LEFT: student list ──────────────────── */}
         <div className="ca-sidebar">
           <div className="coach-section">
-            <div className="coach-section-head"><h2>Students</h2></div>
+            <div className="coach-section-head"><h2>{tr("Students")}</h2></div>
             {loadingStudents ? (
-              <div className="coach-empty">Loading…</div>
+              <div className="coach-empty">{tr("Loading…")}</div>
             ) : students.length === 0 ? (
-              <div className="coach-empty">No active students yet.</div>
+              <div className="coach-empty">{tr("No active students yet.")}</div>
             ) : (
               <ul className="ca-student-list">
                 {students.map(s => (
@@ -166,7 +167,7 @@ export default function CoachAttendance() {
                     {(() => {
                       const row = summary.find(x => String(x.mongoId) === String(s.mongoId));
                       return row ? (
-                        <div className="ca-student-badge" title={`${row.present} present / ${row.absent} absent`}>
+                        <div className="ca-student-badge" title={tr("{present} present / {absent} absent", { present: row.present, absent: row.absent })}>
                           <span style={{ color: '#10b981' }}>{row.present}P</span>
                           {' '}<span style={{ color: '#ef4444' }}>{row.absent}A</span>
                         </div>
@@ -192,20 +193,20 @@ export default function CoachAttendance() {
               </h2>
             </div>
             {loadingSummary ? (
-              <div className="coach-empty">Loading…</div>
+              <div className="coach-empty">{tr("Loading…")}</div>
             ) : summary.length === 0 ? (
-              <div className="coach-empty">No data for this month.</div>
+              <div className="coach-empty">{tr("No data for this month.")}</div>
             ) : (
               <div className="csd-table-wrap">
                 <table className="csd-table">
                   <thead>
                     <tr>
-                      <th>Student</th>
-                      <th>Group</th>
-                      <th style={{ color: '#10b981' }}>Present</th>
-                      <th style={{ color: '#ef4444' }}>Absent</th>
-                      <th>Total</th>
-                      <th>Attendance %</th>
+                      <th>{tr("Student")}</th>
+                      <th>{tr("Group")}</th>
+                      <th style={{ color: '#10b981' }}>{tr("Present")}</th>
+                      <th style={{ color: '#ef4444' }}>{tr("Absent")}</th>
+                      <th>{tr("Total")}</th>
+                      <th>{tr("Attendance %")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -245,11 +246,11 @@ export default function CoachAttendance() {
               {/* Mark form */}
               <div className="coach-section">
                 <div className="coach-section-head">
-                  <h2>Mark attendance — {selected.name}</h2>
+                  <h2>{tr("Mark attendance —")} {selected.name}</h2>
                 </div>
                 <div className="ca-mark-form">
                   <div className="ca-mark-row">
-                    <label>Date</label>
+                    <label>{tr("Date")}</label>
                     <input
                       type="date"
                       value={markDate}
@@ -259,7 +260,7 @@ export default function CoachAttendance() {
                     />
                   </div>
                   <div className="ca-mark-row">
-                    <label>Status</label>
+                    <label>{tr("Status")}</label>
                     <div className="ca-status-btns">
                       {['Present', 'Absent', 'Catch-up'].map(s => (
                         <button
@@ -274,7 +275,7 @@ export default function CoachAttendance() {
                     </div>
                   </div>
                   <button className="ca-mark-submit" onClick={handleMark} disabled={marking}>
-                    {marking ? 'Marking…' : 'Mark Attendance'}
+                    {marking ? tr('Marking…') : tr('Mark Attendance')}
                   </button>
                   {markMsg && <div className="ca-mark-msg">{markMsg}</div>}
                 </div>
@@ -283,21 +284,21 @@ export default function CoachAttendance() {
               {/* History */}
               <div className="coach-section">
                 <div className="coach-section-head">
-                  <h2>📅 History — {selected.name}</h2>
-                  <span className="ca-history-sub">(last 60 records)</span>
+                  <h2>{tr("📅 History —")} {selected.name}</h2>
+                  <span className="ca-history-sub">{tr("(last 60 records)")}</span>
                 </div>
                 {loadingHistory ? (
-                  <div className="coach-empty">Loading…</div>
+                  <div className="coach-empty">{tr("Loading…")}</div>
                 ) : history.length === 0 ? (
-                  <div className="coach-empty">No attendance records yet.</div>
+                  <div className="coach-empty">{tr("No attendance records yet.")}</div>
                 ) : (
                   <div className="csd-table-wrap">
                     <table className="csd-table">
                       <thead>
                         <tr>
-                          <th>Date</th>
-                          <th>Status</th>
-                          <th>Marked at</th>
+                          <th>{tr("Date")}</th>
+                          <th>{tr("Status")}</th>
+                          <th>{tr("Marked at")}</th>
                           <th></th>
                         </tr>
                       </thead>
@@ -317,7 +318,7 @@ export default function CoachAttendance() {
                               {r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' }) : '—'}
                             </td>
                             <td>
-                              <button className="ca-del-btn" onClick={() => handleDelete(r._id)} title="Delete">✕</button>
+                              <button className="ca-del-btn" onClick={() => handleDelete(r._id)} title={tr("Delete")}>✕</button>
                             </td>
                           </tr>
                         ))}
@@ -329,7 +330,7 @@ export default function CoachAttendance() {
             </>
           ) : (
             <div className="coach-section">
-              <div className="coach-empty">← Select a student to mark or view attendance</div>
+              <div className="coach-empty">{tr("← Select a student to mark or view attendance")}</div>
             </div>
           )}
         </div>

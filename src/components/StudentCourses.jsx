@@ -11,6 +11,7 @@ import api from '../api';
 import socket from '../socket';
 import GameAnalysisModal from './masterGames/GameAnalysisModal';
 import '../pages/MyCoachPortal.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Build the embed URL for a course video.
 //
@@ -99,7 +100,7 @@ export default function StudentCourses() {
 
   if (loading) return null;
   if (courses.length === 0) {
-    return <div className="mcp-empty">No syllabus yet. Your coach will enroll you in a course.</div>;
+    return <div className="mcp-empty">{tr("No syllabus yet. Your coach will enroll you in a course.")}</div>;
   }
 
   return (
@@ -110,7 +111,7 @@ export default function StudentCourses() {
             <div>
               <div className="mcp-course-title">📚 {course.title}</div>
               <div className="mcp-course-sub">{course.coachName}
-                {course.status === 'completed' ? ' · Completed 🎉' : ` · On lesson ${course.currentLessonIndex}`}</div>
+                {course.status === 'completed' ? ' · Completed 🎉' : tr(" · On lesson {currentLessonIndex}", { currentLessonIndex: course.currentLessonIndex })}</div>
             </div>
           </div>
           {course.description && <p className="mcp-course-desc">{course.description}</p>}
@@ -122,7 +123,7 @@ export default function StudentCourses() {
               const isEndgame = l.kind === 'endgame';
               const isNexus = l.kind === 'nexusStudy';
               const icon = isVideo ? '🎥' : isMaster ? '♟' : isEndgame ? '🏁' : isNexus ? '✦' : '📖';
-              const markLabel = isVideo ? '✓ Mark as watched' : (isMaster || isEndgame) ? '✓ Mark as reviewed' : '✓ Mark as studied';
+              const markLabel = isVideo ? tr('✓ Mark as watched') : (isMaster || isEndgame) ? tr('✓ Mark as reviewed') : tr('✓ Mark as studied');
               // Open the lesson content by kind.
               const open = () => {
                 if (isMaster) setOpenGameId(l.masterGameId);
@@ -140,14 +141,14 @@ export default function StudentCourses() {
                       {/* No link out: the player for a finished lesson is right
                           below, so "Rewatch" is a label, not a trip to YouTube. */}
                       {isVideo
-                        ? <span className="mcp-lesson-done-tag">▶ rewatch below</span>
-                        : <button className="mcp-lesson-review" onClick={open}>Review</button>}
-                      <span className="mcp-lesson-done-tag">✓ studied</span>
+                        ? <span className="mcp-lesson-done-tag">{tr("▶ rewatch below")}</span>
+                        : <button className="mcp-lesson-review" onClick={open}>{tr("Review")}</button>}
+                      <span className="mcp-lesson-done-tag">{tr("✓ studied")}</span>
                     </>
                   )}
                   {l.state === 'current' && (
                     <>
-                      {!isVideo && <button className="mcp-lesson-play" onClick={open}>▶ Open</button>}
+                      {!isVideo && <button className="mcp-lesson-play" onClick={open}>{tr("▶ Open")}</button>}
                       <button className="mcp-lesson-mark"
                         disabled={marking === `${course.courseId}:${l.lessonIndex}`}
                         onClick={() => markStudied(course.courseId, l.lessonIndex)}>

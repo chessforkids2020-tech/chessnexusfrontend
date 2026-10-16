@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-puzzles";
 
@@ -30,7 +31,7 @@ export default function ChessPuzzlesPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
@@ -47,7 +48,7 @@ export default function ChessPuzzlesPage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "Free Chess Puzzles & Daily Tactics Training",
+        title: tr("Free Chess Puzzles & Daily Tactics Training"),
         description:
           "Solve free daily chess puzzles from super-grandmaster games. Train tactics with the Monthly Focus challenge, Puzzle Tic-Tac-Toe and Bingo — 100% free, no ads.",
         keywords:
@@ -58,18 +59,18 @@ export default function ChessPuzzlesPage() {
       hero={{
         icon: "🧩",
         h1: "Free Chess Puzzles & Daily Tactics Training",
-        sub: "The Chess Nexus Puzzle Hub is a free, no-ads home for sharpening your tactics — daily puzzles from super-grandmaster games, a 7-day Monthly Focus challenge, plus fun modes like Puzzle Tic-Tac-Toe and Bingo.",
-        primary: { label: "Start Solving Puzzles", to: "/puzzles-hub" },
-        secondary: { label: "Browse all features", to: "/features" },
+        sub: tr("The Chess Nexus Puzzle Hub is a free, no-ads home for sharpening your tactics — daily puzzles from super-grandmaster games, a 7-day Monthly Focus challenge, plus fun modes like Puzzle Tic-Tac-Toe and Bingo."),
+        primary: { label: tr("Start Solving Puzzles"), to: "/puzzles-hub" },
+        secondary: { label: tr("Browse all features"), to: "/features" },
       }}
     >
       <section className="mkt-section">
         <div className="mkt-split mkt-split-reverse">
           <div className="mkt-split-media">
-            <img src="/features/puzzleshub.png" alt="Free chess puzzles and daily tactics training" loading="lazy" width="220" height="220" />
+            <img src="/features/puzzleshub.png" alt={tr("Free chess puzzles and daily tactics training")} loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
-            <h2>Everything inside the Puzzle Hub</h2>
+            <h2>{tr("Everything inside the Puzzle Hub")}</h2>
             <p>
               One hub, five ways to train your chess tactics — pick the one that fits
               your mood today. All free, forever.
@@ -78,41 +79,41 @@ export default function ChessPuzzlesPage() {
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🧩</span>
                 <span className="mkt-feat-tx">
-                  <strong>Daily Chess Puzzle</strong>
-                  <span>A fresh puzzle every day from real super-grandmaster and World Champion games — train the exact tactics the masters found over the board.</span>
+                  <strong>{tr("Daily Chess Puzzle")}</strong>
+                  <span>{tr("A fresh puzzle every day from real super-grandmaster and World Champion games — train the exact tactics the masters found over the board.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🎯</span>
                 <span className="mkt-feat-tx">
-                  <strong>Monthly Focus Challenge</strong>
-                  <span>A 7-day guided tactics program with a new themed challenge each day — earn XP, unlock achievements and climb the monthly leaderboard.</span>
+                  <strong>{tr("Monthly Focus Challenge")}</strong>
+                  <span>{tr("A 7-day guided tactics program with a new themed challenge each day — earn XP, unlock achievements and climb the monthly leaderboard.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">⭕</span>
                 <span className="mkt-feat-tx">
-                  <strong>Puzzle Tic-Tac-Toe</strong>
-                  <span>Solve a puzzle to claim a square and outmanoeuvre your opponent to complete a line — tactics with a playful twist.</span>
+                  <strong>{tr("Puzzle Tic-Tac-Toe")}</strong>
+                  <span>{tr("Solve a puzzle to claim a square and outmanoeuvre your opponent to complete a line — tactics with a playful twist.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🎱</span>
                 <span className="mkt-feat-tx">
-                  <strong>Puzzle Bingo</strong>
-                  <span>Spot the tactical theme behind each puzzle — fork, pin, skewer, discovered attack and more — to mark off your card.</span>
+                  <strong>{tr("Puzzle Bingo")}</strong>
+                  <span>{tr("Spot the tactical theme behind each puzzle — fork, pin, skewer, discovered attack and more — to mark off your card.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">💡</span>
                 <span className="mkt-feat-tx">
-                  <strong>Daily Chess Tip</strong>
-                  <span>A fresh, bite-sized lesson that rotates automatically at midnight IST — a little insight every single day.</span>
+                  <strong>{tr("Daily Chess Tip")}</strong>
+                  <span>{tr("A fresh, bite-sized lesson that rotates automatically at midnight IST — a little insight every single day.")}</span>
                 </span>
               </li>
             </ul>
             <Link to="/puzzles-hub" className="mkt-card-cta">
-              Solve today's puzzle →
+              {tr("Solve today's puzzle →")}
             </Link>
           </div>
         </div>
@@ -121,7 +122,7 @@ export default function ChessPuzzlesPage() {
       <div className="mkt-callout">
         <div className="mkt-callout-icon">🗓️</div>
         <div>
-          <h2>Fresh challenges all month long</h2>
+          <h2>{tr("Fresh challenges all month long")}</h2>
           <p>
             A brand-new Monthly Focus challenge launches in the second week of every
             month, and new daily challenges run regularly throughout — alongside a
@@ -132,7 +133,7 @@ export default function ChessPuzzlesPage() {
       </div>
 
       <section className="mkt-section">
-        <h2>Why train chess tactics here</h2>
+        <h2>{tr("Why train chess tactics here")}</h2>
         <p className="mkt-section-lead">
           Tactics decide most games below master level. Chess Nexus makes daily
           tactics practice free, fast and genuinely fun — no ads interrupting your
@@ -142,19 +143,19 @@ export default function ChessPuzzlesPage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <Link to="/puzzles-hub" className="mkt-btn mkt-btn-primary">
-            Open the Puzzle Hub
+            {tr("Open the Puzzle Hub")}
           </Link>
           <Link to="/monthly-focus" className="mkt-btn mkt-btn-ghost">
-            Try the Monthly Focus
+            {tr("Try the Monthly Focus")}
           </Link>
           <Link to="/masters-chess-games" className="mkt-btn mkt-btn-ghost">
-            Study masters games
+            {tr("Study masters games")}
           </Link>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

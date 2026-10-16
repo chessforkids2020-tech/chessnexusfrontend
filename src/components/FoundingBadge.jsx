@@ -3,12 +3,13 @@
 // expires: the first 100 backers were promised a permanent badge, so the backend
 // keeps returning them from /api/coffee/active-usernames regardless of expiresAt.
 import React from 'react';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function FoundingBadge({ size = 14, title = 'Founding Supporter — one of our first 100 backers' }) {
   return (
     <span
       title={title}
-      aria-label="ChessNexus Founding Supporter"
+      aria-label={tr("ChessNexus Founding Supporter")}
       style={{
         display: 'inline-flex',
         alignItems: 'center',

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -25,7 +26,7 @@ const TestChapterSelection = () => {
         const response = await api.get(`/api/testpuzzle/studies`);
         setStudies(response.data);
       } catch (err) {
-        setError('Failed to load studies');
+        setError(tr('Failed to load studies'));
       } finally {
         setLoading(false);
       }
@@ -167,7 +168,7 @@ const TestChapterSelection = () => {
     return (
       <div style={styles.page}>
         <div style={styles.container}>
-          <div style={styles.loading}>Loading studies...</div>
+          <div style={styles.loading}>{tr("Loading studies...")}</div>
         </div>
       </div>
     );
@@ -200,10 +201,10 @@ const TestChapterSelection = () => {
             e.currentTarget.style.borderColor = 'var(--color-white-a10)';
           }}
         >
-          <span>←</span> Back to Study Types
+          <span>←</span> {tr("Back to Study Types")}
         </button>
-        <h1 style={styles.title}>Study Test</h1>
-        <p style={styles.subtitle}>Select a study to take a test</p>
+        <h1 style={styles.title}>{tr("Study Test")}</h1>
+        <p style={styles.subtitle}>{tr("Select a study to take a test")}</p>
 
         <div style={styles.studiesGrid}>
           {studies.map((study) => (
@@ -238,7 +239,7 @@ const TestChapterSelection = () => {
                     e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
                   }}
                 >
-                  <span>📝</span> Test
+                  <span>📝</span> {tr("Test")}
                 </Link>
               </div>
             </div>

@@ -7,29 +7,30 @@ import { useEffect, useState } from "react";
 import { T, PageWrap, GlassCard, GradHeading, SIDEBAR_OFFSET } from "./arcadeTheme";
 import Sidebar from "../../components/Sidebar";
 import { useAuth } from "../../contexts/AuthContext";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const GAMES = [
   {
     id: "ttt",
     icon: "⚔️",
-    title: "Tic-Tac-Toe",
+    title: tr("Tic-Tac-Toe"),
     tag: "Strategy",
     tagColor: T.p1,
     gradient: "linear-gradient(135deg, #f43f5e 0%, #fb7185 100%)",
-    desc: "Solve chess puzzles to claim squares. First to complete a line wins!",
+    desc: tr("Solve chess puzzles to claim squares. First to complete a line wins!"),
     bullets: ["Solve a puzzle → pick any empty square", "Wrong answer? Turn passes to opponent", "First line of marks wins"],
-    stats: { players: "2.4k", difficulty: "Medium" }
+    stats: { players: "2.4k", difficulty: tr("Medium") }
   },
   {
     id: "bingo",
     icon: "🎯",
-    title: "Chess Bingo",
+    title: tr("Chess Bingo"),
     tag: "Knowledge",
     tagColor: T.p2,
     gradient: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)",
-    desc: "Identify puzzle themes to mark your bingo card. First to complete a line wins!",
+    desc: tr("Identify puzzle themes to mark your bingo card. First to complete a line wins!"),
     bullets: ["Solve puzzle → name the tactic theme", "Correct → mark it on your card", "First full line = BINGO!"],
-    stats: { players: "1.8k", difficulty: "Easy" }
+    stats: { players: "1.8k", difficulty: tr("Easy") }
   },
 ];
 
@@ -38,7 +39,7 @@ export default function ArcadeHome() {
   const { user } = useAuth();
   const [hoveredCard, setHoveredCard] = useState(null);
   
-  const username = user?.displayName || user?.name || "Guest";
+  const username = user?.displayName || user?.name || tr("Guest");
   
   const handlePlayClick = (gameId, e) => {
     e.stopPropagation();
@@ -86,7 +87,7 @@ export default function ArcadeHome() {
                 color: "var(--color-text)",
                 letterSpacing: "-0.02em"
               }}>
-                Welcome back, {username}
+                {tr("Welcome back,")} {username}
               </h1>
             </div>
           </div>
@@ -251,7 +252,7 @@ export default function ArcadeHome() {
                       e.currentTarget.style.boxShadow = `0 8px 20px -5px ${tagColor}80, 0 0 0 1px var(--color-white-a10) inset`;
                     }}
                   >
-                    <span>Play {title}</span>
+                    <span>{tr("Play")} {title}</span>
                     <span style={{ 
                       fontSize: 18,
                       transition: "transform 0.2s ease",

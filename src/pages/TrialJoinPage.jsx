@@ -18,6 +18,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 const C = {
   text: '#e2e8f0', dim: 'rgba(226,232,240,0.62)', cyan: '#22d3ee',
@@ -108,7 +109,7 @@ export default function TrialJoinPage() {
   }, [phase, joinCode, nav]);
 
   if (loading) {
-    return <div style={wrap}><div style={{ color: C.dim }}>Loading…</div></div>;
+    return <div style={wrap}><div style={{ color: C.dim }}>{tr("Loading…")}</div></div>;
   }
 
   if (fatal) {
@@ -117,7 +118,7 @@ export default function TrialJoinPage() {
         <div style={card}>
           <div style={{ fontSize: 42 }}>🔗</div>
           <h1 style={{ fontSize: 19, fontWeight: 800, margin: '10px 0 8px' }}>
-            This link is no longer active
+            {tr("This link is no longer active")}
           </h1>
           <p style={{ fontSize: 13.5, color: C.dim, lineHeight: 1.6, margin: 0 }}>{fatal}</p>
         </div>
@@ -125,20 +126,20 @@ export default function TrialJoinPage() {
     );
   }
 
-  const coach = info?.coachName || 'Your coach';
+  const coach = info?.coachName || tr('Your coach');
 
   return (
     <div style={wrap}>
       <div style={card}>
         <div style={{ fontSize: 40 }}>♟️</div>
         <h1 style={{ fontSize: 20, fontWeight: 800, margin: '10px 0 4px' }}>
-          Trial class with {coach}
+          {tr("Trial class with")} {coach}
         </h1>
         {info?.academyName && (
           <div style={{ fontSize: 13, color: C.dim, marginBottom: 2 }}>{info.academyName}</div>
         )}
         <p style={{ fontSize: 13, color: C.dim, margin: '6px 0 20px' }}>
-          {info?.durationMinutes ? `${info.durationMinutes} minutes · ` : ''}
+          {info?.durationMinutes ? tr("{durationMinutes} minutes · ", { durationMinutes: info.durationMinutes }) : ''}
           No account needed — just your name.
         </p>
 
@@ -148,7 +149,7 @@ export default function TrialJoinPage() {
               value={name}
               onChange={e => setName(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && name.trim()) knock(); }}
-              placeholder="Your name"
+              placeholder={tr("Your name")}
               maxLength={80}
               autoFocus
               style={{
@@ -158,7 +159,7 @@ export default function TrialJoinPage() {
               }}
             />
             <div style={{ fontSize: 11.5, color: C.dim, marginBottom: 14 }}>
-              Your coach will see this name when you knock.
+              {tr("Your coach will see this name when you knock.")}
             </div>
 
             {err && <div style={{ color: C.red, fontSize: 13, marginBottom: 12 }}>{err}</div>}
@@ -174,7 +175,7 @@ export default function TrialJoinPage() {
                 cursor: busy || !name.trim() ? 'default' : 'pointer',
               }}
             >
-              {busy ? 'Joining…' : info?.live ? 'Join the class' : 'Knock'}
+              {busy ? tr('Joining…') : info?.live ? tr('Join the class') : tr('Knock')}
             </button>
 
             {!info?.live && (
@@ -195,10 +196,10 @@ export default function TrialJoinPage() {
             }} />
             <style>{'@keyframes trialspin{to{transform:rotate(360deg)}}'}</style>
             <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 6 }}>
-              Waiting for {coach} to let you in
+              {tr("Waiting for")} {coach} {tr("to let you in")}
             </div>
             <div style={{ fontSize: 12.5, color: C.dim, lineHeight: 1.55 }}>
-              Keep this page open. You will go straight into the class.
+              {tr("Keep this page open. You will go straight into the class.")}
             </div>
           </div>
         )}
@@ -206,8 +207,8 @@ export default function TrialJoinPage() {
         {phase === 'admitted' && (
           <div>
             <div style={{ fontSize: 40 }}>✅</div>
-            <div style={{ fontSize: 15, fontWeight: 700, margin: '8px 0 4px' }}>You're in!</div>
-            <div style={{ fontSize: 12.5, color: C.dim }}>Opening the classroom…</div>
+            <div style={{ fontSize: 15, fontWeight: 700, margin: '8px 0 4px' }}>{tr("You're in!")}</div>
+            <div style={{ fontSize: 12.5, color: C.dim }}>{tr("Opening the classroom…")}</div>
           </div>
         )}
       </div>

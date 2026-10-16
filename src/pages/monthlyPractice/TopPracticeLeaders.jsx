@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const TopFocusLeaders = () => {
   const [leaders, setLeaders] = useState([]);
@@ -42,16 +43,16 @@ const TopFocusLeaders = () => {
   };
 
   const getCompletionBadge = (completedDays, perfectDays) => {
-    if (perfectDays > 0) return { icon: '👑', text: 'Perfect', color: 'var(--color-warning)' };
-    if (completedDays >= 5) return { icon: '🏆', text: 'Champion', color: 'var(--color-success)' };
-    if (completedDays >= 3) return { icon: '⭐', text: 'Active', color: 'var(--color-accent)' };
-    return { icon: '🌱', text: 'Beginner', color: 'var(--color-text-muted)' };
+    if (perfectDays > 0) return { icon: '👑', text: tr('Perfect'), color: 'var(--color-warning)' };
+    if (completedDays >= 5) return { icon: '🏆', text: tr('Champion'), color: 'var(--color-success)' };
+    if (completedDays >= 3) return { icon: '⭐', text: tr('Active'), color: 'var(--color-accent)' };
+    return { icon: '🌱', text: tr('Beginner'), color: 'var(--color-text-muted)' };
   };
 
   return (
     <div style={styles.container} className="top-focus-leaders-container">
       <div style={styles.header}>
-        <h2 style={styles.title}>🎯 Top Focus Leaders</h2>
+        <h2 style={styles.title}>{tr("🎯 Top Focus Leaders")}</h2>
         <span style={styles.subtitle}>{focusTitle}</span>
       </div>
 
@@ -59,12 +60,12 @@ const TopFocusLeaders = () => {
         <table style={styles.table}>
           <thead>
             <tr style={styles.tableHeaderRow}>
-              <th style={styles.th}>Rank</th>
-              <th style={{ ...styles.th, textAlign: 'left' }}>User</th>
-              <th style={styles.th}>Focus XP</th>
-              <th style={styles.th}>Skill Score</th>
-              <th style={styles.th}>Progress</th>
-              <th style={styles.th}>Status</th>
+              <th style={styles.th}>{tr("Rank")}</th>
+              <th style={{ ...styles.th, textAlign: 'left' }}>{tr("User")}</th>
+              <th style={styles.th}>{tr("Focus XP")}</th>
+              <th style={styles.th}>{tr("Skill Score")}</th>
+              <th style={styles.th}>{tr("Progress")}</th>
+              <th style={styles.th}>{tr("Status")}</th>
             </tr>
           </thead>
           <tbody>
@@ -74,8 +75,8 @@ const TopFocusLeaders = () => {
                 <tr key={leader.userId} style={styles.tableRow}>
                   <td style={styles.tdRank}>{getMedalEmoji(index)}</td>
                   <td style={styles.tdUser}>{leader.displayName}</td>
-                  <td style={styles.tdXp}>{leader.focusXp} XP</td>
-                  <td style={styles.tdScore}>{leader.skillScore || 0} pts</td>
+                  <td style={styles.tdXp}>{leader.focusXp} {tr("XP")}</td>
+                  <td style={styles.tdScore}>{leader.skillScore || 0} {tr("pts")}</td>
                   <td style={styles.tdProgress}>{leader.completedDays}/7</td>
                   <td style={styles.tdStatus}>
                     <span style={{ ...styles.statusBadge, color: badge.color, borderColor: badge.color }}>
@@ -90,7 +91,7 @@ const TopFocusLeaders = () => {
       </div>
 
       <Link to="/monthly-focus/leaderboard" style={styles.viewAllLink}>
-        View Full Leaderboard →
+        {tr("View Full Leaderboard →")}
       </Link>
     </div>
   );

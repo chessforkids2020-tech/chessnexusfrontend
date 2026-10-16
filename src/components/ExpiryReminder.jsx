@@ -11,11 +11,12 @@
 //   ctaLabel      : string         (button text, e.g. "Renew" / "Manage plan")
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function ExpiryReminder({ daysRemaining, what = 'plan', to, ctaLabel = 'Renew now' }) {
   if (daysRemaining == null || daysRemaining > 15 || daysRemaining < 0) return null;
   const urgent = daysRemaining <= 7;
-  const dayText = daysRemaining === 0 ? 'today' : `in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'}`;
+  const dayText = daysRemaining === 0 ? tr('today') : tr("in {daysRemaining} day{v1}", { daysRemaining: daysRemaining, v1: daysRemaining === 1 ? '' : 's' });
 
   return (
     <div style={{
@@ -25,7 +26,7 @@ export default function ExpiryReminder({ daysRemaining, what = 'plan', to, ctaLa
       border: `1px solid ${urgent ? 'var(--color-danger-a30)' : 'var(--color-warning-a30)'}`,
     }}>
       <span style={{ fontSize: 13.5, fontWeight: 600, color: urgent ? 'var(--color-danger)' : 'var(--color-warning)' }}>
-        {urgent ? '⏰' : '🔔'} Your {what} expires {dayText}. Renew to keep your access without interruption.
+        {urgent ? '⏰' : '🔔'} {tr("Your")} {what} {tr("expires")} {dayText}{tr(". Renew to keep your access without interruption.")}
       </span>
       {to && (
         <Link to={to} style={{

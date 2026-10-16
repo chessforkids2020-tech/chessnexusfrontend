@@ -94,7 +94,7 @@
 }
 .mm-modal {
   position: relative; background: #111827; border: 1px solid var(--color-white-a07);
-  border-radius: var(--radius-xl); padding: 22px; max-width: 900px; width: 100%;
+  border-radius: var(--radius-xl); padding: 22px; max-width: 980px; width: 100%;
   box-shadow: 0 20px 60px var(--color-black-a65);
   /* Sit just below the top edge on tall screens, but never push the panel
      off-screen on short ones: auto margins centre it only when it fits. */
@@ -167,6 +167,21 @@
 }
 .mm-nav-next:hover:not(:disabled) { color: #04121a; filter: brightness(1.08); }
 .mm-nav-count { font-size: 12px; color: var(--color-text-muted); font-weight: 700; }
+
+/* Desktop: the nav sits at the TOP of the right-hand column (beside the board,
+   leaving the board the panel's full height) and stays visible while a long
+   explanation scrolls. Mobile keeps it as the footer under the board. */
+.mm-nav-side {
+  position: sticky; top: 0; z-index: 1;
+  margin: 0 32px 14px 0;          /* clear of the ✕ close button */
+  padding: 0 0 12px; border-top: none; border-bottom: 1px solid var(--color-white-a07);
+  background: #111827;
+}
+.mm-nav-foot { display: none; }
+@media (max-width: 1024px) {
+  .mm-nav-side { display: none; }
+  .mm-nav-foot { display: flex; }
+}
 
 /* ── Study board: free play + engine, after the moment is answered ─────────
    Constrained to the board's width so the engine readout sits under the board
@@ -342,3 +357,7 @@
   .mm-modal-side { min-width: 0; width: 100%; }
   .mm-modal-close { top: 8px; right: 10px; }
 }
+
+/* Free board after the moment is answered (hooks/useMomentFreePlay.js). */
+.mm-free { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--color-white-a07); }
+.mm-free-hint { font-size: 12.5px; color: var(--color-text-muted); margin: 0 0 10px; }

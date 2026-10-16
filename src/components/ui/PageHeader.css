@@ -1,0 +1,67 @@
+/* components/ui/PageHeader.css — layout + type size for the shared page heading.
+   Sizes come from styles/tokens/typography.css; never hard-code px here. */
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.page-header__main {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.page-header__titlerow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.page-header__title {
+  margin: 0;
+  font-size: var(--fs-page-title);
+  font-weight: var(--fw-heavy);
+  line-height: var(--lh-tight);
+  color: var(--color-text);
+}
+
+.page-header__subtitle {
+  margin: 6px 0 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-text-faint);
+}
+
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* The floating ☰ (UserLayout) only exists in portrait at ≤1024px, which is
+   exactly when its content wrapper carries `.mobile` without `.landscape`.
+   Keying off that — not a guessed width — indents only when the button is
+   really there, including portrait tablets the old 768px rules missed. */
+.user-main-content.mobile:not(.landscape) .page-header__titlerow {
+  padding-left: var(--menu-btn-clearance);
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .page-header__actions {
+    width: 100%;
+    flex-shrink: 1;
+    gap: 8px;
+  }
+}

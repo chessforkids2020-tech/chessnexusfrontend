@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 import Footer from './Footer';
 import { useAuth } from '../contexts/AuthContext';
 import './UserLayout.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 /**
  * Layout for the PUBLIC, prerendered SEO/marketing pages.

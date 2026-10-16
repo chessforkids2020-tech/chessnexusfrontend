@@ -5,6 +5,7 @@ import socket from '../../socket';
 import { useAuth } from '../../contexts/AuthContext';
 import { getTopicTitle } from '../../utils/topicTitles';
 import './TeamRaceSelection.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 function TeamRaceSelection() {
   const navigate = useNavigate();
@@ -89,16 +90,16 @@ function TeamRaceSelection() {
   };
 
   if (loading) {
-    return <div style={{ padding: '40px', textAlign: 'center' }}>Loading races...</div>;
+    return <div style={{ padding: '40px', textAlign: 'center' }}>{tr("Loading races...")}</div>;
   }
 
   return (
     <div className="team-race-selection">
       <div className="selection-header">
-        <h1>🏁 Team Race</h1>
-        <p>Choose a race and join a team to compete!</p>
+        <h1>{tr("🏁 Team Race")}</h1>
+        <p>{tr("Choose a race and join a team to compete!")}</p>
         <button onClick={() => navigate('/dashboard')} className="btn-back">
-          ← Back to Dashboard
+          {tr("← Back to Dashboard")}
         </button>
         {(isAdmin || isElite) && (
           <button
@@ -115,7 +116,7 @@ function TeamRaceSelection() {
               fontSize: '13px',
             }}
           >
-            ⚙️ Manage Races
+            {tr("⚙️ Manage Races")}
           </button>
         )}
       </div>
@@ -123,17 +124,17 @@ function TeamRaceSelection() {
       {races.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">🏁</div>
-          <h2>No Active Races</h2>
-          <p>There are no team races available at the moment.</p>
-          <p>Check back later or contact your admin!</p>
+          <h2>{tr("No Active Races")}</h2>
+          <p>{tr("There are no team races available at the moment.")}</p>
+          <p>{tr("Check back later or contact your admin!")}</p>
         </div>
       ) : (
         <div className="races-grid">
           {races.map(race => {
             const badges = {
-              created: { color: 'var(--color-text-faint)', label: '📅 Scheduled' },
-              waiting: { color: 'var(--color-warning)', label: '⏳ Join Now' },
-              running: { color: 'var(--color-success)', label: '🏃 In Progress' }
+              created: { color: 'var(--color-text-faint)', label: tr('📅 Scheduled') },
+              waiting: { color: 'var(--color-warning)', label: tr('⏳ Join Now') },
+              running: { color: 'var(--color-success)', label: tr('🏃 In Progress') }
             };
             const badge = badges[race.status] || badges.waiting;
             
@@ -142,7 +143,7 @@ function TeamRaceSelection() {
                 if (race.status === 'created') {
                   const t = new Date(race.scheduledStartTime);
                   const formatted = t.toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'short', timeZoneName: 'short' });
-                  alert(`This race is scheduled to start at ${new Date(race.scheduledStartTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST. Please check back later!`);
+                  alert(tr("This race is scheduled to start at {v0} IST. Please check back later!", { v0: new Date(race.scheduledStartTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) }));
                   return;
                 }
                 navigate(`/team-race/${race._id}/teams`);
@@ -165,20 +166,20 @@ function TeamRaceSelection() {
                 <div className="race-details">
                   <div className="detail-row">
                     <span className="detail-icon">📚</span>
-                    <span className="detail-label">Topic:</span>
+                    <span className="detail-label">{tr("Topic:")}</span>
                     <span className="detail-value">{getTopicTitle(race.topic)}</span>
                   </div>
                   
                   <div className="detail-row">
                     <span className="detail-icon">⏱️</span>
-                    <span className="detail-label">Duration:</span>
-                    <span className="detail-value">{Math.floor(race.duration / 60)} minutes</span>
+                    <span className="detail-label">{tr("Duration:")}</span>
+                    <span className="detail-value">{Math.floor(race.duration / 60)} {tr("minutes")}</span>
                   </div>
                   
                   <div className="detail-row">
                     <span className="detail-icon">⭐</span>
-                    <span className="detail-label">Points:</span>
-                    <span className="detail-value">{race.pointsPerPuzzle} per puzzle</span>
+                    <span className="detail-label">{tr("Points:")}</span>
+                    <span className="detail-value">{race.pointsPerPuzzle} {tr("per puzzle")}</span>
                   </div>
 
                   {race.scheduledStartTime && (() => {
@@ -188,10 +189,10 @@ function TeamRaceSelection() {
                     return (
                       <div className="detail-row">
                         <span className="detail-icon">📅</span>
-                        <span className="detail-label">Starts (IST):</span>
+                        <span className="detail-label">{tr("Starts (IST):")}</span>
                         <span className="detail-value" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                           <span>{datePart}</span>
-                          <span style={{ opacity: 0.8 }}>{timePart} IST</span>
+                          <span style={{ opacity: 0.8 }}>{timePart} {tr("IST")}</span>
                         </span>
                       </div>
                     );
@@ -210,7 +211,7 @@ function TeamRaceSelection() {
       {recentRaces.length > 0 && (
         <div className="recent-races-section">
           <h2 style={{ color: 'var(--color-text)', fontSize: 20, fontWeight: 700, marginBottom: 16, marginTop: 40, display: 'flex', alignItems: 'center', gap: 8 }}>
-            🏆 Recently Finished Team Races
+            {tr("🏆 Recently Finished Team Races")}
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
             {recentRaces.map(race => (
@@ -221,21 +222,21 @@ function TeamRaceSelection() {
                 padding: '16px 18px',
               }}>
                 <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 15, marginBottom: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {race.raceName || 'Team Race'}
+                  {race.raceName || tr('Team Race')}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 10 }}>
-                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>📚 Topic: <span style={{ color: 'var(--color-text)' }}>{getTopicTitle(race.topic)}</span></div>
-                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 Players: <span style={{ color: 'var(--color-text)' }}>{race.playerCount}</span></div>
-                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱️ Duration: <span style={{ color: 'var(--color-text)' }}>{Math.floor(race.duration / 60)} min</span></div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>{tr("📚 Topic:")} <span style={{ color: 'var(--color-text)' }}>{getTopicTitle(race.topic)}</span></div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>{tr("👥 Players:")} <span style={{ color: 'var(--color-text)' }}>{race.playerCount}</span></div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>{tr("⏱️ Duration:")} <span style={{ color: 'var(--color-text)' }}>{Math.floor(race.duration / 60)} {tr("min")}</span></div>
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>
                   Finished {(() => {
                     const diff = Date.now() - new Date(race.finishedAt).getTime();
                     const mins = Math.floor(diff / 60000);
                     if (mins < 1) return 'just now';
-                    if (mins < 60) return `${mins}m ago`;
+                    if (mins < 60) return tr("{mins}m ago", { mins: mins });
                     const h = Math.floor(mins / 60);
-                    return h < 24 ? `${h}h ago` : `${Math.floor(h / 24)}d ago`;
+                    return h < 24 ? tr("{h}h ago", { h: h }) : tr("{v0}d ago", { v0: Math.floor(h / 24) });
                   })()}
                 </div>
               </div>

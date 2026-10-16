@@ -13,6 +13,7 @@
 // If any of those change, update this page too.
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-coach-guide";
 
@@ -22,9 +23,9 @@ const CANONICAL = "/chess-coach-guide";
 // meetingsPerDay: Infinity and maxStudents: Infinity, so Free is the only plan
 // with a limited room.
 const PLAN_ROWS = [
-  { plan: "Free (30 students)", perDay: "1 a day", mins: "up to 40 min", students: "4" },
-  { plan: "Pro (70 students)", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
-  { plan: "Coach (150 students)", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
+  { plan: tr("Free (30 students)"), perDay: tr("1 a day"), mins: tr("up to 40 min"), students: "4" },
+  { plan: tr("Pro (70 students)"), perDay: tr("Unlimited"), mins: tr("up to 120 min, or no limit"), students: tr("Unlimited") },
+  { plan: tr("Coach (150 students)"), perDay: tr("Unlimited"), mins: tr("up to 120 min, or no limit"), students: tr("Unlimited") },
 ];
 
 const FAQ = [
@@ -112,7 +113,7 @@ export default function CoachGuidePage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
   const howToSchema = {
@@ -120,19 +121,19 @@ export default function CoachGuidePage() {
     "@type": "HowTo",
     name: "How to run a chess academy on Chess Nexus",
     step: [
-      { "@type": "HowToStep", name: "Become a coach", text: "Confirm you're a coach and get verified by the Nexus team, usually within 12 hours." },
-      { "@type": "HowToStep", name: "Add your students", text: "Accept join requests or invite students, then group them into batches." },
-      { "@type": "HowToStep", name: "Set your class schedule", text: "Add weekly class slots per batch; students see them in their own timezone." },
-      { "@type": "HowToStep", name: "Assign work", text: "Create assignments from puzzles, studies, races or your own positions." },
-      { "@type": "HowToStep", name: "Teach live", text: "Run the class in the built-in classroom with video and a shared board." },
-      { "@type": "HowToStep", name: "Report to parents", text: "Share one progress link per student with their parents." },
+      { "@type": tr("HowToStep"), name: tr("Become a coach"), text: tr("Confirm you're a coach and get verified by the Nexus team, usually within 12 hours.") },
+      { "@type": tr("HowToStep"), name: tr("Add your students"), text: tr("Accept join requests or invite students, then group them into batches.") },
+      { "@type": tr("HowToStep"), name: tr("Set your class schedule"), text: "Add weekly class slots per batch; students see them in their own timezone." },
+      { "@type": "HowToStep", name: "Assign work", text: tr("Create assignments from puzzles, studies, races or your own positions.") },
+      { "@type": tr("HowToStep"), name: tr("Teach live"), text: tr("Run the class in the built-in classroom with video and a shared board.") },
+      { "@type": tr("HowToStep"), name: tr("Report to parents"), text: tr("Share one progress link per student with their parents.") },
     ],
   };
 
   return (
     <FeaturePageLayout
       seo={{
-        title: "Chess Coach Guide — Run Your Whole Academy on Chess Nexus",
+        title: tr("Chess Coach Guide — Run Your Whole Academy on Chess Nexus"),
         description:
           "The complete guide for chess coaches: onboarding, adding students, batches, class schedules, assignments, courses, activities, attendance, parent reports, and the built-in live classroom with video and a shared board.",
         keywords:
@@ -144,8 +145,8 @@ export default function CoachGuidePage() {
         h1: "The complete chess coach guide",
         sub:
           "Everything you can do as a coach on Chess Nexus — from your first student to a full academy, including a built-in live classroom so you never need Zoom.",
-        primary: { to: "/coach/onboarding", label: "Start coaching free" },
-        secondary: { to: "/chess-coaching", label: "See the coaching platform" },
+        primary: { to: "/coach/onboarding", label: tr("Start coaching free") },
+        secondary: { to: "/chess-coaching", label: tr("See the coaching platform") },
       }}
       jsonLd={[faqSchema, howToSchema]}
       excludeSlug={CANONICAL}
@@ -154,14 +155,14 @@ export default function CoachGuidePage() {
       <Section
         id="onboarding"
         icon="🚀"
-        title="Getting started as a coach"
+        title={tr("Getting started as a coach")}
         lead="Free forever for up to 30 students. No card, no trial clock."
       >
         <Steps
           items={[
-            { t: "Confirm you're a coach", d: "Open the Coach section and tell us you teach. It takes one click." },
-            { t: "Get verified", d: "The Nexus team reviews new coaches — usually within 12 hours — before you can add students. This keeps the platform safe for children." },
-            { t: "Your workspace opens", d: "Dashboard, roster, assignments, courses, library, schedule, activities and the live classroom are all unlocked straight away." },
+            { t: tr("Confirm you're a coach"), d: tr("Open the Coach section and tell us you teach. It takes one click.") },
+            { t: tr("Get verified"), d: tr("The Nexus team reviews new coaches — usually within 12 hours — before you can add students. This keeps the platform safe for children.") },
+            { t: tr("Your workspace opens"), d: tr("Dashboard, roster, assignments, courses, library, schedule, activities and the live classroom are all unlocked straight away.") },
           ]}
         />
       </Section>
@@ -170,15 +171,15 @@ export default function CoachGuidePage() {
       <Section
         id="students"
         icon="👥"
-        title="Adding students & organising batches"
+        title={tr("Adding students & organising batches")}
         lead="Your roster is the base everything else builds on."
       >
         <FeatList
           items={[
-            { icon: "🔗", t: "Students join you", d: "A student sends a join request, or you invite them. Once accepted they appear on your roster with rating, recent activity and attendance." },
-            { icon: "🗂", t: "Group into batches", d: "Create batches by level, age or class time. Assignments, schedules and activities can all target a whole batch at once instead of one student at a time." },
-            { icon: "🟢", t: "See who's online", d: "The coach sidebar shows which of your students are online right now — useful before starting a class or a race." },
-            { icon: "📝", t: "Private notes", d: "Keep per-student notes only you can see, so you remember what each child is working on." },
+            { icon: "🔗", t: tr("Students join you"), d: tr("A student sends a join request, or you invite them. Once accepted they appear on your roster with rating, recent activity and attendance.") },
+            { icon: "🗂", t: tr("Group into batches"), d: tr("Create batches by level, age or class time. Assignments, schedules and activities can all target a whole batch at once instead of one student at a time.") },
+            { icon: "🟢", t: tr("See who's online"), d: tr("The coach sidebar shows which of your students are online right now — useful before starting a class or a race.") },
+            { icon: "📝", t: tr("Private notes"), d: tr("Keep per-student notes only you can see, so you remember what each child is working on.") },
           ]}
         />
       </Section>
@@ -187,17 +188,17 @@ export default function CoachGuidePage() {
       <Section
         id="assignments"
         icon="📝"
-        title="Creating assignments"
+        title={tr("Creating assignments")}
         lead="Seven assignment types, all tracked automatically."
       >
         <FeatList
           items={[
-            { icon: "🎯", t: "Puzzle topic", d: "Set a theme like Mate in 2, forks or pins, and a target number of puzzles. Solve rate and accuracy are recorded per student." },
+            { icon: "🎯", t: tr("Puzzle topic"), d: tr("Set a theme like Mate in 2, forks or pins, and a target number of puzzles. Solve rate and accuracy are recorded per student.") },
             { icon: "📚", t: "Study or study chapter", d: "Assign one of your studies, or a single chapter from it, so students work through exactly the material you taught." },
-            { icon: "⏱️", t: "Puzzle Rush", d: "A timed race against the clock on a topic you choose — great for building pattern speed." },
-            { icon: "🏁", t: "Arena tournament", d: "Set a tournament as the assignment; completion is tracked when they play it." },
-            { icon: "♟️", t: "Play vs Stockfish position", d: "Drag pieces onto a visual board editor — set side to move, castling and en passant — and it writes the FEN for you. Students play the position out against the engine." },
-            { icon: "✍️", t: "Custom task", d: "Anything else you want to set, in your own words, with your own target." },
+            { icon: "⏱️", t: tr("Puzzle Rush"), d: tr("A timed race against the clock on a topic you choose — great for building pattern speed.") },
+            { icon: "🏁", t: tr("Arena tournament"), d: "Set a tournament as the assignment; completion is tracked when they play it." },
+            { icon: "♟️", t: tr("Play vs Stockfish position"), d: tr("Drag pieces onto a visual board editor — set side to move, castling and en passant — and it writes the FEN for you. Students play the position out against the engine.") },
+            { icon: "✍️", t: tr("Custom task"), d: tr("Anything else you want to set, in your own words, with your own target.") },
             { icon: "♻️", t: "Save & reuse", d: "Save your best assignments as templates, or pull from the admin blunder library, instead of rebuilding them every term." },
           ]}
         />
@@ -207,7 +208,7 @@ export default function CoachGuidePage() {
       <Section
         id="courses"
         icon="📚"
-        title="Building courses"
+        title={tr("Building courses")}
         lead="A course is an ordered syllabus your students work through in sequence."
       >
         <p className="mkt-p">
@@ -217,15 +218,15 @@ export default function CoachGuidePage() {
         </p>
         <FeatList
           items={[
-            { icon: "📖", t: "Your own studies", d: "Any study you've built — whole study or a single chapter." },
-            { icon: "🏛️", t: "Nexus studies", d: "Built-in studies that ship with the platform, so you don't have to author everything yourself." },
-            { icon: "🎬", t: "Video", d: "Drop in a video lesson alongside the board work." },
+            { icon: "📖", t: tr("Your own studies"), d: tr("Any study you've built — whole study or a single chapter.") },
+            { icon: "🏛️", t: tr("Nexus studies"), d: tr("Built-in studies that ship with the platform, so you don't have to author everything yourself.") },
+            { icon: "🎬", t: tr("Video"), d: tr("Drop in a video lesson alongside the board work.") },
             { icon: "♛", t: "Master games", d: "Teach from the master game collection — thousands of annotated games." },
-            { icon: "♔", t: "Endgames", d: "Endgame positions, including premium endgame picks for coaches on a paid plan." },
+            { icon: "♔", t: tr("Endgames"), d: tr("Endgame positions, including premium endgame picks for coaches on a paid plan.") },
           ]}
         />
         <p className="mkt-p">
-          Alongside courses you get a <strong>coach library</strong> — saved positions,
+          Alongside courses you get a <strong>{tr("coach library")}</strong> — saved positions,
           games and templates you keep on hand to drop into any assignment or course
           later.
         </p>
@@ -235,14 +236,14 @@ export default function CoachGuidePage() {
       <Section
         id="schedule"
         icon="📅"
-        title="Class schedule"
+        title={tr("Class schedule")}
         lead="Set it once a week; every student sees it in their own timezone."
       >
         <FeatList
           items={[
-            { icon: "🗓", t: "Weekly slots per batch", d: "Choose the days, start time and duration for each batch. You enter the time in your timezone; every student sees it converted to theirs automatically." },
-            { icon: "🔔", t: "Students are told", d: "When you change the schedule, a notice is posted automatically into each affected student's coach chat — their Messages badge lights up. Nobody has to be told manually." },
-            { icon: "📍", t: "Where students see it", d: "Upcoming classes appear on the student's My Coach page, so there's one place they always check." },
+            { icon: "🗓", t: tr("Weekly slots per batch"), d: "Choose the days, start time and duration for each batch. You enter the time in your timezone; every student sees it converted to theirs automatically." },
+            { icon: "🔔", t: tr("Students are told"), d: tr("When you change the schedule, a notice is posted automatically into each affected student's coach chat — their Messages badge lights up. Nobody has to be told manually.") },
+            { icon: "📍", t: tr("Where students see it"), d: tr("Upcoming classes appear on the student's My Coach page, so there's one place they always check.") },
           ]}
         />
       </Section>
@@ -251,15 +252,15 @@ export default function CoachGuidePage() {
       <Section
         id="activities"
         icon="🏁"
-        title="Private activities for your class"
+        title={tr("Private activities for your class")}
         lead="Races and tournaments only your students can enter."
       >
         <FeatList
           items={[
-            { icon: "🔒", t: "Private by default", d: "Coach-created arena races and tournaments are visible only to your accepted students. They never appear on the public Arena page, so no outside player can join your class session." },
-            { icon: "⚡", t: "Arena races", d: "Timed puzzle races for the whole batch — everyone solves the same set and climbs a live leaderboard." },
-            { icon: "🏆", t: "Arena tournaments", d: "Run a tournament for your class, with standings tracked as it plays out." },
-            { icon: "🔔", t: "Students get notified", d: "New activities show on the student's Activities tab with a badge, so they know something is waiting without you chasing them." },
+            { icon: "🔒", t: tr("Private by default"), d: tr("Coach-created arena races and tournaments are visible only to your accepted students. They never appear on the public Arena page, so no outside player can join your class session.") },
+            { icon: "⚡", t: tr("Arena races"), d: tr("Timed puzzle races for the whole batch — everyone solves the same set and climbs a live leaderboard.") },
+            { icon: "🏆", t: tr("Arena tournaments"), d: tr("Run a tournament for your class, with standings tracked as it plays out.") },
+            { icon: "🔔", t: tr("Students get notified"), d: tr("New activities show on the student's Activities tab with a badge, so they know something is waiting without you chasing them.") },
           ]}
         />
       </Section>
@@ -268,15 +269,15 @@ export default function CoachGuidePage() {
       <Section
         id="attendance"
         icon="📋"
-        title="Attendance"
+        title={tr("Attendance")}
         lead="Three states, CSV export, and it fills itself in when you teach live."
       >
         <FeatList
           items={[
-            { icon: "✅", t: "Present, Absent or Catch-up", d: "Catch-up covers a student who missed the class and made it up separately, so your records reflect what actually happened." },
-            { icon: "🎥", t: "Marked automatically in live class", d: "When you teach in the built-in classroom, each student's attendance is written the moment they're admitted. No separate register to fill in." },
-            { icon: "📤", t: "CSV export", d: "Export attendance for any period — for your own records, for parents, or for an academy you report to." },
-            { icon: "💳", t: "Fees alongside", d: "Track enrollment and record payments in the same place, so attendance and fees stay in step." },
+            { icon: "✅", t: tr("Present, Absent or Catch-up"), d: tr("Catch-up covers a student who missed the class and made it up separately, so your records reflect what actually happened.") },
+            { icon: "🎥", t: tr("Marked automatically in live class"), d: tr("When you teach in the built-in classroom, each student's attendance is written the moment they're admitted. No separate register to fill in.") },
+            { icon: "📤", t: tr("CSV export"), d: tr("Export attendance for any period — for your own records, for parents, or for an academy you report to.") },
+            { icon: "💳", t: tr("Fees alongside"), d: tr("Track enrollment and record payments in the same place, so attendance and fees stay in step.") },
           ]}
         />
       </Section>
@@ -285,7 +286,7 @@ export default function CoachGuidePage() {
       <Section
         id="reports"
         icon="📊"
-        title="Parent reports"
+        title={tr("Parent reports")}
         lead="One link per student. No account needed for the parent."
       >
         <p className="mkt-p">
@@ -300,39 +301,39 @@ export default function CoachGuidePage() {
       <Section
         id="classroom"
         icon="🎥"
-        title="The built-in live classroom"
+        title={tr("The built-in live classroom")}
         lead="Teach inside Chess Nexus — video, screen share and one shared board. No Zoom, no extra apps."
       >
         <FeatList
           items={[
-            { icon: "📹", t: "HD video & screen share", d: "See your whole class and share your screen when you need to. Background noise suppression and video touch-up are built in." },
-            { icon: "♟️", t: "One shared board", d: "Every student sees the same position, live. Move a piece and it moves on their screen instantly." },
-            { icon: "🖱️", t: "Give a student control", d: "Hand the board to any student so they play the move themselves in front of the class — then take it back with one click." },
-            { icon: "✏️", t: "Draw on the board", d: "Arrows and square highlights sync to everyone, so you can point at the plan instead of describing it." },
-            { icon: "📚", t: "Load any content instantly", d: "Pull in your studies, Nexus studies, courses, the coach library, endgames (including premium picks), puzzles by theme or rating, and master games searchable by player or opening." },
-            { icon: "🧩", t: "Puzzles for the class", d: "Load a puzzle at the level you choose and solve it together — Healthy Mix, by theme, or by number of pieces." },
-            { icon: "🤖", t: "Private engine", d: "Stockfish runs on your side only. You see the evaluation and best lines; students see just the board." },
-            { icon: "⏳", t: "Waiting room", d: "Students wait until you admit them, so nobody wanders in mid-explanation." },
-            { icon: "✋", t: "Raise hand", d: "Students raise a hand and their tile jumps to the front of your grid. You can lower it for them when it's dealt with." },
+            { icon: "📹", t: tr("HD video & screen share"), d: tr("See your whole class and share your screen when you need to. Background noise suppression and video touch-up are built in.") },
+            { icon: "♟️", t: tr("One shared board"), d: tr("Every student sees the same position, live. Move a piece and it moves on their screen instantly.") },
+            { icon: "🖱️", t: tr("Give a student control"), d: tr("Hand the board to any student so they play the move themselves in front of the class — then take it back with one click.") },
+            { icon: "✏️", t: tr("Draw on the board"), d: tr("Arrows and square highlights sync to everyone, so you can point at the plan instead of describing it.") },
+            { icon: "📚", t: tr("Load any content instantly"), d: tr("Pull in your studies, Nexus studies, courses, the coach library, endgames (including premium picks), puzzles by theme or rating, and master games searchable by player or opening.") },
+            { icon: "🧩", t: tr("Puzzles for the class"), d: tr("Load a puzzle at the level you choose and solve it together — Healthy Mix, by theme, or by number of pieces.") },
+            { icon: "🤖", t: tr("Private engine"), d: "Stockfish runs on your side only. You see the evaluation and best lines; students see just the board." },
+            { icon: "⏳", t: tr("Waiting room"), d: tr("Students wait until you admit them, so nobody wanders in mid-explanation.") },
+            { icon: "✋", t: tr("Raise hand"), d: tr("Students raise a hand and their tile jumps to the front of your grid. You can lower it for them when it's dealt with.") },
             { icon: "🎙️", t: "Mic & camera control", d: "Mute a student or turn their camera off in one click, straight from their video tile. To turn either back on you send a request — the student accepts. A child's mic or camera is never forced on." },
-            { icon: "📌", t: "One-click homework", d: "Press Add to homework and the position on the board is captured instantly — no dialog, no typing a FEN, so the lesson keeps moving. Collect positions all through the class, then send them as one assignment to exactly the students who were in the room. They play each one out against Stockfish at home." },
-            { icon: "📋", t: "Attendance writes itself", d: "Admitting a student records their attendance for that class automatically." },
-            { icon: "💬", t: "Class chat", d: "A chat panel for the session — good for links and quick questions without interrupting." },
+            { icon: "📌", t: tr("One-click homework"), d: tr("Press Add to homework and the position on the board is captured instantly — no dialog, no typing a FEN, so the lesson keeps moving. Collect positions all through the class, then send them as one assignment to exactly the students who were in the room. They play each one out against Stockfish at home.") },
+            { icon: "📋", t: tr("Attendance writes itself"), d: tr("Admitting a student records their attendance for that class automatically.") },
+            { icon: "💬", t: "Class chat", d: tr("A chat panel for the session — good for links and quick questions without interrupting.") },
             { icon: "♟️", t: "Play in class", d: "Pair students into real games from the Activities panel — the whole class can play at once, each on their own board with live clocks. You watch every board live, spotlight one for everyone to follow, and load any finished game onto the teaching board to review it together." },
-            { icon: "🎲", t: "Simul — play the whole class", d: "Run a simultaneous exhibition against every student at once. Send a join request; once they accept you get one big active board plus a strip of all the others — click any board to swap to it and move, just like the Lichess simul page." },
-            { icon: "🏁", t: "Activities in the room", d: "Launch a private Arena race or tournament for the class without leaving the room — only your own students can join." },
+            { icon: "🎲", t: tr("Simul — play the whole class"), d: "Run a simultaneous exhibition against every student at once. Send a join request; once they accept you get one big active board plus a strip of all the others — click any board to swap to it and move, just like the Lichess simul page." },
+            { icon: "🏁", t: tr("Activities in the room"), d: tr("Launch a private Arena race or tournament for the class without leaving the room — only your own students can join.") },
           ]}
         />
 
-        <h3 className="mkt-h3">What each plan includes</h3>
+        <h3 className="mkt-h3">{tr("What each plan includes")}</h3>
         <div className="mkt-table-wrap">
           <table className="mkt-table">
             <thead>
               <tr>
-                <th>Plan</th>
-                <th>Classes per day</th>
-                <th>Length</th>
-                <th>Students per class (+ coach)</th>
+                <th>{tr("Plan")}</th>
+                <th>{tr("Classes per day")}</th>
+                <th>{tr("Length")}</th>
+                <th>{tr("Students per class (+ coach)")}</th>
               </tr>
             </thead>
             <tbody>
@@ -355,7 +356,7 @@ export default function CoachGuidePage() {
       </Section>
 
       {/* ── FAQ ────────────────────────────────────────────────────────── */}
-      <Section id="faq" icon="❓" title="Coach FAQ">
+      <Section id="faq" icon="❓" title={tr("Coach FAQ")}>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div key={q} className="mkt-faq-item">
@@ -366,14 +367,14 @@ export default function CoachGuidePage() {
         </div>
       </Section>
 
-      <section className="mkt-section mkt-cta-section" aria-label="Start coaching">
-        <h2>Start coaching free</h2>
+      <section className="mkt-section mkt-cta-section" aria-label={tr("Start coaching")}>
+        <h2>{tr("Start coaching free")}</h2>
         <p className="mkt-section-lead">
-          Free forever for up to 30 students — including the live classroom. No card required.
+          {tr("Free forever for up to 30 students — including the live classroom. No card required.")}
         </p>
         <div className="mkt-cta-row">
-          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Become a coach</Link>
-          <Link to="/chess-coaching" className="mkt-btn">See the coaching platform</Link>
+          <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">{tr("Become a coach")}</Link>
+          <Link to="/chess-coaching" className="mkt-btn">{tr("See the coaching platform")}</Link>
         </div>
       </section>
     </FeaturePageLayout>

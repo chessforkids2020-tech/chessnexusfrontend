@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 const styles = {
   page: {
@@ -350,7 +351,7 @@ export default function Racer() {
 
       setError(null);
     } catch (err) {
-      setError('Failed to load racer data');
+      setError(tr('Failed to load racer data'));
     } finally {
       setLoading(false);
     }
@@ -365,15 +366,15 @@ export default function Racer() {
     } catch (err) {
       // Fallback to default topics if API fails
       const fallbackTopics = [
-        { id: 'tactics', title: 'Chess Tactics', description: 'Master tactical patterns like pins, forks, skewers, and discovered attacks.', icon: '⚔️', difficulty: 'Intermediate', puzzles: 0 },
-        { id: 'endgame', title: 'Endgame Mastery', description: 'Learn essential endgame techniques and winning positions.', icon: '👑', difficulty: 'Advanced', puzzles: 0 },
-        { id: 'openings', title: 'Opening Principles', description: 'Understand fundamental opening concepts and common mistakes.', icon: '🚀', difficulty: 'Beginner', puzzles: 0 },
-        { id: 'strategy', title: 'Strategic Play', description: 'Develop positional understanding and long-term planning.', icon: '🎯', difficulty: 'Advanced', puzzles: 0 },
-        { id: 'defense', title: 'Defensive Skills', description: 'Learn how to defend against attacks and counter threats.', icon: '🛡️', difficulty: 'Intermediate', puzzles: 0 },
-        { id: 'checkmate', title: 'Checkmate Patterns', description: 'Practice delivering checkmate in various positions.', icon: '♔', difficulty: 'Intermediate', puzzles: 0 },
-        { id: 'forks', title: 'Forks & Pins', description: 'Master attacking multiple pieces simultaneously.', icon: '🍴', difficulty: 'Intermediate', puzzles: 0 },
-        { id: 'combinations', title: 'Combinations', description: 'Complex tactical sequences requiring calculation.', icon: '🔗', difficulty: 'Advanced', puzzles: 0 },
-        { id: 'mixed', title: 'Mixed Puzzles', description: 'A variety of puzzles covering all aspects of chess.', icon: '🎲', difficulty: 'All Levels', puzzles: 0 }
+        { id: 'tactics', title: tr('Chess Tactics'), description: tr('Master tactical patterns like pins, forks, skewers, and discovered attacks.'), icon: '⚔️', difficulty: tr('Intermediate'), puzzles: 0 },
+        { id: 'endgame', title: tr('Endgame Mastery'), description: tr('Learn essential endgame techniques and winning positions.'), icon: '👑', difficulty: tr('Advanced'), puzzles: 0 },
+        { id: 'openings', title: tr('Opening Principles'), description: tr('Understand fundamental opening concepts and common mistakes.'), icon: '🚀', difficulty: tr('Beginner'), puzzles: 0 },
+        { id: 'strategy', title: tr('Strategic Play'), description: tr('Develop positional understanding and long-term planning.'), icon: '🎯', difficulty: tr('Advanced'), puzzles: 0 },
+        { id: 'defense', title: tr('Defensive Skills'), description: tr('Learn how to defend against attacks and counter threats.'), icon: '🛡️', difficulty: tr('Intermediate'), puzzles: 0 },
+        { id: 'checkmate', title: tr('Checkmate Patterns'), description: tr('Practice delivering checkmate in various positions.'), icon: '♔', difficulty: tr('Intermediate'), puzzles: 0 },
+        { id: 'forks', title: tr('Forks & Pins'), description: tr('Master attacking multiple pieces simultaneously.'), icon: '🍴', difficulty: tr('Intermediate'), puzzles: 0 },
+        { id: 'combinations', title: tr('Combinations'), description: tr('Complex tactical sequences requiring calculation.'), icon: '🔗', difficulty: tr('Advanced'), puzzles: 0 },
+        { id: 'mixed', title: tr('Mixed Puzzles'), description: tr('A variety of puzzles covering all aspects of chess.'), icon: '🎲', difficulty: tr('All Levels'), puzzles: 0 }
       ];
       setTopics(fallbackTopics);
     }
@@ -405,7 +406,7 @@ export default function Racer() {
 
   const handleSaveTopic = async () => {
     if (!topicForm.title || !topicForm.description) {
-      alert('Title and description are required');
+      alert(tr('Title and description are required'));
       return;
     }
 
@@ -413,7 +414,7 @@ export default function Racer() {
       if (editingTopic) {
         // Update existing topic
         await api.put(`/api/admin/topics/${editingTopic._id}`, topicForm);
-        alert('Topic updated successfully!');
+        alert(tr('Topic updated successfully!'));
       } else {
         // Add new topic
         const newTopic = {
@@ -421,7 +422,7 @@ export default function Racer() {
           id: topicForm.id || topicForm.title.toLowerCase().replace(/\s+/g, ''),
         };
         await api.post('/api/admin/topics', newTopic);
-        alert('Topic added successfully!');
+        alert(tr('Topic added successfully!'));
       }
       
       // Refresh topics from database after save
@@ -429,20 +430,20 @@ export default function Racer() {
       
       setShowAddTopicModal(false);
       setShowConfigureModal(false);
-      setTopicForm({ id: '', title: '', description: '', icon: '', difficulty: 'Intermediate' });
+      setTopicForm({ id: '', title: '', description: '', icon: '', difficulty: tr('Intermediate') });
     } catch (err) {
       alert('Failed to save topic: ' + (err.response?.data?.message || err.message));
     }
   };
 
   const handleDeleteTopic = async (topicId) => {
-    if (!confirm('Are you sure you want to delete this topic? This action cannot be undone.')) {
+    if (!confirm(tr('Are you sure you want to delete this topic? This action cannot be undone.'))) {
       return;
     }
 
     try {
       await api.delete(`/api/admin/topics/${topicId}`);
-      alert('Topic deleted successfully!');
+      alert(tr('Topic deleted successfully!'));
       await fetchTopics();
     } catch (err) {
       alert('Failed to delete topic: ' + (err.response?.data?.message || err.message));
@@ -457,25 +458,25 @@ export default function Racer() {
   const handleSaveSettings = () => {
     // Validate inputs
     if (settingsForm.defaultDuration < 1 || settingsForm.defaultDuration > 60) {
-      alert('Race duration must be between 1 and 60 minutes');
+      alert(tr('Race duration must be between 1 and 60 minutes'));
       return;
     }
     if (settingsForm.pointsPerPuzzle < 1 || settingsForm.pointsPerPuzzle > 100) {
-      alert('Points per puzzle must be between 1 and 100');
+      alert(tr('Points per puzzle must be between 1 and 100'));
       return;
     }
     if (settingsForm.timeBonus < 0 || settingsForm.timeBonus > 50) {
-      alert('Time bonus must be between 0 and 50 points');
+      alert(tr('Time bonus must be between 0 and 50 points'));
       return;
     }
     if (settingsForm.timeBonusThreshold < 5 || settingsForm.timeBonusThreshold > 300) {
-      alert('Time bonus threshold must be between 5 and 300 seconds');
+      alert(tr('Time bonus threshold must be between 5 and 300 seconds'));
       return;
     }
 
     saveRaceSettings(settingsForm);
     setShowSettingsModal(false);
-    alert('Race settings saved successfully!');
+    alert(tr('Race settings saved successfully!'));
   };
 
   const handleResetSettings = () => {
@@ -487,7 +488,7 @@ export default function Racer() {
       difficultyLevels: ['Beginner', 'Intermediate', 'Advanced']
     };
     saveRaceSettings(defaultSettings);
-    alert('Settings reset to defaults!');
+    alert(tr('Settings reset to defaults!'));
   };
 
   const fetchRacerDetails = async (racerId) => {
@@ -496,7 +497,7 @@ export default function Racer() {
       const response = await api.get(`/api/admin/racers/${racerId}`);
       setRacerDetails(response.data);
     } catch (err) {
-      alert('Failed to load racer details');
+      alert(tr('Failed to load racer details'));
     } finally {
       setLoadingDetails(false);
     }
@@ -522,12 +523,12 @@ export default function Racer() {
     const diffDays = Math.floor(diffHours / 24);
 
     if (diffDays > 0) {
-      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+      return tr("{diffDays} day{v1} ago", { diffDays: diffDays, v1: diffDays > 1 ? 's' : '' });
     } else if (diffHours > 0) {
-      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+      return tr("{diffHours} hour{v1} ago", { diffHours: diffHours, v1: diffHours > 1 ? 's' : '' });
     } else {
       const diffMinutes = Math.floor(diffMs / (1000 * 60));
-      return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+      return tr("{diffMinutes} minute{v1} ago", { diffMinutes: diffMinutes, v1: diffMinutes > 1 ? 's' : '' });
     }
   };
 
@@ -535,7 +536,7 @@ export default function Racer() {
   if (loading) {
     return (
       <div style={styles.page}>
-        <div style={styles.loading}>Loading racer data...</div>
+        <div style={styles.loading}>{tr("Loading racer data...")}</div>
       </div>
     );
   }
@@ -544,7 +545,7 @@ export default function Racer() {
     return (
       <div style={styles.page}>
         <div style={styles.error}>{error}</div>
-        <button style={styles.button} onClick={fetchRacerData}>Retry</button>
+        <button style={styles.button} onClick={fetchRacerData}>{tr("Retry")}</button>
       </div>
     );
   }
@@ -553,47 +554,47 @@ export default function Racer() {
     <div style={styles.page}>
       <div style={styles.header}>
         <div>
-          <h1 style={styles.title}>🏎️ Racer Management</h1>
-          <p style={styles.subtitle}>Monitor and manage racing participants</p>
+          <h1 style={styles.title}>{tr("🏎️ Racer Management")}</h1>
+          <p style={styles.subtitle}>{tr("Monitor and manage racing participants")}</p>
         </div>
-        <a href="/admin" style={styles.backButton}>← Back to Admin</a>
+        <a href="/admin" style={styles.backButton}>{tr("← Back to Admin")}</a>
       </div>
 
       <div style={styles.content}>
         {/* Statistics Cards */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>
-            📊 Racing Statistics
+            {tr("📊 Racing Statistics")}
           </h2>
           <p style={styles.cardDescription}>
-            Overview of racing activity and performance metrics
+            {tr("Overview of racing activity and performance metrics")}
           </p>
 
           <div style={styles.statGrid}>
             <div style={styles.statItem}>
               <span style={styles.statNumber}>{racerStats.totalRacers}</span>
-              <span style={styles.statLabel}>Total Racers</span>
+              <span style={styles.statLabel}>{tr("Total Racers")}</span>
             </div>
             <div style={styles.statItem}>
               <span style={styles.statNumber}>{racerStats.activeRacers}</span>
-              <span style={styles.statLabel}>Active Today</span>
+              <span style={styles.statLabel}>{tr("Active Today")}</span>
             </div>
             <div style={styles.statItem}>
               <span style={styles.statNumber}>{racerStats.completedRaces}</span>
-              <span style={styles.statLabel}>Completed Races</span>
+              <span style={styles.statLabel}>{tr("Completed Races")}</span>
             </div>
             <div style={styles.statItem}>
               <span style={styles.statNumber}>{racerStats.averageScore}</span>
-              <span style={styles.statLabel}>Avg Score</span>
+              <span style={styles.statLabel}>{tr("Avg Score")}</span>
             </div>
           </div>
 
           <div>
             <button style={styles.button} onClick={fetchRacerData}>
-              🔄 Refresh Stats
+              {tr("🔄 Refresh Stats")}
             </button>
-            <button style={styles.secondaryButton} onClick={() => alert('Export functionality coming soon!')}>
-              📈 Export Report
+            <button style={styles.secondaryButton} onClick={() => alert(tr('Export functionality coming soon!'))}>
+              {tr("📈 Export Report")}
             </button>
           </div>
         </div>
@@ -601,14 +602,14 @@ export default function Racer() {
         {/* Racing Topics */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>
-            🎯 Racing Topics
+            {tr("🎯 Racing Topics")}
           </h2>
           <p style={styles.cardDescription}>
-            Manage available racing topics and difficulty levels
+            {tr("Manage available racing topics and difficulty levels")}
           </p>
 
           <div style={{ marginBottom: '20px' }}>
-            <h3 style={{ margin: '0 0 10px 0', color: 'var(--color-success)' }}>Available Topics:</h3>
+            <h3 style={{ margin: '0 0 10px 0', color: 'var(--color-success)' }}>{tr("Available Topics:")}</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '15px' }}>
               {topics.map(topic => (
                 <div key={topic.id} style={{
@@ -637,7 +638,7 @@ export default function Racer() {
                       padding: '2px',
                       marginLeft: '4px'
                     }}
-                    title="Edit topic"
+                    title={tr("Edit topic")}
                   >
                     ✏️
                   </button>
@@ -651,7 +652,7 @@ export default function Racer() {
                       fontSize: '10px',
                       padding: '2px'
                     }}
-                    title="Delete topic"
+                    title={tr("Delete topic")}
                   >
                     🗑️
                   </button>
@@ -662,10 +663,10 @@ export default function Racer() {
 
           <div>
             <button style={styles.button} onClick={handleAddTopic}>
-              ➕ Add Topic
+              {tr("➕ Add Topic")}
             </button>
             <button style={styles.secondaryButton} onClick={() => setShowConfigureModal(true)}>
-              ⚙️ Configure Topics
+              {tr("⚙️ Configure Topics")}
             </button>
           </div>
         </div>
@@ -673,33 +674,33 @@ export default function Racer() {
         {/* Race Settings */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>
-            ⚙️ Race Settings
+            {tr("⚙️ Race Settings")}
           </h2>
           <p style={styles.cardDescription}>
-            Configure racing parameters and time limits
+            {tr("Configure racing parameters and time limits")}
           </p>
 
           <div style={{ marginBottom: '20px' }}>
             <div style={{ marginBottom: '15px' }}>
-              <strong>Default Race Duration:</strong> {raceSettings.defaultDuration} minutes
+              <strong>{tr("Default Race Duration:")}</strong> {raceSettings.defaultDuration} {tr("minutes")}
             </div>
             <div style={{ marginBottom: '15px' }}>
-              <strong>Points per Puzzle:</strong> {raceSettings.pointsPerPuzzle} points
+              <strong>{tr("Points per Puzzle:")}</strong> {raceSettings.pointsPerPuzzle} {tr("points")}
             </div>
             <div style={{ marginBottom: '15px' }}>
-              <strong>Time Bonus:</strong> +{raceSettings.timeBonus} points for under {raceSettings.timeBonusThreshold} seconds
+              <strong>{tr("Time Bonus:")}</strong> +{raceSettings.timeBonus} {tr("points for under")} {raceSettings.timeBonusThreshold} {tr("seconds")}
             </div>
             <div style={{ marginBottom: '15px' }}>
-              <strong>Difficulty Levels:</strong> {raceSettings.difficultyLevels.join(', ')}
+              <strong>{tr("Difficulty Levels:")}</strong> {raceSettings.difficultyLevels.join(', ')}
             </div>
           </div>
 
           <div>
             <button style={styles.button} onClick={handleEditSettings}>
-              ⚙️ Edit Settings
+              {tr("⚙️ Edit Settings")}
             </button>
             <button style={styles.secondaryButton} onClick={handleResetSettings}>
-              🔄 Reset to Default
+              {tr("🔄 Reset to Default")}
             </button>
           </div>
         </div>
@@ -708,13 +709,13 @@ export default function Racer() {
         <table style={styles.table}>
           <thead>
             <tr style={styles.tableHeader}>
-              <th style={styles.th}>Racer</th>
-              <th style={styles.th}>Races</th>
-              <th style={styles.th}>Performance</th>
-              <th style={styles.th}>Time Spent</th>
-              <th style={styles.th}>Last Active</th>
-              <th style={styles.th}>Favorite Topic</th>
-              <th style={styles.th}>Actions</th>
+              <th style={styles.th}>{tr("Racer")}</th>
+              <th style={styles.th}>{tr("Races")}</th>
+              <th style={styles.th}>{tr("Performance")}</th>
+              <th style={styles.th}>{tr("Time Spent")}</th>
+              <th style={styles.th}>{tr("Last Active")}</th>
+              <th style={styles.th}>{tr("Favorite Topic")}</th>
+              <th style={styles.th}>{tr("Actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -729,13 +730,13 @@ export default function Racer() {
                   <div>
                     <strong>{racer.completedRaces}/{racer.totalRaces}</strong>
                     <div style={{ fontSize: '11px', color: 'var(--color-text-faint)' }}>
-                      {Math.round((racer.completedRaces / racer.totalRaces) * 100)}% completion
+                      {Math.round((racer.completedRaces / racer.totalRaces) * 100)}{tr("% completion")}
                     </div>
                   </div>
                 </td>
                 <td style={styles.td}>
                   <div>
-                    <strong>{racer.averageScore} avg</strong>
+                    <strong>{racer.averageScore} {tr("avg")}</strong>
                     <div style={{ fontSize: '11px', color: 'var(--color-text-faint)' }}>
                       Best: {racer.bestScore} pts
                     </div>
@@ -764,7 +765,7 @@ export default function Racer() {
                     style={{ ...styles.button, padding: '6px 12px', fontSize: '12px' }}
                     onClick={() => handleViewRacerDetails(racer)}
                   >
-                    👁️ View
+                    {tr("👁️ View")}
                   </button>
                 </td>
               </tr>
@@ -777,30 +778,30 @@ export default function Racer() {
       {showAddTopicModal && (
         <div style={styles.modalOverlay} onClick={() => setShowAddTopicModal(false)}>
           <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h2 style={styles.modalTitle}>Add New Topic</h2>
+            <h2 style={styles.modalTitle}>{tr("Add New Topic")}</h2>
             <div style={styles.modalContent}>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Topic ID:</label>
+                <label style={styles.label}>{tr("Topic ID:")}</label>
                 <input
                   style={styles.input}
                   type="text"
-                  placeholder="e.g., tactics, endgame"
+                  placeholder={tr("e.g., tactics, endgame")}
                   value={topicForm.id}
                   onChange={(e) => setTopicForm({...topicForm, id: e.target.value.toLowerCase().replace(/\s+/g, '')})}
                 />
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Title:</label>
+                <label style={styles.label}>{tr("Title:")}</label>
                 <input
                   style={styles.input}
                   type="text"
-                  placeholder="e.g., Chess Tactics"
+                  placeholder={tr("e.g., Chess Tactics")}
                   value={topicForm.title}
                   onChange={(e) => setTopicForm({...topicForm, title: e.target.value})}
                 />
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Icon:</label>
+                <label style={styles.label}>{tr("Icon:")}</label>
                 <input
                   style={styles.input}
                   type="text"
@@ -810,34 +811,34 @@ export default function Racer() {
                 />
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Description:</label>
+                <label style={styles.label}>{tr("Description:")}</label>
                 <textarea
                   style={{...styles.input, minHeight: '80px', resize: 'vertical'}}
-                  placeholder="Describe what this topic covers..."
+                  placeholder={tr("Describe what this topic covers...")}
                   value={topicForm.description}
                   onChange={(e) => setTopicForm({...topicForm, description: e.target.value})}
                 />
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Difficulty:</label>
+                <label style={styles.label}>{tr("Difficulty:")}</label>
                 <select
                   style={styles.input}
                   value={topicForm.difficulty}
                   onChange={(e) => setTopicForm({...topicForm, difficulty: e.target.value})}
                 >
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Advanced">Advanced</option>
-                  <option value="All Levels">All Levels</option>
+                  <option value="Beginner">{tr("Beginner")}</option>
+                  <option value="Intermediate">{tr("Intermediate")}</option>
+                  <option value="Advanced">{tr("Advanced")}</option>
+                  <option value="All Levels">{tr("All Levels")}</option>
                 </select>
               </div>
             </div>
             <div style={styles.modalButtons}>
               <button style={styles.cancelButton} onClick={() => setShowAddTopicModal(false)}>
-                Cancel
+                {tr("Cancel")}
               </button>
               <button style={styles.saveButton} onClick={handleSaveTopic}>
-                Add Topic
+                {tr("Add Topic")}
               </button>
             </div>
           </div>
@@ -852,7 +853,7 @@ export default function Racer() {
             {editingTopic ? (
               <div style={styles.modalContent}>
                 <div style={styles.formGroup}>
-                  <label style={styles.label}>Topic ID:</label>
+                  <label style={styles.label}>{tr("Topic ID:")}</label>
                   <input
                     style={styles.input}
                     type="text"
@@ -861,7 +862,7 @@ export default function Racer() {
                   />
                 </div>
                 <div style={styles.formGroup}>
-                  <label style={styles.label}>Title:</label>
+                  <label style={styles.label}>{tr("Title:")}</label>
                   <input
                     style={styles.input}
                     type="text"
@@ -870,7 +871,7 @@ export default function Racer() {
                   />
                 </div>
                 <div style={styles.formGroup}>
-                  <label style={styles.label}>Icon:</label>
+                  <label style={styles.label}>{tr("Icon:")}</label>
                   <input
                     style={styles.input}
                     type="text"
@@ -879,7 +880,7 @@ export default function Racer() {
                   />
                 </div>
                 <div style={styles.formGroup}>
-                  <label style={styles.label}>Description:</label>
+                  <label style={styles.label}>{tr("Description:")}</label>
                   <textarea
                     style={{...styles.input, minHeight: '80px', resize: 'vertical'}}
                     value={topicForm.description}
@@ -887,23 +888,23 @@ export default function Racer() {
                   />
                 </div>
                 <div style={styles.formGroup}>
-                  <label style={styles.label}>Difficulty:</label>
+                  <label style={styles.label}>{tr("Difficulty:")}</label>
                   <select
                     style={styles.input}
                     value={topicForm.difficulty}
                     onChange={(e) => setTopicForm({...topicForm, difficulty: e.target.value})}
                   >
-                    <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
-                    <option value="All Levels">All Levels</option>
+                    <option value="Beginner">{tr("Beginner")}</option>
+                    <option value="Intermediate">{tr("Intermediate")}</option>
+                    <option value="Advanced">{tr("Advanced")}</option>
+                    <option value="All Levels">{tr("All Levels")}</option>
                   </select>
                 </div>
               </div>
             ) : (
               <div style={styles.modalContent}>
                 <p style={{ marginBottom: '20px', color: 'var(--color-text-faint)' }}>
-                  Click the edit button (✏️) next to any topic to modify it, or use the "Add Topic" button to create new topics.
+                  {tr("Click the edit button (✏️) next to any topic to modify it, or use the \"Add Topic\" button to create new topics.")}
                 </p>
                 <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                   {topics.map(topic => (
@@ -922,7 +923,7 @@ export default function Racer() {
                         <div>
                           <strong>{topic.title}</strong>
                           <div style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>
-                            {topic.puzzles} puzzles • {topic.difficulty}
+                            {topic.puzzles} {tr("puzzles •")} {topic.difficulty}
                           </div>
                         </div>
                       </div>
@@ -931,13 +932,13 @@ export default function Racer() {
                           style={{...styles.button, padding: '6px 12px', fontSize: '12px'}}
                           onClick={() => handleEditTopic(topic)}
                         >
-                          ✏️ Edit
+                          {tr("✏️ Edit")}
                         </button>
                         <button
                           style={{...styles.secondaryButton, padding: '6px 12px', fontSize: '12px'}}
                           onClick={() => handleDeleteTopic(topic._id)}
                         >
-                          🗑️ Delete
+                          {tr("🗑️ Delete")}
                         </button>
                       </div>
                     </div>
@@ -949,13 +950,13 @@ export default function Racer() {
               <button style={styles.cancelButton} onClick={() => {
                 setShowConfigureModal(false);
                 setEditingTopic(null);
-                setTopicForm({ id: '', title: '', description: '', icon: '', difficulty: 'Intermediate' });
+                setTopicForm({ id: '', title: '', description: '', icon: '', difficulty: tr('Intermediate') });
               }}>
-                {editingTopic ? 'Cancel' : 'Close'}
+                {editingTopic ? tr('Cancel') : tr('Close')}
               </button>
               {editingTopic && (
                 <button style={styles.saveButton} onClick={handleSaveTopic}>
-                  Save Changes
+                  {tr("Save Changes")}
                 </button>
               )}
             </div>
@@ -967,10 +968,10 @@ export default function Racer() {
       {showSettingsModal && (
         <div style={styles.modalOverlay} onClick={() => setShowSettingsModal(false)}>
           <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h2 style={styles.modalTitle}>Edit Race Settings</h2>
+            <h2 style={styles.modalTitle}>{tr("Edit Race Settings")}</h2>
             <div style={styles.modalContent}>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Default Race Duration (minutes):</label>
+                <label style={styles.label}>{tr("Default Race Duration (minutes):")}</label>
                 <input
                   style={styles.input}
                   type="number"
@@ -979,11 +980,11 @@ export default function Racer() {
                   value={settingsForm.defaultDuration}
                   onChange={(e) => setSettingsForm({...settingsForm, defaultDuration: parseInt(e.target.value) || 5})}
                 />
-                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Range: 1-60 minutes</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>{tr("Range: 1-60 minutes")}</small>
               </div>
               
               <div style={styles.formGroup}>
-                <label style={styles.label}>Points per Puzzle:</label>
+                <label style={styles.label}>{tr("Points per Puzzle:")}</label>
                 <input
                   style={styles.input}
                   type="number"
@@ -992,11 +993,11 @@ export default function Racer() {
                   value={settingsForm.pointsPerPuzzle}
                   onChange={(e) => setSettingsForm({...settingsForm, pointsPerPuzzle: parseInt(e.target.value) || 10})}
                 />
-                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Range: 1-100 points</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>{tr("Range: 1-100 points")}</small>
               </div>
               
               <div style={styles.formGroup}>
-                <label style={styles.label}>Time Bonus Points:</label>
+                <label style={styles.label}>{tr("Time Bonus Points:")}</label>
                 <input
                   style={styles.input}
                   type="number"
@@ -1005,11 +1006,11 @@ export default function Racer() {
                   value={settingsForm.timeBonus}
                   onChange={(e) => setSettingsForm({...settingsForm, timeBonus: parseInt(e.target.value) || 0})}
                 />
-                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Bonus points for solving quickly (0-50)</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>{tr("Bonus points for solving quickly (0-50)")}</small>
               </div>
               
               <div style={styles.formGroup}>
-                <label style={styles.label}>Time Bonus Threshold (seconds):</label>
+                <label style={styles.label}>{tr("Time Bonus Threshold (seconds):")}</label>
                 <input
                   style={styles.input}
                   type="number"
@@ -1018,11 +1019,11 @@ export default function Racer() {
                   value={settingsForm.timeBonusThreshold}
                   onChange={(e) => setSettingsForm({...settingsForm, timeBonusThreshold: parseInt(e.target.value) || 30})}
                 />
-                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Time limit to earn bonus points (5-300 seconds)</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>{tr("Time limit to earn bonus points (5-300 seconds)")}</small>
               </div>
               
               <div style={styles.formGroup}>
-                <label style={styles.label}>Difficulty Levels (comma-separated):</label>
+                <label style={styles.label}>{tr("Difficulty Levels (comma-separated):")}</label>
                 <input
                   style={styles.input}
                   type="text"
@@ -1032,15 +1033,15 @@ export default function Racer() {
                     setSettingsForm({...settingsForm, difficultyLevels: levels.length > 0 ? levels : ['Beginner', 'Intermediate', 'Advanced']});
                   }}
                 />
-                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Separate levels with commas (e.g., Beginner, Intermediate, Advanced)</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>{tr("Separate levels with commas (e.g., Beginner, Intermediate, Advanced)")}</small>
               </div>
             </div>
             <div style={styles.modalButtons}>
               <button style={styles.cancelButton} onClick={() => setShowSettingsModal(false)}>
-                Cancel
+                {tr("Cancel")}
               </button>
               <button style={styles.saveButton} onClick={handleSaveSettings}>
-                Save Settings
+                {tr("Save Settings")}
               </button>
             </div>
           </div>
@@ -1057,50 +1058,50 @@ export default function Racer() {
             
             {loadingDetails ? (
               <div style={{ textAlign: 'center', padding: '40px' }}>
-                Loading racer details...
+                {tr("Loading racer details...")}
               </div>
             ) : racerDetails ? (
               <div style={styles.modalContent}>
                 {/* User Info */}
                 <div style={{ marginBottom: '24px', padding: '16px', background: 'var(--color-surface)', borderRadius: 'var(--radius-md)' }}>
-                  <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>User Information</h3>
+                  <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>{tr("User Information")}</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-                    <div><strong>Display Name:</strong> {racerDetails.user.displayName}</div>
-                    {racerDetails.user.age && <div><strong>Age:</strong> {racerDetails.user.age}</div>}
-                    {racerDetails.user.country && <div><strong>Country:</strong> {racerDetails.user.country}</div>}
-                    {racerDetails.user.timeZone && <div><strong>Time Zone:</strong> {racerDetails.user.timeZone}</div>}
-                    {racerDetails.user.lichessUsername && <div><strong>Lichess:</strong> {racerDetails.user.lichessUsername}</div>}
-                    <div><strong>Joined:</strong> {new Date(racerDetails.user.joinedDate).toLocaleDateString()}</div>
+                    <div><strong>{tr("Display Name:")}</strong> {racerDetails.user.displayName}</div>
+                    {racerDetails.user.age && <div><strong>{tr("Age:")}</strong> {racerDetails.user.age}</div>}
+                    {racerDetails.user.country && <div><strong>{tr("Country:")}</strong> {racerDetails.user.country}</div>}
+                    {racerDetails.user.timeZone && <div><strong>{tr("Time Zone:")}</strong> {racerDetails.user.timeZone}</div>}
+                    {racerDetails.user.lichessUsername && <div><strong>{tr("Lichess:")}</strong> {racerDetails.user.lichessUsername}</div>}
+                    <div><strong>{tr("Joined:")}</strong> {new Date(racerDetails.user.joinedDate).toLocaleDateString()}</div>
                   </div>
                 </div>
 
                 {/* Statistics */}
                 <div style={{ marginBottom: '24px' }}>
-                  <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>📊 Performance Statistics</h3>
+                  <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>{tr("📊 Performance Statistics")}</h3>
                   <div style={styles.statGrid}>
                     <div style={styles.statItem}>
                       <span style={styles.statNumber}>{racerDetails.statistics.totalAttempts}</span>
-                      <span style={styles.statLabel}>Total Attempts</span>
+                      <span style={styles.statLabel}>{tr("Total Attempts")}</span>
                     </div>
                     <div style={styles.statItem}>
                       <span style={styles.statNumber}>{racerDetails.statistics.correctAttempts}</span>
-                      <span style={styles.statLabel}>Correct Solutions</span>
+                      <span style={styles.statLabel}>{tr("Correct Solutions")}</span>
                     </div>
                     <div style={styles.statItem}>
                       <span style={styles.statNumber}>{racerDetails.statistics.accuracy}%</span>
-                      <span style={styles.statLabel}>Accuracy</span>
+                      <span style={styles.statLabel}>{tr("Accuracy")}</span>
                     </div>
                     <div style={styles.statItem}>
                       <span style={styles.statNumber}>{racerDetails.statistics.averageScore}</span>
-                      <span style={styles.statLabel}>Avg Score</span>
+                      <span style={styles.statLabel}>{tr("Avg Score")}</span>
                     </div>
                     <div style={styles.statItem}>
                       <span style={styles.statNumber}>{racerDetails.statistics.bestScore}</span>
-                      <span style={styles.statLabel}>Best Score</span>
+                      <span style={styles.statLabel}>{tr("Best Score")}</span>
                     </div>
                     <div style={styles.statItem}>
                       <span style={styles.statNumber}>{formatTime(racerDetails.statistics.totalTime)}</span>
-                      <span style={styles.statLabel}>Total Time</span>
+                      <span style={styles.statLabel}>{tr("Total Time")}</span>
                     </div>
                   </div>
                 </div>
@@ -1108,7 +1109,7 @@ export default function Racer() {
                 {/* Topic Breakdown */}
                 {racerDetails.topicBreakdown.length > 0 && (
                   <div style={{ marginBottom: '24px' }}>
-                    <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>🎯 Topic Performance</h3>
+                    <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>{tr("🎯 Topic Performance")}</h3>
                     <div style={{ display: 'grid', gap: '8px' }}>
                       {racerDetails.topicBreakdown.map(topic => (
                         <div key={topic.topic} style={{
@@ -1122,10 +1123,10 @@ export default function Racer() {
                         }}>
                           <div style={{ fontWeight: '600' }}>{topic.topic}</div>
                           <div style={{ display: 'flex', gap: '16px', fontSize: '14px' }}>
-                            <span>{topic.attempts} attempts</span>
-                            <span>{topic.correct} correct ({topic.accuracy}%)</span>
-                            <span>Avg: {topic.averageScore} pts</span>
-                            <span>{topic.averageTime}s avg</span>
+                            <span>{topic.attempts} {tr("attempts")}</span>
+                            <span>{topic.correct} {tr("correct (")}{topic.accuracy}%)</span>
+                            <span>{tr("Avg:")} {topic.averageScore} {tr("pts")}</span>
+                            <span>{topic.averageTime}{tr("s avg")}</span>
                           </div>
                         </div>
                       ))}
@@ -1136,7 +1137,7 @@ export default function Racer() {
                 {/* Recent Activity */}
                 {racerDetails.recentActivity.length > 0 && (
                   <div style={{ marginBottom: '24px' }}>
-                    <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>🕒 Recent Activity</h3>
+                    <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>{tr("🕒 Recent Activity")}</h3>
                     <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--color-surface-2)', borderRadius: 'var(--radius-md)' }}>
                       {racerDetails.recentActivity.map((activity, index) => (
                         <div key={index} style={{
@@ -1155,7 +1156,7 @@ export default function Racer() {
                           </div>
                           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                             <span style={{ color: activity.correct ? '#064f28' : 'var(--color-danger)' }}>
-                              {activity.correct ? '✓' : '✗'} {activity.score}pts
+                              {activity.correct ? '✓' : '✗'} {activity.score}{tr("pts")}
                             </span>
                             <span>{activity.timeTaken}s</span>
                             <span style={{ color: 'var(--color-text-faint)' }}>
@@ -1171,7 +1172,7 @@ export default function Racer() {
                 {/* Performance Timeline */}
                 {racerDetails.performanceTimeline.length > 0 && (
                   <div style={{ marginBottom: '24px' }}>
-                    <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>📈 Performance Over Time</h3>
+                    <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>{tr("📈 Performance Over Time")}</h3>
                     <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid var(--color-surface-2)', borderRadius: 'var(--radius-md)' }}>
                       {racerDetails.performanceTimeline.map((day, index) => (
                         <div key={index} style={{
@@ -1184,9 +1185,9 @@ export default function Racer() {
                         }}>
                           <span>{new Date(day.date).toLocaleDateString()}</span>
                           <div style={{ display: 'flex', gap: '12px' }}>
-                            <span>{day.attempts} attempts</span>
-                            <span>{day.accuracy}% accuracy</span>
-                            <span>{day.averageScore} avg pts</span>
+                            <span>{day.attempts} {tr("attempts")}</span>
+                            <span>{day.accuracy}{tr("% accuracy")}</span>
+                            <span>{day.averageScore} {tr("avg pts")}</span>
                           </div>
                         </div>
                       ))}
@@ -1196,7 +1197,7 @@ export default function Racer() {
               </div>
             ) : (
               <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-danger)' }}>
-                Failed to load racer details
+                {tr("Failed to load racer details")}
               </div>
             )}
             
@@ -1206,7 +1207,7 @@ export default function Racer() {
                 setSelectedRacer(null);
                 setRacerDetails(null);
               }}>
-                Close
+                {tr("Close")}
               </button>
             </div>
           </div>

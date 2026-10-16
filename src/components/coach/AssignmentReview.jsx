@@ -18,6 +18,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Chess } from 'chess.js';
 import Chessboard from '../Chessboard';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -50,12 +51,12 @@ export default function AssignmentReview({ assignment, onClose }) {
   const items = useMemo(() => {
     if (isFen) return (a.fenTask?.positions || []).map((p, i) => ({
       kind: 'fen', idx: i, fen: p.fen, tag: p.tag,
-      label: p.tag || `Position ${i + 1}`,
+      label: p.tag || tr("Position {v0}", { v0: i + 1 }),
       moveCount: p.userMoveCount,
     }));
     if (isBlunder) return (a.pgnTask?.games || []).map((g, i) => ({
       kind: 'game', idx: i, pgn: g.pgn, blunders: g.blunders || [],
-      label: g.title || `Game ${i + 1}`,
+      label: g.title || tr("Game {v0}", { v0: i + 1 }),
     }));
     if (isPuzzle) return (student?.puzzleResults || []).map((r, i) => ({
       kind: 'puzzle', idx: i, fen: r.fen,
@@ -151,12 +152,12 @@ export default function AssignmentReview({ assignment, onClose }) {
           <div style={{ minWidth: 0 }}>
             <div style={S.title}>{a.title}</div>
             <div style={S.sub}>
-              {isFen ? '♟️ Play vs Stockfish' : isPuzzle ? '🧩 Puzzles' : '🔎 Find the blunders'}
+              {isFen ? tr('♟️ Play vs Stockfish') : isPuzzle ? tr('🧩 Puzzles') : tr('🔎 Find the blunders')}
               {' · '}{items.length}{' '}
               {isFen ? 'position(s)' : isPuzzle ? 'puzzle(s)' : 'game(s)'}
             </div>
           </div>
-          <button style={S.close} onClick={onClose} aria-label="Close">×</button>
+          <button style={S.close} onClick={onClose} aria-label={tr("Close")}>×</button>
         </div>
 
         <div style={S.body}>
@@ -172,7 +173,7 @@ export default function AssignmentReview({ assignment, onClose }) {
                 <span style={S.navInfo}>
                   {ply === 0
                     ? (replayable ? 'Start' : 'Position')
-                    : `${replayable ? '' : 'Move '}${ply}. ${lastSan}`}
+                    : `${replayable ? '' : tr('Move ')}${ply}. ${lastSan}`}
                   <span style={{ opacity: .5 }}> / {line.length}</span>
                 </span>
                 <button style={S.navBtn} onClick={() => setPly(p => Math.min(line.length, p + 1))} disabled={ply >= line.length}>▶</button>
@@ -189,7 +190,7 @@ export default function AssignmentReview({ assignment, onClose }) {
 
             {/* What the coach assigned — the second thing that was missing. */}
             <div style={S.itemsWrap}>
-              <div style={S.itemsHead}>What you assigned</div>
+              <div style={S.itemsHead}>{tr("What you assigned")}</div>
               <div style={S.items}>
                 {items.map((it, i) => (
                   <button
@@ -198,7 +199,7 @@ export default function AssignmentReview({ assignment, onClose }) {
                     onClick={() => setItemIdx(i)}
                   >
                     {it.label}
-                    {it.kind === 'fen' && it.moveCount === 0 && <span style={S.itemHint}> · play to the end</span>}
+                    {it.kind === 'fen' && it.moveCount === 0 && <span style={S.itemHint}> {tr("· play to the end")}</span>}
                     {it.kind === 'game' && <span style={S.itemHint}> · {it.blunders.length} blunder(s)</span>}
                   </button>
                 ))}
@@ -208,7 +209,7 @@ export default function AssignmentReview({ assignment, onClose }) {
 
           {/* ── RIGHT: students, and the picked student's answer ── */}
           <div style={S.right}>
-            <div style={S.itemsHead}>Students</div>
+            <div style={S.itemsHead}>{tr("Students")}</div>
             <div style={S.students}>
               {completions.map(c => {
                 const done = c.status === 'completed';
@@ -220,7 +221,7 @@ export default function AssignmentReview({ assignment, onClose }) {
                     onClick={() => setStudentId(on ? null : c.studentId)}
                   >
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {c.studentName || 'Student'}
+                      {c.studentName || tr('Student')}
                     </span>
                     <span style={{ color: done ? '#6ee7b7' : '#94a3b8', fontSize: 11, flex: '0 0 auto' }}>
                       {done ? '✓' : '·'}
@@ -232,7 +233,7 @@ export default function AssignmentReview({ assignment, onClose }) {
 
             <div style={S.answer}>
               {!student ? (
-                <div style={S.muted}>Pick a student to see what they played.</div>
+                <div style={S.muted}>{tr("Pick a student to see what they played.")}</div>
               ) : isPuzzle ? (
                 <>
                   <PuzzleTimeSummary results={student.puzzleResults || []} />
@@ -262,14 +263,14 @@ function FenAnswer({ student, item, onJump, ply }) {
       <div style={{ marginBottom: 8 }}>
         <span style={r.passed ? S.pillOk : S.pillNo}>{r.passed ? '✓ Solved' : '✗ Missed'}</span>
         {!r.passed && r.engineBestMove && (
-          <span style={S.muted}> · engine wanted <b style={{ color: '#e6e8ee' }}>{r.engineBestMove}</b></span>
+          <span style={S.muted}> {tr("· engine wanted")} <b style={{ color: '#e6e8ee' }}>{r.engineBestMove}</b></span>
         )}
       </div>
       {/* Prefer the FULL line — student and engine moves interleaved — so the
           coach sees the real game, not a list of orphaned student moves. */}
       {r.line?.length ? (
         <>
-          <div style={S.answerHead}>The game — click any move to jump</div>
+          <div style={S.answerHead}>{tr("The game — click any move to jump")}</div>
           <div style={S.moveRow}>
             {r.line.map((mv, i) => (
               <button
@@ -289,14 +290,14 @@ function FenAnswer({ student, item, onJump, ply }) {
           <div style={{ ...S.muted, marginTop: 6, fontSize: 11 }}>
             <span style={S.legendStudent}>●</span> {student.studentName}
             {'   '}
-            <span style={S.legendEngine}>●</span> Stockfish
+            <span style={S.legendEngine}>●</span> {tr("Stockfish")}
           </div>
         </>
       ) : moves.length === 0 ? (
-        <div style={S.muted}>No moves recorded.</div>
+        <div style={S.muted}>{tr("No moves recorded.")}</div>
       ) : (
         <>
-          <div style={S.answerHead}>Their moves — click to jump</div>
+          <div style={S.answerHead}>{tr("Their moves — click to jump")}</div>
           <div style={S.moveRow}>
             {moves.map((m, i) => (
               <button key={i} style={{ ...S.move, ...(ply === i + 1 ? S.moveOn : {}) }} onClick={() => onJump(i + 1)}>
@@ -350,19 +351,19 @@ function PuzzleTimeSummary({ results }) {
 
   return (
     <div style={S.timeSummary}>
-      <span style={S.timeChip} title="Total time across timed puzzles">
-        ⏱ {fmtDuration(total)} total
+      <span style={S.timeChip} title={tr("Total time across timed puzzles")}>
+        ⏱ {fmtDuration(total)} {tr("total")}
       </span>
-      <span style={S.timeChip} title={`Average over ${timed.length} timed puzzle${timed.length === 1 ? '' : 's'}`}>
-        {fmtDuration(avg(timed))} avg
+      <span style={S.timeChip} title={tr("Average over {length} timed puzzle{v1}", { length: timed.length, v1: timed.length === 1 ? '' : 's' })}>
+        {fmtDuration(avg(timed))} {tr("avg")}
       </span>
       {solvedRows.length > 0 && (
-        <span style={S.timeChip} title={`Average on the ${solvedRows.length} they solved`}>
+        <span style={S.timeChip} title={tr("Average on the {length} they solved", { length: solvedRows.length })}>
           ✅ {fmtDuration(avg(solvedRows))}
         </span>
       )}
       {missedRows.length > 0 && (
-        <span style={S.timeChip} title={`Average on the ${missedRows.length} they missed`}>
+        <span style={S.timeChip} title={tr("Average on the {length} they missed", { length: missedRows.length })}>
           ❌ {fmtDuration(avg(missedRows))}
         </span>
       )}
@@ -375,31 +376,31 @@ function PuzzleTimeSummary({ results }) {
 // moves, with the engine line beside them so the coach can see how close the
 // student was — a near-miss and a wild guess look identical in a percentage.
 function PuzzleAnswer({ item }) {
-  if (!item) return <div style={S.muted}>Pick a puzzle on the left.</div>;
+  if (!item) return <div style={S.muted}>{tr("Pick a puzzle on the left.")}</div>;
   const attempts = item.attempts || [];
   return (
     <div>
       <div style={S.answerHead}>
-        {item.solved ? '✅ Solved' : '❌ Not solved'}
+        {item.solved ? tr('✅ Solved') : tr('❌ Not solved')}
         {/* Time spent, beside the verdict: a 5-second wrong answer is a guess,
             a 4-minute wrong answer is a misunderstanding — different lessons. */}
         {item.timeTakenSec > 0 && (
-          <span style={S.timeChip} title="Time spent on this puzzle">
+          <span style={S.timeChip} title={tr("Time spent on this puzzle")}>
             ⏱ {fmtDuration(item.timeTakenSec)}
           </span>
         )}
       </div>
 
-      <div style={{ ...S.answerHead, marginTop: 12 }}>They played</div>
+      <div style={{ ...S.answerHead, marginTop: 12 }}>{tr("They played")}</div>
       <div style={S.moveRow}>
         {attempts.length === 0
-          ? <span style={S.muted}>No moves recorded.</span>
+          ? <span style={S.muted}>{tr("No moves recorded.")}</span>
           : attempts.map((x, i) => (
               <span key={i} style={x.correct ? S.moveOkChip : S.moveNoChip}>{x.move}</span>
             ))}
       </div>
 
-      <div style={{ ...S.answerHead, marginTop: 12 }}>Engine line</div>
+      <div style={{ ...S.answerHead, marginTop: 12 }}>{tr("Engine line")}</div>
       <div style={S.moveRow}>
         {(item.solution || []).length === 0
           ? <span style={S.muted}>—</span>
@@ -422,7 +423,7 @@ function BlunderAnswer({ student, item, allItems, gameIndex = 0 }) {
   }, [allItems]);
   return (
     <div>
-      <div style={S.answerHead}>The answers</div>
+      <div style={S.answerHead}>{tr("The answers")}</div>
       <div style={S.moveRow}>
         {answers.map((b, i) => (
           <span key={i} style={S.answerChip} title={b.explanation || ''}>
@@ -433,7 +434,7 @@ function BlunderAnswer({ student, item, allItems, gameIndex = 0 }) {
       </div>
 
       <div style={{ ...S.answerHead, marginTop: 12 }}>
-        Their attempts ({history.length || (student.attempts || 0)})
+        {tr("Their attempts (")}{history.length || (student.attempts || 0)})
       </div>
       {history.length === 0 ? (
         <div style={S.muted}>
@@ -453,17 +454,17 @@ function BlunderAnswer({ student, item, allItems, gameIndex = 0 }) {
             : (h.submittedMoves || []);
           return (
             <div key={i} style={S.try}>
-              <span style={h.passed ? S.pillOk : S.pillNo}>Try {i + 1}</span>
+              <span style={h.passed ? S.pillOk : S.pillNo}>{tr("Try")} {i + 1}</span>
               <span style={{ marginLeft: 8 }}>
                 {moves.length
                   ? moves.map((m, j) => {
                       const right = allKeys.has(normalizeMove(m));
                       return <span key={j} style={right ? S.moveOkChip : S.moveNoChip}>{m}</span>;
                     })
-                  : <span style={S.muted}>nothing submitted</span>}
+                  : <span style={S.muted}>{tr("nothing submitted")}</span>}
               </span>
               <span style={{ ...S.muted, marginLeft: 6 }}>
-                {hasPerGame ? `found ${h.foundCount || 0} overall` : `found ${h.foundCount || 0} (all games)`}
+                {hasPerGame ? tr("found {v0} overall", { v0: h.foundCount || 0 }) : tr("found {v0} (all games)", { v0: h.foundCount || 0 })}
               </span>
             </div>
           );

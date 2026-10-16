@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { motion } from 'framer-motion';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Unified studies: positional filter removed. "all" already shows every study
 // (basic + positional) merged into one list.
@@ -36,7 +37,7 @@ const PublicStudiesPage = () => {
       setTotalPages(res.data.totalPages || 1);
       setTotal(res.data.total || 0);
     } catch (e) {
-      setError('Failed to load public studies');
+      setError(tr('Failed to load public studies'));
     } finally {
       setLoading(false);
     }
@@ -231,8 +232,8 @@ const PublicStudiesPage = () => {
     <div style={s.page}>
       {/* Header */}
       <div style={s.header}>
-        <h1 style={s.title}>📚 Public Studies</h1>
-        <span style={s.subtitle}>{total > 0 ? `${total} stud${total === 1 ? 'y' : 'ies'}` : ''}</span>
+        <h1 style={s.title}>{tr("📚 Public Studies")}</h1>
+        <span style={s.subtitle}>{total > 0 ? tr("{total} stud{v1}", { total: total, v1: total === 1 ? 'y' : 'ies' }) : ''}</span>
       </div>
 
       {/* Controls */}
@@ -240,11 +241,11 @@ const PublicStudiesPage = () => {
         <form style={s.searchForm} onSubmit={handleSearch}>
           <input
             style={s.searchInput}
-            placeholder="Search studies by name..."
+            placeholder={tr("Search studies by name...")}
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
           />
-          <button type="submit" style={s.searchBtn}>Search</button>
+          <button type="submit" style={s.searchBtn}>{tr("Search")}</button>
         </form>
         <div style={s.filterRow}>
           {STUDY_TYPES.map(t => (
@@ -261,14 +262,14 @@ const PublicStudiesPage = () => {
 
       {/* Content */}
       {loading ? (
-        <div style={s.empty}>Loading studies...</div>
+        <div style={s.empty}>{tr("Loading studies...")}</div>
       ) : error ? (
         <div style={s.errBox}>{error}</div>
       ) : studies.length === 0 ? (
         <div style={s.empty}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>📖</div>
-          <div style={{ fontSize: 16, marginBottom: 6 }}>No public studies yet</div>
-          <div style={{ fontSize: 13 }}>Be the first to create one by saving a position!</div>
+          <div style={{ fontSize: 16, marginBottom: 6 }}>{tr("No public studies yet")}</div>
+          <div style={{ fontSize: 13 }}>{tr("Be the first to create one by saving a position!")}</div>
         </div>
       ) : (
         <>
@@ -291,11 +292,11 @@ const PublicStudiesPage = () => {
                     <span style={s.typeBadge(study.studyType)}>{study.studyType || 'other'}</span>
                   </div>
                   <div style={s.cardMeta}>
-                    <div style={s.metaItem}>📂 {chapterCount} chapter{chapterCount !== 1 ? 's' : ''}</div>
-                    <div style={s.metaItem}>♟️ {puzzleCount} position{puzzleCount !== 1 ? 's' : ''}</div>
+                    <div style={s.metaItem}>📂 {chapterCount} {tr("chapter")}{chapterCount !== 1 ? 's' : ''}</div>
+                    <div style={s.metaItem}>♟️ {puzzleCount} {tr("position")}{puzzleCount !== 1 ? 's' : ''}</div>
                   </div>
                   <div style={s.cardAuthor}>
-                    by <strong style={{ color: 'var(--color-text-muted)' }}>{study.username || 'Unknown'}</strong>
+                    {tr("by")} <strong style={{ color: 'var(--color-text-muted)' }}>{study.username || 'Unknown'}</strong>
                   </div>
                 </motion.div>
               );
@@ -305,11 +306,11 @@ const PublicStudiesPage = () => {
           {/* Pagination */}
           {totalPages > 1 && (
             <div style={s.pagination}>
-              <button style={s.pageBtn(false)} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹ Prev</button>
+              <button style={s.pageBtn(false)} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>{tr("‹ Prev")}</button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
                 <button key={p} style={s.pageBtn(p === page)} onClick={() => setPage(p)}>{p}</button>
               ))}
-              <button style={s.pageBtn(false)} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Next ›</button>
+              <button style={s.pageBtn(false)} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>{tr("Next ›")}</button>
             </div>
           )}
         </>

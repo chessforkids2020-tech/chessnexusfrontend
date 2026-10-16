@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { launch3DArena } from "../../utils/open3DArena";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/3d-chess-arena-tournament";
 
@@ -37,7 +38,7 @@ export default function ArenaTournamentPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
   const webPageSchema = {
@@ -53,7 +54,7 @@ export default function ArenaTournamentPage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "3D Chess Arena — Immersive Real-Time Tournaments & Puzzle Hall",
+        title: tr("3D Chess Arena — Immersive Real-Time Tournaments & Puzzle Hall"),
         description:
           "Step into a 3D chess arena as your own avatar. Walk into the tournament hall for real-time games, or the 5-stage Puzzle Hall to solve tactics with live leaderboards and chat — free, no ads.",
         keywords:
@@ -64,18 +65,18 @@ export default function ArenaTournamentPage() {
       hero={{
         icon: "🏟️",
         h1: "3D Chess Arena — Play & Solve in Real Time",
-        sub: "Step into a fully immersive 3D world as your own avatar. Walk into the tournament hall for real-time games at the table, or head to the Puzzle Hall to solve tactics alongside other players — with live leaderboards and chat throughout.",
-        primary: { label: "Enter the 3D Arena", onClick: enterArena },
-        secondary: { label: "Browse all features", to: "/features" },
+        sub: tr("Step into a fully immersive 3D world as your own avatar. Walk into the tournament hall for real-time games at the table, or head to the Puzzle Hall to solve tactics alongside other players — with live leaderboards and chat throughout."),
+        primary: { label: tr("Enter the 3D Arena"), onClick: enterArena },
+        secondary: { label: tr("Browse all features"), to: "/features" },
       }}
     >
       <section className="mkt-section">
         <div className="mkt-split mkt-split-reverse">
           <div className="mkt-split-media">
-            <img src="/features/3darena.png" alt="3D Chess Arena — immersive real-time tournaments and puzzle hall" loading="lazy" width="220" height="220" />
+            <img src="/features/3darena.png" alt={tr("3D Chess Arena — immersive real-time tournaments and puzzle hall")} loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
-            <h2>Inside the 3D Arena</h2>
+            <h2>{tr("Inside the 3D Arena")}</h2>
             <p>
               It's not just a board on a screen — it's a place you walk into, play and
               solve in, alongside real people in real time.
@@ -84,34 +85,34 @@ export default function ArenaTournamentPage() {
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🚪</span>
                 <span className="mkt-feat-tx">
-                  <strong>Walk into the tournament hall</strong>
-                  <span>Enter as your own avatar, just like walking into a real chess club — check the notice board for live events and pick one to join.</span>
+                  <strong>{tr("Walk into the tournament hall")}</strong>
+                  <span>{tr("Enter as your own avatar, just like walking into a real chess club — check the notice board for live events and pick one to join.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">♟️</span>
                 <span className="mkt-feat-tx">
-                  <strong>Play live at the table</strong>
-                  <span>When a tournament starts you're paired instantly — your avatar sits down and plays a real-time game, the closest thing to over-the-board chess online.</span>
+                  <strong>{tr("Play live at the table")}</strong>
+                  <span>{tr("When a tournament starts you're paired instantly — your avatar sits down and plays a real-time game, the closest thing to over-the-board chess online.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🧩</span>
                 <span className="mkt-feat-tx">
-                  <strong>Puzzle Hall — 5 stages</strong>
-                  <span>Climb from basic to advanced. Every solve is submitted live and the leaderboard updates in real time so you see exactly where you stand.</span>
+                  <strong>{tr("Puzzle Hall — 5 stages")}</strong>
+                  <span>{tr("Climb from basic to advanced. Every solve is submitted live and the leaderboard updates in real time so you see exactly where you stand.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">💬</span>
                 <span className="mkt-feat-tx">
                   <strong>Chat &amp; social buzz</strong>
-                  <span>Chat with friends and other players in real time — the social feel of a real chess event, online and in 3D.</span>
+                  <span>{tr("Chat with friends and other players in real time — the social feel of a real chess event, online and in 3D.")}</span>
                 </span>
               </li>
             </ul>
             <button type="button" className="mkt-card-cta" onClick={enterArena}>
-              Enter the arena →
+              {tr("Enter the arena →")}
             </button>
           </div>
         </div>
@@ -120,7 +121,7 @@ export default function ArenaTournamentPage() {
       <div className="mkt-callout">
         <div className="mkt-callout-icon">🗓️</div>
         <div>
-          <h2>A different tournament every day</h2>
+          <h2>{tr("A different tournament every day")}</h2>
           <p>
             Arena tournaments are scheduled daily at different times, so there's
             always a live event to walk into no matter when you play. Check the
@@ -131,7 +132,7 @@ export default function ArenaTournamentPage() {
       </div>
 
       <section className="mkt-section">
-        <h2>Why play in the 3D Arena</h2>
+        <h2>{tr("Why play in the 3D Arena")}</h2>
         <p className="mkt-section-lead">
           Online chess can feel flat and lonely. The 3D Arena brings back the
           atmosphere of a real tournament hall — walking in, sitting down across the
@@ -140,16 +141,16 @@ export default function ArenaTournamentPage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <button type="button" onClick={enterArena} className="mkt-btn mkt-btn-primary">
-            Enter the 3D Arena
+            {tr("Enter the 3D Arena")}
           </button>
           <Link to="/chess-puzzles" className="mkt-btn mkt-btn-ghost">
-            Train with puzzles first
+            {tr("Train with puzzles first")}
           </Link>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

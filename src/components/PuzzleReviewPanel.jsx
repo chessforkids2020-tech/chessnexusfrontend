@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Chess } from 'chess.js';
 import Chessboard from './Chessboard';
 import stockfishService from '../services/stockfishService';
+import { t as tr } from '../i18n/LanguageContext';
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 
@@ -134,10 +135,10 @@ function MiniPuzzleCard({ puzzle, index, onClick }) {
         e.currentTarget.style.transform = 'scale(1)';
         e.currentTarget.style.boxShadow = 'none';
       }}
-      title="Click to study this puzzle"
+      title={tr("Click to study this puzzle")}
     >
       <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.05em' }}>
-        PUZZLE #{index + 1}
+        {tr("PUZZLE #")}{index + 1}
       </div>
 
       {/* mini board wrapper — pointer events disabled so the card click fires */}
@@ -164,11 +165,11 @@ function MiniPuzzleCard({ puzzle, index, onClick }) {
       </div>
 
       {puzzle.rating && (
-        <div style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>Rating {puzzle.rating}</div>
+        <div style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>{tr("Rating")} {puzzle.rating}</div>
       )}
 
       <div style={{ fontSize: 10, color: 'var(--color-accent-2)', marginTop: -2 }}>
-        🔍 Tap to study
+        {tr("🔍 Tap to study")}
       </div>
     </div>
   );
@@ -366,24 +367,24 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           {/* title row */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <div style={{ color: 'var(--color-text)', fontWeight: 800, fontSize: 16 }}>
-              Puzzle #{index + 1} — Review
+              {tr("Puzzle #")}{index + 1} {tr("— Review")}
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               <button
                 onClick={() => setOrientation(o => o === 'white' ? 'black' : 'white')}
-                title="Flip board"
+                title={tr("Flip board")}
                 style={{
                   background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)',
                   borderRadius: 'var(--radius-md)', color: 'var(--color-text-muted)', padding: '5px 12px', cursor: 'pointer', fontSize: 15,
                 }}
-              >⇅ Flip</button>
+              >{tr("⇅ Flip")}</button>
               <button
                 onClick={onClose}
                 style={{
                   background: 'var(--color-danger-a20)', border: '1px solid var(--color-danger-a30)',
                   borderRadius: 'var(--radius-md)', color: 'var(--color-danger)', padding: '5px 12px', cursor: 'pointer', fontWeight: 700, fontSize: 15,
                 }}
-              >✕ Close</button>
+              >{tr("✕ Close")}</button>
             </div>
           </div>
 
@@ -406,11 +407,11 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
 
           {/* side to move + analysing indicator */}
           <div style={{ color: 'var(--color-text-muted)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>{sideToMove} to move</span>
+            <span>{sideToMove} {tr("to move")}</span>
             {analyzing && (
               <span style={{ color: 'var(--color-accent-2)', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: 'var(--color-accent-2)', display: 'inline-block', animation: 'pulseDot 1s infinite' }} />
-                Analysing depth {targetDepth}…
+                {tr("Analysing depth")} {targetDepth}…
               </span>
             )}
             {evalInfo && !analyzing && (
@@ -439,8 +440,8 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
             width: '100%',
             justifyContent: 'center',
           }}>
-            <NavBtn onClick={() => goTo(-1)} disabled={moveIdx <= -1} title="Go to start">⏮</NavBtn>
-            <NavBtn onClick={() => goTo(moveIdx - 1)} disabled={moveIdx < 0} title="Previous">◀</NavBtn>
+            <NavBtn onClick={() => goTo(-1)} disabled={moveIdx <= -1} title={tr("Go to start")}>⏮</NavBtn>
+            <NavBtn onClick={() => goTo(moveIdx - 1)} disabled={moveIdx < 0} title={tr("Previous")}>◀</NavBtn>
             <div style={{
               background: 'var(--color-white-a07)',
               borderRadius: 'var(--radius-md)', padding: '4px 14px',
@@ -448,10 +449,10 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
             }}>
               {moveIdx === -999 ? 'Free play'
                 : moveIdx < 0 ? 'Start position'
-                : `Move ${moveIdx + 1} / ${solution.length}`}
+                : tr("Move {v0} / {length}", { v0: moveIdx + 1, length: solution.length })}
             </div>
-            <NavBtn onClick={() => goTo(moveIdx + 1)} disabled={moveIdx >= solution.length - 1} title="Next">▶</NavBtn>
-            <NavBtn onClick={() => goTo(solution.length - 1)} disabled={moveIdx >= solution.length - 1} title="Go to end">⏭</NavBtn>
+            <NavBtn onClick={() => goTo(moveIdx + 1)} disabled={moveIdx >= solution.length - 1} title={tr("Next")}>▶</NavBtn>
+            <NavBtn onClick={() => goTo(solution.length - 1)} disabled={moveIdx >= solution.length - 1} title={tr("Go to end")}>⏭</NavBtn>
           </div>
 
           {/* reset */}
@@ -462,7 +463,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
               borderRadius: 'var(--radius-md)', color: '#93c5fd', padding: '7px 20px',
               cursor: 'pointer', fontSize: 13, fontWeight: 600, width: '100%',
             }}
-          >↩ Reset to starting position</button>
+          >{tr("↩ Reset to starting position")}</button>
         </div>
 
         {/* ── Right column: analysis ── */}
@@ -483,13 +484,13 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
             borderRadius: 'var(--radius-lg)', padding: '10px 14px',
           }}>
             <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
-              Puzzle Info
+              {tr("Puzzle Info")}
             </div>
             <div style={{ color: 'var(--color-text)', fontSize: 13 }}>
               Rating: <strong style={{ color: 'var(--color-warning)' }}>{puzzle.rating || '—'}</strong>
             </div>
             <div style={{ color: puzzle.isCorrect ? 'var(--color-success)' : 'var(--color-danger)', fontSize: 13, fontWeight: 700, marginTop: 3 }}>
-              {puzzle.isCorrect ? '✓ Solved correctly!' : '✗ Got this wrong'}
+              {puzzle.isCorrect ? tr('✓ Solved correctly!') : tr('✗ Got this wrong')}
             </div>
             {puzzle.pointsEarned !== undefined && (
               <div style={{ fontSize: 12, color: puzzle.pointsEarned >= 0 ? 'var(--color-success)' : 'var(--color-danger)', marginTop: 2 }}>
@@ -501,10 +502,10 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           {/* solution moves */}
           <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-lg)', padding: '10px 14px' }}>
             <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-              Solution
+              {tr("Solution")}
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-              {solution.length === 0 && <span style={{ color: 'var(--color-text-faint)', fontSize: 12 }}>No solution recorded</span>}
+              {solution.length === 0 && <span style={{ color: 'var(--color-text-faint)', fontSize: 12 }}>{tr("No solution recorded")}</span>}
               {solution.map((move, i) => (
                 <button key={i} onClick={() => goTo(i)} style={{
                   background: moveIdx === i ? 'rgba(59,130,246,0.4)' : 'var(--color-white-a07)',
@@ -522,13 +523,13 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           {/* ── STOCKFISH ANALYSE BUTTON — prominent, always visible ── */}
           <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-lg)', padding: '12px 14px' }}>
             <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-              Stockfish Analysis
+              {tr("Stockfish Analysis")}
             </div>
 
             {/* depth */}
             <div style={{ marginBottom: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>Depth</span>
+                <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>{tr("Depth")}</span>
                 <span style={{ color: 'var(--color-accent-2)', fontSize: 12, fontWeight: 700 }}>{targetDepth}</span>
               </div>
               <input
@@ -561,7 +562,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
                 transition: 'all 0.2s',
               }}
             >
-              {analyzing ? '⏳ Analysing…' : analyzeEnabled ? '⏹ Stop Analysis' : '▶ Analyse with Stockfish'}
+              {analyzing ? tr('⏳ Analysing…') : analyzeEnabled ? tr('⏹ Stop Analysis') : tr('▶ Analyse with Stockfish')}
             </button>
           </div>
 
@@ -577,7 +578,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
               {analysisLines.length > 0 && (
                 <>
                   <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-                    Best Lines
+                    {tr("Best Lines")}
                   </div>
                   {analysisLines.slice(0, 3).map((line, i) => {
                     const forWhite = currentChess.turn() === 'w';
@@ -607,9 +608,9 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
             background: 'var(--color-accent-2-a15)', borderRadius: 'var(--radius-lg)', padding: '8px 14px',
             color: 'var(--color-text-faint)', fontSize: 11, lineHeight: 1.7,
           }}>
-            <strong style={{ color: 'var(--color-text-faint)' }}>Tips</strong><br />
-            • ▶ / ◀ steps through the solution<br />
-            • Drag pieces to explore freely<br />
+            <strong style={{ color: 'var(--color-text-faint)' }}>{tr("Tips")}</strong><br />
+            {tr("• ▶ / ◀ steps through the solution")}<br />
+            {tr("• Drag pieces to explore freely")}<br />
             • Green arrow = best move<br />
             • Yellow arrow = 2nd best
           </div>
@@ -681,10 +682,10 @@ export default function PuzzleReviewPanel({ dailyBatch }) {
           fontSize: 13,
           fontWeight: 700,
         }}>
-          🔍 Study Today's Puzzles
+          {tr("🔍 Study Today's Puzzles")}
         </div>
         <div style={{ color: 'var(--color-text-faint)', fontSize: 11, marginTop: 6 }}>
-          Tap any board to study the position with Stockfish analysis
+          {tr("Tap any board to study the position with Stockfish analysis")}
         </div>
       </div>
 

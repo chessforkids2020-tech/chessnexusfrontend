@@ -4,6 +4,7 @@ import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 import PlayerName from '../../components/PlayerName';
 import './TeamRaceResults.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 function TeamRaceResults() {
   const { raceId } = useParams();
@@ -107,9 +108,9 @@ function TeamRaceResults() {
   const teamColors = ['var(--color-warning)', 'var(--color-text-muted)', '#b45309'];
   const topTeams = [teams[1], teams[0], teams[2]];
   const podiumConfig = [
-    { place: 2, tone: 'var(--color-text-muted)', label: 'Silver', className: 'is-second' },
-    { place: 1, tone: 'var(--color-warning)', label: 'Champion', className: 'is-first' },
-    { place: 3, tone: '#b45309', label: 'Bronze', className: 'is-third' }
+    { place: 2, tone: 'var(--color-text-muted)', label: tr('Silver'), className: 'is-second' },
+    { place: 1, tone: 'var(--color-warning)', label: tr('Champion'), className: 'is-first' },
+    { place: 3, tone: '#b45309', label: tr('Bronze'), className: 'is-third' }
   ];
 
   if (loading) {
@@ -117,7 +118,7 @@ function TeamRaceResults() {
       <div className="tournament-leaderboard-container">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '16px' }}>
           <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-circle)', border: '3px solid transparent', borderTopColor: 'var(--color-accent)', borderLeftColor: 'var(--color-success)', animation: 'tr-spin 0.9s linear infinite' }} />
-          <div style={{ color: 'var(--color-accent)', fontSize: '14px', fontFamily: 'Inter, system-ui, sans-serif' }}>Loading results...</div>
+          <div style={{ color: 'var(--color-accent)', fontSize: '14px', fontFamily: 'Inter, system-ui, sans-serif' }}>{tr("Loading results...")}</div>
         </div>
       </div>
     );
@@ -131,7 +132,7 @@ function TeamRaceResults() {
 
       {/* Back button */}
       <button className="back-to-tournaments" onClick={() => navigate('/dashboard')}>
-        {'←'} Back to Dashboard
+        {'←'} {tr("Back to Dashboard")}
       </button>
 
       <div className="tr-main-content">
@@ -153,7 +154,7 @@ function TeamRaceResults() {
                   </div>
 
                   <div className="trophy-icon" style={{ borderColor: `${cfg.tone}66`, boxShadow: `0 6px 24px ${cfg.tone}40` }}>
-                    <svg viewBox="0 0 120 120" className="trophy-svg" role="img" aria-label={`${cfg.place} place trophy`}>
+                    <svg viewBox="0 0 120 120" className="trophy-svg" role="img" aria-label={tr("{place} place trophy", { place: cfg.place })}>
                       <defs>
                         <linearGradient id={`cupGrad-${cfg.place}`} x1="0" y1="0" x2="0" y2="1">
                           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
@@ -172,10 +173,10 @@ function TeamRaceResults() {
                   <div className="trophy-username">
                     <div className="team-dot" style={{ background: cfg.tone, boxShadow: `0 0 10px ${cfg.tone}` }} />
                     <span className="trophy-team-name" style={{ color: cfg.tone }}>{team.teamName}</span>
-                    <span className="trophy-team-meta">{displayPlayers} players</span>
+                    <span className="trophy-team-meta">{displayPlayers} {tr("players")}</span>
                   </div>
 
-                  <div className="trophy-score">{team.totalScore} pts</div>
+                  <div className="trophy-score">{team.totalScore} {tr("pts")}</div>
                   <div className="podium-base" style={{ borderColor: `${cfg.tone}66`, background: `linear-gradient(180deg, ${cfg.tone}33 0%, rgba(10, 13, 21, 0.92) 100%), var(--color-black-a20)` }} />
                 </article>
               );
@@ -186,14 +187,14 @@ function TeamRaceResults() {
         {/* Team Standings Table */}
         {teams.length > 0 && (
           <div className="leaderboard-table-container">
-            <h3 className="team-standings-title">⚔️ Team Standings</h3>
+            <h3 className="team-standings-title">{tr("⚔️ Team Standings")}</h3>
             <table className="leaderboard-table">
               <thead>
                 <tr>
                   <th style={{ width: '60px', textAlign: 'center' }}>#</th>
-                  <th>Team</th>
-                  <th style={{ textAlign: 'center' }}>Members</th>
-                  <th style={{ textAlign: 'right' }}>Score</th>
+                  <th>{tr("Team")}</th>
+                  <th style={{ textAlign: 'center' }}>{tr("Members")}</th>
+                  <th style={{ textAlign: 'right' }}>{tr("Score")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -222,14 +223,14 @@ function TeamRaceResults() {
         {/* Individual Results Table */}
         {sortedResults.length > 0 && (
           <div className="leaderboard-table-container">
-            <h3 className="team-standings-title">🏅 Individual Results</h3>
+            <h3 className="team-standings-title">{tr("🏅 Individual Results")}</h3>
             <table className="leaderboard-table">
               <thead>
                 <tr>
-                  <th style={{ width: '60px', textAlign: 'center' }}>Rank</th>
-                  <th>Player</th>
-                  <th>Team</th>
-                  <th style={{ textAlign: 'right' }}>Score</th>
+                  <th style={{ width: '60px', textAlign: 'center' }}>{tr("Rank")}</th>
+                  <th>{tr("Player")}</th>
+                  <th>{tr("Team")}</th>
+                  <th style={{ textAlign: 'right' }}>{tr("Score")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -262,13 +263,13 @@ function TeamRaceResults() {
 
         {teams.length === 0 && (
           <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--color-text-faint)', fontSize: '16px' }}>
-            No results available yet.
+            {tr("No results available yet.")}
           </div>
         )}
 
         <div style={{ textAlign: 'center', paddingTop: '32px' }}>
           <button className="back-to-tournaments" onClick={() => navigate('/dashboard')}>
-            {'←'} Back to Dashboard
+            {'←'} {tr("Back to Dashboard")}
           </button>
         </div>
       </div>

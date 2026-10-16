@@ -10,6 +10,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { questTasks } from './aliveQuest';
 import './DockDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ── Dock ────────────────────────────────────────────────────────────────────
 export function DashDock({ items, active, onChange }) {
@@ -19,7 +20,7 @@ export function DashDock({ items, active, onChange }) {
     return () => document.body.classList.remove('has-dash-dock');
   }, []);
   return (
-    <nav className="dash-dock" aria-label="Dashboard sections">
+    <nav className="dash-dock" aria-label={tr("Dashboard sections")}>
       {items.map(it => (
         <button
           key={it.key}
@@ -75,7 +76,7 @@ function minutesBetween(activity, fromDaysAgo, toDaysAgo) {
   return sum;
 }
 function greetingFor(hour) {
-  return hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  return hour < 12 ? tr('Good morning') : hour < 17 ? tr('Good afternoon') : tr('Good evening');
 }
 
 // ── Home: hero + member card ────────────────────────────────────────────────
@@ -89,20 +90,20 @@ export function MemberCard({ user, practiceStreak }) {
   const since = user?.memberSince ? new Date(user.memberSince).getFullYear() : null;
   const name = (user?.displayName || user?.username || '').toUpperCase();
   return (
-    <div className="mcard" aria-label={`ChessNexus member card: ${tier}, ${xp} XP`}>
+    <div className="mcard" aria-label={tr("ChessNexus member card: {tier}, {xp} XP", { tier: tier, xp: xp })}>
       <div className="mc-top">
         <div>
-          <div className="mc-kicker">CHESSNEXUS MEMBER</div>
+          <div className="mc-kicker">{tr("CHESSNEXUS MEMBER")}</div>
           <div className="serif mc-tier">{tier}</div>
         </div>
         <span className="mc-glyph" aria-hidden="true">♛</span>
       </div>
       <div className="mc-bottom">
         <div style={{ minWidth: 0 }}>
-          <div className="disp mc-xp">{xp.toLocaleString()} XP</div>
+          <div className="disp mc-xp">{xp.toLocaleString()} {tr("XP")}</div>
           <div className="mc-name">{name}{since && <> · SINCE {since}</>}</div>
         </div>
-        <div className="mc-streak">🔥 {practiceStreak}<br />DAY STREAK</div>
+        <div className="mc-streak">🔥 {practiceStreak}<br />{tr("DAY STREAK")}</div>
       </div>
     </div>
   );
@@ -117,13 +118,13 @@ export function HomeHero({ user, isPublicView, streak, activity, practiceStreak,
   let sub;
   if (isPublicView) {
     const weekMin = minutesBetween(activity, 6, 0);
-    sub = <>{practiceStreak > 0 ? <>On a <b>{practiceStreak}-day</b> practice streak.</> : <>Training on ChessNexus.</>}{weekMin > 0 && <> {weekMin} min trained this week.</>}</>;
+    sub = <>{practiceStreak > 0 ? <>{tr("On a")} <b>{practiceStreak}-day</b> {tr("practice streak.")}</> : <>{tr("Training on ChessNexus.")}</>}{weekMin > 0 && <> {weekMin} min trained this week.</>}</>;
   } else if (streak?.todayQualified) {
-    sub = <>Today's plan is done — your streak is safe.{streak.daysToNextReport > 0 && <> <b>{streak.daysToNextReport} more day{streak.daysToNextReport === 1 ? '' : 's'}</b> to your next weekly report.</>}</>;
+    sub = <>Today's plan is done — your streak is safe.{streak.daysToNextReport > 0 && <> <b>{streak.daysToNextReport} more day{streak.daysToNextReport === 1 ? '' : 's'}</b> {tr("to your next weekly report.")}</>}</>;
   } else if (streak) {
-    sub = <>Finish today's plan to reach a <b>{(streak.current || 0) + 1}-day streak</b>.</>;
+    sub = <>{tr("Finish today's plan to reach a")} <b>{(streak.current || 0) + 1}-day streak</b>.</>;
   } else {
-    sub = <>Puzzles, a game and an endgame a day keep the streak growing.</>;
+    sub = <>{tr("Puzzles, a game and an endgame a day keep the streak growing.")}</>;
   }
 
   return (
@@ -161,9 +162,9 @@ export function TodayPlan({ streak }) {
   return (
     <section className="rise" style={{ animationDelay: '.16s' }}>
       <SectionHead
-        eyebrow={streak ? `Today · ${doneCount} of ${tasks.length} done` : 'Today'}
-        title="Today's plan"
-        right={<span className="muted" style={{ fontSize: 14 }}>All three keep your streak alive</span>}
+        eyebrow={streak ? tr("Today · {doneCount} of {length} done", { doneCount: doneCount, length: tasks.length }) : tr('Today')}
+        title={tr("Today's plan")}
+        right={<span className="muted" style={{ fontSize: 14 }}>{tr("All three keep your streak alive")}</span>}
       />
       <div className="plan-grid">
         {tasks.map(t => {
@@ -180,7 +181,7 @@ export function TodayPlan({ streak }) {
               </div>
               <div className="d-bar"><i style={{ width: `${pct}%` }} /></div>
               <div className="pc-foot">
-                <span className="faint" style={{ fontSize: 12 }}>{streak ? `${t.have} of ${t.want}` : '…'}</span>
+                <span className="faint" style={{ fontSize: 12 }}>{streak ? tr("{have} of {want}", { have: t.have, want: t.want }) : '…'}</span>
                 <Link to={t.to} className={t.done ? 'd-btn2' : 'd-btn'}>{t.done ? 'Done ✓' : started ? 'Continue' : 'Start'}</Link>
               </div>
             </div>
@@ -204,19 +205,19 @@ export function StatsRow({ practiceStreak, activity, puzzleStats, fallbackRating
   return (
     <div className="stats-row rise" style={{ animationDelay: '.22s' }}>
       <div>
-        <div className="eyebrow">Streak</div>
+        <div className="eyebrow">{tr("Streak")}</div>
         <div className="serif big">{practiceStreak}<span className="unit"> {practiceStreak === 1 ? 'day' : 'days'}</span></div>
         {best > 0 && <div className="faint st-sub">Best active run {best}</div>}
       </div>
       <div>
-        <div className="eyebrow">Trained this week</div>
-        <div className="serif big">{week}<span className="unit"> min</span></div>
+        <div className="eyebrow">{tr("Trained this week")}</div>
+        <div className="serif big">{week}<span className="unit"> {tr("min")}</span></div>
         {change != null && (
           <div className={`st-sub ${change >= 0 ? 'good' : 'bad'}`}>{change >= 0 ? '▲' : '▼'} {Math.abs(change)}% on last week</div>
         )}
       </div>
       <div>
-        <div className="eyebrow">Puzzle rating</div>
+        <div className="eyebrow">{tr("Puzzle rating")}</div>
         <div className="serif big" style={{ color: 'var(--a-gold)' }}>{rating != null ? Number(rating).toLocaleString() : '—'}</div>
         <div className="st-sub">
           {trend ? <span className={trend > 0 ? 'good' : 'bad'}>{trend > 0 ? '+' : ''}{trend}</span> : null}
@@ -224,7 +225,7 @@ export function StatsRow({ practiceStreak, activity, puzzleStats, fallbackRating
         </div>
       </div>
       <div>
-        <div className="eyebrow">Arena</div>
+        <div className="eyebrow">{tr("Arena")}</div>
         <div className="serif big">{arena ? (arena.totalTournaments || 0) : '—'}</div>
         {arena && <div className="faint st-sub">tournaments · {arena.totalGamesPlayed || 0} games</div>}
       </div>
@@ -236,18 +237,18 @@ export function StatsRow({ practiceStreak, activity, puzzleStats, fallbackRating
 function fmtIn(ms) {
   const min = Math.round(ms / 60000);
   if (min <= 1) return 'now';
-  if (min < 60) return `in ${min} min`;
+  if (min < 60) return tr("in {min} min", { min: min });
   const h = Math.floor(min / 60);
   if (h < 24) return `in ${h}h${min % 60 ? ` ${min % 60}m` : ''}`;
   const d = Math.round(h / 24);
-  return `in ${d} day${d === 1 ? '' : 's'}`;
+  return tr("in {d} day{v1}", { d: d, v1: d === 1 ? '' : 's' });
 }
 
 function classWhen(when) {
   const today = new Date();
   const tomorrow = new Date(Date.now() + 86400000);
   const sameDay = (a, b) => a.toDateString() === b.toDateString();
-  const day = sameDay(when, today) ? 'Today' : sameDay(when, tomorrow) ? 'Tomorrow'
+  const day = sameDay(when, today) ? tr('Today') : sameDay(when, tomorrow) ? tr('Tomorrow')
     : when.toLocaleDateString(undefined, { weekday: 'long' });
   return `${day}, ${when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
 }
@@ -263,13 +264,13 @@ export function NextClassCard({ next }) {
       <div className="serif nc-when">{classWhen(when)}</div>
       <div className="muted" style={{ fontSize: 14, marginTop: 8 }}>
         {item.title} · {item.coachName}
-        {!live && <> · starts <b style={{ color: 'var(--a-gold)' }}>{fmtIn(ms)}</b></>}
+        {!live && <> {tr("· starts")} <b style={{ color: 'var(--a-gold)' }}>{fmtIn(ms)}</b></>}
       </div>
       <div style={{ display: 'flex', gap: 10, marginTop: 20, flexWrap: 'wrap' }}>
         {item.meetingLink && (
-          <a href={item.meetingLink} target="_blank" rel="noopener noreferrer" className="d-btn">Join class</a>
+          <a href={item.meetingLink} target="_blank" rel="noopener noreferrer" className="d-btn">{tr("Join class")}</a>
         )}
-        <Link to="/my-coach" className="d-btn2">Full schedule</Link>
+        <Link to="/my-coach" className="d-btn2">{tr("Full schedule")}</Link>
       </div>
     </div>
   );
@@ -280,16 +281,16 @@ export function UpNext({ next, nextTask, onGo }) {
   const rows = [];
   if (next) {
     const ms = next.when.getTime() - Date.now();
-    rows.push({ key: 'class', ic: '🎓', t: `Class with ${next.item.coachName}`, s: `${classWhen(next.when)} · ${next.item.title}`, right: fmtIn(ms), go: 'coach' });
+    rows.push({ key: 'class', ic: '🎓', t: tr("Class with {coachName}", { coachName: next.item.coachName }), s: `${classWhen(next.when)} · ${next.item.title}`, right: fmtIn(ms), go: 'coach' });
   }
   if (nextTask) {
-    rows.push({ key: 'task', ic: PLAN_ICON[nextTask.key], t: nextTask.title, s: `${nextTask.have} of ${nextTask.want} today`, right: '→', to: nextTask.to });
+    rows.push({ key: 'task', ic: PLAN_ICON[nextTask.key], t: nextTask.title, s: tr("{have} of {want} today", { have: nextTask.have, want: nextTask.want }), right: '→', to: nextTask.to });
   }
-  rows.push({ key: 'focus', ic: '🎯', t: 'Monthly Focus', s: "This month's theme, one day at a time", right: '→', go: 'train' });
-  rows.push({ key: 'arena', ic: '🏆', t: 'Arena tournaments', s: 'Live games with players your level', right: '→', to: '/arenatournament' });
+  rows.push({ key: 'focus', ic: '🎯', t: tr('Monthly Focus'), s: tr("This month's theme, one day at a time"), right: '→', go: 'train' });
+  rows.push({ key: 'arena', ic: '🏆', t: tr('Arena tournaments'), s: tr('Live games with players your level'), right: '→', to: '/arenatournament' });
   return (
     <div className="up-next rise" style={{ animationDelay: '.34s' }}>
-      <div className="eyebrow">Up next</div>
+      <div className="eyebrow">{tr("Up next")}</div>
       {rows.slice(0, 3).map(r => {
         const body = (
           <>
@@ -311,10 +312,10 @@ export function UpNext({ next, nextTask, onGo }) {
 
 // ── Train: quick tiles ──────────────────────────────────────────────────────
 const TRAIN_TILES = [
-  { ic: '🧩', t: 'Healthy Mix', s: 'Rated puzzles, mixed themes', to: '/training/healthy-mix', cta: 'Solve' },
-  { ic: '📅', t: 'Daily puzzles', s: 'A fresh set every day', to: '/daily-puzzles', cta: 'Open' },
-  { ic: '⚡', t: 'Puzzle Race', s: 'Beat your personal best', to: '/race', cta: 'Race' },
-  { ic: '🏰', t: 'Endgames', s: 'Play out vs the computer', to: '/study/endgames', cta: 'Practise' },
+  { ic: '🧩', t: tr('Healthy Mix'), s: tr('Rated puzzles, mixed themes'), to: '/training/healthy-mix', cta: tr('Solve') },
+  { ic: '📅', t: tr('Daily puzzles'), s: tr('A fresh set every day'), to: '/daily-puzzles', cta: tr('Open') },
+  { ic: '⚡', t: tr('Puzzle Race'), s: tr('Beat your personal best'), to: '/race', cta: tr('Race') },
+  { ic: '🏰', t: tr('Endgames'), s: tr('Play out vs the computer'), to: '/study/endgames', cta: tr('Practise') },
 ];
 
 export function TrainTiles() {

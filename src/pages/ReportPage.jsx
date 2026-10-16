@@ -4,6 +4,7 @@ import api from "../api";
 import SEO from "../components/SEO";
 import { useAuth } from "../contexts/AuthContext";
 import "./ContactPage.css";
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function ReportPage() {
   const { user } = useAuth();
@@ -42,14 +43,14 @@ export default function ReportPage() {
   return (
     <div className="contact-page-container">
       <SEO
-        title="Report a Problem — Chess Nexus"
-        description="Report a bug, issue, or complaint to the Chess Nexus team. We review every report and reply directly to you."
+        title={tr("Report a Problem — Chess Nexus")}
+        description={tr("Report a bug, issue, or complaint to the Chess Nexus team. We review every report and reply directly to you.")}
         canonical="/report"
       />
       <div className="contact-page-content">
         <h1 className="contact-page-title">
           <span className="title-icon">🚩</span>
-          Submit a Report
+          {tr("Submit a Report")}
         </h1>
         <p style={{ textAlign: "center", color: "var(--color-text-muted)", marginTop: -8, marginBottom: 24 }}>
           Found a bug or want to report something? Tell us below — the Chess Nexus
@@ -63,12 +64,12 @@ export default function ReportPage() {
                 <div style={{ textAlign: "center", padding: "12px 4px" }}>
                   <div style={{ fontSize: 40 }}>✅</div>
                   <h3 className="form-box-title" style={{ marginTop: 8 }}>
-                    Report received
+                    {tr("Report received")}
                   </h3>
                   {isLoggedIn ? (
                     <>
                       <p style={{ color: "var(--color-text-muted)", lineHeight: 1.6 }}>
-                        Thanks, {displayName}! The Chess Nexus team will shortly
+                        {tr("Thanks,")} {displayName}{tr("! The Chess Nexus team will shortly")}
                         review your report and reply in your inbox.
                       </p>
                       <Link
@@ -76,7 +77,7 @@ export default function ReportPage() {
                         className="submit-btn"
                         style={{ display: "inline-flex", marginTop: 12, textDecoration: "none" }}
                       >
-                        <span>View My Reports</span>
+                        <span>{tr("View My Reports")}</span>
                         <span className="btn-arrow">→</span>
                       </Link>
                     </>
@@ -93,19 +94,19 @@ export default function ReportPage() {
                       style={{ background: "transparent", border: "1px solid var(--color-white-a20)" }}
                       onClick={() => setStatus("")}
                     >
-                      <span>Submit another</span>
+                      <span>{tr("Submit another")}</span>
                     </button>
                   </div>
                 </div>
               ) : (
                 <>
                   <h3 className="form-box-title">
-                    {isLoggedIn ? "Tell us what happened" : "Report a problem"}
+                    {isLoggedIn ? tr("Tell us what happened") : tr("Report a problem")}
                   </h3>
                   <form className="contact-form" onSubmit={handleSubmit}>
                     {isLoggedIn ? (
                       <div className="form-group">
-                        <label htmlFor="rep-username">Username</label>
+                        <label htmlFor="rep-username">{tr("Username")}</label>
                         <input
                           type="text"
                           id="rep-username"
@@ -116,11 +117,11 @@ export default function ReportPage() {
                       </div>
                     ) : (
                       <div className="form-group">
-                        <label htmlFor="rep-email">Email</label>
+                        <label htmlFor="rep-email">{tr("Email")}</label>
                         <input
                           type="email"
                           id="rep-email"
-                          placeholder="Enter your email"
+                          placeholder={tr("Enter your email")}
                           value={form.email}
                           onChange={(e) => setForm({ ...form, email: e.target.value })}
                           required
@@ -129,11 +130,11 @@ export default function ReportPage() {
                     )}
 
                     <div className="form-group">
-                      <label htmlFor="rep-subject">Subject</label>
+                      <label htmlFor="rep-subject">{tr("Subject")}</label>
                       <input
                         type="text"
                         id="rep-subject"
-                        placeholder="Briefly, what is this about?"
+                        placeholder={tr("Briefly, what is this about?")}
                         value={form.subject}
                         onChange={(e) => setForm({ ...form, subject: e.target.value })}
                         required
@@ -142,11 +143,11 @@ export default function ReportPage() {
 
                     <div className="form-group">
                       <label htmlFor="rep-details">
-                        {isLoggedIn ? "Details" : "Complaint"}
+                        {isLoggedIn ? tr("Details") : tr("Complaint")}
                       </label>
                       <textarea
                         id="rep-details"
-                        placeholder="Describe the issue in as much detail as you can..."
+                        placeholder={tr("Describe the issue in as much detail as you can...")}
                         value={form.details}
                         onChange={(e) => setForm({ ...form, details: e.target.value })}
                         rows="6"
@@ -155,13 +156,13 @@ export default function ReportPage() {
                     </div>
 
                     <button type="submit" className="submit-btn" disabled={submitting}>
-                      <span>{submitting ? "Sending..." : isLoggedIn ? "Report Now" : "Submit Report"}</span>
+                      <span>{submitting ? tr("Sending...") : isLoggedIn ? tr("Report Now") : tr("Submit Report")}</span>
                       <span className="btn-arrow">→</span>
                     </button>
 
                     {status === "error" && (
                       <p className="submit-message error">
-                        Couldn't send your report. Please try again.
+                        {tr("Couldn't send your report. Please try again.")}
                       </p>
                     )}
                   </form>

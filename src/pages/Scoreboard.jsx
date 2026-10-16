@@ -2,6 +2,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function Scoreboard() {
   const { isAuthenticated, isAdmin } = useAuth();
@@ -158,10 +159,10 @@ export default function Scoreboard() {
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            ← Back to Dashboard
+            {tr("← Back to Dashboard")}
           </button>
         </div>
-      <h3 style={styles.title}>Scoreboard</h3>
+      <h3 style={styles.title}>{tr("Scoreboard")}</h3>
       <p style={styles.subtitle}>
         {isAdmin
           ? "Select a round to manage player points for that round."
@@ -188,31 +189,31 @@ export default function Scoreboard() {
               e.currentTarget.style.background = 'var(--color-black-a35)';
             }}
           >
-            <div style={styles.roundLabel}>Round</div>
+            <div style={styles.roundLabel}>{tr("Round")}</div>
             <h2 style={styles.roundNumber}>{roundNum}</h2>
             <p style={styles.roundAction}>
-              {isAdmin ? 'Manage Points' : 'View Scores'}
+              {isAdmin ? tr('Manage Points') : tr('View Scores')}
             </p>
           </div>
         ))}
       </div>
 
       <div style={styles.infoBox}>
-        <h4 style={styles.infoTitle}>How it works</h4>
+        <h4 style={styles.infoTitle}>{tr("How it works")}</h4>
         <ul style={styles.infoList}>
           {isAdmin ? (
             <>
-              <li>Click on any round card to manage points for that round</li>
-              <li>You can set manual points for each player in that round</li>
-              <li>Points are specific to each round and don't carry over</li>
-              <li>Players will see their points for each round separately</li>
+              <li>{tr("Click on any round card to manage points for that round")}</li>
+              <li>{tr("You can set manual points for each player in that round")}</li>
+              <li>{tr("Points are specific to each round and don't carry over")}</li>
+              <li>{tr("Players will see their points for each round separately")}</li>
             </>
           ) : (
             <>
-              <li>Click on any round card to view the scoreboard for that round</li>
-              <li>See your ranking, points, and other players' scores</li>
-              <li>Each round has its own separate scoreboard</li>
-              <li>Points are awarded by administrators for each round</li>
+              <li>{tr("Click on any round card to view the scoreboard for that round")}</li>
+              <li>{tr("See your ranking, points, and other players' scores")}</li>
+              <li>{tr("Each round has its own separate scoreboard")}</li>
+              <li>{tr("Points are awarded by administrators for each round")}</li>
             </>
           )}
         </ul>

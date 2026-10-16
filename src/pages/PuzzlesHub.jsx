@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './PuzzlesHub.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function PuzzlesHub() {
   const [showRulesModal, setShowRulesModal] = useState(false);
@@ -32,20 +33,20 @@ export default function PuzzlesHub() {
             the first card INSIDE Puzzles (see Training.jsx PUZZLE_MODES), so
             this hero points at the one place that holds every puzzle mode. */}
         <div className="hub-daily-hero">
-          <div className="hub-daily-badge">⭐ Featured</div>
+          <div className="hub-daily-badge">{tr("⭐ Featured")}</div>
           <div className="hub-daily-icon">🧩</div>
           <div className="hub-daily-body">
-            <h2 className="hub-daily-title">Puzzles</h2>
+            <h2 className="hub-daily-title">{tr("Puzzles")}</h2>
             <p className="hub-daily-desc">
-              <strong>Daily Puzzles</strong> from World Champion games, plus Healthy Mix,
+              <strong>{tr("Daily Puzzles")}</strong> {tr("from World Champion games, plus Healthy Mix,")}
               Themes, Pieces and Rating — every way to train, in one place.
             </p>
             <div className="hub-daily-stats">
-              <span className="hub-daily-stat">👑 From Champion Games</span>
-              <span className="hub-daily-stat">🔥 New every day</span>
+              <span className="hub-daily-stat">{tr("👑 From Champion Games")}</span>
+              <span className="hub-daily-stat">{tr("🔥 New every day")}</span>
             </div>
           </div>
-          <Link to="/training" className="hub-daily-cta">Start Solving →</Link>
+          <Link to="/training" className="hub-daily-cta">{tr("Start Solving →")}</Link>
         </div>
 
         {/* Monthly Focus — promoted from its own full-width band to sit beside
@@ -64,7 +65,7 @@ export default function PuzzlesHub() {
               .hub-focus-active-badge), so it reads as a status flag on the card
               rather than a caption under the icon — the same place the Puzzles
               hero puts its FEATURED badge. */}
-          <span className="hub-focus-active-badge">Active Now</span>
+          <span className="hub-focus-active-badge">{tr("Active Now")}</span>
 
           <div className="hub-focus-icon-wrap">
             <span className="hub-focus-big-icon">🎯</span>
@@ -73,7 +74,7 @@ export default function PuzzlesHub() {
           <div className="hub-focus-info">
             {/* The "Monthly Challenge" eyebrow was removed: it repeated the
                 title directly beneath it. */}
-            <h3 className="hub-focus-title">Monthly Focus Challenge</h3>
+            <h3 className="hub-focus-title">{tr("Monthly Focus Challenge")}</h3>
             <p className="hub-focus-desc">7-day tactical training program • Earn XP & unlock achievements</p>
           </div>
 
@@ -82,7 +83,7 @@ export default function PuzzlesHub() {
               wrapper, which inherited align-items:flex-start from the card and
               so shrank to the text width — that is why this button was narrower
               than its twin despite identical type and padding. */}
-          <Link to="/monthly-focus" className="hub-focus-cta">Start Challenge →</Link>
+          <Link to="/monthly-focus" className="hub-focus-cta">{tr("Start Challenge →")}</Link>
         </div>
 
       </div>
@@ -98,9 +99,9 @@ export default function PuzzlesHub() {
         <Link to="/training/find-the-blunder" className="hub-mini-card hub-mini--blunder hub-mini--wide">
           <div className="hub-mini-icon">🔎</div>
           <div className="hub-mini-body">
-            <span className="hub-mini-tag">Analysis</span>
-            <h3 className="hub-mini-title">Find the Blunder</h3>
-            <p className="hub-mini-desc">Spot the losing move in a real game</p>
+            <span className="hub-mini-tag">{tr("Analysis")}</span>
+            <h3 className="hub-mini-title">{tr("Find the Blunder")}</h3>
+            <p className="hub-mini-desc">{tr("Spot the losing move in a real game")}</p>
           </div>
           <span className="hub-mini-arrow">→</span>
         </Link>
@@ -108,9 +109,9 @@ export default function PuzzlesHub() {
         <Link to="/arcade/lobby?game=ttt" className="hub-mini-card hub-mini--ttt">
           <div className="hub-mini-icon">⚔️</div>
           <div className="hub-mini-body">
-            <span className="hub-mini-tag">Strategy</span>
-            <h3 className="hub-mini-title">TTT</h3>
-            <p className="hub-mini-desc">Puzzle-powered Tic‑Tac‑Toe</p>
+            <span className="hub-mini-tag">{tr("Strategy")}</span>
+            <h3 className="hub-mini-title">{"TTT"}</h3>
+            <p className="hub-mini-desc">{tr("Puzzle-powered Tic‑Tac‑Toe")}</p>
           </div>
           <span className="hub-mini-arrow">→</span>
         </Link>
@@ -118,9 +119,9 @@ export default function PuzzlesHub() {
         <Link to="/arcade/lobby?game=bingo" className="hub-mini-card hub-mini--bingo">
           <div className="hub-mini-icon">🎰</div>
           <div className="hub-mini-body">
-            <span className="hub-mini-tag">Knowledge</span>
-            <h3 className="hub-mini-title">Bingo</h3>
-            <p className="hub-mini-desc">Spot tactical themes</p>
+            <span className="hub-mini-tag">{tr("Knowledge")}</span>
+            <h3 className="hub-mini-title">{tr("Bingo")}</h3>
+            <p className="hub-mini-desc">{tr("Spot tactical themes")}</p>
           </div>
           <span className="hub-mini-arrow">→</span>
         </Link>
@@ -131,15 +132,15 @@ export default function PuzzlesHub() {
       <div className="action-bar">
         <Link to="/scoreboard" className="action-button scoreboard-btn">
           <span className="btn-icon">🏅</span>
-          <span className="btn-text">Scoreboard</span>
+          <span className="btn-text">{tr("Scoreboard")}</span>
         </Link>
         <Link to="/contest-rules" className="action-button contest-btn">
           <span className="btn-icon">🎯</span>
-          <span className="btn-text">Contest 2025</span>
+          <span className="btn-text">{tr("Contest 2025")}</span>
         </Link>
         <button className="action-button rules-btn" onClick={() => setShowRulesModal(true)}>
           <span className="btn-icon">📜</span>
-          <span className="btn-text">Quick Rules</span>
+          <span className="btn-text">{tr("Quick Rules")}</span>
         </button>
       </div>
 
@@ -148,8 +149,8 @@ export default function PuzzlesHub() {
         <div className="modal-overlay" onClick={() => setShowRulesModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2 className="modal-title">📜 Contest Rules</h2>
-              <button className="modal-close" onClick={() => setShowRulesModal(false)} aria-label="Close modal">✕</button>
+              <h2 className="modal-title">{tr("📜 Contest Rules")}</h2>
+              <button className="modal-close" onClick={() => setShowRulesModal(false)} aria-label={tr("Close modal")}>✕</button>
             </div>
             <div className="modal-body">
               <ul className="rules-list">
@@ -162,7 +163,7 @@ export default function PuzzlesHub() {
               </ul>
             </div>
             <div className="modal-footer">
-              <button className="modal-action-btn" onClick={() => setShowRulesModal(false)}>Got it!</button>
+              <button className="modal-action-btn" onClick={() => setShowRulesModal(false)}>{tr("Got it!")}</button>
             </div>
           </div>
         </div>

@@ -15,6 +15,7 @@ import '../GameAnalysis.css';
 import './CoachDashboard.css';
 import './CoachOnboarding.css';
 import './CoachStudentDetail.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 function fmt(n) { return n != null ? Number(n).toLocaleString() : '—'; }
 // Chess ratings are plain numbers — never thousands-separated (1200, not 1,200).
@@ -113,7 +114,7 @@ function RatingChart({ title, accent, who, series }) {
             href={profileUrl(title, who)}
             target="_blank"
             rel="noopener noreferrer"
-            title={`Open @${who} on ${title}`}
+            title={tr("Open @{who} on {title}", { who: who, title: title })}
           >
             @{who} <span aria-hidden="true">↗</span>
           </a>
@@ -131,7 +132,7 @@ function RatingChart({ title, accent, who, series }) {
         </div>
 
         <svg className="csd-rating-svg" viewBox="0 0 300 100" preserveAspectRatio="none" role="img"
-          aria-label={`${title} rating from ${yMin} to ${yMax} over recent games`}>
+          aria-label={tr("{title} rating from {yMin} to {yMax} over recent games", { title: title, yMin: yMin, yMax: yMax })}>
           {/* Gridlines at the same values as the labels beside them. */}
           {ticks.map(v => {
             const y = yOf(v);
@@ -272,24 +273,24 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
     return `${window.location.origin}/progress/${r.data.token}`;
   };
   const copyReportLink = async () => {
-    setShareMsg('Generating link…');
+    setShareMsg(tr('Generating link…'));
     try {
       const url = await resolveReportUrl();
       try {
         await navigator.clipboard.writeText(url);
-        setShareMsg('✓ Link copied — send it to the parent');
+        setShareMsg(tr('✓ Link copied — send it to the parent'));
       } catch {
         window.prompt('Copy this progress link and send it to the parent:', url);
         setShareMsg('');
       }
     } catch {
-      setShareMsg('Could not generate link — try again');
+      setShareMsg(tr('Could not generate link — try again'));
     } finally {
       setTimeout(() => setShareMsg(''), 2600);
     }
   };
   const openReport = async () => {
-    setShareMsg('Opening report…');
+    setShareMsg(tr('Opening report…'));
     // Open the tab synchronously (before the await) so popup blockers don't stop it.
     const tab = window.open('', '_blank');
     try {
@@ -298,7 +299,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       setShareMsg('');
     } catch {
       if (tab) tab.close();
-      setShareMsg('Could not open report — try again');
+      setShareMsg(tr('Could not open report — try again'));
       setTimeout(() => setShareMsg(''), 2600);
     }
   };
@@ -344,7 +345,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
     setLoading(true);
     api.get(`/api/coach/students/${studentLinkId}/progress`)
       .then(r => setData(r.data))
-      .catch(e => setError(e.response?.data?.message || 'Failed to load student.'))
+      .catch(e => setError(e.response?.data?.message || tr('Failed to load student.')))
       .finally(() => setLoading(false));
 
     // The student's latest practice report. Absent for most students — they
@@ -398,7 +399,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
     setAnalyzing(true);
     setAnalysis(null);
     setAnalyzePlatform(platform);
-    setAnalyzeProgress({ current: 0, total: 25, stage: 'Starting…' });
+    setAnalyzeProgress({ current: 0, total: 25, stage: tr('Starting…') });
     try {
       const r = await api.post(`/api/coach/students/${studentLinkId}/analyze`, { force, platform });
       if (r.data.status === 'done') {
@@ -413,7 +414,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
     }
   };
 
-  if (loading) return <div className="coach-loading">Loading student progress…</div>;
+  if (loading) return <div className="coach-loading">{tr("Loading student progress…")}</div>;
   if (error) return <div className="coach-error">⚠️ {error}</div>;
   if (!data) return null;
 
@@ -423,7 +424,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
   return (
     <div className="coach-dash">
       <div className="csd-back">
-        <button onClick={() => (embedded && onBack ? onBack() : navigate(-1))} className="btn-ghost">← Back</button>
+        <button onClick={() => (embedded && onBack ? onBack() : navigate(-1))} className="btn-ghost">{tr("← Back")}</button>
       </div>
 
       {/* ── Header ─────────────────── */}
@@ -435,10 +436,10 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           className="csd-avatar"
         />
         <div className="csd-meta">
-          <h1>{link?.studentName || student?.displayName || student?.username || 'Unnamed student'}</h1>
+          <h1>{link?.studentName || student?.displayName || student?.username || tr('Unnamed student')}</h1>
           <p>
             {student?.username && <>@{student.username} · </>}
-            {student?.country || 'Unknown country'}
+            {student?.country || tr('Unknown country')}
             {/* Also in the header, not only on the rating cards: those cards
                 need enough games to draw a chart, so a student who has just
                 linked an account would otherwise have no way through to it. */}
@@ -447,9 +448,9 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                 className="csd-ext-link"
                 href={profileUrl('Lichess', student.lichessUsername)}
                 target="_blank" rel="noopener noreferrer"
-                title={`Open @${student.lichessUsername} on Lichess`}
+                title={tr("Open @{lichessUsername} on Lichess", { lichessUsername: student.lichessUsername })}
               >
-                Lichess ↗
+                {tr("Lichess ↗")}
               </a>
             )}
             {student?.chessComUsername && (
@@ -457,9 +458,9 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                 className="csd-ext-link"
                 href={profileUrl('Chess.com', student.chessComUsername)}
                 target="_blank" rel="noopener noreferrer"
-                title={`Open @${student.chessComUsername} on Chess.com`}
+                title={tr("Open @{chessComUsername} on Chess.com", { chessComUsername: student.chessComUsername })}
               >
-                Chess.com ↗
+                {tr("Chess.com ↗")}
               </a>
             )}
             {!editingGroup && (
@@ -467,10 +468,10 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                 type="button"
                 className="tag"
                 style={{ marginLeft: 8, cursor: 'pointer', border: 'none' }}
-                title="Click to change this student's group / batch"
+                title={tr("Click to change this student's group / batch")}
                 onClick={() => setEditingGroup(true)}
               >
-                {groupTag ? `🏷️ ${groupTag}` : '＋ Add group'} ✎
+                {groupTag ? `🏷️ ${groupTag}` : tr('＋ Add group')} ✎
               </button>
             )}
             {editingGroup && (
@@ -479,16 +480,16 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                   type="text"
                   value={groupTag}
                   autoFocus
-                  placeholder="e.g. Batch A"
+                  placeholder={tr("e.g. Batch A")}
                   onChange={e => setGroupTag(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') saveGroup(); if (e.key === 'Escape') { setEditingGroup(false); setGroupTag(data?.link?.groupTag || ''); } }}
                   style={{ padding: '2px 8px', borderRadius: 'var(--radius-sm)' }}
                 />
                 <button type="button" className="btn-ghost" onClick={saveGroup} disabled={savingGroup}>
-                  {savingGroup ? 'Saving…' : 'Save'}
+                  {savingGroup ? tr('Saving…') : tr('Save')}
                 </button>
                 <button type="button" className="btn-ghost" onClick={() => { setEditingGroup(false); setGroupTag(data?.link?.groupTag || ''); }}>
-                  Cancel
+                  {tr("Cancel")}
                 </button>
               </span>
             )}
@@ -518,7 +519,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
         <aside className="csd-side">
           <div className="csd-card">
             <div className="csd-card-head">
-              <h2>📝 Notes<InfoTip>Private — only you see these notes. The student and parents never do.</InfoTip></h2>
+              <h2>{tr("📝 Notes")}<InfoTip>{tr("Private — only you see these notes. The student and parents never do.")}</InfoTip></h2>
             </div>
             <textarea
               className="csd-textarea"
@@ -526,12 +527,12 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               onChange={(e) => setNotes(e.target.value)}
               maxLength={1000}
               rows={4}
-              placeholder="Private notes about this student…"
+              placeholder={tr("Private notes about this student…")}
             />
             <div className="csd-card-foot">
               <span className="csd-muted">{notesSaved}</span>
               <button className="btn-ghost csd-save" onClick={saveNotes} disabled={savingNotes}>
-                {savingNotes ? 'Saving…' : 'Save'}
+                {savingNotes ? tr('Saving…') : tr('Save')}
               </button>
             </div>
           </div>
@@ -542,7 +543,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               purpose: this text is published to anyone holding the link. */}
           <div className="csd-card coach-parent-note">
             <div className="csd-card-head">
-              <h2>💬 Parent report<InfoTip>
+              <h2>{tr("💬 Parent report")}<InfoTip>
                 Copy a private link to this student's progress report and send it to
                 the parent. The note below is printed on that report — write it for
                 someone who may not play chess.
@@ -552,18 +553,18 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               <button
                 type="button"
                 className="csd-share-progress"
-                title="Copy a private progress link to send to this student's parent"
+                title={tr("Copy a private progress link to send to this student's parent")}
                 onClick={copyReportLink}
               >
-                📋 Copy link
+                {tr("📋 Copy link")}
               </button>
               <button
                 type="button"
                 className="csd-share-progress csd-share-open"
-                title="Open the parent's progress report in a new tab"
+                title={tr("Open the parent's progress report in a new tab")}
                 onClick={openReport}
               >
-                ↗ Open report
+                {tr("↗ Open report")}
               </button>
             </div>
             {shareMsg && <div className="csd-share-msg">{shareMsg}</div>}
@@ -573,17 +574,17 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               onChange={(e) => setReportNote(e.target.value)}
               maxLength={1500}
               rows={5}
-              placeholder="e.g. Aarav has worked hard this month and his tactics have improved a lot. He needs to slow down in longer games — we are working on that."
+              placeholder={tr("e.g. Aarav has worked hard this month and his tactics have improved a lot. He needs to slow down in longer games — we are working on that.")}
             />
             <div className="csd-card-foot">
               <span className="coach-parent-note-foot">
                 {reportNoteSaved || <>
                   {reportNote.length}/1500
-                  {reportNoteAt && ` · updated ${new Date(reportNoteAt).toLocaleDateString()}`}
+                  {reportNoteAt && tr(" · updated {v0}", { v0: new Date(reportNoteAt).toLocaleDateString() })}
                 </>}
               </span>
               <button className="btn-ghost csd-save" onClick={saveReportNote} disabled={savingReportNote}>
-                {savingReportNote ? 'Saving…' : 'Save'}
+                {savingReportNote ? tr('Saving…') : tr('Save')}
               </button>
             </div>
           </div>
@@ -593,24 +594,24 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       {/* ── Summary stats (last 30 days) ─────────── */}
       <div className="csd-stats">
         <div className="csd-stat">
-          <span>Puzzles solved</span>
+          <span>{tr("Puzzles solved")}</span>
           <strong>{fmt(totals.puzzlesSolved)}</strong>
-          <em>last 30 days</em>
+          <em>{tr("last 30 days")}</em>
         </div>
         <div className="csd-stat">
-          <span>Avg accuracy</span>
+          <span>{tr("Avg accuracy")}</span>
           <strong>{totals.avgAccuracy != null ? Math.round(totals.avgAccuracy) + '%' : '—'}</strong>
-          <em>last 30 days</em>
+          <em>{tr("last 30 days")}</em>
         </div>
         <div className="csd-stat">
-          <span>Active days</span>
+          <span>{tr("Active days")}</span>
           <strong>{totals.activeDays || 0}<small> / 30</small></strong>
-          <em>last 30 days</em>
+          <em>{tr("last 30 days")}</em>
         </div>
         <div className="csd-stat">
-          <span>Best race score</span>
+          <span>{tr("Best race score")}</span>
           <strong>{fmt(student?.highestArenaRaceScore)}</strong>
-          <em>all time</em>
+          <em>{tr("all time")}</em>
         </div>
       </div>
 
@@ -622,7 +623,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       {(ratings?.lichess || ratings?.chesscom) && (
         <div className="coach-section">
           <div className="coach-section-head">
-            <h2>📈 Rating over recent games<InfoTip>
+            <h2>{tr("📈 Rating over recent games")}<InfoTip>
               Built from this student's most recent games on each site, so it shows
               the current trend rather than their whole history.
             </InfoTip></h2>
@@ -630,7 +631,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           <div className="csd-rating-grid">
             {ratings.lichess && (
               <RatingChart
-                title="Lichess"
+                title={tr("Lichess")}
                 accent="#a78bfa"
                 who={ratings.lichessName}
                 series={ratings.lichess}
@@ -638,7 +639,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
             )}
             {ratings.chesscom && (
               <RatingChart
-                title="Chess.com"
+                title={tr("Chess.com")}
                 accent="#86efac"
                 who={ratings.chesscomName}
                 series={ratings.chesscom}
@@ -655,15 +656,15 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       {streakReport?.payload && (
         <div className="coach-section">
           <div className="coach-section-head">
-            <h2>🔥 Practice report<InfoTip>
+            <h2>{tr("🔥 Practice report")}<InfoTip>
               The student earns this report by practising several days in a row. It is
               built from their own games: accuracy by phase (b = blunders, m = mistakes,
               i = inaccuracies), how they defend, and the study plan they were given.
             </InfoTip></h2>
             <span className="csd-muted" style={{ fontSize: 12.5 }}>
               {fmtDate(streakReport.periodStart)} – {fmtDate(streakReport.periodEnd)} ·
-              {' '}{streakReport.milestoneDay}-day streak ·
-              {' '}{streakReport.gamesAnalysed} games
+              {' '}{streakReport.milestoneDay}{tr("-day streak ·")}
+              {' '}{streakReport.gamesAnalysed} {tr("games")}
             </span>
             {/* The summary below is a triage view — enough to see who needs
                 attention before a lesson. The full report is the same payload
@@ -676,7 +677,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               className="csd-full-btn"
               onClick={() => setShowFullReport(true)}
             >
-              View full report →
+              {tr("View full report →")}
             </button>
           </div>
 
@@ -708,21 +709,21 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                 🛡 Held <b>{(streakReport.payload.defence.recovered || 0)
                   + (streakReport.payload.defence.turnedAround || 0)
                   + (streakReport.payload.defence.held || 0)}</b>
-                {' '}of <b>{streakReport.payload.defence.opportunities}</b> bad positions
+                {' '}{tr("of")} <b>{streakReport.payload.defence.opportunities}</b> {tr("bad positions")}
                 {streakReport.payload.defence.defensiveScore != null
                   && ` (${streakReport.payload.defence.defensiveScore}%)`}
                 {/* Collapses are the actionable half of defence: "held 19 of 24"
                     is a pass mark, "collapsed 5" is the lesson. Showing only the
                     held figure hid what the coach should teach. */}
                 {streakReport.payload.defence.collapsed > 0 && (
-                  <em className="csd-bad"> · collapsed {streakReport.payload.defence.collapsed}</em>
+                  <em className="csd-bad"> {tr("· collapsed")} {streakReport.payload.defence.collapsed}</em>
                 )}
               </span>
             )}
             {streakReport.payload.conversion?.hadWinningPosition > 0 && (
               <span>
-                🏁 Won <b>{streakReport.payload.conversion.converted}</b> of
-                {' '}<b>{streakReport.payload.conversion.hadWinningPosition}</b> winning positions
+                {tr("🏁 Won")} <b>{streakReport.payload.conversion.converted}</b> {tr("of")}
+                {' '}<b>{streakReport.payload.conversion.hadWinningPosition}</b> {tr("winning positions")}
               </span>
             )}
           </div>
@@ -752,7 +753,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           {/* The study plan the report built — what the student was told to do. */}
           {(streakReport.payload.suggestions || []).length > 0 && (
             <div className="csd-plan">
-              <div className="csd-plan-head">Study plan given to this student</div>
+              <div className="csd-plan-head">{tr("Study plan given to this student")}</div>
               {streakReport.payload.suggestions.map(sg => (
                 <div key={sg.key} className="csd-plan-row">
                   <span className="csd-plan-ic">{sg.icon}</span>
@@ -770,13 +771,13 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       {/* ── Game analysis (deep Stockfish report) ───── */}
       <div className="coach-section">
         <div className="coach-section-head csd-analyze-head">
-          <h2>🔎 Game analysis<InfoTip>
-            Runs a deep Stockfish review of {student?.displayName || student?.username || 'the student'}'s
+          <h2>{tr("🔎 Game analysis")}<InfoTip>
+            {tr("Runs a deep Stockfish review of")} {student?.displayName || student?.username || tr('the student')}'s
             last 25 games on the platform you pick — accuracy by phase, blunders, playstyle and
             recurring patterns. Each platform is analysed separately; press the same button again
             to re-run. Results are kept for 24 hours.
             {!student?.lichessUsername && !student?.chessComUsername && (
-              <> Lichess and Chess.com buttons appear once the student saves those usernames in their profile.</>
+              <> {tr("Lichess and Chess.com buttons appear once the student saves those usernames in their profile.")}</>
             )}
           </InfoTip></h2>
           <div className="csd-analyze-actions">
@@ -820,7 +821,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               <div style={{ width: `${analyzeProgress && analyzeProgress.total ? Math.round((analyzeProgress.current / analyzeProgress.total) * 100) : 5}%` }} />
             </div>
             <div className="csd-analyze-count">
-              {analyzeProgress?.current || 0} / {analyzeProgress?.total || 25} games
+              {analyzeProgress?.current || 0} / {analyzeProgress?.total || 25} {tr("games")}
             </div>
           </div>
         )}
@@ -828,20 +829,20 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
         {analysis && !analyzing && <AnalysisReport result={analysis} />}
 
         {!analysis && !analyzing && !analyzeErr && (
-          <div className="coach-empty">No analysis yet — pick a platform above.</div>
+          <div className="coach-empty">{tr("No analysis yet — pick a platform above.")}</div>
         )}
       </div>
 
       {/* ── Daily activity chart ───── */}
       <div className="coach-section">
         <div className="coach-section-head">
-          <h2>⏱️ Time on app (last 30 days)<InfoTip>
-            Minutes {student?.displayName || student?.username || 'the student'} spent practising
+          <h2>{tr("⏱️ Time on app (last 30 days)")}<InfoTip>
+            {tr("Minutes")} {student?.displayName || student?.username || tr('the student')} {tr("spent practising")}
             each day. A higher line means more time that day; dots mark the days they practised.
           </InfoTip></h2>
         </div>
         {activity.length === 0 ? (
-          <div className="coach-empty">No activity recorded yet.</div>
+          <div className="coach-empty">{tr("No activity recorded yet.")}</div>
         ) : (() => {
           const totalMins = Math.round(activity.reduce((s, a) => s + (a.totalSeconds || 0), 0) / 60);
           const activeDays = activity.filter(a => (a.totalSeconds || 0) > 0).length;
@@ -852,9 +853,9 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           return (
             <>
               <div className="csd-chart-summary">
-                <span><strong>{totalMins}</strong> min total</span>
-                <span><strong>{activeDays}</strong> active day{activeDays === 1 ? '' : 's'}</span>
-                <span>Best day: <strong>{peakMins}</strong> min</span>
+                <span><strong>{totalMins}</strong> {tr("min total")}</span>
+                <span><strong>{activeDays}</strong> {tr("active day")}{activeDays === 1 ? '' : 's'}</span>
+                <span>{tr("Best day:")} <strong>{peakMins}</strong> {tr("min")}</span>
               </div>
               <div className="csd-chart-plot">
                 {/* Y-axis: peak value at top, 0 at bottom */}
@@ -870,7 +871,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                   viewBox="0 0 300 100"
                   preserveAspectRatio="none"
                   role="img"
-                  aria-label={`Practice minutes per day over the last ${activity.length} days`}
+                  aria-label={tr("Practice minutes per day over the last {length} days", { length: activity.length })}
                 >
                   <defs>
                     {/* Follows the theme — was the old brand cyan hardcoded,
@@ -916,7 +917,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                             strokeLinecap="round"
                             vectorEffect="non-scaling-stroke"
                           >
-                            <title>{`${fmtDate(a.date)} · ${Math.round((a.totalSeconds || 0) / 60)} min`}</title>
+                            <title>{tr("{v0} · {v1} min", { v0: fmtDate(a.date), v1: Math.round((a.totalSeconds || 0) / 60) })}</title>
                           </line>
                         ) : null))}
                       </>
@@ -939,10 +940,10 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       <div className="coach-section">
         <div className="csd-tabs">
           {[
-            { id: 'races', label: '🏁 Races', n: raceResults.length },
-            { id: 'arena', label: '♟ Arena games', n: arenaGames.length },
-            { id: 'studies', label: '📚 Studies', n: testResults.length },
-            { id: 'assignments', label: '📝 Assignments', n: assignments.length },
+            { id: 'races', label: tr('🏁 Races'), n: raceResults.length },
+            { id: 'arena', label: tr('♟ Arena games'), n: arenaGames.length },
+            { id: 'studies', label: tr('📚 Studies'), n: testResults.length },
+            { id: 'assignments', label: tr('📝 Assignments'), n: assignments.length },
           ].map(t => (
             <button
               key={t.id}
@@ -957,18 +958,18 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
         {/* ── Race results ──────────── */}
         {activityTab === 'races' && (
           raceResults.length === 0 ? (
-          <div className="coach-empty">No race results in the last 30 days.</div>
+          <div className="coach-empty">{tr("No race results in the last 30 days.")}</div>
         ) : (
           <div className="csd-table-wrap">
             <table className="csd-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Topic</th>
-                  <th>Correct</th>
-                  <th>Wrong</th>
-                  <th>Time</th>
-                  <th>Score</th>
+                  <th>{tr("Date")}</th>
+                  <th>{tr("Topic")}</th>
+                  <th>{tr("Correct")}</th>
+                  <th>{tr("Wrong")}</th>
+                  <th>{tr("Time")}</th>
+                  <th>{tr("Score")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -990,18 +991,18 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
         {/* ── Arena tournament games ─── */}
         {activityTab === 'arena' && (<>
           {arenaGames.length === 0 ? (
-          <div className="coach-empty">No arena games in the last 30 days.</div>
+          <div className="coach-empty">{tr("No arena games in the last 30 days.")}</div>
         ) : (
           <div className="csd-table-wrap">
             <table className="csd-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Tournament</th>
-                  <th>Color</th>
-                  <th>Opponent</th>
-                  <th>Result</th>
-                  <th>Time ctrl</th>
+                  <th>{tr("Date")}</th>
+                  <th>{tr("Tournament")}</th>
+                  <th>{tr("Color")}</th>
+                  <th>{tr("Opponent")}</th>
+                  <th>{tr("Result")}</th>
+                  <th>{tr("Time ctrl")}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -1031,13 +1032,13 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                     <tr key={i}>
                       <td>{fmtDate(g.finishedAt)}</td>
                       <td>{g.tournamentId?.name || '—'}</td>
-                      <td>{isWhite ? '⬜ White' : '⬛ Black'}</td>
+                      <td>{isWhite ? tr('⬜ White') : tr('⬛ Black')}</td>
                       <td>{opponent}</td>
                       <td className={resultClass}>{resultLabel}</td>
                       <td>{tc}</td>
                       <td>
-                        <button className="csd-watch-btn" onClick={watchGame} title="Replay this game">
-                          ▶ Watch
+                        <button className="csd-watch-btn" onClick={watchGame} title={tr("Replay this game")}>
+                          {tr("▶ Watch")}
                         </button>
                       </td>
                     </tr>
@@ -1052,19 +1053,19 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
         {/* ── Study / Test results ───── */}
         {activityTab === 'studies' && (
           testResults.length === 0 ? (
-          <div className="coach-empty">No studies in the last 30 days.</div>
+          <div className="coach-empty">{tr("No studies in the last 30 days.")}</div>
         ) : (
           <div className="csd-table-wrap">
             <table className="csd-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Study</th>
-                  <th>Chapter</th>
-                  <th>Solved</th>
-                  <th>Accuracy</th>
-                  <th>Points</th>
-                  <th>Time</th>
+                  <th>{tr("Date")}</th>
+                  <th>{tr("Study")}</th>
+                  <th>{tr("Chapter")}</th>
+                  <th>{tr("Solved")}</th>
+                  <th>{tr("Accuracy")}</th>
+                  <th>{tr("Points")}</th>
+                  <th>{tr("Time")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1097,11 +1098,11 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
         {activityTab === 'assignments' && (<>
           {!embedded && (
             <div className="csd-tab-hint">
-              <Link to="/coach/assignments" className="btn-ghost">＋ New assignment</Link>
+              <Link to="/coach/assignments" className="btn-ghost">{tr("＋ New assignment")}</Link>
             </div>
           )}
           {assignments.length === 0 ? (
-          <div className="coach-empty">No assignments yet for this student.</div>
+          <div className="coach-empty">{tr("No assignments yet for this student.")}</div>
         ) : (
           <div className="coach-assignment-list">
             {assignments.map(a => {
@@ -1112,8 +1113,8 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                     <div className="assign-title">{a.title}</div>
                     <div className="assign-meta">
                       {a.assignmentType.replace('_', ' ')}
-                      {a.targetCount ? ` · ${a.targetCount} puzzles` : ''}
-                      {a.dueDate ? ` · due ${new Date(a.dueDate).toLocaleDateString()}` : ''}
+                      {a.targetCount ? tr(" · {targetCount} puzzles", { targetCount: a.targetCount }) : ''}
+                      {a.dueDate ? tr(" · due {v0}", { v0: new Date(a.dueDate).toLocaleDateString() }) : ''}
                     </div>
                   </div>
                   <div className="assign-status">
@@ -1148,7 +1149,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       {showFullReport && streakReport?.payload && (
         <FullReportModal
           report={streakReport}
-          studentName={link?.studentName || student?.displayName || student?.username || 'this student'}
+          studentName={link?.studentName || student?.displayName || student?.username || tr('this student')}
           onClose={() => setShowFullReport(false)}
         />
       )}
@@ -1195,20 +1196,20 @@ function FullReportModal({ report, studentName, onClose }) {
       <div className="csd-modal" onClick={e => e.stopPropagation()}>
         <div className="csd-modal-head">
           <div>
-            <h2>Practice report — {studentName}</h2>
+            <h2>{tr("Practice report —")} {studentName}</h2>
             <span className="csd-muted">
               {fmtDate(report.periodStart)} – {fmtDate(report.periodEnd)} ·
-              {' '}{report.gamesAnalysed} of {report.gamesFound} games analysed
+              {' '}{report.gamesAnalysed} {tr("of")} {report.gamesFound} {tr("games analysed")}
             </span>
           </div>
-          <button type="button" className="csd-modal-x" onClick={onClose} aria-label="Close">✕</button>
+          <button type="button" className="csd-modal-x" onClick={onClose} aria-label={tr("Close")}>✕</button>
         </div>
 
         <div className="csd-modal-body">
           {p.verdict?.text && <p className="csd-verdict">🎯 {p.verdict.text}</p>}
 
           {/* Phases, in full: accuracy AND the error counts behind it. */}
-          <h3 className="csd-modal-h3">Accuracy by phase</h3>
+          <h3 className="csd-modal-h3">{tr("Accuracy by phase")}</h3>
           <div className="csd-fr-phases">
             {['opening', 'middlegame', 'endgame'].map(k => {
               const ph = phases[k] || {};
@@ -1219,11 +1220,11 @@ function FullReportModal({ report, studentName, onClose }) {
                   <div className="csd-fr-phase-acc" style={{ color: accColor(ph.accuracy) }}>
                     {pct(ph.accuracy)}
                   </div>
-                  <div className="csd-fr-phase-moves">{ph.moves || 0} moves</div>
-                  <div className="csd-fr-err"><span>Blunders</span><b>{ph.blunders || 0}</b></div>
-                  <div className="csd-fr-err"><span>Mistakes</span><b>{ph.mistakes || 0}</b></div>
-                  <div className="csd-fr-err"><span>Inaccuracies</span><b>{ph.inaccuracies || 0}</b></div>
-                  {weak && <div className="csd-fr-weak">Weakest phase</div>}
+                  <div className="csd-fr-phase-moves">{ph.moves || 0} {tr("moves")}</div>
+                  <div className="csd-fr-err"><span>{tr("Blunders")}</span><b>{ph.blunders || 0}</b></div>
+                  <div className="csd-fr-err"><span>{tr("Mistakes")}</span><b>{ph.mistakes || 0}</b></div>
+                  <div className="csd-fr-err"><span>{tr("Inaccuracies")}</span><b>{ph.inaccuracies || 0}</b></div>
+                  {weak && <div className="csd-fr-weak">{tr("Weakest phase")}</div>}
                 </div>
               );
             })}
@@ -1232,25 +1233,25 @@ function FullReportModal({ report, studentName, onClose }) {
           {/* Defence — including the collapses, which the summary omitted. */}
           {p.defence?.opportunities > 0 && (
             <>
-              <h3 className="csd-modal-h3">How they defend</h3>
+              <h3 className="csd-modal-h3">{tr("How they defend")}</h3>
               <div className="csd-fr-stats">
-                <Stat2 label="Difficult positions" v={p.defence.opportunities} />
-                <Stat2 label="Saved or held" good
+                <Stat2 label={tr("Difficult positions")} v={p.defence.opportunities} />
+                <Stat2 label={tr("Saved or held")} good
                   v={(p.defence.recovered || 0) + (p.defence.turnedAround || 0) + (p.defence.held || 0)} />
-                <Stat2 label="Collapsed" bad v={p.defence.collapsed || 0} />
-                <Stat2 label="Defensive score" v={pct(p.defence.defensiveScore)} />
-                <Stat2 label="Avg. resistance"
-                  v={p.defence.avgResistanceMoves != null ? `${p.defence.avgResistanceMoves} moves` : '—'} />
+                <Stat2 label={tr("Collapsed")} bad v={p.defence.collapsed || 0} />
+                <Stat2 label={tr("Defensive score")} v={pct(p.defence.defensiveScore)} />
+                <Stat2 label={tr("Avg. resistance")}
+                  v={p.defence.avgResistanceMoves != null ? tr("{avgResistanceMoves} moves", { avgResistanceMoves: p.defence.avgResistanceMoves }) : '—'} />
               </div>
             </>
           )}
 
           {(p.endgames || []).length > 0 && (
             <>
-              <h3 className="csd-modal-h3">Endgames reached</h3>
+              <h3 className="csd-modal-h3">{tr("Endgames reached")}</h3>
               <div className="csd-fr-scroll">
                 <table className="csd-fr-table">
-                  <thead><tr><th>Endgame</th><th>Reached</th><th>W</th><th>D</th><th>L</th><th>Score</th></tr></thead>
+                  <thead><tr><th>{tr("Endgame")}</th><th>{tr("Reached")}</th><th>W</th><th>D</th><th>L</th><th>{tr("Score")}</th></tr></thead>
                   <tbody>
                     {p.endgames.map((e, i) => (
                       <tr key={i}>
@@ -1269,10 +1270,10 @@ function FullReportModal({ report, studentName, onClose }) {
 
           {openings.length > 0 && (
             <>
-              <h3 className="csd-modal-h3">Openings played</h3>
+              <h3 className="csd-modal-h3">{tr("Openings played")}</h3>
               <div className="csd-fr-scroll">
                 <table className="csd-fr-table">
-                  <thead><tr><th>Opening</th><th>Side</th><th>Games</th><th>W</th><th>D</th><th>L</th><th>Score</th></tr></thead>
+                  <thead><tr><th>{tr("Opening")}</th><th>{tr("Side")}</th><th>{tr("Games")}</th><th>W</th><th>D</th><th>L</th><th>{tr("Score")}</th></tr></thead>
                   <tbody>
                     {openings.map((o, i) => (
                       <tr key={i}>
@@ -1290,7 +1291,7 @@ function FullReportModal({ report, studentName, onClose }) {
 
           {(p.momentThemes || []).length > 0 && (
             <>
-              <h3 className="csd-modal-h3">Patterns they missed</h3>
+              <h3 className="csd-modal-h3">{tr("Patterns they missed")}</h3>
               <div className="csd-fr-motifs">
                 {p.momentThemes.slice(0, 10).map(t => (
                   <span key={t.theme} className="csd-fr-motif">
@@ -1303,10 +1304,10 @@ function FullReportModal({ report, studentName, onClose }) {
 
           {p.timePressure?.hasClockData && (
             <>
-              <h3 className="csd-modal-h3">The clock</h3>
+              <h3 className="csd-modal-h3">{tr("The clock")}</h3>
               <div className="csd-fr-stats">
-                <Stat2 label="Moves with time" v={p.timePressure.normalMoves} />
-                <Stat2 label="Moves under a minute" v={p.timePressure.pressuredMoves} />
+                <Stat2 label={tr("Moves with time")} v={p.timePressure.normalMoves} />
+                <Stat2 label={tr("Moves under a minute")} v={p.timePressure.pressuredMoves} />
               </div>
               {p.timePressure.avgDropPressured > p.timePressure.avgDropNormal * 1.5 && (
                 <p className="csd-muted" style={{ fontSize: 12.5, marginTop: 8 }}>
@@ -1324,15 +1325,15 @@ function FullReportModal({ report, studentName, onClose }) {
           {cols.length > 0 && (
             <>
               <h3 className="csd-modal-h3">
-                {cols.length > 1 ? 'Report over report' : 'All measures'}
+                {cols.length > 1 ? tr('Report over report') : tr('All measures')}
               </h3>
               <div className="csd-fr-scroll">
                 <table className="csd-fr-table">
                   <thead>
                     <tr>
-                      <th>Measure</th>
+                      <th>{tr("Measure")}</th>
                       {cols.map((c, i) => (
-                        <th key={i}>{i === cols.length - 1 ? 'This report' : `Report ${i + 1}`}</th>
+                        <th key={i}>{i === cols.length - 1 ? 'This report' : tr("Report {v0}", { v0: i + 1 })}</th>
                       ))}
                     </tr>
                   </thead>
@@ -1373,7 +1374,7 @@ function FullReportModal({ report, studentName, onClose }) {
 
           {(p.suggestions || []).length > 0 && (
             <>
-              <h3 className="csd-modal-h3">Study plan given to this student</h3>
+              <h3 className="csd-modal-h3">{tr("Study plan given to this student")}</h3>
               <div className="csd-plan">
                 {p.suggestions.map(sg => (
                   <div key={sg.key} className="csd-plan-row">
@@ -1386,8 +1387,8 @@ function FullReportModal({ report, studentName, onClose }) {
           )}
 
           <p className="csd-muted" style={{ fontSize: 12, marginTop: 18 }}>
-            This is the same report the student sees.
-            {games.sampled && ` Analysed ${games.analysed} of ${games.found} games this period.`}
+            {tr("This is the same report the student sees.")}
+            {games.sampled && tr(" Analysed {analysed} of {found} games this period.", { analysed: games.analysed, found: games.found })}
           </p>
         </div>
       </div>
@@ -1433,9 +1434,9 @@ function AnalysisReport({ result }) {
     <div className="csd-analysis">
       {lowSample && (
         <div className="csd-lowsample">
-          ⚠️ Only {gamesN} game{gamesN === 1 ? '' : 's'} analyzed — results are rough.
+          {tr("⚠️ Only")} {gamesN} {tr("game")}{gamesN === 1 ? '' : 's'} {tr("analyzed — results are rough.")}
           <InfoTip>
-            {movesAnalyzed} of this player's moves could be analyzed — not enough to judge skill
+            {movesAnalyzed} {tr("of this player's moves could be analyzed — not enough to judge skill")}
             reliably. Treat accuracy, cp-loss and playstyle as rough indicators, not a true rating.
             Ask the student to play a few more games, then re-analyze.
           </InfoTip>
@@ -1445,17 +1446,17 @@ function AnalysisReport({ result }) {
       {/* Top-line summary */}
       <div className="csd-analysis-top">
         <div className="csd-an-card">
-          <span className="csd-an-label">Games analyzed</span>
-          <span className="csd-an-val">{gamesN}<span className="csd-an-cap"> / 25 max</span></span>
+          <span className="csd-an-label">{tr("Games analyzed")}</span>
+          <span className="csd-an-val">{gamesN}<span className="csd-an-cap"> {tr("/ 25 max")}</span></span>
         </div>
         <div className="csd-an-card">
-          <span className="csd-an-label">Overall accuracy</span>
+          <span className="csd-an-label">{tr("Overall accuracy")}</span>
           <span className="csd-an-val" style={{ color: accColor(result.overallAccuracy) }}>
             {result.overallAccuracy != null ? `${result.overallAccuracy}%` : '—'}
           </span>
         </div>
         <div className="csd-an-card">
-          <span className="csd-an-label">Record (W-D-L)</span>
+          <span className="csd-an-label">{tr("Record (W-D-L)")}</span>
           <span className="csd-an-val">
             <span className="cell-good">{result.wins ?? 0}</span>-
             {result.draws ?? 0}-
@@ -1463,18 +1464,18 @@ function AnalysisReport({ result }) {
           </span>
         </div>
         <div className="csd-an-card">
-          <span className="csd-an-label">Blunders</span>
+          <span className="csd-an-label">{tr("Blunders")}</span>
           <span className="csd-an-val cell-bad">{totalBlunders}</span>
         </div>
         {result.capsScore?.avgCpLoss != null && (
           <div className="csd-an-card">
-            <span className="csd-an-label">Avg cp lost / move<InfoTip>Centipawns lost per move compared with Stockfish's best move. Lower is better — strong players lose under 30.</InfoTip></span>
+            <span className="csd-an-label">{tr("Avg cp lost / move")}<InfoTip>{tr("Centipawns lost per move compared with Stockfish's best move. Lower is better — strong players lose under 30.")}</InfoTip></span>
             <span className="csd-an-val">{result.capsScore.avgCpLoss}</span>
           </div>
         )}
         {result.playstyle?.display && (
           <div className="csd-an-card">
-            <span className="csd-an-label">Playstyle</span>
+            <span className="csd-an-label">{tr("Playstyle")}</span>
             <span className="csd-an-val csd-an-val-sm">{result.playstyle.display}</span>
           </div>
         )}
@@ -1482,7 +1483,7 @@ function AnalysisReport({ result }) {
 
       {eloBandTrustworthy && (
         <div className="csd-elo-band">
-          Move quality is around <strong>{result.capsScore.eloBand.display}</strong> level
+          {tr("Move quality is around")} <strong>{result.capsScore.eloBand.display}</strong> {tr("level")}
           {result.capsScore.eloBand.label ? ` (${result.capsScore.eloBand.label})` : ''}.
         </div>
       )}
@@ -1490,7 +1491,7 @@ function AnalysisReport({ result }) {
       {/* ── Detailed report — same cards as the student's "Analyze My Games" ── */}
 
       {/* Game phase accuracy (doughnuts) */}
-      <h3 className="ga-section-title">📊 Game Phase Accuracy</h3>
+      <h3 className="ga-section-title">{tr("📊 Game Phase Accuracy")}</h3>
       <div className="ga-phase-cards">
         <PhaseCard phase="Opening"    data={result.opening}    icon="♟" />
         <PhaseCard phase="Middlegame" data={result.middlegame} icon="⚔" />
@@ -1500,7 +1501,7 @@ function AnalysisReport({ result }) {
       {/* Recurring patterns / coach takeaways */}
       {Array.isArray(result.patterns) && result.patterns.length > 0 && (
         <div className="csd-patterns">
-          <div className="csd-patterns-title">🔬 Recurring patterns</div>
+          <div className="csd-patterns-title">{tr("🔬 Recurring patterns")}</div>
           <ul>
             {result.patterns.map((p, i) => <li key={i}>{p}</li>)}
           </ul>
@@ -1513,7 +1514,7 @@ function AnalysisReport({ result }) {
       {/* Endgame type performance */}
       {result.endgameStats && result.endgameStats.length > 0 && (
         <div className="ga-endgame-section">
-          <h3 className="ga-section-title">👑 Endgame Type Performance</h3>
+          <h3 className="ga-section-title">{tr("👑 Endgame Type Performance")}</h3>
           <EndgameStats endgameStats={result.endgameStats} />
         </div>
       )}
@@ -1521,7 +1522,7 @@ function AnalysisReport({ result }) {
       {/* Performance trends across games */}
       {result.trends && result.trends.accuracyPerGame && result.trends.accuracyPerGame.length > 0 && (
         <>
-          <h3 className="ga-section-title">📉 Performance Trends</h3>
+          <h3 className="ga-section-title">{tr("📉 Performance Trends")}</h3>
           <TrendCharts trends={result.trends} />
         </>
       )}
@@ -1529,7 +1530,7 @@ function AnalysisReport({ result }) {
       {/* Per-game breakdown + move-by-move replay */}
       {result.games && result.games.length > 0 && (
         <>
-          <h3 className="ga-section-title">📋 Per-Game Breakdown<InfoTip>Click a game to replay it move by move with full analysis.</InfoTip></h3>
+          <h3 className="ga-section-title">{tr("📋 Per-Game Breakdown")}<InfoTip>{tr("Click a game to replay it move by move with full analysis.")}</InfoTip></h3>
           <GameBreakdownTable games={result.games} />
           <div className="ga-game-btns">
             {result.games.map((g, i) => (
@@ -1538,7 +1539,7 @@ function AnalysisReport({ result }) {
                 className={`ga-game-btn${selectedGameIndex === i ? ' active' : ''}`}
                 onClick={() => setSelectedGameIndex(i)}
               >
-                Game {g.gameNumber}
+                {tr("Game")} {g.gameNumber}
               </button>
             ))}
           </div>

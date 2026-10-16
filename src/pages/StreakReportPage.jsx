@@ -15,8 +15,9 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../api';
 import { viewOpenings, viewComparison } from '../lib/streakReportView';
 import './StreakReportPage.css';
+import { t as tr } from '../i18n/LanguageContext';
 
-const PHASE_LABEL = { opening: 'Opening', middlegame: 'Middlegame', endgame: 'Endgame' };
+const PHASE_LABEL = { opening: tr('Opening'), middlegame: tr('Middlegame'), endgame: tr('Endgame') };
 
 const fmtDate = (d) => new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 
@@ -30,25 +31,25 @@ export default function StreakReportPage() {
     let alive = true;
     api.get(`/api/streak-report/${id}`)
       .then(res => { if (alive) setReport(res.data?.report || null); })
-      .catch(e => { if (alive) setError(e.response?.data?.message || 'Could not load this report.'); })
+      .catch(e => { if (alive) setError(e.response?.data?.message || tr('Could not load this report.')); })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
   }, [id]);
 
-  if (loading) return <div className="sr-wrap"><p className="sr-muted">Loading your report…</p></div>;
+  if (loading) return <div className="sr-wrap"><p className="sr-muted">{tr("Loading your report…")}</p></div>;
   if (error)   return <div className="sr-wrap"><p className="sr-muted">{error}</p></div>;
-  if (!report) return <div className="sr-wrap"><p className="sr-muted">Report not found.</p></div>;
+  if (!report) return <div className="sr-wrap"><p className="sr-muted">{tr("Report not found.")}</p></div>;
 
   if (report.status !== 'done') {
     return (
       <div className="sr-wrap">
-        <h1 className="sr-h1">Your report is being prepared</h1>
+        <h1 className="sr-h1">{tr("Your report is being prepared")}</h1>
         <p className="sr-muted">
           {report.status === 'failed'
             ? (report.error || 'Something went wrong. Please try generating it again.')
-            : `Analysing your games… ${report.progress?.current || 0} of ${report.progress?.total || 0}. You will get a notification when it is ready.`}
+            : tr("Analysing your games… {v0} of {v1}. You will get a notification when it is ready.", { v0: report.progress?.current || 0, v1: report.progress?.total || 0 })}
         </p>
-        <Link to="/dashboard" className="sr-back">← Back to dashboard</Link>
+        <Link to="/dashboard" className="sr-back">{tr("← Back to dashboard")}</Link>
       </div>
     );
   }
@@ -62,22 +63,36 @@ export default function StreakReportPage() {
   // why these cannot live in this file.
   const openings = viewOpenings(p);
   const comparison = viewComparison(report);
+  // The free dashboard "weakness report" (kind 'quick'): a chosen window and
+  // time control, no Chess Nexus puzzle stats (those rows/cards hide on null).
+  const quick = report.kind === 'quick';
+  const QUICK_TC = { rapid: tr('Rapid'), blitz: tr('Blitz'), blitz_rapid: tr('Blitz + Rapid'), classical: tr('Classical') };
+  const periodWords = quick ? (report.days === 14 ? 'these two weeks' : 'these seven days') : 'these five days';
 
   return (
     <div className="sr-wrap">
       <header className="sr-head">
-        <div className="sr-streak-badge">
-          <span aria-hidden="true">🔥</span>
-          {report.milestoneDay}-day streak · report unlocked
-        </div>
-        <h1 className="sr-h1">Your last 5 days</h1>
+        {quick ? (
+          <div className="sr-streak-badge">
+            <span aria-hidden="true">🔍</span>
+            {tr("Weakness report ·")} {QUICK_TC[report.timeControl] || tr('All games')}
+          </div>
+        ) : (
+          <div className="sr-streak-badge">
+            <span aria-hidden="true">🔥</span>
+            {report.milestoneDay}{tr("-day streak · report unlocked")}
+          </div>
+        )}
+        <h1 className="sr-h1">
+          {quick ? (report.days === 14 ? 'Your last 2 weeks' : 'Your last 7 days') : 'Your last 5 days'}
+        </h1>
         <div className="sr-meta">
           {fmtDate(report.periodStart)} – {fmtDate(report.periodEnd)}
         </div>
         {/* The week at a glance, before any analysis — a student wants to see
             their own record first, then be told what it means. */}
         <div className="sr-record">
-          <span className="sr-pill"><b>{games.analysed || 0}</b> games analysed</span>
+          <span className="sr-pill"><b>{games.analysed || 0}</b> {tr("games analysed")}</span>
           {games.results?.win   > 0 && <span className="sr-pill is-win"><b>{games.results.win}</b> won</span>}
           {games.results?.draw  > 0 && <span className="sr-pill"><b>{games.results.draw}</b> drawn</span>}
           {games.results?.loss  > 0 && <span className="sr-pill is-loss"><b>{games.results.loss}</b> lost</span>}
@@ -94,10 +109,10 @@ export default function StreakReportPage() {
       {(games.sampled || Object.keys(games.sourceErrors || {}).length > 0) && (
         <p className="sr-note">
           {games.sampled && (
-            <>Analysed {games.analysed} of your {games.found} games this period. </>
+            <>{tr("Analysed")} {games.analysed} {tr("of your")} {games.found} {tr("games this period.")} </>
           )}
           {Object.entries(games.sourceErrors || {}).map(([src, msg]) => (
-            <span key={src}>We could not reach {src === 'chesscom' ? 'Chess.com' : src === 'lichess' ? 'Lichess' : src}, so those games are missing. </span>
+            <span key={src}>{tr("We could not reach")} {src === 'chesscom' ? 'Chess.com' : src === 'lichess' ? 'Lichess' : src}{tr(", so those games are missing.")} </span>
           ))}
         </p>
       )}
@@ -105,8 +120,8 @@ export default function StreakReportPage() {
       {/* ── The three phases ─────────────────────────────────────────── */}
       <section className="sr-section">
         <SectionHead
-          title="The three phases of your games"
-          help={`All ${games.analysed || 0} games, Chess Nexus and your other accounts together. Accuracy is how close your moves were to the best move available, so 100% would mean playing like the engine.`}
+          title={tr("The three phases of your games")}
+          help={tr("All {v0} games, Chess Nexus and your other accounts together. Accuracy is how close your moves were to the best move available, so 100% would mean playing like the engine.", { v0: games.analysed || 0 })}
         />
         <div className="sr-phases">
           {['opening', 'middlegame', 'endgame'].map(key => {
@@ -115,19 +130,19 @@ export default function StreakReportPage() {
             return (
               <div key={key} className={`sr-phase${weakest ? ' is-weak' : ''}`}>
                 <span className="sr-phase-name">{PHASE_LABEL[key]}</span>
-                <span className="sr-phase-moves">{ph.moves || 0} moves</span>
+                <span className="sr-phase-moves">{ph.moves || 0} {tr("moves")}</span>
                 <div className="sr-phase-acc">{ph.accuracy != null ? `${ph.accuracy}%` : '—'}</div>
                 {/* The bar is the fastest read on the page — you can see which
                     phase is behind without comparing three numbers. */}
                 {ph.accuracy != null && (
-                  <div className="sr-bar" role="img" aria-label={`${ph.accuracy}% accuracy`}>
+                  <div className="sr-bar" role="img" aria-label={tr("{accuracy}% accuracy", { accuracy: ph.accuracy })}>
                     <i style={{ width: `${Math.max(2, Math.min(100, ph.accuracy))}%` }} />
                   </div>
                 )}
-                <div className="sr-errline"><span>Blunders</span><b>{ph.blunders || 0}</b></div>
-                <div className="sr-errline"><span>Mistakes</span><b>{ph.mistakes || 0}</b></div>
-                <div className="sr-errline"><span>Inaccuracies</span><b>{ph.inaccuracies || 0}</b></div>
-                {weakest && <div className="sr-tag">Your weakest phase</div>}
+                <div className="sr-errline"><span>{tr("Blunders")}</span><b>{ph.blunders || 0}</b></div>
+                <div className="sr-errline"><span>{tr("Mistakes")}</span><b>{ph.mistakes || 0}</b></div>
+                <div className="sr-errline"><span>{tr("Inaccuracies")}</span><b>{ph.inaccuracies || 0}</b></div>
+                {weakest && <div className="sr-tag">{tr("Your weakest phase")}</div>}
               </div>
             );
           })}
@@ -138,17 +153,17 @@ export default function StreakReportPage() {
       {p.defence?.opportunities > 0 && (
         <section className="sr-section">
           <SectionHead
-            title="How you defend"
+            title={tr("How you defend")}
             help={<>
-            What happens after a game turns against you — the skill most players never measure.
+            {tr("What happens after a game turns against you — the skill most players never measure.")}
           </>}
           />
           <div className="sr-stats">
-            <Stat label="Difficult positions" value={p.defence.opportunities} />
-            <Stat label="Saved or held" value={p.defence.recovered + p.defence.turnedAround + p.defence.held} good />
-            <Stat label="Collapsed" value={p.defence.collapsed} bad />
-            <Stat label="Defensive score" value={p.defence.defensiveScore != null ? `${p.defence.defensiveScore}%` : '—'} />
-            <Stat label="Avg. resistance" value={p.defence.avgResistanceMoves != null ? `${p.defence.avgResistanceMoves} moves` : '—'} />
+            <Stat label={tr("Difficult positions")} value={p.defence.opportunities} />
+            <Stat label={tr("Saved or held")} value={p.defence.recovered + p.defence.turnedAround + p.defence.held} good />
+            <Stat label={tr("Collapsed")} value={p.defence.collapsed} bad />
+            <Stat label={tr("Defensive score")} value={p.defence.defensiveScore != null ? `${p.defence.defensiveScore}%` : '—'} />
+            <Stat label={tr("Avg. resistance")} value={p.defence.avgResistanceMoves != null ? tr("{avgResistanceMoves} moves", { avgResistanceMoves: p.defence.avgResistanceMoves }) : '—'} />
           </div>
         </section>
       )}
@@ -157,13 +172,13 @@ export default function StreakReportPage() {
       {(p.endgames || []).length > 0 && (
         <section className="sr-section">
           <SectionHead
-            title="The endgames you reached"
+            title={tr("The endgames you reached")}
             help="Which endgames came up, and how you did once you were in them."
           />
           <div className="sr-scroll">
             <table className="sr-table">
               <thead>
-                <tr><th>Endgame</th><th>Reached</th><th>W</th><th>D</th><th>L</th><th>Score</th><th>Accuracy</th></tr>
+                <tr><th>{tr("Endgame")}</th><th>{tr("Reached")}</th><th>W</th><th>D</th><th>L</th><th>{tr("Score")}</th><th>{tr("Accuracy")}</th></tr>
               </thead>
               <tbody>
                 {p.endgames.map(e => (
@@ -186,7 +201,7 @@ export default function StreakReportPage() {
       {openings.length > 0 && (
         <section className="sr-section">
           <SectionHead
-            title="Openings you played"
+            title={tr("Openings you played")}
             help={<>
             Grouped by opening, not by variation — three Sicilians are three
             Sicilians however they continued. Openings you played only once are left
@@ -196,7 +211,7 @@ export default function StreakReportPage() {
           <div className="sr-scroll">
             <table className="sr-table">
               <thead>
-                <tr><th>Opening</th><th>Side</th><th>Games</th><th>W</th><th>D</th><th>L</th><th>Score</th></tr>
+                <tr><th>{tr("Opening")}</th><th>{tr("Side")}</th><th>{tr("Games")}</th><th>W</th><th>D</th><th>L</th><th>{tr("Score")}</th></tr>
               </thead>
               <tbody>
                 {openings.slice(0, 12).map((o, i) => (
@@ -207,7 +222,7 @@ export default function StreakReportPage() {
                         <small style={{ display: 'block', fontWeight: 400, opacity: 0.6 }}>
                           {o.ecoCode}
                           {o.ecoCode && o.variations > 1 ? ' · ' : ''}
-                          {o.variations > 1 ? `${o.variations} variations` : ''}
+                          {o.variations > 1 ? tr("{variations} variations", { variations: o.variations }) : ''}
                         </small>
                       )}
                     </th>
@@ -230,7 +245,7 @@ export default function StreakReportPage() {
       {(p.momentThemes || []).length > 0 && (
         <section className="sr-section">
           <SectionHead
-            title="The patterns you missed"
+            title={tr("The patterns you missed")}
             help={<>
             The tactical motifs behind your mistakes this period, most frequent first.
             These come from your own games, not from a puzzle set.
@@ -243,7 +258,7 @@ export default function StreakReportPage() {
                 <div className="sr-motif" key={t.theme}>
                   <span className="sr-motif-name">{prettyTheme(t.theme)}</span>
                   <span className="sr-motif-val">
-                    {t.count}<span className="sr-motif-unit"> missed</span>
+                    {t.count}<span className="sr-motif-unit"> {tr("missed")}</span>
                   </span>
                   <div className="sr-motif-track">
                     <i style={{ width: `${Math.max(6, Math.round((t.count / top) * 100))}%` }} />
@@ -274,7 +289,7 @@ export default function StreakReportPage() {
               filled column and one hatched "Next report" column waiting, which
               says it without a sentence. So no "?" appears there at all. */}
           <SectionHead
-            title="Weekly report"
+            title={tr("Weekly report")}
             help={(comparison.history || []).length > 0
               ? 'Each column is one report period, oldest first. The small figure under a number is the change from the report before it. Periods never overlap, so a change here is a real change in your play.'
               : null}
@@ -287,12 +302,12 @@ export default function StreakReportPage() {
             <table className="sr-table sr-compare">
               <thead>
                 <tr>
-                  <th>Measure</th>
+                  <th>{tr("Measure")}</th>
                   {comparison.columns.map((c, i) => (
                     <th key={i} className={i === comparison.columns.length - 1 ? 'sr-now' : ''}>
                       {comparison.columns.length === 1
                         ? 'This report'
-                        : i === comparison.columns.length - 1 ? 'This report' : `Report ${i + 1}`}
+                        : i === comparison.columns.length - 1 ? 'This report' : tr("Report {v0}", { v0: i + 1 })}
                       <span className="sr-wk">{fmtDate(c.periodStart)}</span>
                     </th>
                   ))}
@@ -301,8 +316,8 @@ export default function StreakReportPage() {
                       than a list with a missing half. */}
                   {comparison.columns.length === 1 && (
                     <th className="sr-next">
-                      Next report
-                      <span className="sr-wk">after 5 more days</span>
+                      {tr("Next report")}
+                      <span className="sr-wk">{quick ? 'next week' : 'after 5 more days'}</span>
                     </th>
                   )}
                 </tr>
@@ -313,32 +328,32 @@ export default function StreakReportPage() {
                     eight numbers made the reader work out which belonged
                     together. A group whose every row is empty hides itself, so a
                     student with no study work does not get an empty heading. */}
-                <CompareGroup label="Puzzles — Chess Nexus" cols={comparison.columns}
+                <CompareGroup label={tr("Puzzles — Chess Nexus")} cols={comparison.columns}
                   rows={[
-                    { label: 'Puzzles solved', field: 'puzzles' },
-                    { label: 'Puzzle accuracy', field: 'puzzleAccuracy', suffix: '%' },
+                    { label: tr('Puzzles solved'), field: 'puzzles' },
+                    { label: tr('Puzzle accuracy'), field: 'puzzleAccuracy', suffix: '%' },
                     // Lower is better only up to a point — rushing is not a
                     // virtue in puzzles — so this is NOT marked lowerIsBetter.
                     // It is shown so a student can see whether they are
                     // guessing quickly or thinking.
-                    { label: 'Avg time per puzzle', field: 'avgPuzzleSeconds', suffix: ' sec' },
-                    { label: 'Best streak', sub: 'correct in a row', field: 'bestStreak' },
-                    { label: 'Days practised', field: 'daysPractised' },
+                    { label: tr('Avg time per puzzle'), field: 'avgPuzzleSeconds', suffix: ' sec' },
+                    { label: tr('Best streak'), sub: tr('correct in a row'), field: 'bestStreak' },
+                    { label: tr('Days practised'), field: 'daysPractised' },
                   ]} />
 
-                <CompareGroup label="Play — accuracy by phase" cols={comparison.columns}
+                <CompareGroup label={tr("Play — accuracy by phase")} cols={comparison.columns}
                   rows={[
-                    { label: 'Games analysed', field: 'gamesAnalysed' },
-                    { label: 'Opening', field: 'opening', suffix: '%' },
-                    { label: 'Middlegame', field: 'middlegame', suffix: '%' },
-                    { label: 'Endgame', field: 'endgame', suffix: '%' },
-                    { label: 'Blunders per game', field: 'blundersPerGame', lowerIsBetter: true },
+                    { label: tr('Games analysed'), field: 'gamesAnalysed' },
+                    { label: tr('Opening'), field: 'opening', suffix: '%' },
+                    { label: tr('Middlegame'), field: 'middlegame', suffix: '%' },
+                    { label: tr('Endgame'), field: 'endgame', suffix: '%' },
+                    { label: tr('Blunders per game'), field: 'blundersPerGame', lowerIsBetter: true },
                     // The most actionable line in the table for a beginner:
                     // not "71% accuracy" but "you drop a piece to a one-move
                     // shot about once a game".
-                    { label: 'Pieces lost to one-move tactics', sub: 'per game',
+                    { label: tr('Pieces lost to one-move tactics'), sub: tr('per game'),
                       field: 'oneMoveLossesPerGame', lowerIsBetter: true },
-                    { label: 'Defensive score', field: 'defensiveScore', suffix: '%' },
+                    { label: tr('Defensive score'), field: 'defensiveScore', suffix: '%' },
                     // "Mistakes found" removed: it counted the moments the
                     // analyser extracted, not the student's play, so it moved
                     // with how many games were analysed rather than with how
@@ -349,24 +364,24 @@ export default function StreakReportPage() {
                 {/* The point of tracking performance rather than rating: this
                     row is where "am I getting stronger?" is actually answered,
                     report over report. */}
-                <CompareGroup label="Tournament performance — Chess Nexus" cols={comparison.columns}
+                <CompareGroup label={tr("Tournament performance — Chess Nexus")} cols={comparison.columns}
                   rows={[
-                    { label: 'Performance rating', sub: 'blitz + rapid', field: 'performance' },
-                    { label: 'Blitz', field: 'performanceBlitz' },
-                    { label: 'Rapid', field: 'performanceRapid' },
+                    { label: tr('Performance rating'), sub: tr('blitz + rapid'), field: 'performance' },
+                    { label: tr('Blitz'), field: 'performanceBlitz' },
+                    { label: tr('Rapid'), field: 'performanceRapid' },
                   ]} />
 
-                <CompareGroup label="Games played" cols={comparison.columns}
+                <CompareGroup label={tr("Games played")} cols={comparison.columns}
                   rows={[
-                    { label: 'Chess Nexus arena', field: 'arenaGames' },
-                    { label: 'Lichess + Chess.com', field: 'externalGames' },
-                    { label: 'Win rate', sub: 'all games', field: 'winRate', suffix: '%' },
+                    { label: tr('Chess Nexus arena'), field: 'arenaGames' },
+                    { label: tr('Lichess + Chess.com'), field: 'externalGames' },
+                    { label: tr('Win rate'), sub: tr('all games'), field: 'winRate', suffix: '%' },
                   ]} />
 
-                <CompareGroup label="Study" cols={comparison.columns}
+                <CompareGroup label={tr("Study")} cols={comparison.columns}
                   rows={[
-                    { label: 'Endgames played out', field: 'endgamesPlayed' },
-                    { label: 'Chapters completed', field: 'studies' },
+                    { label: tr('Endgames played out'), field: 'endgamesPlayed' },
+                    { label: tr('Chapters completed'), field: 'studies' },
                   ]} />
               </tbody>
             </table>
@@ -384,7 +399,7 @@ export default function StreakReportPage() {
       {Object.values(p.games?.bySource || {}).some(n => n > 0) && (
         <section className="sr-section">
           <SectionHead
-            title="Where the work came from"
+            title={tr("Where the work came from")}
             help={<>
             Your games from every account go into the phase and endgame analysis above.
             Puzzle motifs are the one thing only Chess Nexus can give you.
@@ -392,13 +407,13 @@ export default function StreakReportPage() {
           />
           <div className="sr-sources">
             {[
-              { key: 'chessnexus', name: 'Chess Nexus',
+              { key: 'chessnexus', name: tr('Chess Nexus'),
                 lines: ['Every motif named and scored', 'Your moves kept, right and wrong', 'Failed positions ready to redo'],
                 limit: null },
-              { key: 'lichess', name: 'Lichess',
+              { key: 'lichess', name: tr('Lichess'),
                 lines: ['Openings played, by result', 'Win / draw / loss'],
                 limit: 'Puzzles solved on Lichess stay on Lichess — we cannot see the motifs.' },
-              { key: 'chesscom', name: 'Chess.com',
+              { key: 'chesscom', name: tr('Chess.com'),
                 lines: ['Openings played, by result', 'Win / draw / loss'],
                 limit: 'Same here — games yes, puzzle detail no.' },
             ].map(src => {
@@ -412,8 +427,8 @@ export default function StreakReportPage() {
               // its headline is the puzzle count when we have one — games alone
               // badly understate what the student did here.
               const headline = pt?.puzzles > 0
-                ? `${pt.puzzles} puzzle${pt.puzzles === 1 ? '' : 's'}`
-                : `${n} game${n === 1 ? '' : 's'}`;
+                ? tr("{puzzles} puzzle{v1}", { puzzles: pt.puzzles, v1: pt.puzzles === 1 ? '' : 's' })
+                : tr("{n} game{v1}", { n: n, v1: n === 1 ? '' : 's' });
               // Hide a source only when there is genuinely nothing to say about
               // it. Chess Nexus previously disappeared whenever no GAMES were
               // played here, which hid a week of puzzle practice — the one thing
@@ -424,7 +439,7 @@ export default function StreakReportPage() {
                   <div className="sr-src-who">{src.name}</div>
                   <div className="sr-src-big">{headline}</div>
                   {failed ? (
-                    <p className="sr-src-limit">Could not be reached this period, so these games are missing.</p>
+                    <p className="sr-src-limit">{tr("Could not be reached this period, so these games are missing.")}</p>
                   ) : (
                     <>
                       <ul>
@@ -432,7 +447,7 @@ export default function StreakReportPage() {
                         {/* n, not pt.arenaGames: this is the count of games
                             actually collected for the report, so it agrees with
                             the headline and with the comparison table. */}
-                        {n > 0 && <li>{n} arena game{n === 1 ? '' : 's'}</li>}
+                        {n > 0 && src.key === 'chessnexus' && <li>{n} arena game{n === 1 ? '' : 's'}</li>}
                         {pt?.endgames > 0 && <li>{pt.endgames} endgame{pt.endgames === 1 ? '' : 's'} played out</li>}
                         {pt?.studies > 0 && <li>{pt.studies} study chapter{pt.studies === 1 ? '' : 's'}</li>}
                       </ul>
@@ -458,30 +473,30 @@ export default function StreakReportPage() {
           be the kind of flattering nonsense this report is meant to avoid. */}
       {p.performance && (
         <section className="sr-section sr-perf">
-          <h2 className="sr-h2">Tournament performance</h2>
+          <h2 className="sr-h2">{tr("Tournament performance")}</h2>
           <p className="sr-sub">
-            How strongly you actually played in Chess Nexus tournaments over these
-            five days — blitz and rapid only. This is not your rating: it is the
+            {tr("How strongly you actually played in Chess Nexus tournaments over")}{' '}
+            {periodWords} {tr("— blitz and rapid only. This is not your rating: it is the")}
             level your results were worth, and it moves before your rating does.
           </p>
           <div className="sr-stats">
             <Stat
-              label="Performance"
+              label={tr("Performance")}
               value={p.performance.performance}
               sub={`${p.performance.score}/${p.performance.games} vs ~${p.performance.avgOpponent}`}
             />
             {p.performance.byCategory?.blitz && (
               <Stat
-                label="Blitz"
+                label={tr("Blitz")}
                 value={p.performance.byCategory.blitz.performance}
-                sub={`${p.performance.byCategory.blitz.games} games`}
+                sub={tr("{games} games", { games: p.performance.byCategory.blitz.games })}
               />
             )}
             {p.performance.byCategory?.rapid && (
               <Stat
-                label="Rapid"
+                label={tr("Rapid")}
                 value={p.performance.byCategory.rapid.performance}
-                sub={`${p.performance.byCategory.rapid.games} games`}
+                sub={tr("{games} games", { games: p.performance.byCategory.rapid.games })}
               />
             )}
           </div>
@@ -499,29 +514,29 @@ export default function StreakReportPage() {
           from Score rows, which no Lichess or Chess.com import ever writes. */}
       {p.practiceTotals?.topics?.length > 0 && (
         <section className="sr-section">
-          <h2 className="sr-h2">What you practised</h2>
+          <h2 className="sr-h2">{tr("What you practised")}</h2>
 
           {(p.practiceTotals.topicStrongest || p.practiceTotals.topicWeakest) && (
             <div className="sr-stats">
               {p.practiceTotals.topicMost && (
                 <Stat
-                  label="Most practised"
+                  label={tr("Most practised")}
                   value={p.practiceTotals.topicMost.topic}
-                  sub={`${p.practiceTotals.topicMost.attempts} puzzles`}
+                  sub={tr("{attempts} puzzles", { attempts: p.practiceTotals.topicMost.attempts })}
                 />
               )}
               {p.practiceTotals.topicStrongest && (
                 <Stat
-                  label="Strongest"
+                  label={tr("Strongest")}
                   value={p.practiceTotals.topicStrongest.topic}
-                  sub={`${p.practiceTotals.topicStrongest.accuracy}% solved`}
+                  sub={tr("{accuracy}% solved", { accuracy: p.practiceTotals.topicStrongest.accuracy })}
                 />
               )}
               {p.practiceTotals.topicWeakest && (
                 <Stat
-                  label="Needs work"
+                  label={tr("Needs work")}
                   value={p.practiceTotals.topicWeakest.topic}
-                  sub={`${p.practiceTotals.topicWeakest.accuracy}% solved`}
+                  sub={tr("{accuracy}% solved", { accuracy: p.practiceTotals.topicWeakest.accuracy })}
                 />
               )}
             </div>
@@ -529,7 +544,7 @@ export default function StreakReportPage() {
 
           <table className="sr-table">
             <thead>
-              <tr><th>Topic</th><th>Puzzles</th><th>Solved</th><th>Accuracy</th></tr>
+              <tr><th>{tr("Topic")}</th><th>{tr("Puzzles")}</th><th>{tr("Solved")}</th><th>{tr("Accuracy")}</th></tr>
             </thead>
             <tbody>
               {p.practiceTotals.topics.map(t => {
@@ -546,7 +561,7 @@ export default function StreakReportPage() {
                     <th scope="row">{t.topic}</th>
                     <td>{t.attempts}</td>
                     <td>{t.solved}</td>
-                    <td>{judged ? `${t.accuracy}%` : <span className="sr-muted">too few</span>}</td>
+                    <td>{judged ? `${t.accuracy}%` : <span className="sr-muted">{tr("too few")}</span>}</td>
                   </tr>
                 );
               })}
@@ -556,7 +571,7 @@ export default function StreakReportPage() {
           <p className="sr-sub">
             Only work done on Chess Nexus is counted here — puzzles solved on
             Lichess or Chess.com stay there, so we cannot see what they were
-            about. A topic needs at least {p.practiceTotals.topicsMinToJudge || 5}{' '}
+            {tr("about. A topic needs at least")} {p.practiceTotals.topicsMinToJudge || 5}{' '}
             puzzles before it is called a strength or a weakness.
           </p>
         </section>
@@ -565,10 +580,10 @@ export default function StreakReportPage() {
       {/* ── Time pressure ────────────────────────────────────────────── */}
       {p.timePressure?.hasClockData && (
         <section className="sr-section">
-          <h2 className="sr-h2">The clock</h2>
+          <h2 className="sr-h2">{tr("The clock")}</h2>
           <div className="sr-stats">
-            <Stat label="Moves with time" value={p.timePressure.normalMoves} />
-            <Stat label="Moves under a minute" value={p.timePressure.pressuredMoves} />
+            <Stat label={tr("Moves with time")} value={p.timePressure.normalMoves} />
+            <Stat label={tr("Moves under a minute")} value={p.timePressure.pressuredMoves} />
           </div>
           {p.timePressure.avgDropPressured > p.timePressure.avgDropNormal * 1.5 && (
             <p className="sr-sub">
@@ -583,9 +598,9 @@ export default function StreakReportPage() {
       {(p.moments?.categories || []).length > 0 && (
         <section className="sr-section">
           <SectionHead
-            title="Where your mistakes happen"
+            title={tr("Where your mistakes happen")}
             help={<>
-            {p.moments.total} positions from your own games. A mistake can belong to more
+            {p.moments.total} {tr("positions from your own games. A mistake can belong to more")}
             than one group — an endgame fork is both — so these add up to more than the total.
           </>}
           />
@@ -606,7 +621,7 @@ export default function StreakReportPage() {
       {(p.moments?.practice?.plan || []).length > 0 && (
         <section className="sr-section">
           <SectionHead
-            title="Your practice for the next few days"
+            title={tr("Your practice for the next few days")}
             help={<>
             The positions that cost you the most, worst first. Five a day — enough to
             actually finish.
@@ -615,14 +630,14 @@ export default function StreakReportPage() {
           <div className="sr-plan">
             {p.moments.practice.plan.map(d => (
               <div key={d.day} className="sr-day">
-                <div className="sr-day-h">Day {d.day}</div>
-                <div className="sr-day-n">{d.moments.length} positions</div>
+                <div className="sr-day-h">{tr("Day")} {d.day}</div>
+                <div className="sr-day-n">{d.moments.length} {tr("positions")}</div>
               </div>
             ))}
           </div>
           {p.moments.practice.skippedTimeScramble > 0 && (
             <p className="sr-sub">
-              {p.moments.practice.skippedTimeScramble} more mistakes came with under a minute
+              {p.moments.practice.skippedTimeScramble} {tr("more mistakes came with under a minute")}
               on the clock. Those are left out of practice — you did not miss the idea, you
               ran out of time to look for it.
             </p>
@@ -634,7 +649,7 @@ export default function StreakReportPage() {
       {(p.suggestions || []).length > 0 && (
         <section className="sr-section">
           <SectionHead
-            title="Study plan — practice from your mistakes"
+            title={tr("Study plan — practice from your mistakes")}
             help="Built from the games above, worst first. Everything here comes from a position you actually got wrong this week."
           />
           <div className="sr-improve">
@@ -654,7 +669,7 @@ export default function StreakReportPage() {
         </section>
       )}
 
-      <Link to="/dashboard" className="sr-back">← Back to dashboard</Link>
+      <Link to="/dashboard" className="sr-back">{tr("← Back to dashboard")}</Link>
     </div>
   );
 }
@@ -683,7 +698,7 @@ function SectionHead({ title, help }) {
           className={`sr-help${open ? ' is-open' : ''}`}
           onClick={() => setOpen(v => !v)}
           aria-expanded={open}
-          aria-label={open ? `Hide explanation of ${title}` : `What does ${title} mean?`}
+          aria-label={open ? tr("Hide explanation of {title}", { title: title }) : tr("What does {title} mean?", { title: title })}
         >
           ?
         </button>

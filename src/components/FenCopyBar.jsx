@@ -7,6 +7,7 @@
 // is display-only.
 import React, { useState, useRef, useEffect } from 'react';
 import { copyText } from '../utils/clipboard';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function FenCopyBar({ fen, style }) {
   const [state, setState] = useState('idle'); // 'idle' | 'copied' | 'failed'
@@ -34,7 +35,7 @@ export default function FenCopyBar({ fen, style }) {
         value={fen}
         readOnly
         spellCheck={false}
-        aria-label="FEN of the current position"
+        aria-label={tr("FEN of the current position")}
         onFocus={(e) => e.target.select()}
         style={{
           flex: 1, minWidth: 0,
@@ -47,7 +48,7 @@ export default function FenCopyBar({ fen, style }) {
       />
       <button
         onClick={onCopy}
-        title="Copy FEN to clipboard"
+        title={tr("Copy FEN to clipboard")}
         style={{
           padding: '8px 14px',
           background: state === 'copied' ? 'var(--color-success-a20)' : 'rgba(99,102,241,0.15)',

@@ -16,6 +16,7 @@ import {
   BarElement, LineElement, PointElement,
   Tooltip, Legend, Filler
 } from 'chart.js';
+import { t as tr } from '../../i18n/LanguageContext';
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend, Filler);
 
 function assignmentIcon(type = '') {
@@ -35,7 +36,7 @@ function relativeDay(iso) {
   const days = Math.round((start(new Date()) - start(d)) / 864e5);
   if (days <= 0) return 'Today';
   if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days} days ago`;
+  if (days < 7) return tr("{days} days ago", { days: days });
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 }
 
@@ -48,19 +49,19 @@ function buildChartData(data) {
   const hasStudy = data.some(d => d.studyMins > 0);
   const datasets = [
     {
-      type: 'bar', label: '✓ Present',
+      type: 'bar', label: tr('✓ Present'),
       data: data.map(d => d.present),
       backgroundColor: 'rgba(16,185,129,0.78)', borderWidth: 0,
       stack: 'att', yAxisID: 'y', order: 2
     },
     {
-      type: 'bar', label: '↺ Catch-up',
+      type: 'bar', label: tr('↺ Catch-up'),
       data: data.map(d => d.catchup),
       backgroundColor: 'rgba(245,158,11,0.75)', borderWidth: 0,
       stack: 'att', yAxisID: 'y', order: 2
     },
     {
-      type: 'bar', label: '✗ Absent',
+      type: 'bar', label: tr('✗ Absent'),
       data: data.map(d => d.absent),
       backgroundColor: 'rgba(248,113,113,0.45)', borderWidth: 0,
       stack: 'att', yAxisID: 'y', order: 2
@@ -68,7 +69,7 @@ function buildChartData(data) {
   ];
   if (hasStudy) {
     datasets.push({
-      type: 'line', label: 'Study (min)',
+      type: 'line', label: tr('Study (min)'),
       data: data.map(d => d.studyMins),
       borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.07)',
       yAxisID: 'y2', tension: 0.4, fill: true,
@@ -100,7 +101,7 @@ function buildChartOptions(data, days) {
         stacked: true, position: 'left',
         grid: { color: 'rgba(255,255,255,0.06)' },
         ticks: { color: 'rgba(226,232,240,0.45)', font: { size: 10 }, stepSize: 1 },
-        title: { display: true, text: 'Classes', color: 'rgba(226,232,240,0.35)', font: { size: 10 } },
+        title: { display: true, text: tr('Classes'), color: 'rgba(226,232,240,0.35)', font: { size: 10 } },
         beginAtZero: true
       },
       ...(hasStudy ? {
@@ -108,7 +109,7 @@ function buildChartOptions(data, days) {
           position: 'right',
           grid: { drawOnChartArea: false },
           ticks: { color: 'rgba(6,182,212,0.6)', font: { size: 10 } },
-          title: { display: true, text: 'Study min', color: 'rgba(6,182,212,0.4)', font: { size: 10 } },
+          title: { display: true, text: tr('Study min'), color: 'rgba(6,182,212,0.4)', font: { size: 10 } },
           beginAtZero: true
         }
       } : {})
@@ -153,7 +154,7 @@ function buildEngagementOptions(data, days) {
         ticks: { color: 'rgba(226,232,240,0.45)', font: { size: 10 }, maxTicksLimit: days <= 7 ? 7 : 10 } },
       y: { stacked: true, grid: { color: 'rgba(255,255,255,0.06)' },
         ticks: { color: 'rgba(226,232,240,0.45)', font: { size: 10 }, stepSize: 1 },
-        title: { display: true, text: 'Students', color: 'rgba(226,232,240,0.35)', font: { size: 10 } },
+        title: { display: true, text: tr('Students'), color: 'rgba(226,232,240,0.35)', font: { size: 10 } },
         beginAtZero: true }
     }
   };
@@ -244,18 +245,18 @@ export default function CoachDashboard() {
     if (!socket.connected) socket.connect();
 
     const onApproved = (d) => {
-      setToast(`✓ ${d?.studentName || 'A student'} joined your roster`);
+      setToast(tr("✓ {v0} joined your roster", { v0: d?.studentName || tr('A student') }));
       loadAll();
     };
     const onDeclined = (d) => {
-      setToast(`${d?.studentName || 'A student'} declined your request`);
+      setToast(tr("{v0} declined your request", { v0: d?.studentName || tr('A student') }));
       loadAll();
     };
 
     // A student ASKING to join — the server already emits this; without a
     // listener the request only appeared after a manual reload.
     const onRequested = (d) => {
-      setToast(`${d?.studentName || 'A student'} asked to join your students`);
+      setToast(tr("{v0} asked to join your students", { v0: d?.studentName || tr('A student') }));
       loadAll();
     };
 
@@ -286,7 +287,7 @@ export default function CoachDashboard() {
     setAddError('');
     setAddErrorUpgrade(false);
     if (!addForm.studentUsername && !addForm.studentName) {
-      setAddError('Enter the student\'s username (preferred) or their name.');
+      setAddError(tr('Enter the student\'s username (preferred) or their name.'));
       return;
     }
     setAdding(true);
@@ -316,7 +317,7 @@ export default function CoachDashboard() {
       // a ready compose box instead of having to find them in the list.
       openCoachChat(res.data?._id);
     } catch (err) {
-      alert(err.response?.data?.message || `Could not open a chat with ${name}.`);
+      alert(err.response?.data?.message || tr("Could not open a chat with {name}.", { name: name }));
     }
   };
 
@@ -326,7 +327,7 @@ export default function CoachDashboard() {
       setIncoming(prev => prev.filter(r => r._id !== linkId));
       if (action === 'approve') loadAll();
     } catch (err) {
-      alert(err.response?.data?.message || `Failed to ${action} the request.`);
+      alert(err.response?.data?.message || tr("Failed to {action} the request.", { action: action }));
     }
   };
 
@@ -340,7 +341,7 @@ export default function CoachDashboard() {
   };
 
   const removeStudent = async (linkId) => {
-    if (!window.confirm('Remove this student from your roster?')) return;
+    if (!window.confirm(tr('Remove this student from your roster?'))) return;
     try {
       await api.delete(`/api/coach/students/${linkId}`);
       setStudents(prev => prev.filter(s => s._id !== linkId));
@@ -351,7 +352,7 @@ export default function CoachDashboard() {
   };
 
   if (loading) {
-    return <div className="coach-loading">Loading your coach dashboard…</div>;
+    return <div className="coach-loading">{tr("Loading your coach dashboard…")}</div>;
   }
 
   if (error) {
@@ -412,15 +413,15 @@ export default function CoachDashboard() {
           </div>
           <div>
             <h1>
-              Welcome Coach, {summary?.coachProfile?.coachName || 'Coach'} 👋
+              {tr("Welcome Coach,")} {summary?.coachProfile?.coachName || tr('Coach')} 👋
               {summary?.coachProfile?.verified && (
-                <span className="coach-verified-badge" title="Verified by the Nexus team">🎓 Verified Coach</span>
+                <span className="coach-verified-badge" title={tr("Verified by the Nexus team")}>{tr("🎓 Verified Coach")}</span>
               )}
             </h1>
             <p className="coach-dash-sub">
               {summary?.coachProfile?.coachType === 'academy'
                 ? summary?.coachProfile?.academyName
-                : `Individual coach · ${summary?.coachProfile?.coachCountry || ''}`}
+                : tr("Individual coach · {v0}", { v0: summary?.coachProfile?.coachCountry || '' })}
             </p>
           </div>
         </div>
@@ -431,7 +432,7 @@ export default function CoachDashboard() {
               — all three already existed, just nowhere a coach would find them
               mid-lesson. */}
           <CoachHelpMenu />
-          <Link to="/coach/profile" className="btn-ghost">👤 Profile</Link>
+          <Link to="/coach/profile" className="btn-ghost">{tr("👤 Profile")}</Link>
         </div>
       </div>
 
@@ -439,38 +440,38 @@ export default function CoachDashboard() {
       <div className="coach-stat-row">
         <div className="coach-stat-card cd-stat cd-stat--cyan">
           <span className="cd-stat-icon" aria-hidden="true">👥</span>
-          <div className="stat-label">Students</div>
+          <div className="stat-label">{tr("Students")}</div>
           <div className="stat-value">{count} <span className="stat-cap">/ {max}</span></div>
           <div className="stat-bar"><div style={{ width: `${Math.min(100, (count / max) * 100)}%` }} /></div>
-          <div className="stat-foot">{remaining} slots remaining</div>
+          <div className="stat-foot">{remaining} {tr("slots remaining")}</div>
         </div>
         <div className="coach-stat-card cd-stat cd-stat--amber">
           <span className="cd-stat-icon" aria-hidden="true">📝</span>
-          <div className="stat-label">Active assignments</div>
+          <div className="stat-label">{tr("Active assignments")}</div>
           <div className="stat-value">{summary?.assignmentsCount || 0}</div>
-          <Link to="/coach/assignments" className="stat-link">View all →</Link>
+          <Link to="/coach/assignments" className="stat-link">{tr("View all →")}</Link>
         </div>
         <div className="coach-stat-card cd-stat cd-stat--violet">
           <span className="cd-stat-icon" aria-hidden="true">🎯</span>
-          <div className="stat-label">Activities</div>
+          <div className="stat-label">{tr("Activities")}</div>
           <div className="stat-value">{summary?.activitiesCount || 0}</div>
-          <Link to="/coach/activities" className="stat-link">View all →</Link>
+          <Link to="/coach/activities" className="stat-link">{tr("View all →")}</Link>
         </div>
         <div className="coach-stat-card cd-stat cd-stat--green">
           <span className="cd-stat-icon" aria-hidden="true">⚡</span>
-          <div className="stat-label">Active students</div>
+          <div className="stat-label">{tr("Active students")}</div>
           <div className="stat-value">
             {summary?.activeStudents || 0} <span className="stat-cap">/ {count}</span>
           </div>
-          <div className="stat-foot">active in the last 7 days</div>
+          <div className="stat-foot">{tr("active in the last 7 days")}</div>
         </div>
       </div>
 
       {/* ── Class overview: two charts side by side ─────────────── */}
       <div className="coach-section">
         <div className="coach-section-head">
-          <h2><span className="cd-h-icon" aria-hidden="true">📊</span>Class overview</h2>
-          <div className="cd-seg" role="group" aria-label="Chart range">
+          <h2><span className="cd-h-icon" aria-hidden="true">📊</span>{tr("Class overview")}</h2>
+          <div className="cd-seg" role="group" aria-label={tr("Chart range")}>
             {[7, 30, 90].map(d => (
               <button
                 key={d}
@@ -487,13 +488,13 @@ export default function CoachDashboard() {
         <div className="coach-charts-grid">
           {/* Engagement: how many students did each activity */}
           <div className="coach-chart-panel">
-            <div className="coach-chart-title">🔥 Student engagement <span>· students active per day</span></div>
+            <div className="coach-chart-title">{tr("🔥 Student engagement")} <span>{tr("· students active per day")}</span></div>
             <div className="coach-chart-wrap">
               {chartLoading ? (
-                <p className="coach-chart-placeholder">Loading…</p>
+                <p className="coach-chart-placeholder">{tr("Loading…")}</p>
               ) : engData.every(d => !d.puzzles && !d.games && !d.studies && !d.assignments) ? (
                 <p className="coach-chart-placeholder">
-                  No student activity yet — puzzles, games, studies and completed assignments will show here.
+                  {tr("No student activity yet — puzzles, games, studies and completed assignments will show here.")}
                 </p>
               ) : (
                 <Bar data={buildEngagementData(engData)} options={buildEngagementOptions(engData, chartDays)} />
@@ -503,13 +504,13 @@ export default function CoachDashboard() {
 
           {/* Attendance: present / catch-up / absent */}
           <div className="coach-chart-panel">
-            <div className="coach-chart-title">📋 Attendance <span>· present · catch-up · absent</span></div>
+            <div className="coach-chart-title">{tr("📋 Attendance")} <span>{tr("· present · catch-up · absent")}</span></div>
             <div className="coach-chart-wrap">
               {chartLoading ? (
-                <p className="coach-chart-placeholder">Loading…</p>
+                <p className="coach-chart-placeholder">{tr("Loading…")}</p>
               ) : chartData.every(d => d.present === 0 && d.absent === 0 && d.catchup === 0 && d.studyMins === 0) ? (
                 <p className="coach-chart-placeholder">
-                  No attendance yet — mark it in the <Link to="/coach/attendance">Attendance</Link> tab.
+                  {tr("No attendance yet — mark it in the")} <Link to="/coach/attendance">{tr("Attendance")}</Link> {tr("tab.")}
                 </p>
               ) : (
                 <Bar data={buildChartData(chartData)} options={buildChartOptions(chartData, chartDays)} />
@@ -522,19 +523,19 @@ export default function CoachDashboard() {
       {/* ── Students section ─────────────────── */}
       <div className="coach-section">
         <div className="coach-section-head">
-          <h2><span className="cd-h-icon" aria-hidden="true">👥</span>Your students</h2>
+          <h2><span className="cd-h-icon" aria-hidden="true">👥</span>{tr("Your students")}</h2>
           <button
             className="btn-primary"
             onClick={() => setShowAdd(true)}
             disabled={remaining <= 0}
-            title={remaining <= 0 ? 'Upgrade your plan to add more students' : ''}
+            title={remaining <= 0 ? tr('Upgrade your plan to add more students') : ''}
           >
-            ＋ Add student
+            {tr("＋ Add student")}
           </button>
         </div>
 
         <p className="coach-add-hint" style={{ fontSize: '13px', color: '#a78bfa', margin: '-4px 0 12px' }}>
-          Enroll a student in attendance — the student will receive your assignments.
+          {tr("Enroll a student in attendance — the student will receive your assignments.")}
         </p>
 
         {addNotice && (
@@ -553,19 +554,19 @@ export default function CoachDashboard() {
         {incoming.length > 0 && (
           <div style={{ marginBottom: '14px' }}>
             <div style={{ fontSize: '12px', fontWeight: 700, color: '#6ee7b7', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '4px 0 8px' }}>
-              🙋 Student requests ({incoming.length})
+              {tr("🙋 Student requests (")}{incoming.length})
             </div>
             <div className="coach-students-grid">
               {incoming.map(r => {
                 const u = r.studentId;
-                const name = u?.displayName || u?.username || r.studentName || 'Student';
+                const name = u?.displayName || u?.username || r.studentName || tr('Student');
                 return (
                   <div key={r._id} className="coach-student-card cd-req-card cd-req-card--in">
                     <div className="cd-req-head">
                       <span className="cd-req-avatar" aria-hidden="true">{name.charAt(0).toUpperCase()}</span>
                       <div>
                         <div className="coach-student-name">{name}</div>
-                        <div className="cd-req-sub cd-req-sub--in">asked to join your students</div>
+                        <div className="cd-req-sub cd-req-sub--in">{tr("asked to join your students")}</div>
                       </div>
                     </div>
                     {/* What the student wrote. Shown BEFORE the buttons on
@@ -587,12 +588,12 @@ export default function CoachDashboard() {
                           rather than accepting a stranger sight unseen. */}
                       {u?._id && (
                         <button className="btn-ghost" style={{ padding: '6px 14px', fontSize: 13, borderColor: 'rgba(6,182,212,0.45)', color: '#67e8f9' }}
-                          onClick={() => messageApplicant(u._id, name)}>💬 Message</button>
+                          onClick={() => messageApplicant(u._id, name)}>{tr("💬 Message")}</button>
                       )}
                       <button className="btn-primary" style={{ padding: '6px 14px', fontSize: 13 }}
-                        onClick={() => answerIncoming(r._id, 'approve')}>Accept</button>
+                        onClick={() => answerIncoming(r._id, 'approve')}>{tr("Accept")}</button>
                       <button className="btn-ghost" style={{ padding: '6px 14px', fontSize: 13 }}
-                        onClick={() => answerIncoming(r._id, 'decline')}>Decline</button>
+                        onClick={() => answerIncoming(r._id, 'decline')}>{tr("Decline")}</button>
                     </div>
                   </div>
                 );
@@ -605,23 +606,23 @@ export default function CoachDashboard() {
         {pending.length > 0 && (
           <div style={{ marginBottom: '14px' }}>
             <div style={{ fontSize: '12px', fontWeight: 700, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '4px 0 8px' }}>
-              ⏳ Pending requests ({pending.length})
+              {tr("⏳ Pending requests (")}{pending.length})
             </div>
             <div className="coach-students-grid">
               {pending.map(p => {
                 const u = p.studentId;
-                const name = u?.displayName || u?.username || p.studentName || 'Student';
+                const name = u?.displayName || u?.username || p.studentName || tr('Student');
                 return (
                   <div key={p._id} className="coach-student-card cd-req-card cd-req-card--out">
                     <div className="cd-req-head">
                       <span className="cd-req-avatar" aria-hidden="true">{name.charAt(0).toUpperCase()}</span>
                       <div>
                         <div className="coach-student-name">{name}</div>
-                        <div className="cd-req-sub cd-req-sub--out">Waiting for approval…</div>
+                        <div className="cd-req-sub cd-req-sub--out">{tr("Waiting for approval…")}</div>
                       </div>
                     </div>
                     <div className="cd-req-actions">
-                      <button className="btn-ghost" onClick={() => cancelPending(p._id)}>Cancel request</button>
+                      <button className="btn-ghost" onClick={() => cancelPending(p._id)}>{tr("Cancel request")}</button>
                     </div>
                   </div>
                 );
@@ -632,7 +633,7 @@ export default function CoachDashboard() {
 
         {students.length === 0 && (
           <div className="coach-empty">
-            No students yet. Click <strong>Add student</strong> to invite your first one.
+            {tr("No students yet. Click")} <strong>{tr("Add student")}</strong> {tr("to invite your first one.")}
           </div>
         )}
 
@@ -645,24 +646,24 @@ export default function CoachDashboard() {
               type="search"
               value={studentSearch}
               onChange={e => setStudentSearch(e.target.value)}
-              placeholder="Search students by name or username…"
-              aria-label="Search students"
+              placeholder={tr("Search students by name or username…")}
+              aria-label={tr("Search students")}
             />
             {batches.length > 0 && (
               <select
                 className="coach-roster-batch"
                 value={batchFilter}
                 onChange={e => setBatchFilter(e.target.value)}
-                aria-label="Filter by batch"
+                aria-label={tr("Filter by batch")}
               >
-                <option value="">All batches</option>
+                <option value="">{tr("All batches")}</option>
                 {batches.map(b => <option key={b} value={b}>{b}</option>)}
               </select>
             )}
             <span className="coach-roster-count">
               {visibleStudents.length === students.length
-                ? `${students.length} students`
-                : `${visibleStudents.length} of ${students.length} students`}
+                ? tr("{length} students", { length: students.length })
+                : tr("{length} of {v1} students", { length: visibleStudents.length, v1: students.length })}
             </span>
             {(q || batchFilter) && (
               <button
@@ -670,7 +671,7 @@ export default function CoachDashboard() {
                 className="coach-roster-clear"
                 onClick={() => { setStudentSearch(''); setBatchFilter(''); }}
               >
-                Clear
+                {tr("Clear")}
               </button>
             )}
           </div>
@@ -680,7 +681,7 @@ export default function CoachDashboard() {
             "your students vanished". */}
         {students.length > 0 && visibleStudents.length === 0 && (
           <div className="coach-empty">
-            No students match “{studentSearch || batchFilter}”.
+            {tr("No students match “")}{studentSearch || batchFilter}”.
           </div>
         )}
 
@@ -689,18 +690,18 @@ export default function CoachDashboard() {
             <table className="coach-students-table">
               <thead>
                 <tr>
-                  <th className="cst-player">Student</th>
-                  <th className="cst-num">Puzzle</th>
-                  <th className="cst-num">Bullet</th>
-                  <th className="cst-num">Blitz</th>
-                  <th className="cst-num">Rapid</th>
-                  <th className="cst-actions">Actions</th>
+                  <th className="cst-player">{tr("Student")}</th>
+                  <th className="cst-num">{tr("Puzzle")}</th>
+                  <th className="cst-num">{tr("Bullet")}</th>
+                  <th className="cst-num">{tr("Blitz")}</th>
+                  <th className="cst-num">{tr("Rapid")}</th>
+                  <th className="cst-actions">{tr("Actions")}</th>
                 </tr>
               </thead>
               <tbody>
                 {visibleStudents.map(s => {
                   const u = s.studentId;
-                  const name = s.studentName || u?.displayName || u?.username || 'Unnamed';
+                  const name = s.studentName || u?.displayName || u?.username || tr('Unnamed');
                   const r = s.ratings || {};
                   // Public profile is keyed by displayName; fall back to username.
                   const profileKey = u?.displayName || u?.username;
@@ -732,21 +733,21 @@ export default function CoachDashboard() {
                             <Link
                               to={`/player/${encodeURIComponent(profileKey)}`}
                               className="cst-btn cst-btn-profile"
-                              title="Open student's public profile"
-                            >Profile</Link>
+                              title={tr("Open student's public profile")}
+                            >{tr("Profile")}</Link>
                           ) : (
-                            <span className="cst-btn cst-btn-disabled" title="No linked account yet">Profile</span>
+                            <span className="cst-btn cst-btn-disabled" title={tr("No linked account yet")}>{tr("Profile")}</span>
                           )}
                           <Link
                             to={`/coach/students/${s._id}`}
                             className="cst-btn cst-btn-progress"
-                            title="View this student's progress"
-                          >Progress</Link>
+                            title={tr("View this student's progress")}
+                          >{tr("Progress")}</Link>
                           <button
                             className="cst-btn cst-btn-delete"
                             onClick={() => removeStudent(s._id)}
-                            title="Remove from roster"
-                          >Delete</button>
+                            title={tr("Remove from roster")}
+                          >{tr("Delete")}</button>
                         </div>
                       </td>
                     </tr>
@@ -762,8 +763,8 @@ export default function CoachDashboard() {
       {summary?.recentAssignments?.length > 0 && (
         <div className="coach-section">
           <div className="coach-section-head">
-            <h2><span className="cd-h-icon" aria-hidden="true">📝</span>Recent assignments</h2>
-            <Link to="/coach/assignments" className="btn-ghost">See all</Link>
+            <h2><span className="cd-h-icon" aria-hidden="true">📝</span>{tr("Recent assignments")}</h2>
+            <Link to="/coach/assignments" className="btn-ghost">{tr("See all")}</Link>
           </div>
           <div className="coach-assignment-list">
             {summary.recentAssignments.map(a => (
@@ -772,8 +773,8 @@ export default function CoachDashboard() {
                 <div className="cd-assign-main">
                   <div className="assign-title">{a.title}</div>
                   <div className="assign-meta">
-                    {a.assignmentType.replace(/_/g, ' ')} · {a.studentIds.length} student{a.studentIds.length === 1 ? '' : 's'}
-                    {a.targetCount ? ` · ${a.targetCount} puzzles` : ''}
+                    {a.assignmentType.replace(/_/g, ' ')} · {a.studentIds.length} {tr("student")}{a.studentIds.length === 1 ? '' : 's'}
+                    {a.targetCount ? tr(" · {targetCount} puzzles", { targetCount: a.targetCount }) : ''}
                   </div>
                 </div>
                 <div className="assign-date" title={new Date(a.createdAt).toLocaleString()}>
@@ -792,33 +793,33 @@ export default function CoachDashboard() {
       {showAdd && (
         <div className="coach-modal-overlay" onClick={() => setShowAdd(false)}>
           <div className="coach-modal" onClick={e => e.stopPropagation()}>
-            <h2>Add a student</h2>
+            <h2>{tr("Add a student")}</h2>
             <p className="modal-hint">
-              If your student already has a chess account here, enter their username — they will be linked instantly and their progress will sync.
+              {tr("If your student already has a chess account here, enter their username — they will be linked instantly and their progress will sync.")}
             </p>
             <form onSubmit={addStudent}>
               <label className="field">
-                <span>Username (preferred)</span>
+                <span>{tr("Username (preferred)")}</span>
                 <input
                   type="text"
                   value={addForm.studentUsername}
                   onChange={e => setAddForm({ ...addForm, studentUsername: e.target.value })}
-                  placeholder="e.g. magnus_2018"
+                  placeholder={tr("e.g. magnus_2018")}
                 />
               </label>
-              <div className="modal-divider">— or add manually —</div>
+              <div className="modal-divider">{tr("— or add manually —")}</div>
               <label className="field">
-                <span>Student name</span>
+                <span>{tr("Student name")}</span>
                 <input
                   type="text"
                   value={addForm.studentName}
                   onChange={e => setAddForm({ ...addForm, studentName: e.target.value })}
-                  placeholder="Full name"
+                  placeholder={tr("Full name")}
                 />
               </label>
               <div className="field-row">
                 <label className="field">
-                  <span>Email (optional)</span>
+                  <span>{tr("Email (optional)")}</span>
                   <input
                     type="email"
                     value={addForm.studentEmail}
@@ -826,38 +827,38 @@ export default function CoachDashboard() {
                   />
                 </label>
                 <label className="field">
-                  <span>Group / batch tag</span>
+                  <span>{tr("Group / batch tag")}</span>
                   <input
                     type="text"
                     value={addForm.groupTag}
                     onChange={e => setAddForm({ ...addForm, groupTag: e.target.value })}
-                    placeholder="e.g. Sunday morning"
+                    placeholder={tr("e.g. Sunday morning")}
                   />
                 </label>
               </div>
               <label className="field">
-                <span>Coach notes (private)</span>
+                <span>{tr("Coach notes (private)")}</span>
                 <textarea
                   rows={2}
                   value={addForm.notes}
                   onChange={e => setAddForm({ ...addForm, notes: e.target.value })}
-                  placeholder="Anything you want to remember about this student"
+                  placeholder={tr("Anything you want to remember about this student")}
                 />
               </label>
 
               {addError && (
                 <div className="form-error">
                   {addError}
-                  {addErrorUpgrade && <> <Link to="/coach/subscription">View plans →</Link></>}
+                  {addErrorUpgrade && <> <Link to="/coach/subscription">{tr("View plans →")}</Link></>}
                 </div>
               )}
 
               <div className="modal-actions">
                 <button type="button" className="btn-ghost" onClick={() => setShowAdd(false)} disabled={adding}>
-                  Cancel
+                  {tr("Cancel")}
                 </button>
                 <button type="submit" className="btn-primary" disabled={adding}>
-                  {adding ? 'Adding…' : 'Add student'}
+                  {adding ? tr('Adding…') : tr('Add student')}
                 </button>
               </div>
             </form>
@@ -870,18 +871,18 @@ export default function CoachDashboard() {
         <div className="coach-modal-overlay" onClick={dismissVerifiedPopup}>
           <div className="coach-modal coach-verified-modal" onClick={e => e.stopPropagation()}>
             <div className="coach-verified-modal-icon">🎓</div>
-            <h2>You're a verified coach!</h2>
+            <h2>{tr("You're a verified coach!")}</h2>
             <p>
-              The Nexus team has verified your account — welcome aboard. You now carry the
-              <strong> 🎓 Verified Coach</strong> badge.
+              {tr("The Nexus team has verified your account — welcome aboard. You now carry the")}
+              <strong> {tr("🎓 Verified Coach")}</strong> {tr("badge.")}
             </p>
             <p className="coach-verified-modal-note">
-              ChessNexus is <strong>free for coaches</strong>. To keep it fair for everyone,
-              please make sure you use <strong>only one coach account</strong>. Duplicate
+              ChessNexus is <strong>{tr("free for coaches")}</strong>. To keep it fair for everyone,
+              {tr("please make sure you use")} <strong>{tr("only one coach account")}</strong>{tr(". Duplicate")}
               coach accounts may be removed.
             </p>
             <button className="btn-primary" onClick={dismissVerifiedPopup}>
-              Got it — let's coach ♟️
+              {tr("Got it — let's coach ♟️")}
             </button>
           </div>
         </div>

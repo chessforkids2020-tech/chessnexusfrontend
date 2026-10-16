@@ -4,6 +4,7 @@ import api from '../../api';
 import './CoachDashboard.css';
 import './CoachOnboarding.css';
 import './CoachSubscription.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 function loadRazorpayScript() {
   return new Promise(resolve => {
@@ -55,7 +56,7 @@ export default function CoachSubscription() {
       // "With Live Classroom" — which asked a coach to choose between features
       // before they had used either. Every paid plan now includes the classroom.
       setFamilies(p.data?.planFamilies || [
-        { key: 'coach', title: 'Plans', order: p.data?.planOrder || ['free', 'pro', 'coach'] },
+        { key: 'coach', title: tr('Plans'), order: p.data?.planOrder || ['free', 'pro', 'coach'] },
       ]);
       const curs = p.data?.currencies || [];
       setCurrencies(curs);
@@ -88,7 +89,7 @@ export default function CoachSubscription() {
       // Dev fallback: backend returns { devMode: true } when keys aren't configured
       if (data.devMode) {
         await api.post('/api/coach-subscription/dev-activate', { paymentRecordId: data.paymentRecordId });
-        setMsg(`✅ ${planId.toUpperCase()} activated (dev mode).`);
+        setMsg(tr("✅ {v0} activated (dev mode).", { v0: planId.toUpperCase() }));
         await loadAll();
         return;
       }
@@ -102,7 +103,7 @@ export default function CoachSubscription() {
         currency: data.currency || 'INR',
         order_id: data.orderId,
         name: 'Chess Coach',
-        description: `${planId} plan · ${months} month${months === 1 ? '' : 's'}`,
+        description: tr("{planId} plan · {months} month{v2}", { planId: planId, months: months, v2: months === 1 ? '' : 's' }),
         prefill: {
           name: status?.coachProfile?.coachName || '',
           email: status?.email || ''
@@ -116,7 +117,7 @@ export default function CoachSubscription() {
               razorpay_signature: response.razorpay_signature,
               planId,
             });
-            setMsg(`✅ Payment successful. Welcome to ${planId.toUpperCase()}!`);
+            setMsg(tr("✅ Payment successful. Welcome to {v0}!", { v0: planId.toUpperCase() }));
             await loadAll();
           } catch (e) {
             setErr(e.response?.data?.message || 'Payment verification failed.');
@@ -148,7 +149,7 @@ export default function CoachSubscription() {
   // coach's current roster won't fit the target cap.
   const downgrade = async (planId, planName, targetCap) => {
     if (activating) return;
-    if (!window.confirm(`Switch to the ${planName} plan (up to ${targetCap} students)? You'll keep your students, but can't add past ${targetCap}.`)) return;
+    if (!window.confirm(tr("Switch to the {planName} plan (up to {targetCap} students)? You'll keep your students, but can't add past {v2}.", { planName: planName, targetCap: targetCap, v2: targetCap }))) return;
     setErr(''); setMsg('');
     setActivating(planId);
     try {
@@ -164,10 +165,10 @@ export default function CoachSubscription() {
   };
 
   const cancelPlan = async () => {
-    if (!window.confirm('Cancel your subscription? You will keep access until the end of the current period.')) return;
+    if (!window.confirm(tr('Cancel your subscription? You will keep access until the end of the current period.'))) return;
     try {
       await api.post('/api/coach-subscription/cancel');
-      setMsg('Subscription cancelled. Access continues until period end.');
+      setMsg(tr('Subscription cancelled. Access continues until period end.'));
       await loadAll();
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not cancel.');
@@ -202,9 +203,9 @@ export default function CoachSubscription() {
 
   // Per-tier presentation: a ribbon badge + a one-line tagline of the offer.
   const TIER = {
-    free:  { tagline: 'Start free, forever', badge: '' },
-    pro:   { tagline: 'Unlimited live classes', badge: '⭐ Most popular' },
-    coach: { tagline: 'Everything, unlimited', badge: '💎 Elite Coach' },
+    free:  { tagline: tr('Start free, forever'), badge: '' },
+    pro:   { tagline: tr('Unlimited live classes'), badge: tr('⭐ Most popular') },
+    coach: { tagline: tr('Everything, unlimited'), badge: tr('💎 Elite Coach') },
   };
 
   // Human "live class" summary for a plan's liveClass config (server sends
@@ -212,12 +213,12 @@ export default function CoachSubscription() {
   const liveSummary = (p) => {
     const lc = p.liveClass || {};
     const per = lc.meetingsPerDay === -1 ? 'Unlimited' : `${lc.meetingsPerDay}/day`;
-    const room = lc.maxStudents === -1 ? 'unlimited students' : `up to ${lc.maxStudents} students (+ coach)`;
-    const len = lc.meetingsPerDay === -1 ? `up to ${lc.durationMin} min or unlimited` : `up to ${lc.durationMin} min`;
+    const room = lc.maxStudents === -1 ? 'unlimited students' : tr("up to {maxStudents} students (+ coach)", { maxStudents: lc.maxStudents });
+    const len = lc.meetingsPerDay === -1 ? tr("up to {durationMin} min or unlimited", { durationMin: lc.durationMin }) : tr("up to {durationMin} min", { durationMin: lc.durationMin });
     return `${per} · ${len} · ${room}`;
   };
 
-  if (loading) return <div className="coach-loading">Loading plans…</div>;
+  if (loading) return <div className="coach-loading">{tr("Loading plans…")}</div>;
 
   const currentPlan = status?.coachSubscription?.plan;
   const access = status?.access || {};
@@ -257,15 +258,15 @@ export default function CoachSubscription() {
       <div className="coach-dash">
         <div className="coach-dash-header">
           <div>
-            <h1>💎 Coach Subscription</h1>
-            <p className="coach-dash-sub">Your plan is provided by your academy.</p>
+            <h1>{tr("💎 Coach Subscription")}</h1>
+            <p className="coach-dash-sub">{tr("Your plan is provided by your academy.")}</p>
           </div>
-          <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
+          <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>{tr("← Back to dashboard")}</button>
         </div>
         <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(6,182,212,0.15),rgba(16,185,129,0.08))', border: '1px solid rgba(6,182,212,0.4)', borderRadius: 'var(--radius-lg)', padding: '24px 28px' }}>
           <div>
-            <div className="cs-current-label" style={{ color: '#67e8f9' }}>🏛️ Academy-sponsored</div>
-            <div className="cs-current-name" style={{ color: '#a5f3fc', fontSize: 22 }}>{planName} plan — provided by your academy</div>
+            <div className="cs-current-label" style={{ color: '#67e8f9' }}>{tr("🏛️ Academy-sponsored")}</div>
+            <div className="cs-current-name" style={{ color: '#a5f3fc', fontSize: 22 }}>{planName} {tr("plan — provided by your academy")}</div>
             <div className="cs-current-meta" style={{ marginTop: 8, lineHeight: 1.6 }}>
               Your academy pays for your subscription. You don't need to buy a plan yourself.
               If anything looks off, ask your academy head.
@@ -282,17 +283,17 @@ export default function CoachSubscription() {
       <div className="coach-dash">
         <div className="coach-dash-header">
           <div>
-            <h1>💎 Coach Subscription</h1>
-            <p className="coach-dash-sub">Your role includes everything.</p>
+            <h1>{tr("💎 Coach Subscription")}</h1>
+            <p className="coach-dash-sub">{tr("Your role includes everything.")}</p>
           </div>
-          <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
+          <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>{tr("← Back to dashboard")}</button>
         </div>
         <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(251,191,36,0.15),rgba(245,158,11,0.08))', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 'var(--radius-lg)', padding: '24px 28px' }}>
           <div>
-            <div className="cs-current-label" style={{ color: '#fbbf24' }}>✨ Admin</div>
-            <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 22 }}>Coach access included — free</div>
+            <div className="cs-current-label" style={{ color: '#fbbf24' }}>{tr("✨ Admin")}</div>
+            <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 22 }}>{tr("Coach access included — free")}</div>
             <div className="cs-current-meta" style={{ marginTop: 6 }}>
-              Your admin role includes full coach access (up to 100 students) at no extra cost.
+              {tr("Your admin role includes full coach access (up to 100 students) at no extra cost.")}
             </div>
           </div>
         </div>
@@ -306,19 +307,19 @@ export default function CoachSubscription() {
       <div className="coach-dash">
         <div className="coach-dash-header">
           <div>
-            <h1>💎 Coach Subscription</h1>
-            <p className="coach-dash-sub">Elite Coach access — included free.</p>
+            <h1>{tr("💎 Coach Subscription")}</h1>
+            <p className="coach-dash-sub">{tr("Elite Coach access — included free.")}</p>
           </div>
-          <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
+          <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>{tr("← Back to dashboard")}</button>
         </div>
         <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(251,191,36,0.15),rgba(245,158,11,0.08))', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 'var(--radius-lg)', padding: '24px 28px' }}>
           <div>
-            <div className="cs-current-label" style={{ color: '#fbbf24' }}>💎 Elite Member</div>
+            <div className="cs-current-label" style={{ color: '#fbbf24' }}>{tr("💎 Elite Member")}</div>
             <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 22 }}>
-              Coach access included — free
+              {tr("Coach access included — free")}
             </div>
             <div className="cs-current-meta" style={{ marginTop: 8, lineHeight: 1.6 }}>
-              Coach access is included free with your Elite membership — up to 100 students, no expiry.
+              {tr("Coach access is included free with your Elite membership — up to 100 students, no expiry.")}
             </div>
           </div>
         </div>
@@ -330,10 +331,10 @@ export default function CoachSubscription() {
     <div className="coach-dash">
       <div className="coach-dash-header">
         <div>
-          <h1>💎 Coach Plans</h1>
-          <p className="coach-dash-sub">Free forever, or upgrade for more students and tools. Cancel anytime.</p>
+          <h1>{tr("💎 Coach Plans")}</h1>
+          <p className="coach-dash-sub">{tr("Free forever, or upgrade for more students and tools. Cancel anytime.")}</p>
         </div>
-        <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
+        <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>{tr("← Back to dashboard")}</button>
       </div>
 
       {msg && <div className="cs-ok">{msg}</div>}
@@ -342,9 +343,9 @@ export default function CoachSubscription() {
       {access.reason === 'exit_trial' && (
         <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.06))', border: '1px solid rgba(245,158,11,0.45)', borderRadius: 'var(--radius-lg)', padding: '18px 24px', marginBottom: 16 }}>
           <div>
-            <div className="cs-current-label" style={{ color: '#fbbf24' }}>⏳ Academy trial</div>
+            <div className="cs-current-label" style={{ color: '#fbbf24' }}>{tr("⏳ Academy trial")}</div>
             <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 20 }}>
-              You left your academy — {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'} left on your current plan
+              {tr("You left your academy —")} {access.daysRemaining} {tr("day")}{access.daysRemaining === 1 ? '' : 's'} {tr("left on your current plan")}
             </div>
             <div className="cs-current-meta" style={{ marginTop: 6, lineHeight: 1.6 }}>
               Pick a plan below to keep your access. When the trial ends you'll move to the Free plan
@@ -356,28 +357,28 @@ export default function CoachSubscription() {
       {currentPlan && (
         <div className="cs-current">
           <div>
-            <div className="cs-current-label">Current plan</div>
+            <div className="cs-current-label">{tr("Current plan")}</div>
             <div className="cs-current-name">{isOnFreePlan ? 'FREE' : currentPlan.toUpperCase()}</div>
             <div className="cs-current-meta">
               {access.downgraded ? (
-                <>Your Coach plan ended{periodEndDate ? ` on ${periodEndDate}` : ''} — you're on the Free plan now
-                  (up to {access.maxStudents} students). Your existing students are unaffected.</>
+                <>Your Coach plan ended{periodEndDate ? tr(" on {periodEndDate}", { periodEndDate: periodEndDate }) : ''} — you're on the Free plan now
+                  {tr("(up to")} {access.maxStudents} {tr("students). Your existing students are unaffected.")}</>
               ) : isOnFreePlan ? (
-                <>Free forever · up to {access.maxStudents} students · no card required</>
+                <>{tr("Free forever · up to")} {access.maxStudents} {tr("students · no card required")}</>
               ) : (
-                <>Status: {status?.coachSubscription?.status} · {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'} remaining</>
+                <>{tr("Status:")} {status?.coachSubscription?.status} · {access.daysRemaining} {tr("day")}{access.daysRemaining === 1 ? '' : 's'} {tr("remaining")}</>
               )}
             </div>
           </div>
           {status?.coachSubscription?.status === 'active' && !isOnFreePlan && !access.downgraded && (
-            <button className="btn-danger" onClick={cancelPlan}>Cancel subscription</button>
+            <button className="btn-danger" onClick={cancelPlan}>{tr("Cancel subscription")}</button>
           )}
         </div>
       )}
 
       {/* Currency is fixed by the coach's country — shown, not chosen. */}
       <div className="cs-currency-row">
-        <span className="cs-currency-hint">Prices shown in <strong>{currency}</strong> (based on your country).</span>
+        <span className="cs-currency-hint">{tr("Prices shown in")} <strong>{currency}</strong> {tr("(based on your country).")}</span>
       </div>
 
       {walletBalanceMinor > 0 && (
@@ -389,12 +390,12 @@ export default function CoachSubscription() {
               onChange={e => setApplyCredit(e.target.checked)}
             />
             <span>
-              Apply referral credit — you have{' '}
-              <strong>{curSymbol}{fmt(walletBalanceMinor)}</strong> in {currency}
+              {tr("Apply referral credit — you have")}{' '}
+              <strong>{curSymbol}{fmt(walletBalanceMinor)}</strong> {tr("in")} {currency}
             </span>
           </label>
           <span className="cs-currency-hint">
-            Credit covers up to {Math.round(maxDiscountPct * 100)}% of a purchase.
+            {tr("Credit covers up to")} {Math.round(maxDiscountPct * 100)}{tr("% of a purchase.")}
           </span>
         </div>
       )}
@@ -406,7 +407,7 @@ export default function CoachSubscription() {
       )}
 
       <div className="cs-duration-row">
-        <label>Subscribe for</label>
+        <label>{tr("Subscribe for")}</label>
         <div className="cs-duration-pills">
           {durations.map(m => (
             <button
@@ -415,7 +416,7 @@ export default function CoachSubscription() {
               className={`cs-duration-pill ${months === m ? 'is-active' : ''}`}
               onClick={() => setMonths(m)}
             >
-              {m} month{m === 1 ? '' : 's'}{m === 3 ? ' · save 10%' : ''}
+              {m} {tr("month")}{m === 1 ? '' : 's'}{m === 3 ? ' · save 10%' : ''}
             </button>
           ))}
         </div>
@@ -463,21 +464,21 @@ export default function CoachSubscription() {
                     {isFreeCard ? (
                       <div className="cs-plan-price">
                         <span className="amount">{curSymbol}0</span>
-                        <span className="cycle">forever</span>
+                        <span className="cycle">{tr("forever")}</span>
                       </div>
                     ) : (
                       <>
                         <div className="cs-plan-price">
                           <span className="currency">{curSymbol}</span>
                           <span className="amount">{totalFor(p)}</span>
-                          <span className="cycle">for {months} month{months === 1 ? '' : 's'}</span>
+                          <span className="cycle">{tr("for")} {months} {tr("month")}{months === 1 ? '' : 's'}</span>
                         </div>
                         {months > 1 && (
-                          <div className="cs-plan-permonth">{curSymbol}{perMonthFor(p)} / month</div>
+                          <div className="cs-plan-permonth">{curSymbol}{perMonthFor(p)} {tr("/ month")}</div>
                         )}
                       </>
                     )}
-                    <div className="cs-plan-students"><strong>{p.maxStudents.toLocaleString()}</strong> students</div>
+                    <div className="cs-plan-students"><strong>{p.maxStudents.toLocaleString()}</strong> {tr("students")}</div>
                     {p.liveClass && (
                       <div className="cs-plan-live">🎥 {liveSummary(p)}</div>
                     )}
@@ -489,7 +490,7 @@ export default function CoachSubscription() {
                       const tooMany = canDowngrade && activeStudents != null && activeStudents > (p.maxStudents ?? 0);
                       if (isFreeCard) {
                         // Free card: current plan, or a downgrade target for a paid coach.
-                        if (isCurrent) return <button className="btn-ghost" disabled>Current plan</button>;
+                        if (isCurrent) return <button className="btn-ghost" disabled>{tr("Current plan")}</button>;
                         if (onActivePaid) {
                           return (
                             <>
@@ -502,15 +503,15 @@ export default function CoachSubscription() {
                               </button>
                               {tooMany && (
                                 <div className="cs-downgrade-warn">
-                                  You have {activeStudents} students — remove {activeStudents - p.maxStudents} to fit {p.maxStudents}.
+                                  {tr("You have")} {activeStudents} {tr("students — remove")} {activeStudents - p.maxStudents} {tr("to fit")} {p.maxStudents}.
                                 </div>
                               )}
                             </>
                           );
                         }
-                        return <button className="btn-ghost" disabled>Included free</button>;
+                        return <button className="btn-ghost" disabled>{tr("Included free")}</button>;
                       }
-                      if (isCurrent) return <button className="btn-ghost" disabled>Current plan</button>;
+                      if (isCurrent) return <button className="btn-ghost" disabled>{tr("Current plan")}</button>;
                       if (canDowngrade) {
                         return (
                           <>
@@ -523,7 +524,7 @@ export default function CoachSubscription() {
                             </button>
                             {tooMany && (
                               <div className="cs-downgrade-warn">
-                                You have {activeStudents} students — remove {activeStudents - p.maxStudents} to fit {p.maxStudents}.
+                                {tr("You have")} {activeStudents} {tr("students — remove")} {activeStudents - p.maxStudents} {tr("to fit")} {p.maxStudents}.
                               </div>
                             )}
                           </>
@@ -553,13 +554,13 @@ export default function CoachSubscription() {
           <div className="cs-refer">
             <p className="cs-refer-lead">
               Invite another coach with your code. When they make their first paid
-              subscription, you earn <strong>{Math.round((referrals.rewardPct ?? 0.25) * 100)}%</strong> of
+              {tr("subscription, you earn")} <strong>{Math.round((referrals.rewardPct ?? 0.25) * 100)}%</strong> {tr("of")}
               what they pay as wallet credit — spendable on your own plan.
             </p>
 
             <div className="cs-refer-code-row">
               <div className="cs-refer-code">
-                <span className="cs-refer-code-label">Your code</span>
+                <span className="cs-refer-code-label">{tr("Your code")}</span>
                 <strong>{referrals.myCoachCode}</strong>
               </div>
               <button
@@ -572,21 +573,21 @@ export default function CoachSubscription() {
                   });
                 }}
               >
-                {copied ? '✓ Link copied' : 'Copy invite link'}
+                {copied ? tr('✓ Link copied') : tr('Copy invite link')}
               </button>
             </div>
 
             <div className="cs-refer-stats">
-              <div className="cs-refer-stat"><strong>{referrals.total}</strong><span>Referred</span></div>
-              <div className="cs-refer-stat"><strong>{referrals.granted}</strong><span>Subscribed</span></div>
-              <div className="cs-refer-stat"><strong>{referrals.pending}</strong><span>Pending</span></div>
+              <div className="cs-refer-stat"><strong>{referrals.total}</strong><span>{tr("Referred")}</span></div>
+              <div className="cs-refer-stat"><strong>{referrals.granted}</strong><span>{tr("Subscribed")}</span></div>
+              <div className="cs-refer-stat"><strong>{referrals.pending}</strong><span>{tr("Pending")}</span></div>
               <div className="cs-refer-stat">
                 <strong>
                   {Object.keys(referrals.earnedByCurrency || {}).length
                     ? Object.entries(referrals.earnedByCurrency).map(([c, a]) => `${c} ${fmt(a)}`).join(' · ')
                     : '—'}
                 </strong>
-                <span>Earned</span>
+                <span>{tr("Earned")}</span>
               </div>
             </div>
 
@@ -594,7 +595,7 @@ export default function CoachSubscription() {
               <div className="cs-refer-list">
                 {referrals.referrals.map(r => (
                   <div key={r.id} className="cs-refer-list-row">
-                    <span>{r.coach?.name || 'A coach'}{r.coach?.academy ? ` · ${r.coach.academy}` : ''}</span>
+                    <span>{r.coach?.name || tr('A coach')}{r.coach?.academy ? ` · ${r.coach.academy}` : ''}</span>
                     <span className={`pill pill-${r.status === 'granted' ? 'completed' : 'pending'}`}>
                       {r.status === 'granted'
                         ? `+${r.rewardCurrency} ${fmt(r.rewardAmount)}`
@@ -610,16 +611,16 @@ export default function CoachSubscription() {
 
       {history.length > 0 && (
         <div className="coach-section">
-          <div className="coach-section-head"><h2>Payment history</h2></div>
+          <div className="coach-section-head"><h2>{tr("Payment history")}</h2></div>
           <div className="cs-history">
             <div className="cs-history-row cs-history-head">
-              <span>Date</span><span>Plan</span><span>Duration</span><span>Amount</span><span>Status</span>
+              <span>{tr("Date")}</span><span>{tr("Plan")}</span><span>{tr("Duration")}</span><span>{tr("Amount")}</span><span>{tr("Status")}</span>
             </div>
             {history.map(h => (
               <div key={h._id} className="cs-history-row">
                 <span>{new Date(h.createdAt).toLocaleDateString()}</span>
                 <span>{h.planId}</span>
-                <span>{h.months ? `${h.months} mo` : h.billingCycle}</span>
+                <span>{h.months ? tr("{months} mo", { months: h.months }) : h.billingCycle}</span>
                 <span>{h.currency} {(h.amount / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
                 <span className={`pill pill-${h.status === 'paid' ? 'completed' : h.status === 'failed' ? 'overdue' : 'pending'}`}>
                   {h.status}

@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import SEO from "../../components/SEO";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/members";
 
@@ -22,12 +23,12 @@ const FREE_STUDENTS = 30;
 // IS elite as far as access is concerned; they simply do not carry the `elite`
 // role, which stays admin-granted and never expires. Keep the two in step.
 const SUPPORTER_UNLOCKS = [
-  { icon: "🎯", title: "Monthly Focus challenges", desc: "Create your own month-long daily challenges, with XP and a leaderboard for everyone taking part." },
-  { icon: "👥", title: "Team Races", desc: "Host and run team-based puzzle races — set them up and invite players to compete." },
-  { icon: "📖", title: "Opening repertoire", desc: "Unlimited cloud saves for your repertoire, instead of the standard limit." },
-  { icon: "♟️", title: "Endgame trainer — no XP", desc: "The premium endgame library and playing positions out against the engine, without spending any XP." },
-  { icon: "📚", title: "Books, free", desc: "Read the Chess Nexus book library at no cost." },
-  { icon: "📈", title: "Weekly streak report — no XP", desc: "Your weekly progress report unlocked without spending XP on it." },
+  { icon: "🎯", title: tr("Monthly Focus challenges"), desc: tr("Create your own month-long daily challenges, with XP and a leaderboard for everyone taking part.") },
+  { icon: "👥", title: tr("Team Races"), desc: tr("Host and run team-based puzzle races — set them up and invite players to compete.") },
+  { icon: "📖", title: tr("Opening repertoire"), desc: tr("Unlimited cloud saves for your repertoire, instead of the standard limit.") },
+  { icon: "♟️", title: tr("Endgame trainer — no XP"), desc: tr("The premium endgame library and playing positions out against the engine, without spending any XP.") },
+  { icon: "📚", title: tr("Books, free"), desc: tr("Read the Chess Nexus book library at no cost.") },
+  { icon: "📈", title: tr("Weekly streak report — no XP"), desc: tr("Your weekly progress report unlocked without spending XP on it.") },
 ];
 
 const NEXUS_TITLES = [
@@ -36,7 +37,7 @@ const NEXUS_TITLES = [
     name: "Nexus Supporter",
     role: "Supports the platform",
     how: "Given to members who support Chess Nexus",
-    desc: "Held by members who back the growth of Chess Nexus. NS is carried before your name wherever you play — leaderboards, chat, your profile, every race and tournament you enter.",
+    desc: tr("Held by members who back the growth of Chess Nexus. NS is carried before your name wherever you play — leaderboards, chat, your profile, every race and tournament you enter."),
     accent: "ns",
   },
   {
@@ -44,7 +45,7 @@ const NEXUS_TITLES = [
     name: "Nexus Expert",
     role: "Supports the platform",
     how: "Given to members who support Chess Nexus",
-    desc: "The senior supporter title. NX works exactly as NS does — same recognition, carried the same way, at a higher standing.",
+    desc: tr("The senior supporter title. NX works exactly as NS does — same recognition, carried the same way, at a higher standing."),
     accent: "nx",
   },
   {
@@ -52,7 +53,7 @@ const NEXUS_TITLES = [
     name: "Nexus Coach",
     role: "Builds the community",
     how: "Awarded to the most active coaches — cannot be bought",
-    desc: "Awarded to the coaches who build this community — teaching here regularly, bringing their own academy across, and introducing other academies and coaches to Chess Nexus. It recognises contribution, not payment, and it never expires.",
+    desc: tr("Awarded to the coaches who build this community — teaching here regularly, bringing their own academy across, and introducing other academies and coaches to Chess Nexus. It recognises contribution, not payment, and it never expires."),
     accent: "nc",
     earned: true,
   },
@@ -60,43 +61,43 @@ const NEXUS_TITLES = [
 
 // What every signed-up player gets, at no cost.
 const USER_PERKS = [
-  { icon: "🧩", title: "All puzzles & training", desc: "Daily puzzles, themed tactics, rating-band and piece-count training in Healthy Mix — solve as much as you want, with no daily limit." },
-  { icon: "⚡", title: "All races", desc: "Timed Race, Arena Race and Team Race — beat the clock and climb the live leaderboards." },
-  { icon: "📈", title: "Analyse your own games", desc: "Import from Lichess or Chess.com and review any game with engine evaluation, accuracy, blunder detection and a phase-by-phase breakdown. The engine runs in your browser, so analysis is unlimited and free." },
-  { icon: "📚", title: "Studies & timed tests", desc: "Work through Nexus studies chapter by chapter, then sit timed study tests that grade you and track progress over time." },
-  { icon: "🏆", title: "Tournaments", desc: "Join arena tournaments and compete across multiple rounds with full leaderboards." },
-  { icon: "♟️", title: "Endgame trainer", desc: "Drill essential endgames from a free library of positions, then play them out against the engine at your chosen strength. A deeper premium set unlocks with the XP you earn as you play." },
-  { icon: "🎮", title: "3D Arena Tournament", desc: "Play in realistic 3D tournament environments — 3D boards with atmospheric effects, camera controls and real-time spectator views." },
-  { icon: "🧩✨", title: "3D Puzzle Room", desc: "Solve puzzles with friends and other players in real-time 3D puzzle rooms — collaborate, compete and learn together." },
-  { icon: "💬", title: "Chat & friends", desc: "Message friends, coaches and teammates, create group chats, and see who is online right now." },
-  { icon: "🏛️", title: "Clubs", desc: "Create or join chess clubs for club activities, internal tournaments, club leaderboards and team puzzle challenges." },
-  { icon: "🔥", title: "Streaks, XP & badges", desc: "Build a daily practice streak, earn XP for everything you solve, and unlock achievement badges shown on your public profile." },
+  { icon: "🧩", title: tr("All puzzles & training"), desc: tr("Daily puzzles, themed tactics, rating-band and piece-count training in Healthy Mix — solve as much as you want, with no daily limit.") },
+  { icon: "⚡", title: tr("All races"), desc: tr("Timed Race, Arena Race and Team Race — beat the clock and climb the live leaderboards.") },
+  { icon: "📈", title: tr("Analyse your own games"), desc: tr("Import from Lichess or Chess.com and review any game with engine evaluation, accuracy, blunder detection and a phase-by-phase breakdown. The engine runs in your browser, so analysis is unlimited and free.") },
+  { icon: "📚", title: tr("Studies & timed tests"), desc: tr("Work through Nexus studies chapter by chapter, then sit timed study tests that grade you and track progress over time.") },
+  { icon: "🏆", title: tr("Tournaments"), desc: tr("Join arena tournaments and compete across multiple rounds with full leaderboards.") },
+  { icon: "♟️", title: tr("Endgame trainer"), desc: tr("Drill essential endgames from a free library of positions, then play them out against the engine at your chosen strength. A deeper premium set unlocks with the XP you earn as you play.") },
+  { icon: "🎮", title: tr("3D Arena Tournament"), desc: tr("Play in realistic 3D tournament environments — 3D boards with atmospheric effects, camera controls and real-time spectator views.") },
+  { icon: "🧩✨", title: tr("3D Puzzle Room"), desc: tr("Solve puzzles with friends and other players in real-time 3D puzzle rooms — collaborate, compete and learn together.") },
+  { icon: "💬", title: tr("Chat & friends"), desc: tr("Message friends, coaches and teammates, create group chats, and see who is online right now.") },
+  { icon: "🏛️", title: tr("Clubs"), desc: tr("Create or join chess clubs for club activities, internal tournaments, club leaderboards and team puzzle challenges.") },
+  { icon: "🔥", title: tr("Streaks, XP & badges"), desc: tr("Build a daily practice streak, earn XP for everything you solve, and unlock achievement badges shown on your public profile.") },
 ];
 
 // Extra abilities Elite members unlock. Coach access is deliberately NOT listed
 // here any more: coaching is free for everyone up to the free-plan cap, so
 // presenting it as an Elite unlock both undersold the free plan and misled.
 const ELITE_PERKS = [
-  { icon: "👥", title: "Create Team Races", desc: "Set up your own team-based puzzle races and invite players to compete." },
-  { icon: "🎯", title: "Create Monthly Focus challenges", desc: "Design month-long daily challenges with XP and leaderboards for the community." },
-  { icon: "🧊", title: "Create 3D Arena Tournaments", desc: "Host immersive 3D arena tournaments — a premium way to run events." },
-  { icon: "♟️", title: "Premium tools included", desc: "Premium endgame positions and the opening repertoire trainer are open to you without spending XP." },
+  { icon: "👥", title: tr("Create Team Races"), desc: tr("Set up your own team-based puzzle races and invite players to compete.") },
+  { icon: "🎯", title: tr("Create Monthly Focus challenges"), desc: tr("Design month-long daily challenges with XP and leaderboards for the community.") },
+  { icon: "🧊", title: tr("Create 3D Arena Tournaments"), desc: tr("Host immersive 3D arena tournaments — a premium way to run events.") },
+  { icon: "♟️", title: tr("Premium tools included"), desc: tr("Premium endgame positions and the opening repertoire trainer are open to you without spending XP.") },
 ];
 
 // What coaches can do. Everything here is on the free plan unless the entry
 // says otherwise — the free plan is the product, not a trial.
 const COACH_PERKS = [
-  { icon: "🎥", title: "Built-in live classroom", desc: "Teach inside the app — HD video, screen share and one shared board. Give a student control to play their move, load studies, endgames, puzzles or master games onto the board, and run a waiting room with raise-hand, mic and camera controls. Attendance marks itself as students join. Free plan: one 40-minute class a day with up to 4 students; paid plans remove every limit." },
-  { icon: "📋", title: "Seven kinds of assignment", desc: "Puzzle topics by theme or rating band, whole studies, timed Study Tests, Timed Races, Arena Tournaments, 'find the blunder' tasks from real games, and custom positions played out against Stockfish." },
-  { icon: "📚", title: "Course builder", desc: "Build a course as your curriculum — order lessons from your own studies, Nexus studies, videos, master games and endgame positions, then enrol a whole batch at once and watch progress lesson by lesson." },
-  { icon: "👥", title: "Batches", desc: "Group students into batches and assign work, courses and class times to the whole group instead of one student at a time." },
-  { icon: "🗓️", title: "Class schedule", desc: "Set your weekly class slots with IST times and a meeting link. Students see them on their My Coach page, and everyone is notified automatically when a slot changes." },
-  { icon: "📊", title: "Track every student", desc: "See each student's solved/failed/streak, accuracy, grades and the exact moves they played — including their wrong answers, so you can teach from the mistake." },
-  { icon: "📨", title: "Parent progress reports", desc: "Share a link that shows a parent how their child is doing — activity, accuracy, streaks and recent work — without the parent needing an account." },
-  { icon: "📝", title: "Attendance & fees", desc: "Mark attendance, manage enrolment and record fee payments — built for running a real academy." },
-  { icon: "🗂️", title: "Your coaching library", desc: "Save assignment templates, positions and games you reuse, and pull from the Nexus blunder library instead of rebuilding the same homework each term." },
-  { icon: "🏁", title: "Private class activities", desc: "Run Arena Races just for your own students — your batch competes together, with nobody else in the room." },
-  { icon: "💬", title: "Coach & class chat", desc: "One-to-one chat with any student plus dedicated class group chats for announcements, puzzles and feedback." },
+  { icon: "🎥", title: tr("Built-in live classroom"), desc: "Teach inside the app — HD video, screen share and one shared board. Give a student control to play their move, load studies, endgames, puzzles or master games onto the board, and run a waiting room with raise-hand, mic and camera controls. Attendance marks itself as students join. Free plan: one 40-minute class a day with up to 4 students; paid plans remove every limit." },
+  { icon: "📋", title: tr("Seven kinds of assignment"), desc: tr("Puzzle topics by theme or rating band, whole studies, timed Study Tests, Timed Races, Arena Tournaments, 'find the blunder' tasks from real games, and custom positions played out against Stockfish.") },
+  { icon: "📚", title: tr("Course builder"), desc: tr("Build a course as your curriculum — order lessons from your own studies, Nexus studies, videos, master games and endgame positions, then enrol a whole batch at once and watch progress lesson by lesson.") },
+  { icon: "👥", title: tr("Batches"), desc: tr("Group students into batches and assign work, courses and class times to the whole group instead of one student at a time.") },
+  { icon: "🗓️", title: tr("Class schedule"), desc: tr("Set your weekly class slots with IST times and a meeting link. Students see them on their My Coach page, and everyone is notified automatically when a slot changes.") },
+  { icon: "📊", title: tr("Track every student"), desc: tr("See each student's solved/failed/streak, accuracy, grades and the exact moves they played — including their wrong answers, so you can teach from the mistake.") },
+  { icon: "📨", title: tr("Parent progress reports"), desc: tr("Share a link that shows a parent how their child is doing — activity, accuracy, streaks and recent work — without the parent needing an account.") },
+  { icon: "📝", title: tr("Attendance & fees"), desc: tr("Mark attendance, manage enrolment and record fee payments — built for running a real academy.") },
+  { icon: "🗂️", title: tr("Your coaching library"), desc: tr("Save assignment templates, positions and games you reuse, and pull from the Nexus blunder library instead of rebuilding the same homework each term.") },
+  { icon: "🏁", title: tr("Private class activities"), desc: tr("Run Arena Races just for your own students — your batch competes together, with nobody else in the room.") },
+  { icon: "💬", title: tr("Coach & class chat"), desc: tr("One-to-one chat with any student plus dedicated class group chats for announcements, puzzles and feedback.") },
 ];
 
 function PerkList({ items }) {
@@ -560,8 +561,8 @@ export default function MembersPage() {
       
       <div className="mkt-page">
         <SEO
-          title="Members — Players, Coaches & Elite on Chess Nexus"
-          description={`What you get on Chess Nexus: every player trains free — puzzles, races, studies, tournaments, clubs and unlimited analysis of their own games. Coaches run an academy free for up to ${FREE_STUDENTS} students, with a live classroom, seven assignment types, courses, attendance and parent reports.`}
+          title={tr("Members — Players, Coaches & Elite on Chess Nexus")}
+          description={tr("What you get on Chess Nexus: every player trains free — puzzles, races, studies, tournaments, clubs and unlimited analysis of their own games. Coaches run an academy free for up to {FREE_STUDENTS} students, with a live classroom, seven assignment types, courses, attendance and parent reports.", { FREE_STUDENTS: FREE_STUDENTS })}
           keywords="chess nexus members, free chess training, chess coach platform, free chess coaching software, chess course builder, chess attendance, parent progress reports, create team race, monthly focus challenge, 3d arena tournament, 3d puzzle room, chess clubs"
           canonical={CANONICAL}
         />
@@ -571,19 +572,19 @@ export default function MembersPage() {
 
         <div className="mkt-inner">
           <header className="mkt-hero">
-            <img src="/logo.png" alt="Chess Nexus logo" className="mkt-hero-logo" />
-            <h1>Membership on Chess Nexus</h1>
+            <img src="/logo.png" alt={tr("Chess Nexus logo")} className="mkt-hero-logo" />
+            <h1>{tr("Membership on Chess Nexus")}</h1>
             <p className="mkt-hero-sub">
               Every player gets the whole training platform free. Coaches run their
-              academy free for up to {FREE_STUDENTS} students, and Elite members
+              {tr("academy free for up to")} {FREE_STUDENTS} {tr("students, and Elite members")}
               unlock extra ways to create and host.
             </p>
-            <div className="mkt-free-badge">✅ Free to play · free to coach · no card required</div>
+            <div className="mkt-free-badge">{tr("✅ Free to play · free to coach · no card required")}</div>
           </header>
 
           {/* ── All users ── */}
-          <section className="mkt-section" aria-label="What every player gets">
-            <h2>👤 Every player</h2>
+          <section className="mkt-section" aria-label={tr("What every player gets")}>
+            <h2>{tr("👤 Every player")}</h2>
             <p className="mkt-section-lead">
               Sign up and start training — puzzles, races, studies, tournaments,
               clubs and analysis of your own games are all free, with no daily
@@ -595,12 +596,12 @@ export default function MembersPage() {
           </section>
 
           {/* ── Coaches ── */}
-          <section className="mkt-section" aria-label="What coaches can do">
-            <h2>🎓 Coaches</h2>
+          <section className="mkt-section" aria-label={tr("What coaches can do")}>
+            <h2>{tr("🎓 Coaches")}</h2>
             <p className="mkt-section-lead">
               Run your whole coaching operation here — classroom, curriculum,
-              homework, attendance and parent reports. It is{" "}
-              <strong>free forever for up to {FREE_STUDENTS} students</strong>:
+              {tr("homework, attendance and parent reports. It is")}{" "}
+              <strong>{tr("free forever for up to")} {FREE_STUDENTS} {tr("students")}</strong>:
               not a trial, no time limit and no card on file. Paid plans raise the
               roster cap and lift every limit on the live classroom.
             </p>
@@ -608,8 +609,8 @@ export default function MembersPage() {
           </section>
 
           {/* ── Elite users ── */}
-          <section className="mkt-section" aria-label="What elite members can do">
-            <h2>⭐ Elite members</h2>
+          <section className="mkt-section" aria-label={tr("What elite members can do")}>
+            <h2>{tr("⭐ Elite members")}</h2>
             <p className="mkt-section-lead">
               Elite is a small invited role for people who help run the community.
               Elite members get everything above, plus the power to create and host
@@ -629,15 +630,15 @@ export default function MembersPage() {
               some names", which reduces a title to typography. Chess players care
               about titles specifically, so the copy names them as titles — held,
               carried and addressed by — never as decoration. */}
-          <section className="mkt-section" aria-label="Nexus titles explained">
-            <h2>🎖️ Nexus titles — NS, NX and NC</h2>
+          <section className="mkt-section" aria-label={tr("Nexus titles explained")}>
+            <h2>{tr("🎖️ Nexus titles — NS, NX and NC")}</h2>
             <p className="mkt-section-lead">
-              Chess Nexus has its own titles — <b>NS</b>, <b>NX</b> and <b>NC</b> —
+              {tr("Chess Nexus has its own titles —")} <b>{"NS"}</b>, <b>{"NX"}</b> {tr("and")} <b>{"NC"}</b> —
               which recognise the different roles people play in this community.
             </p>
             <p className="mkt-section-lead">
               Like any chess title, they are carried before your name wherever you
-              play on Chess Nexus: <b>NS Hikaru</b>. Each one marks a different way a
+              {tr("play on Chess Nexus:")} <b>{tr("NS Hikaru")}</b>{tr(". Each one marks a different way a")}
               member contributes to the platform and represents it to everyone else.
             </p>
 
@@ -665,7 +666,7 @@ export default function MembersPage() {
                 Nexus title was recognition only, while the Elite section above
                 listed the same abilities as elite-exclusive — which undersold
                 the titles and was simply wrong: see helpers/privileged.js. */}
-            <h3 className="nx-sub">What a Nexus title unlocks</h3>
+            <h3 className="nx-sub">{tr("What a Nexus title unlocks")}</h3>
             <p className="nx-sub-lead">
               NS and NX open the same tools the Elite role does, for as long as the
               title is held:
@@ -674,43 +675,43 @@ export default function MembersPage() {
 
             <div className="nx-notes">
               <p>
-                <b>NS and NX work the same way.</b> Both are supporter titles: you
+                <b>{tr("NS and NX work the same way.")}</b> {tr("Both are supporter titles: you")}
                 choose one, it is carried before your name across the whole platform,
-                and NX simply sits above NS. <b>NC is different in kind</b> — it is
+                {tr("and NX simply sits above NS.")} <b>{tr("NC is different in kind")}</b> {tr("— it is")}
                 awarded, never bought, so a coach who also supports us still carries
                 NC, because it is the one that has to be earned.
               </p>
               <p>
-                <b>♞ The Knight.</b> Members who support us at the entry level carry a
+                <b>{tr("♞ The Knight.")}</b> {tr("Members who support us at the entry level carry a")}
                 knight beside their name instead of initials — the same recognition,
                 without a lettered title.
               </p>
               <p>
-                <b>What NC coaches get.</b> The title itself, which never expires,
+                <b>{tr("What NC coaches get.")}</b> {tr("The title itself, which never expires,")}
                 plus Chess Nexus coaching tools free for up to two years — the full
                 coach plan, with the student cap and live-class limits lifted. The
                 exact length is set when the title is awarded.
               </p>
               <p>
-                <b>Are you an active coach here?</b> NC is awarded, not sold — but you
+                <b>{tr("Are you an active coach here?")}</b> {tr("NC is awarded, not sold — but you")}
                 can put yourself forward. If you teach regularly on Chess Nexus, run
                 your academy here, or introduce other academies and coaches to the
-                platform, open <Link to="/chat">your chat with the Nexus team</Link>{" "}
+                {tr("platform, open")} <Link to="/chat">{tr("your chat with the Nexus team")}</Link>{" "}
                 and apply for your Nexus Coach title. We reply in the same conversation.
               </p>
               <p>
-                <b>👑 Founding Supporter.</b> The first supporters carry a permanent
+                <b>{tr("👑 Founding Supporter.")}</b> {tr("The first supporters carry a permanent")}
                 crown beside their name. Unlike the titles above, it never expires —
                 it was promised as permanent and it stays that way.
               </p>
               <p>
-                <b>How long a title lasts.</b> You choose 1, 3, 6 or 12 months at
+                <b>{tr("How long a title lasts.")}</b> {tr("You choose 1, 3, 6 or 12 months at")}
                 checkout. It is a one-time payment with no auto-renewal — when the
                 period ends the title simply stops showing, and you can renew whenever
                 you like.
               </p>
               <p>
-                <b>Never an advantage at the board.</b> A title unlocks tools for
+                <b>{tr("Never an advantage at the board.")}</b> {tr("A title unlocks tools for")}
                 running things — challenges, races, your repertoire — but no extra
                 moves and no edge over the person you are playing. Every puzzle,
                 race, study and tournament here stays free for everyone.
@@ -719,10 +720,10 @@ export default function MembersPage() {
 
             <div className="mkt-cta-row">
               <Link to="/nexus-supporter" className="mkt-btn mkt-btn-primary">
-                See who holds a title
+                {tr("See who holds a title")}
               </Link>
               <Link to="/buy-coffee" className="mkt-btn">
-                Become a supporter
+                {tr("Become a supporter")}
               </Link>
             </div>
           </section>
@@ -731,22 +732,22 @@ export default function MembersPage() {
           <div className="mkt-callout">
             <span className="mkt-callout-icon">🤝</span>
             <div>
-              <h2>Teach on Chess Nexus</h2>
+              <h2>{tr("Teach on Chess Nexus")}</h2>
               <p>
                 If you coach, you can move your whole academy here today — roster,
-                classes, homework, attendance and parent reports — free for up to{" "}
-                {FREE_STUDENTS} students, with no card and no trial clock. Hosting
+                {tr("classes, homework, attendance and parent reports — free for up to")}{" "}
+                {FREE_STUDENTS} {tr("students, with no card and no trial clock. Hosting")}
                 tournaments or partnering with us instead? Get in touch.
               </p>
               <div className="mkt-cta-row">
                 <Link to="/chess-coaching" className="mkt-btn mkt-btn-primary">
-                  Start coaching free
+                  {tr("Start coaching free")}
                 </Link>
                 <Link to="/chess-coach-pricing" className="mkt-btn mkt-btn-ghost">
-                  See coach plans
+                  {tr("See coach plans")}
                 </Link>
                 <Link to="/contact" className="mkt-btn mkt-btn-ghost">
-                  Contact us
+                  {tr("Contact us")}
                 </Link>
               </div>
             </div>

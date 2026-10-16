@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../api';
 import { trackEvent } from '../../lib/analytics';
 import Sidebar from '../../components/Sidebar';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function ArenaTournamentJoin() {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ export default function ArenaTournamentJoin() {
   const handleJoin = async () => {
     // Team Battle requires team selection
     if (tournament?.tournamentType === 'team_battle' && !selectedTeamId) {
-      setError('Please select a team before joining.');
+      setError(tr('Please select a team before joining.'));
       return;
     }
     setError('');
@@ -161,14 +162,14 @@ export default function ArenaTournamentJoin() {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
           }}>
-            Join Arena Tournament
+            {tr("Join Arena Tournament")}
           </h1>
           <p style={{ 
             color: 'var(--color-text-muted)', 
             marginBottom: '30px',
             fontStyle: 'italic'
           }}>
-            Enter the tournament code to join
+            {tr("Enter the tournament code to join")}
           </p>
 
           {error && (
@@ -199,14 +200,14 @@ export default function ArenaTournamentJoin() {
                 color: 'var(--color-text)',
                 fontSize: '14px'
               }}>
-                Tournament Code
+                {tr("Tournament Code")}
               </label>
               <input
                 type="text"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                 required
-                placeholder="XXXXXXXX"
+                placeholder={tr("XXXXXXXX")}
                 style={{
                   width: '100%',
                   padding: '14px',
@@ -271,7 +272,7 @@ export default function ArenaTournamentJoin() {
             >
               {loading ? (
                 <>
-                  <span style={{ position: 'relative', zIndex: 2 }}>Searching...</span>
+                  <span style={{ position: 'relative', zIndex: 2 }}>{tr("Searching...")}</span>
                   <div style={{
                     position: 'absolute',
                     top: 0,
@@ -318,16 +319,16 @@ export default function ArenaTournamentJoin() {
               }}>
                 <div>
                   <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
-                    Hosted by
+                    {tr("Hosted by")}
                   </div>
                   <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-accent)' }}>
-                    ChessNexus
+                    {tr("ChessNexus")}
                   </div>
                 </div>
 
                 <div>
                   <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
-                    Time Control
+                    {tr("Time Control")}
                   </div>
                   <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-accent)' }}>
                     {tournament.timeControl.minutes}+{tournament.timeControl.increment || 0}
@@ -336,17 +337,17 @@ export default function ArenaTournamentJoin() {
 
                 <div>
                   <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
-                    Duration
+                    {tr("Duration")}
                   </div>
                   <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-success)' }}>
                     {tournament.tournamentDuration.hours > 0 && `${tournament.tournamentDuration.hours}h `}
-                    {tournament.tournamentDuration.minutes}min
+                    {tournament.tournamentDuration.minutes}{tr("min")}
                   </div>
                 </div>
 
                 <div>
                   <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
-                    Starts
+                    {tr("Starts")}
                   </div>
                   <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-text)' }}>
                     {formatDate(tournament.scheduledStartTime)}
@@ -355,7 +356,7 @@ export default function ArenaTournamentJoin() {
 
                 <div>
                   <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
-                    Status
+                    {tr("Status")}
                   </div>
                   <div style={{ 
                     fontSize: '14px', 
@@ -373,7 +374,7 @@ export default function ArenaTournamentJoin() {
 
                 <div>
                   <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
-                    Participants
+                    {tr("Participants")}
                   </div>
                   <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-accent-2)' }}>
                     {tournament.participantCount}
@@ -393,7 +394,7 @@ export default function ArenaTournamentJoin() {
                     marginBottom: '8px',
                     fontWeight: '600'
                   }}>
-                    Description:
+                    {tr("Description:")}
                   </div>
                   <p style={{ 
                     color: 'var(--color-text-muted)', 
@@ -412,7 +413,7 @@ export default function ArenaTournamentJoin() {
                   {tournament.tournamentType === 'team_battle' && tournament.teams && tournament.teams.length > 0 && (
                     <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid var(--color-white-a10)' }}>
                       <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-accent-2)', marginBottom: '12px' }}>
-                        ⚔️ Select Your Team
+                        {tr("⚔️ Select Your Team")}
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '10px' }}>
                         {(() => {
@@ -444,7 +445,7 @@ export default function ArenaTournamentJoin() {
                                   {team.teamName}
                                 </div>
                                 <div style={{ fontSize: '11px', color: isFull ? 'var(--color-danger)' : isTooUnbalanced ? 'var(--color-warning)' : 'var(--color-text-muted)' }}>
-                                  {isFull ? 'FULL' : isTooUnbalanced ? '⚖️ Too large' : `${count} / 30`}
+                                  {isFull ? tr('FULL') : isTooUnbalanced ? tr('⚖️ Too large') : `${count} / 30`}
                                 </div>
                               </div>
                             );
@@ -453,7 +454,7 @@ export default function ArenaTournamentJoin() {
                       </div>
                       {selectedTeamId && (
                         <div style={{ fontSize: '12px', color: 'var(--color-accent-2)', marginTop: '10px', textAlign: 'center' }}>
-                          ✓ Joining as <strong>{tournament.teams.find(t => t.teamId === selectedTeamId)?.teamName}</strong>
+                          {tr("✓ Joining as")} <strong>{tournament.teams.find(t => t.teamId === selectedTeamId)?.teamName}</strong>
                         </div>
                       )}
                       {tournament.teams.length > 1 && (() => {
@@ -462,7 +463,7 @@ export default function ArenaTournamentJoin() {
                         const hasUnbalanced = counts.some(c => c >= minCount + 2);
                         return hasUnbalanced ? (
                           <div style={{ fontSize: '12px', color: 'var(--color-warning)', marginTop: '10px', padding: '8px 12px', background: 'rgba(40,30,0,0.5)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,193,7,0.3)' }}>
-                            ⚖️ Some teams have too many players — please join a smaller team for fair play.
+                            {tr("⚖️ Some teams have too many players — please join a smaller team for fair play.")}
                           </div>
                         ) : null;
                       })()}
@@ -506,7 +507,7 @@ export default function ArenaTournamentJoin() {
                   >
                     {joining ? (
                       <>
-                        <span style={{ position: 'relative', zIndex: 2 }}>Joining...</span>
+                        <span style={{ position: 'relative', zIndex: 2 }}>{tr("Joining...")}</span>
                         <div style={{
                           position: 'absolute',
                           top: 0, left: 0, right: 0, bottom: 0,
@@ -569,7 +570,7 @@ export default function ArenaTournamentJoin() {
               e.target.style.transform = 'translateY(0)';
             }}
           >
-            ← Back to Tournaments
+            {tr("← Back to Tournaments")}
           </button>
         </div>
       </div>

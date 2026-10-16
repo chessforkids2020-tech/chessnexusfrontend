@@ -9,6 +9,7 @@ import {
 } from '../lib/helpHistory';
 import { IMPROVE_POINTS, RATING_PROMPT, BANDS, FOLLOWUPS, bandForRating, isImproveQuestion, isModeratorRequest } from '../data/improvePlan';
 import './HelpCenter.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Nexus Help Center — a guided chat, the way Amazon's help works.
 //
@@ -35,7 +36,7 @@ const STOP = new Set([
 // Simple word-overlap scoring. Deliberately not fuzzy: a wrong-but-confident
 // answer in a help centre is worse than saying "I don't have that one".
 function searchArticles(text, live = []) {
-  const raw = text.toLowerCase().split(/\W+/).filter(Boolean);
+  const raw = text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
   // Keep short words that carry meaning here (xp, ai, nc) — dropping everything
   // under three characters lost "what is xp" entirely.
   const words = raw.filter(w => !STOP.has(w) && (w.length > 2 || /^(xp|ai|nc|ns|nx)$/.test(w)));
@@ -52,13 +53,15 @@ function searchArticles(text, live = []) {
       return true;
     })
     .map(a => {
-      const hay = `${a.q} ${a.a}`.toLowerCase();
+      // Both the English text and its translation, so a search in either works.
+      const qHay = `${a.q} ${tr(a.q)}`.toLowerCase();
+      const hay = `${qHay} ${a.a} ${tr(a.a)}`.toLowerCase();
       let score = 0;
       for (const w of words) {
         if (!hay.includes(w)) continue;
         // A hit in the QUESTION counts double: that is what the user is asking,
         // whereas the answer body mentions many things in passing.
-        score += a.q.toLowerCase().includes(w) ? 3 : 1;
+        score += qHay.includes(w) ? 3 : 1;
       }
       return { a, score };
     })
@@ -204,8 +207,8 @@ export default function HelpCenter() {
 
   const sendAsk = async () => {
     const text = ask.trim();
-    if (!askUser.trim()) { setAskErr('Please add your Lichess username.'); return; }
-    if (text.length < 20) { setAskErr('Please add a little more detail.'); return; }
+    if (!askUser.trim()) { setAskErr(tr('Please add your Lichess username.')); return; }
+    if (text.length < 20) { setAskErr(tr('Please add a little more detail.')); return; }
     setSending(true); setAskErr('');
     try {
       const r = await api.post('/api/coaching-requests', {
@@ -308,7 +311,7 @@ export default function HelpCenter() {
     if (section.directAnswer === 'improve') { startImprove(); return; }
     say({
       from: 'bot',
-      text: `${section.blurb} Which one?`,
+      text: tr("{blurb} Which one?", { blurb: section.blurb }),
       chips: 'questions',
       sectionId: section.id,
     });
@@ -326,7 +329,7 @@ export default function HelpCenter() {
     logQuestion(`[level] ${band.label}`, { q: `Improvement plan ${band.label}`, _score: 0 }, audience, 'tapped');
     say({ from: 'you', text: band.label });
     say({ from: 'bot', text: band.plan });
-    say({ from: 'bot', text: 'People also ask:', chips: 'followups' });
+    say({ from: 'bot', text: tr('People also ask:'), chips: 'followups' });
   };
 
   // A follow-up answer, with its own deep-links and the remaining follow-up
@@ -337,7 +340,7 @@ export default function HelpCenter() {
     say({ from: 'bot', text: f.a, links: f.links });
     const rest = FOLLOWUPS.filter(x => x.id !== f.id);
     if (rest.length) {
-      say({ from: 'bot', text: 'People also ask:', chips: 'followups', exclude: f.id });
+      say({ from: 'bot', text: tr('People also ask:'), chips: 'followups', exclude: f.id });
     }
   };
 
@@ -348,7 +351,7 @@ export default function HelpCenter() {
     // Every answer offers somewhere to go next, so the chat never dead-ends.
     const related = relatedTo(article);
     if (related.length) {
-      say({ from: 'bot', text: 'People also ask:', chips: 'related', results: related });
+      say({ from: 'bot', text: tr('People also ask:'), chips: 'related', results: related });
     }
   };
 
@@ -376,7 +379,7 @@ export default function HelpCenter() {
       setShowAsk(true);
       say({
         from: 'bot',
-        text: 'Yes — you can message a Nexus moderator about improving your chess. Fill in the form below with your Lichess username, your current rating, and what you want help with. The reply comes back here in the Help Center.',
+        text: tr('Yes — you can message a Nexus moderator about improving your chess. Fill in the form below with your Lichess username, your current rating, and what you want help with. The reply comes back here in the Help Center.'),
       });
       return;
     }
@@ -395,7 +398,7 @@ export default function HelpCenter() {
       setUnanswered(true);
       say({
         from: 'bot',
-        text: "I don't have an answer for that one yet. Try different words, or pick a topic below.",
+        text: tr("I don't have an answer for that one yet. Try different words, or pick a topic below."),
         chips: 'topics',
       });
       return;
@@ -403,7 +406,7 @@ export default function HelpCenter() {
     // Best match answered outright; near misses offered rather than guessed at.
     say({ from: 'bot', text: hits[0].a, article: hits[0] });
     if (hits.length > 1) {
-      say({ from: 'bot', text: 'Did you also mean one of these?', chips: 'results', results: hits.slice(1) });
+      say({ from: 'bot', text: tr('Did you also mean one of these?'), chips: 'results', results: hits.slice(1) });
     }
   };
 
@@ -441,8 +444,8 @@ export default function HelpCenter() {
     if (turn.chips === 'audience') {
       return (
         <div className="hc-chips">
-          <button className="hc-chip" onClick={() => pickAudience('coach', "I'm a coach")}>🎓 I'm a coach</button>
-          <button className="hc-chip" onClick={() => pickAudience('player', "I'm a player")}>♟ I'm a player</button>
+          <button className="hc-chip" onClick={() => pickAudience('coach', "I'm a coach")}>{tr("🎓 I'm a coach")}</button>
+          <button className="hc-chip" onClick={() => pickAudience('player', "I'm a player")}>{tr("♟ I'm a player")}</button>
         </div>
       );
     }
@@ -451,7 +454,7 @@ export default function HelpCenter() {
         <div className="hc-chips">
           {topics.map(s => (
             <button key={s.id} className="hc-chip" onClick={() => pickTopic(s)}>
-              {s.icon} {s.title}
+              {s.icon} {tr(s.title)}
             </button>
           ))}
         </div>
@@ -462,7 +465,7 @@ export default function HelpCenter() {
       return (
         <div className="hc-chips hc-chips--stack">
           {s?.articles.map((a, i) => (
-            <button key={i} className="hc-chip" onClick={() => pickQuestion(a)}>{a.q}</button>
+            <button key={i} className="hc-chip" onClick={() => pickQuestion(a)}>{tr(a.q)}</button>
           ))}
         </div>
       );
@@ -481,7 +484,7 @@ export default function HelpCenter() {
       return (
         <div className="hc-chips hc-chips--stack">
           {shown.map(f => (
-            <button key={f.id} className="hc-chip" onClick={() => pickFollowup(f)}>{f.q}</button>
+            <button key={f.id} className="hc-chip" onClick={() => pickFollowup(f)}>{tr(f.q)}</button>
           ))}
         </div>
       );
@@ -490,7 +493,7 @@ export default function HelpCenter() {
       return (
         <div className="hc-chips hc-chips--stack">
           {turn.results.map((a, i) => (
-            <button key={i} className="hc-chip" onClick={() => pickQuestion(a)}>{a.q}</button>
+            <button key={i} className="hc-chip" onClick={() => pickQuestion(a)}>{tr(a.q)}</button>
           ))}
         </div>
       );
@@ -506,11 +509,11 @@ export default function HelpCenter() {
           <div className="hc-bar-id">
             <span className="hc-bar-avatar">💡</span>
             <div>
-              <strong>Nexus Help</strong>
-              <span>Answers about coaching, playing and improving</span>
+              <strong>{tr("Nexus Help")}</strong>
+              <span>{tr("Answers about coaching, playing and improving")}</span>
             </div>
           </div>
-          <button className="hc-restart" onClick={restart}>Start over</button>
+          <button className="hc-restart" onClick={restart}>{tr("Start over")}</button>
         </header>
 
         <div className="hc-thread" ref={threadRef}>
@@ -520,9 +523,9 @@ export default function HelpCenter() {
             <div key={m._id} className="hc-turn hc-turn--bot hc-turn--reply">
               <div className="hc-bubble hc-bubble--reply">
                 <span className="hc-reply-tag">
-                  {m.readAt ? 'Nexus moderator' : '✨ New reply from a Nexus moderator'}
+                  {m.readAt ? tr('Nexus moderator') : tr('✨ New reply from a Nexus moderator')}
                 </span>
-                <span className="hc-reply-q">You asked: {m.message}</span>
+                <span className="hc-reply-q">{tr("You asked:")} {m.message}</span>
                 <span className="hc-reply-body">{m.reply}</span>
               </div>
             </div>
@@ -537,15 +540,15 @@ export default function HelpCenter() {
               className={`hc-turn hc-turn--${t.from}`}
             >
               <div className="hc-bubble">
-                <RichText text={t.text} />
+                <RichText text={tr(t.text)} />
                 {t.article?.to && (
-                  <Link className="hc-open" to={t.article.to}>Open it →</Link>
+                  <Link className="hc-open" to={t.article.to}>{tr("Open it →")}</Link>
                 )}
                 {/* Deep-links for a follow-up answer: the tools it just named. */}
                 {t.links?.length > 0 && (
                   <span className="hc-links">
                     {t.links.map(l => (
-                      <Link key={l.to} className="hc-link-pill" to={l.to}>{l.label} →</Link>
+                      <Link key={l.to} className="hc-link-pill" to={l.to}>{tr(l.label)} →</Link>
                     ))}
                   </span>
                 )}
@@ -563,15 +566,15 @@ export default function HelpCenter() {
           {unanswered && (
             <div className="hc-turn hc-turn--bot">
               <div className="hc-bubble hc-bubble--ask">
-                Still not what you needed?
+                {tr("Still not what you needed?")}
                 <span className="hc-ask-note">
-                  For your account, billing or a bug, <Link className="hc-open-inline" to="/contact">contact the Nexus team</Link>.
+                  {tr("For your account, billing or a bug,")} <Link className="hc-open-inline" to="/contact">{tr("contact the Nexus team")}</Link>.
                   For advice on your chess, you can message a moderator.
                 </span>
 
                 {!showAsk && (
                   <button className="hc-ask-open" onClick={() => setShowAsk(true)}>
-                    Message a moderator
+                    {tr("Message a moderator")}
                   </button>
                 )}
 
@@ -583,7 +586,7 @@ export default function HelpCenter() {
                 {showAsk && eligState === 'loading' && (
                   <>
                     <div className="hc-ask-divider" />
-                    <span className="hc-ask-note">Checking your account…</span>
+                    <span className="hc-ask-note">{tr("Checking your account…")}</span>
                   </>
                 )}
 
@@ -591,7 +594,7 @@ export default function HelpCenter() {
                   <>
                     <div className="hc-ask-divider" />
                     <span className="hc-ask-note">
-                      Please <Link className="hc-open-inline" to="/login">sign in</Link> to
+                      {tr("Please")} <Link className="hc-open-inline" to="/login">{tr("sign in")}</Link> {tr("to")}
                       message a moderator — the reply comes back to your account here in the
                       Help Center.
                     </span>
@@ -602,11 +605,11 @@ export default function HelpCenter() {
                   <>
                     <div className="hc-ask-divider" />
                     <span className="hc-ask-note">
-                      We could not check your account just now.{' '}
+                      {tr("We could not check your account just now.")}{' '}
                       <button className="hc-open-inline hc-retry" onClick={retryElig} type="button">
-                        Try again
+                        {tr("Try again")}
                       </button>
-                      {' '}— or <Link className="hc-open-inline" to="/contact">contact the Nexus team</Link>.
+                      {' '}{tr("— or")} <Link className="hc-open-inline" to="/contact">{tr("contact the Nexus team")}</Link>.
                     </span>
                   </>
                 )}
@@ -615,10 +618,10 @@ export default function HelpCenter() {
                   elig.canAsk ? (
                     <>
                       <div className="hc-ask-divider" />
-                      <strong>Want advice on improving your chess?</strong>
+                      <strong>{tr("Want advice on improving your chess?")}</strong>
                       <span className="hc-ask-note">
                         Ask a Nexus moderator what to practise and how to use the app to get
-                        better. {elig.remaining} of {elig.limit} message{elig.limit > 1 ? 's' : ''} left this month
+                        {tr("better.")} {elig.remaining} {tr("of")} {elig.limit} {tr("message")}{elig.limit > 1 ? 's' : ''} {tr("left this month")}
                         {!elig.supporter && ' · supporters get 3'}.
                       </span>
                       {sent ? (
@@ -633,16 +636,16 @@ export default function HelpCenter() {
                               HOW STRONG they are, and people leave those out of
                               free text. Asking explicitly gets both every time. */}
                           <label className="hc-field">
-                            <span>Your Lichess username</span>
+                            <span>{tr("Your Lichess username")}</span>
                             <input
                               value={askUser}
                               onChange={e => setAskUser(e.target.value)}
                               maxLength={50}
-                              placeholder="e.g. magnus_fan_2011"
+                              placeholder={tr("e.g. magnus_fan_2011")}
                             />
                           </label>
                           <label className="hc-field">
-                            <span>Your current Lichess rating</span>
+                            <span>{tr("Your current Lichess rating")}</span>
                             <input
                               value={askRating}
                               onChange={e => setAskRating(e.target.value.replace(/[^0-9]/g, ''))}
@@ -652,14 +655,14 @@ export default function HelpCenter() {
                             />
                           </label>
                           <label className="hc-field">
-                            <span>What do you want help with?</span>
+                            <span>{tr("What do you want help with?")}</span>
                             <textarea
                               className="hc-ask-box"
                               value={ask}
                               onChange={e => setAsk(e.target.value)}
                               rows={4}
                               maxLength={2000}
-                              placeholder="How you practise now, and what feels stuck. The more you say, the more useful the answer."
+                              placeholder={tr("How you practise now, and what feels stuck. The more you say, the more useful the answer.")}
                             />
                           </label>
                           {askErr && <span className="hc-ask-err">{askErr}</span>}
@@ -668,7 +671,7 @@ export default function HelpCenter() {
                             disabled={sending || ask.trim().length < 20 || !askUser.trim()}
                             onClick={sendAsk}
                           >
-                            {sending ? 'Sending…' : 'Send to a moderator'}
+                            {sending ? tr('Sending…') : tr('Send to a moderator')}
                           </button>
                         </>
                       )}
@@ -678,8 +681,8 @@ export default function HelpCenter() {
                       <div className="hc-ask-divider" />
                       <span className="hc-ask-note">
                         {elig.reason === 'rating'
-                          ? `Moderator coaching help is for players rated ${elig.minRating}+ on Chess Nexus, Lichess or Chess.com. Until then, the fastest way up is daily puzzles and My Moments — ask me about either.`
-                          : `You have used your ${elig.limit} message${elig.limit > 1 ? 's' : ''} for this month.${elig.supporter ? '' : ' Supporters can send 3.'}`}
+                          ? tr("Moderator coaching help is for players rated {minRating}+ on Chess Nexus, Lichess or Chess.com. Until then, the fastest way up is daily puzzles and My Moments — ask me about either.", { minRating: elig.minRating })
+                          : tr("You have used your {limit} message{v1} for this month.{v2}", { limit: elig.limit, v1: elig.limit > 1 ? 's' : '', v2: elig.supporter ? '' : tr(' Supporters can send 3.') })}
                       </span>
                     </>
                   )
@@ -693,18 +696,18 @@ export default function HelpCenter() {
         {/* Reading an old conversation: no composer, just a way back. */}
         {viewing ? (
           <div className="hc-viewing-bar">
-            <span>Viewing an earlier conversation</span>
-            <button onClick={backToNew}>Start a new question →</button>
+            <span>{tr("Viewing an earlier conversation")}</span>
+            <button onClick={backToNew}>{tr("Start a new question →")}</button>
           </div>
         ) : (
         <form className="hc-composer" onSubmit={submit}>
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Type your question…"
-            aria-label="Type your question"
+            placeholder={tr("Type your question…")}
+            aria-label={tr("Type your question")}
           />
-          <button type="submit" disabled={!input.trim()}>Send</button>
+          <button type="submit" disabled={!input.trim()}>{tr("Send")}</button>
         </form>
         )}
       </div>
@@ -714,7 +717,7 @@ export default function HelpCenter() {
       {history.length > 0 && (
         <div className="hc-history">
           <div className="hc-history-head">
-            Earlier conversations <span>· kept {TTL_DAYS} days</span>
+            {tr("Earlier conversations")} <span>{tr("· kept")} {TTL_DAYS} {tr("days")}</span>
           </div>
           <div className="hc-history-list">
             {history.map(c => (
@@ -723,15 +726,15 @@ export default function HelpCenter() {
                 className={`hc-history-card${viewing === c.id ? ' is-open' : ''}`}
                 onClick={() => openSaved(c)}
               >
-                <span className="hc-history-q">{conversationTitle(c)}</span>
+                <span className="hc-history-q">{tr(conversationTitle(c))}</span>
                 <span className="hc-history-meta">
-                  {relativeDay(c.at)} · {c.turns.length} messages
+                  {relativeDay(c.at)} · {c.turns.length} {tr("messages")}
                 </span>
                 <span
                   className="hc-history-x"
                   role="button"
                   tabIndex={0}
-                  aria-label="Delete this conversation"
+                  aria-label={tr("Delete this conversation")}
                   onClick={(e) => removeSaved(c.id, e)}
                   onKeyDown={(e) => { if (e.key === 'Enter') removeSaved(c.id, e); }}
                 >×</span>

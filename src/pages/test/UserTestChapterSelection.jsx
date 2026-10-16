@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const UserTestChapterSelection = () => {
   const { studyId } = useParams();
@@ -22,7 +23,7 @@ const UserTestChapterSelection = () => {
         const chaptersRes = await api.get(`/api/testpuzzle/studies/${studyId}/chapters`);
         setChapters(chaptersRes.data);
       } catch (err) {
-        setError('Failed to load chapters');
+        setError(tr('Failed to load chapters'));
       } finally {
         setLoading(false);
       }
@@ -146,7 +147,7 @@ const UserTestChapterSelection = () => {
     return (
       <div style={styles.page}>
         <div style={styles.container}>
-          <div style={styles.loading}>Loading chapters...</div>
+          <div style={styles.loading}>{tr("Loading chapters...")}</div>
         </div>
       </div>
     );
@@ -156,14 +157,14 @@ const UserTestChapterSelection = () => {
     <div style={styles.page}>
       <div style={styles.container}>
         <button style={styles.backButton} onClick={() => navigate('/test')}>
-          ← Back to Studies
+          {tr("← Back to Studies")}
         </button>
 
         <div style={styles.header}>
           <div style={styles.studyTitle}>📚 {study?.title || 'Study'}</div>
-          <h1 style={styles.title}>Select a Chapter</h1>
+          <h1 style={styles.title}>{tr("Select a Chapter")}</h1>
           <p style={styles.subtitle}>
-            Choose a chapter to start your test. Each solved puzzle earns 2 points!
+            {tr("Choose a chapter to start your test. Each solved puzzle earns 2 points!")}
           </p>
         </div>
 
@@ -175,8 +176,8 @@ const UserTestChapterSelection = () => {
 
         {chapters.length === 0 ? (
           <div style={styles.empty}>
-            <p style={{ fontSize: '18px', marginBottom: '10px' }}>No chapters available</p>
-            <p>This study doesn't have any chapters yet.</p>
+            <p style={{ fontSize: '18px', marginBottom: '10px' }}>{tr("No chapters available")}</p>
+            <p>{tr("This study doesn't have any chapters yet.")}</p>
           </div>
         ) : (
           <div style={styles.grid}>
@@ -197,7 +198,7 @@ const UserTestChapterSelection = () => {
                 <div style={styles.cardContent}>
                   <div style={styles.cardTitle}>{chapter.title}</div>
                   <div style={styles.cardMeta}>
-                    {chapter.description || 'Practice and improve your skills'}
+                    {chapter.description || tr('Practice and improve your skills')}
                   </div>
                 </div>
                 <div style={styles.puzzleCount}>

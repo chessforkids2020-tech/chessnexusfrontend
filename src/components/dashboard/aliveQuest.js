@@ -1,9 +1,10 @@
+import { t as tr } from '../../i18n/LanguageContext';
 // Today's quest = the three practice-streak requirements from /api/user/streak.
 // Kept out of AliveParts.jsx so that file exports only components (fast refresh).
 const QUEST_ROWS = [
-  { key: 'puzzles',  title: 'Solve puzzles',        sub: 'Healthy Mix, themes, pieces or rating', to: '/training/healthy-mix' },
-  { key: 'games',    title: 'Play a game',          sub: 'Chess Nexus, Chess.com or Lichess',     to: '/arenatournament' },
-  { key: 'endgames', title: 'Play out an endgame',  sub: 'Against the computer',                  to: '/study/endgames' },
+  { key: 'puzzles',  title: tr('Solve puzzles'),        sub: tr('Healthy Mix, themes, pieces or rating'), to: '/training/healthy-mix' },
+  { key: 'games',    title: tr('Play a game'),          sub: tr('Chess Nexus, Chess.com or Lichess'),     to: '/arenatournament' },
+  { key: 'endgames', title: tr('Play out an endgame'),  sub: tr('Against the computer'),                  to: '/study/endgames' },
 ];
 
 export function questTasks(streak) {

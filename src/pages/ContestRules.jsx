@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { t as tr } from '../i18n/LanguageContext';
 
 const styles = {
   pageWrapper: {
@@ -218,11 +219,11 @@ const styles = {
 
 export default function ContestRules() {
   const roundsData = [
-    { number: 1, color: 'rgba(254, 243, 199, 0.1)', bg: 'rgba(254, 243, 199, 0.1)', text: 'Participants scoring less than', points: '4 points', pointsColor: 'var(--color-danger)' },
-    { number: 2, color: 'rgba(209, 250, 229, 0.1)', bg: 'rgba(209, 250, 229, 0.1)', text: 'Participants scoring less than', points: '5 points', pointsColor: 'var(--color-danger)' },
-    { number: 3, color: 'rgba(254, 243, 199, 0.1)', bg: 'rgba(254, 243, 199, 0.1)', text: 'Participants scoring less than', points: '6 points', pointsColor: 'var(--color-danger)' },
-    { number: 4, color: 'rgba(207, 250, 254, 0.1)', bg: 'rgba(207, 250, 254, 0.1)', text: 'Top', points: '6 participants', pointsColor: '#4ade80' },
-    { number: 5, color: 'rgba(254, 243, 199, 0.2)', bg: 'rgba(254, 243, 199, 0.2)', text: 'Top', points: '3 participants', pointsColor: 'var(--color-warning)' },
+    { number: 1, color: 'rgba(254, 243, 199, 0.1)', bg: 'rgba(254, 243, 199, 0.1)', text: tr('Participants scoring less than'), points: tr('4 points'), pointsColor: 'var(--color-danger)' },
+    { number: 2, color: 'rgba(209, 250, 229, 0.1)', bg: 'rgba(209, 250, 229, 0.1)', text: tr('Participants scoring less than'), points: tr('5 points'), pointsColor: 'var(--color-danger)' },
+    { number: 3, color: 'rgba(254, 243, 199, 0.1)', bg: 'rgba(254, 243, 199, 0.1)', text: tr('Participants scoring less than'), points: tr('6 points'), pointsColor: 'var(--color-danger)' },
+    { number: 4, color: 'rgba(207, 250, 254, 0.1)', bg: 'rgba(207, 250, 254, 0.1)', text: tr('Top'), points: tr('6 participants'), pointsColor: '#4ade80' },
+    { number: 5, color: 'rgba(254, 243, 199, 0.2)', bg: 'rgba(254, 243, 199, 0.2)', text: tr('Top'), points: tr('3 participants'), pointsColor: 'var(--color-warning)' },
   ];
 
   return (
@@ -230,8 +231,8 @@ export default function ContestRules() {
       {/* See BuyMeACoffee.jsx — without an explicit canonical the prerendered
           page inherits index.html's, which points at '/'. */}
       <SEO
-        title="Global Chess Puzzle Contest — Rules"
-        description="Full rules for the Chess Nexus global online chess puzzle contest: who can enter, how scoring and tie-breaks work, the schedule, and the fair-play rules every entrant agrees to."
+        title={tr("Global Chess Puzzle Contest — Rules")}
+        description={tr("Full rules for the Chess Nexus global online chess puzzle contest: who can enter, how scoring and tie-breaks work, the schedule, and the fair-play rules every entrant agrees to.")}
         keywords="chess puzzle contest rules, online chess competition, chess tactics contest, chess contest fair play"
         canonical="/contest-rules"
       />
@@ -240,8 +241,8 @@ export default function ContestRules() {
       <div style={styles.container}>
         <div style={styles.header}>
           <div style={styles.headerBackground}></div>
-          <h1 style={styles.title}>🏆 Global Chess Puzzle Contest 2025</h1>
-          <p style={styles.subtitle}>Official rules and guidelines for the worldwide competition</p>
+          <h1 style={styles.title}>{tr("🏆 Global Chess Puzzle Contest 2025")}</h1>
+          <p style={styles.subtitle}>{tr("Official rules and guidelines for the worldwide competition")}</p>
         </div>
 
         <div style={styles.content}>
@@ -259,7 +260,7 @@ export default function ContestRules() {
           <div style={styles.section}>
             <h2 style={styles.sectionTitle}>
               <span>🎯</span>
-              Contest Overview
+              {tr("Contest Overview")}
             </h2>
             <div style={styles.sectionContent}>
               <p>
@@ -268,12 +269,12 @@ export default function ContestRules() {
               </p>
 
               <div style={styles.highlightBox}>
-                <h3 style={styles.highlightTitle}>📅 Contest Starts: 1st December (Monday)</h3>
+                <h3 style={styles.highlightTitle}>{tr("📅 Contest Starts: 1st December (Monday)")}</h3>
                 <p style={styles.highlightText}>
-                  ⏳ Before the contest begins, each participant will receive:<br/>
+                  {tr("⏳ Before the contest begins, each participant will receive:")}<br/>
                   ✔ Date & Time slot<br/>
-                  ✔ Unique Username<br/>
-                  ✔ Password for login
+                  {tr("✔ Unique Username")}<br/>
+                  {tr("✔ Password for login")}
                 </p>
               </div>
             </div>
@@ -283,19 +284,19 @@ export default function ContestRules() {
           <div style={styles.section}>
             <h2 style={styles.sectionTitle}>
               <span>🧩</span>
-              Eligibility Requirements
+              {tr("Eligibility Requirements")}
             </h2>
             <div style={styles.sectionContent}>
               <div style={styles.highlightBox}>
-                <h3 style={styles.highlightTitle}>Who Can Participate?</h3>
+                <h3 style={styles.highlightTitle}>{tr("Who Can Participate?")}</h3>
                 <p style={styles.highlightText}>
-                  ✔ Open to all kids worldwide<br/>
-                  ✔ No minimum or maximum chess skill level — beginners to advanced are welcome
+                  {tr("✔ Open to all kids worldwide")}<br/>
+                  {tr("✔ No minimum or maximum chess skill level — beginners to advanced are welcome")}
                 </p>
               </div>
 
-              <h4 style={{color: 'var(--color-text-muted)', margin: '20px 0 8px 0'}}>🎂 Age Requirements:</h4>
-              <p>Children between 5 and 16 years old can participate.</p>
+              <h4 style={{color: 'var(--color-text-muted)', margin: '20px 0 8px 0'}}>{tr("🎂 Age Requirements:")}</h4>
+              <p>{tr("Children between 5 and 16 years old can participate.")}</p>
             </div>
           </div>
 
@@ -303,16 +304,16 @@ export default function ContestRules() {
           <div style={styles.section}>
             <h2 style={styles.sectionTitle}>
               <span>💻</span>
-              Technical Requirements
+              {tr("Technical Requirements")}
             </h2>
             <div style={styles.sectionContent}>
-              <p>To compete, each participant must have:</p>
+              <p>{tr("To compete, each participant must have:")}</p>
               <ul style={styles.ruleList}>
-                <li style={styles.ruleItem}>A laptop / computer (phones/tablets not allowed)</li>
-                <li style={styles.ruleItem}>Webcam turned ON at all times</li>
-                <li style={styles.ruleItem}>Zoom application installed</li>
-                <li style={styles.ruleItem}>Stable internet connection</li>
-                <li style={styles.ruleItem}>Ability to share the entire screen on Zoom (not just the browser window)</li>
+                <li style={styles.ruleItem}>{tr("A laptop / computer (phones/tablets not allowed)")}</li>
+                <li style={styles.ruleItem}>{tr("Webcam turned ON at all times")}</li>
+                <li style={styles.ruleItem}>{tr("Zoom application installed")}</li>
+                <li style={styles.ruleItem}>{tr("Stable internet connection")}</li>
+                <li style={styles.ruleItem}>{tr("Ability to share the entire screen on Zoom (not just the browser window)")}</li>
               </ul>
             </div>
           </div>
@@ -321,14 +322,14 @@ export default function ContestRules() {
           <div style={styles.section}>
             <h2 style={styles.sectionTitle}>
               <span>🎮</span>
-              How to Play
+              {tr("How to Play")}
             </h2>
             <div style={styles.sectionContent}>
               <ul style={styles.ruleList}>
-                <li style={styles.ruleItem}>Join the assigned Zoom meeting during your scheduled time</li>
+                <li style={styles.ruleItem}>{tr("Join the assigned Zoom meeting during your scheduled time")}</li>
                 <li style={styles.ruleItem}>Log in to the Official Contest Page using the username & password provided</li>
-                <li style={styles.ruleItem}>Puzzle timer will start automatically</li>
-                <li style={styles.ruleItem}>Solve puzzles as fast and accurately as possible to score points</li>
+                <li style={styles.ruleItem}>{tr("Puzzle timer will start automatically")}</li>
+                <li style={styles.ruleItem}>{tr("Solve puzzles as fast and accurately as possible to score points")}</li>
               </ul>
             </div>
           </div>
@@ -337,20 +338,20 @@ export default function ContestRules() {
           <div style={styles.section}>
             <h2 style={styles.sectionTitle}>
               <span>🧮</span>
-              Scoring & Eliminations
+              {tr("Scoring & Eliminations")}
             </h2>
             <div style={styles.sectionContent}>
-              <p>The contest has 5 rounds:</p>
+              <p>{tr("The contest has 5 rounds:")}</p>
 
               <div style={styles.tableContainer}>
                 <table style={styles.table}>
                   <thead>
                     <tr style={styles.tableHeader}>
                       <th style={styles.tableHeaderCell}>
-                        🏁 Round
+                        {tr("🏁 Round")}
                       </th>
                       <th style={styles.tableHeaderCell}>
-                        📊 Qualification Rule
+                        {tr("📊 Qualification Rule")}
                       </th>
                     </tr>
                   </thead>
@@ -377,7 +378,7 @@ export default function ContestRules() {
                           background: round.bg,
                           borderRadius: '12px 0 0 12px',
                         }}>
-                          Round {round.number}
+                          {tr("Round")} {round.number}
                         </td>
                         <td style={styles.tableCell}>
                           {round.text} <strong style={{color: round.pointsColor}}>{round.points}</strong> {round.number === 4 || round.number === 5 ? 'advance' : 'are eliminated'} {round.number === 5 && '🏆'}
@@ -394,18 +395,18 @@ export default function ContestRules() {
           <div style={styles.section}>
             <h2 style={styles.sectionTitle}>
               <span>⚖️</span>
-              Rules & Fair Play
+              {tr("Rules & Fair Play")}
             </h2>
             <div style={styles.sectionContent}>
-              <p>To ensure fair competition:</p>
+              <p>{tr("To ensure fair competition:")}</p>
               <ul style={styles.ruleList}>
-                <li style={styles.ruleItem}>Participants must share their entire screen on Zoom</li>
-                <li style={styles.ruleItem}>Camera must remain ON throughout the contest and must clearly show the participant</li>
-                <li style={styles.ruleItem}>No external help from parents, friends, books, devices, or notes</li>
-                <li style={styles.ruleItem}>No talking during the rounds</li>
-                <li style={styles.ruleItem}>If the internet disconnects, the round timer continues</li>
-                <li style={styles.ruleItem}>Puzzles must be solved only on the official contest page</li>
-                <li style={styles.ruleItem}>Cheating or breaking rules will lead to immediate disqualification</li>
+                <li style={styles.ruleItem}>{tr("Participants must share their entire screen on Zoom")}</li>
+                <li style={styles.ruleItem}>{tr("Camera must remain ON throughout the contest and must clearly show the participant")}</li>
+                <li style={styles.ruleItem}>{tr("No external help from parents, friends, books, devices, or notes")}</li>
+                <li style={styles.ruleItem}>{tr("No talking during the rounds")}</li>
+                <li style={styles.ruleItem}>{tr("If the internet disconnects, the round timer continues")}</li>
+                <li style={styles.ruleItem}>{tr("Puzzles must be solved only on the official contest page")}</li>
+                <li style={styles.ruleItem}>{tr("Cheating or breaking rules will lead to immediate disqualification")}</li>
               </ul>
             </div>
           </div>
@@ -414,7 +415,7 @@ export default function ContestRules() {
           <div style={styles.section}>
             <h2 style={styles.sectionTitle}>
               <span>🔁</span>
-              Rescheduling
+              {tr("Rescheduling")}
             </h2>
             <div style={styles.sectionContent}>
               <p>
@@ -438,10 +439,10 @@ export default function ContestRules() {
                 e.target.style.boxShadow = '0 8px 24px rgba(244, 63, 94, 0.3)';
               }}
             >
-              🏠 Back to Home
+              {tr("🏠 Back to Home")}
             </Link>
             <p style={styles.footerText}>
-              These rules are subject to change. Last updated: November 2025
+              {tr("These rules are subject to change. Last updated: November 2025")}
             </p>
           </div>
         </div>

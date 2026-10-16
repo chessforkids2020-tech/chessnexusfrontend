@@ -14,6 +14,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
 import './AskCoachPanel.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function AskCoachPanel() {
   const [username, setUsername] = useState('');
@@ -35,11 +36,11 @@ export default function AskCoachPanel() {
     setBusy(true); setMsg(null);
     try {
       const r = await api.post('/api/coach/request-coach', { coachUsername: u });
-      setMsg({ ok: true, text: r.data?.message || 'Request sent.' });
+      setMsg({ ok: true, text: r.data?.message || tr('Request sent.') });
       setUsername('');
       loadPending();
     } catch (e) {
-      setMsg({ ok: false, text: e.response?.data?.message || 'Could not send that request.' });
+      setMsg({ ok: false, text: e.response?.data?.message || tr('Could not send that request.') });
     } finally {
       setBusy(false);
     }
@@ -50,7 +51,7 @@ export default function AskCoachPanel() {
       <div className="acp-head">
         <div className="acp-ic" aria-hidden="true">🎓</div>
         <div className="acp-head-txt">
-          <h3 className="acp-title">Connect with your coach</h3>
+          <h3 className="acp-title">{tr("Connect with your coach")}</h3>
           {/* "Enter their username" was ambiguous — a student could read
               "their" as their OWN. Say whose username it is. */}
           <p className="acp-sub">
@@ -68,18 +69,18 @@ export default function AskCoachPanel() {
           value={username}
           onChange={(e) => { setUsername(e.target.value); setMsg(null); }}
           onKeyDown={(e) => e.key === 'Enter' && send()}
-          placeholder="e.g. coach_ravi"
+          placeholder={tr("e.g. coach_ravi")}
           disabled={busy}
           maxLength={50}
         />
         <button className="acp-btn" onClick={send} disabled={busy || !username.trim()}>
-          {busy ? 'Sending…' : 'Send request'}
+          {busy ? tr('Sending…') : tr('Send request')}
         </button>
       </div>
 
       <div className="acp-note">
         <span aria-hidden="true">🔒</span>
-        <span>Your coach approves before you join their roster. Got an invite link instead? Just open it.</span>
+        <span>{tr("Your coach approves before you join their roster. Got an invite link instead? Just open it.")}</span>
       </div>
 
       {msg && (
@@ -90,11 +91,11 @@ export default function AskCoachPanel() {
 
       {pending.length > 0 && (
         <div className="acp-pending">
-          <div className="acp-pending-h">Waiting for a reply</div>
+          <div className="acp-pending-h">{tr("Waiting for a reply")}</div>
           {pending.map((p) => (
             <div key={p._id} className="acp-pending-row">
-              <span>{p.coachId?.displayName || p.coachId?.username || 'Coach'}</span>
-              <span className="acp-chip">Pending</span>
+              <span>{p.coachId?.displayName || p.coachId?.username || tr('Coach')}</span>
+              <span className="acp-chip">{tr("Pending")}</span>
             </div>
           ))}
         </div>

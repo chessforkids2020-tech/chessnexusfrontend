@@ -9,6 +9,7 @@
 // all exist; nothing is aspirational.
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-practice-streak";
 
@@ -50,7 +51,7 @@ export default function PracticeStreakPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
@@ -67,7 +68,7 @@ export default function PracticeStreakPage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "Chess Practice Streak — Earn a Full Report on Your Play",
+        title: tr("Chess Practice Streak — Earn a Full Report on Your Play"),
         description:
           "Practise 5 days in a row and unlock a report on every game you played across Chess Nexus, Chess.com and Lichess — accuracy by phase, how you defend, the endgames you reached, and a study plan from your own mistakes.",
         keywords:
@@ -78,13 +79,13 @@ export default function PracticeStreakPage() {
       hero={{
         icon: "🔥",
         h1: "Practise 5 days. Find out what is really costing you games.",
-        sub: "Most players practise without ever learning which part of their chess is holding them back. Practise five days in a row and Chess Nexus analyses every game you played — on Chess Nexus, Chess.com and Lichess together — and tells you exactly what to work on next.",
-        primary: { label: "Start your streak", to: "/dashboard" },
-        secondary: { label: "Browse all features", to: "/features" },
+        sub: tr("Most players practise without ever learning which part of their chess is holding them back. Practise five days in a row and Chess Nexus analyses every game you played — on Chess Nexus, Chess.com and Lichess together — and tells you exactly what to work on next."),
+        primary: { label: tr("Start your streak"), to: "/dashboard" },
+        secondary: { label: tr("Browse all features"), to: "/features" },
       }}
     >
       <section className="mkt-section">
-        <h2>What a practice day costs</h2>
+        <h2>{tr("What a practice day costs")}</h2>
         <p className="mkt-section-lead">
           A day only counts when you do all three. Opening the app does not
           count, and neither does one quick puzzle — the streak is a record of
@@ -94,22 +95,22 @@ export default function PracticeStreakPage() {
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">🧩</span>
             <span className="mkt-feat-tx">
-              <strong>10 puzzles</strong>
-              <span>Any mode counts — Healthy Mix, themes, by piece count or by rating band.</span>
+              <strong>{tr("10 puzzles")}</strong>
+              <span>{tr("Any mode counts — Healthy Mix, themes, by piece count or by rating band.")}</span>
             </span>
           </li>
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">⚔️</span>
             <span className="mkt-feat-tx">
-              <strong>1 game</strong>
-              <span>On Chess Nexus, Chess.com or Lichess. Blitz, rapid or classical — bullet and variants do not count, because their mistakes are usually the clock rather than your chess.</span>
+              <strong>{tr("1 game")}</strong>
+              <span>{tr("On Chess Nexus, Chess.com or Lichess. Blitz, rapid or classical — bullet and variants do not count, because their mistakes are usually the clock rather than your chess.")}</span>
             </span>
           </li>
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">♟️</span>
             <span className="mkt-feat-tx">
-              <strong>1 endgame</strong>
-              <span>Played out against the computer, from any position in the endgame library.</span>
+              <strong>{tr("1 endgame")}</strong>
+              <span>{tr("Played out against the computer, from any position in the endgame library.")}</span>
             </span>
           </li>
         </ul>
@@ -118,7 +119,7 @@ export default function PracticeStreakPage() {
       <div className="mkt-callout">
         <div className="mkt-callout-icon">📊</div>
         <div>
-          <h2>One report, all three platforms</h2>
+          <h2>{tr("One report, all three platforms")}</h2>
           <p>
             Analysing a game tells you what happened in that game. This pools
             everything you played over five days — wherever you played it — and
@@ -129,7 +130,7 @@ export default function PracticeStreakPage() {
       </div>
 
       <section className="mkt-section">
-        <h2>What the report tells you</h2>
+        <h2>{tr("What the report tells you")}</h2>
         <p className="mkt-section-lead">
           Not a wall of engine lines. Six things a coach would actually point at,
           each drawn from the games you really played.
@@ -138,43 +139,43 @@ export default function PracticeStreakPage() {
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">🎯</span>
             <span className="mkt-feat-tx">
-              <strong>Which phase is holding you back</strong>
-              <span>Your accuracy in the opening, middlegame and endgame separately, with the blunders, mistakes and inaccuracies in each — and the weakest one marked.</span>
+              <strong>{tr("Which phase is holding you back")}</strong>
+              <span>{tr("Your accuracy in the opening, middlegame and endgame separately, with the blunders, mistakes and inaccuracies in each — and the weakest one marked.")}</span>
             </span>
           </li>
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">🛡</span>
             <span className="mkt-feat-tx">
-              <strong>How well you defend</strong>
-              <span>How often a game turned against you, how many of those you saved, how many collapsed, and how long you resisted on average. Almost nothing else measures this.</span>
+              <strong>{tr("How well you defend")}</strong>
+              <span>{tr("How often a game turned against you, how many of those you saved, how many collapsed, and how long you resisted on average. Almost nothing else measures this.")}</span>
             </span>
           </li>
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">♟️</span>
             <span className="mkt-feat-tx">
-              <strong>The endgames you actually reached</strong>
-              <span>Rook endgames, king and pawn, queen endings — how many came up and your record in each. Losing the same type repeatedly is a fixable problem once you can see it.</span>
+              <strong>{tr("The endgames you actually reached")}</strong>
+              <span>{tr("Rook endgames, king and pawn, queen endings — how many came up and your record in each. Losing the same type repeatedly is a fixable problem once you can see it.")}</span>
             </span>
           </li>
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">⏱</span>
             <span className="mkt-feat-tx">
-              <strong>What the clock costs you</strong>
-              <span>How much worse you play with under a minute left than with time to think — and how many of your blunders came from there.</span>
+              <strong>{tr("What the clock costs you")}</strong>
+              <span>{tr("How much worse you play with under a minute left than with time to think — and how many of your blunders came from there.")}</span>
             </span>
           </li>
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">🏁</span>
             <span className="mkt-feat-tx">
-              <strong>Whether you finish won games</strong>
-              <span>How often you reached a winning position, and how often you actually won from it.</span>
+              <strong>{tr("Whether you finish won games")}</strong>
+              <span>{tr("How often you reached a winning position, and how often you actually won from it.")}</span>
             </span>
           </li>
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">🧠</span>
             <span className="mkt-feat-tx">
-              <strong>Where your mistakes happen</strong>
-              <span>Every blunder grouped into tactics, defence, calculation, endgames and opening — click a group and replay those exact positions.</span>
+              <strong>{tr("Where your mistakes happen")}</strong>
+              <span>{tr("Every blunder grouped into tactics, defence, calculation, endgames and opening — click a group and replay those exact positions.")}</span>
             </span>
           </li>
         </ul>
@@ -183,7 +184,7 @@ export default function PracticeStreakPage() {
       <section className="mkt-section">
         <div className="mkt-split">
           <div className="mkt-split-text">
-            <h2>A study plan built from your own mistakes</h2>
+            <h2>{tr("A study plan built from your own mistakes")}</h2>
             <p>
               The report does not stop at telling you what is wrong. Every
               finding becomes something to do:
@@ -192,27 +193,27 @@ export default function PracticeStreakPage() {
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">♜</span>
                 <span className="mkt-feat-tx">
-                  <strong>Lost rook endgames?</strong>
-                  <span>Get rook endgames with the same material to play out against the engine.</span>
+                  <strong>{tr("Lost rook endgames?")}</strong>
+                  <span>{tr("Get rook endgames with the same material to play out against the engine.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">⚔️</span>
                 <span className="mkt-feat-tx">
-                  <strong>Kept missing forks?</strong>
-                  <span>Go straight to fork puzzles, until you stop missing them.</span>
+                  <strong>{tr("Kept missing forks?")}</strong>
+                  <span>{tr("Go straight to fork puzzles, until you stop missing them.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🔁</span>
                 <span className="mkt-feat-tx">
-                  <strong>Weak middlegame?</strong>
-                  <span>Replay your own middlegame blunders and find the move you should have played.</span>
+                  <strong>{tr("Weak middlegame?")}</strong>
+                  <span>{tr("Replay your own middlegame blunders and find the move you should have played.")}</span>
                 </span>
               </li>
             </ul>
             <Link to="/dashboard" className="mkt-card-cta">
-              Start your streak →
+              {tr("Start your streak →")}
             </Link>
           </div>
         </div>
@@ -221,7 +222,7 @@ export default function PracticeStreakPage() {
       <div className="mkt-callout">
         <div className="mkt-callout-icon">📈</div>
         <div>
-          <h2>Compare four reports and watch a month of progress</h2>
+          <h2>{tr("Compare four reports and watch a month of progress")}</h2>
           <p>
             Reports are kept and shown side by side, like comparing
             specifications. Each column is one five-day period; each row a
@@ -235,7 +236,7 @@ export default function PracticeStreakPage() {
       </div>
 
       <section className="mkt-section">
-        <h2>Why a streak, and not just a button</h2>
+        <h2>{tr("Why a streak, and not just a button")}</h2>
         <p className="mkt-section-lead">
           Improvement comes from turning up regularly, and one analysed game
           tells you very little. Five days of real practice is enough games to
@@ -246,19 +247,19 @@ export default function PracticeStreakPage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <Link to="/dashboard" className="mkt-btn mkt-btn-primary">
-            Start your streak
+            {tr("Start your streak")}
           </Link>
           <Link to="/chess-puzzles" className="mkt-btn mkt-btn-ghost">
-            Train tactics
+            {tr("Train tactics")}
           </Link>
           <Link to="/chess-endgame-training" className="mkt-btn mkt-btn-ghost">
-            Endgame training
+            {tr("Endgame training")}
           </Link>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

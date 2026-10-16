@@ -5,6 +5,7 @@ import socket from '../../socket';
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import './MonthlyFocusDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function MonthlyFocusDashboard() {
   const [currentFocus, setCurrentFocus] = useState(null);
@@ -102,7 +103,7 @@ export default function MonthlyFocusDashboard() {
   // Helper function to format countdown
   const formatCountdown = (endTime) => {
     const remaining = new Date(endTime) - new Date();
-    if (remaining <= 0) return { text: 'Ended', expired: true };
+    if (remaining <= 0) return { text: tr('Ended'), expired: true };
     
     const hours = Math.floor(remaining / (1000 * 60 * 60));
     const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
@@ -149,7 +150,7 @@ export default function MonthlyFocusDashboard() {
     return (
       <div className="focus-dashboard loading">
         <div className="spinner"></div>
-        <p style={{ color: 'var(--color-text-muted)', fontSize: '1.1em', marginTop: '20px' }}>Loading Monthly Practice...</p>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '1.1em', marginTop: '20px' }}>{tr("Loading Monthly Practice...")}</p>
       </div>
     );
   }
@@ -157,9 +158,9 @@ export default function MonthlyFocusDashboard() {
   if (error) {
     return (
       <div className="focus-dashboard error">
-        <h2>⚠️ Error</h2>
+        <h2>{tr("⚠️ Error")}</h2>
         <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
+        <button onClick={() => window.location.reload()}>{tr("Retry")}</button>
       </div>
     );
   }
@@ -167,9 +168,9 @@ export default function MonthlyFocusDashboard() {
   if (!currentFocus) {
     return (
       <div className="focus-dashboard no-focus">
-        <h2>🎯 No Active Monthly Practice</h2>
-        <p>Check back soon for the next monthly practice challenge!</p>
-        <Link to="/dashboard" className="btn-primary">Back to Dashboard</Link>
+        <h2>{tr("🎯 No Active Monthly Practice")}</h2>
+        <p>{tr("Check back soon for the next monthly practice challenge!")}</p>
+        <Link to="/dashboard" className="btn-primary">{tr("Back to Dashboard")}</Link>
       </div>
     );
   }
@@ -184,7 +185,7 @@ export default function MonthlyFocusDashboard() {
           exit={{ opacity: 0, y: 20 }}
           className="xp-animation"
         >
-          +{earnedXp} XP ✨
+          +{earnedXp} {tr("XP ✨")}
         </motion.div>
       )}
 
@@ -196,9 +197,9 @@ export default function MonthlyFocusDashboard() {
           className="milestone-alert"
         >
           <div className="alert-content">
-            <span>🎉 Milestone Reached! +75 XP Bonus Available!</span>
+            <span>{tr("🎉 Milestone Reached! +75 XP Bonus Available!")}</span>
             <button onClick={claimMilestoneReward} className="claim-btn">
-              Claim Reward
+              {tr("Claim Reward")}
             </button>
           </div>
         </motion.div>
@@ -223,10 +224,10 @@ export default function MonthlyFocusDashboard() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <h3>🧠 Skill Score</h3>
+            <h3>{tr("🧠 Skill Score")}</h3>
             <div className="xp-display">
               <span className="xp-amount">{userProgress?.skillScore || 0}</span>
-              <span className="xp-label">Rating</span>
+              <span className="xp-label">{tr("Rating")}</span>
             </div>
           </motion.div>
           
@@ -236,10 +237,10 @@ export default function MonthlyFocusDashboard() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <h3>🏅 Focus XP</h3>
+            <h3>{tr("🏅 Focus XP")}</h3>
             <div className="xp-display">
               <span className="xp-amount">{userProgress?.totalXp || 0}</span>
-              <span className="xp-label">XP</span>
+              <span className="xp-label">{"XP"}</span>
             </div>
           </motion.div>
           
@@ -249,10 +250,10 @@ export default function MonthlyFocusDashboard() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <h3>🏆 Focus Rank</h3>
+            <h3>{tr("🏆 Focus Rank")}</h3>
             <div className="rank-display">
               <span className="rank-position">#{userRank || '-'}</span>
-              <span className="rank-total">of {focusLeaderboard.length}</span>
+              <span className="rank-total">{tr("of")} {focusLeaderboard.length}</span>
             </div>
           </motion.div>
         </div>
@@ -265,7 +266,7 @@ export default function MonthlyFocusDashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <h2>📊 Your Weekly Progress</h2>
+        <h2>{tr("📊 Your Weekly Progress")}</h2>
         <div className="progress-bar">
           <motion.div 
             className="progress-fill" 
@@ -275,7 +276,7 @@ export default function MonthlyFocusDashboard() {
           ></motion.div>
         </div>
         <p className="progress-text">
-          {userProgress?.completedDays?.length || 0} of 7 days complete
+          {userProgress?.completedDays?.length || 0} {tr("of 7 days complete")}
           {userProgress?.completedDays?.length >= 5 && " • Milestone reached! 🎉"}
         </p>
       </motion.div>
@@ -287,7 +288,7 @@ export default function MonthlyFocusDashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
       >
-        <h2>📅 Daily Tasks</h2>
+        <h2>{tr("📅 Daily Tasks")}</h2>
         <div className="tasks-container">
           {currentFocus.days?.length > 0 ? currentFocus.days.map((day, index) => {
             const status = getDayStatus(day.dayNumber);
@@ -305,7 +306,7 @@ export default function MonthlyFocusDashboard() {
                 whileTap={{ scale: (status === 'available' && running) ? 0.98 : 1 }}
               >
                 <div className="task-header">
-                  <span className="day-number">Day {day.dayNumber}</span>
+                  <span className="day-number">{tr("Day")} {day.dayNumber}</span>
                   <span className="task-status-icon">
                     {status === 'completed' ? '✅' : running ? '🔴' : day.isStarted ? '⏹️' : '🔒'}
                   </span>
@@ -314,7 +315,7 @@ export default function MonthlyFocusDashboard() {
                 {/* Countdown Timer - show only for running days */}
                 {running && countdown && (
                   <div className="countdown-timer">
-                    <div>TIME REMAINING</div>
+                    <div>{tr("TIME REMAINING")}</div>
                     <div>{countdown.text}</div>
                   </div>
                 )}
@@ -332,7 +333,7 @@ export default function MonthlyFocusDashboard() {
                     fontWeight: '600',
                     border: '1px solid var(--color-warning-a30)'
                   }}>
-                    ⏳ Waiting for Admin to Start
+                    {tr("⏳ Waiting for Admin to Start")}
                   </div>
                 )}
                 
@@ -349,7 +350,7 @@ export default function MonthlyFocusDashboard() {
                     fontWeight: '600',
                     border: '1px solid var(--color-warning-a30)'
                   }}>
-                    ⏱️ Time's Up - Complete for 5 XP
+                    {tr("⏱️ Time's Up - Complete for 5 XP")}
                   </div>
                 )}
                 
@@ -375,7 +376,7 @@ export default function MonthlyFocusDashboard() {
                 
                 <div className="task-footer">
                   <span className="xp-reward">
-                    +{(day.isStarted && !running && status !== 'completed') ? 5 : day.xpReward} XP
+                    +{(day.isStarted && !running && status !== 'completed') ? 5 : day.xpReward} {tr("XP")}
                     {day.timerEnabled && <span className="timer-badge">⏱️</span>}
                   </span>
                   {status === 'available' && running && (
@@ -383,12 +384,12 @@ export default function MonthlyFocusDashboard() {
                       to={`/monthly-focus/task/${day.dayNumber}`}
                       className="start-task-btn"
                     >
-                      Start Now!
+                      {tr("Start Now!")}
                     </Link>
                   )}
                   {status === 'available' && !running && !day.isStarted && (
                     <span className="waiting-badge">
-                      Coming Soon
+                      {tr("Coming Soon")}
                     </span>
                   )}
                   {status === 'available' && day.isStarted && !running && (
@@ -396,11 +397,11 @@ export default function MonthlyFocusDashboard() {
                       to={`/monthly-focus/task/${day.dayNumber}`}
                       className="late-task-btn"
                     >
-                      Do for 5 XP
+                      {tr("Do for 5 XP")}
                     </Link>
                   )}
                   {status === 'completed' && (
-                    <span className="completed-badge">✓ Done</span>
+                    <span className="completed-badge">{tr("✓ Done")}</span>
                   )}
                 </div>
               </motion.div>
@@ -415,7 +416,7 @@ export default function MonthlyFocusDashboard() {
               borderRadius: 'var(--radius-xl)',
               border: '1px solid var(--color-white-a04)'
             }}>
-              <p style={{ fontSize: '1.1em', margin: 0 }}>No days created yet. Check back soon!</p>
+              <p style={{ fontSize: '1.1em', margin: 0 }}>{tr("No days created yet. Check back soon!")}</p>
             </div>
           )}
         </div>
@@ -428,7 +429,7 @@ export default function MonthlyFocusDashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.6 }}
       >
-        <h2>🏅 Focus Leaders</h2>
+        <h2>{tr("🏅 Focus Leaders")}</h2>
         <div className="leaderboard-list">
           {focusLeaderboard.slice(0, 5).map((user, index) => (
             <motion.div 
@@ -443,13 +444,13 @@ export default function MonthlyFocusDashboard() {
                 {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
               </span>
               <span className="username">{user.displayName}</span>
-              <span className="xp">{user.totalXp} XP</span>
+              <span className="xp">{user.totalXp} {tr("XP")}</span>
             </motion.div>
           ))}
         </div>
         
         <Link to="/monthly-focus/leaderboard" className="view-full-btn">
-          View Full Leaderboard →
+          {tr("View Full Leaderboard →")}
         </Link>
       </motion.div>
 
@@ -461,10 +462,10 @@ export default function MonthlyFocusDashboard() {
         transition={{ duration: 0.6, delay: 0.8 }}
       >
         <Link to="/dashboard" className="btn-secondary">
-          ← Back to Dashboard
+          {tr("← Back to Dashboard")}
         </Link>
         <Link to="/monthly-focus/leaderboard" className="btn-primary">
-          View Leaderboard →
+          {tr("View Leaderboard →")}
         </Link>
       </motion.div>
     </div>

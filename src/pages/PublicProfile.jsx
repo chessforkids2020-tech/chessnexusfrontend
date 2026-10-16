@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import UserAvatar from '../components/UserAvatar';
 import PlayerName from '../components/PlayerName';
+import { t as tr } from '../i18n/LanguageContext';
 
 const API = import.meta.env.VITE_API_URL || window.location.origin;
 
@@ -13,55 +14,55 @@ const TRACKS = [
   {
     id: 'puzzles', icon: '🧩', name: 'Daily Puzzles',
     badges: [
-      { id: 'puzzle_starter', tier: 'starter', emoji: '🧩', name: 'First Move',    threshold: 'Solve 1 puzzle' },
-      { id: 'puzzle_gold',    tier: 'gold',    emoji: '🥇', name: 'Puzzle Pro',     threshold: '25 puzzles (~5 days)' },
-      { id: 'puzzle_plat',    tier: 'plat',    emoji: '💎', name: 'Puzzle Legend',  threshold: '300 puzzles (~2 months)' },
+      { id: 'puzzle_starter', tier: 'starter', emoji: '🧩', name: tr('First Move'),    threshold: tr('Solve 1 puzzle') },
+      { id: 'puzzle_gold',    tier: 'gold',    emoji: '🥇', name: tr('Puzzle Pro'),     threshold: tr('25 puzzles (~5 days)') },
+      { id: 'puzzle_plat',    tier: 'plat',    emoji: '💎', name: tr('Puzzle Legend'),  threshold: tr('300 puzzles (~2 months)') },
     ],
   },
   {
     id: 'rating', icon: '⭐', name: 'Competition',
     badges: [
-      { id: 'rating_starter', tier: 'starter', emoji: '⭐', name: 'Rising',         threshold: 'Reach 1250 points' },
-      { id: 'rating_gold',    tier: 'gold',    emoji: '🥇', name: 'Sharp Mind',     threshold: 'Reach 1350 points' },
-      { id: 'rating_plat',    tier: 'plat',    emoji: '💎', name: 'Chess King',     threshold: 'Reach 1700 points' },
+      { id: 'rating_starter', tier: 'starter', emoji: '⭐', name: tr('Rising'),         threshold: tr('Reach 1250 points') },
+      { id: 'rating_gold',    tier: 'gold',    emoji: '🥇', name: tr('Sharp Mind'),     threshold: tr('Reach 1350 points') },
+      { id: 'rating_plat',    tier: 'plat',    emoji: '💎', name: tr('Chess King'),     threshold: tr('Reach 1700 points') },
     ],
   },
   {
     id: 'race', icon: '🏎️', name: 'Speed Race',
     badges: [
-      { id: 'race_starter',   tier: 'starter', emoji: '🏁', name: 'Racer',          threshold: 'Play any race' },
-      { id: 'race_gold',      tier: 'gold',    emoji: '🥇', name: 'Speed Demon',    threshold: 'Score 200+ in Individual Race' },
-      { id: 'race_plat',      tier: 'plat',    emoji: '💎', name: 'Arena Champion', threshold: 'Score 400+ in Arena Race' },
+      { id: 'race_starter',   tier: 'starter', emoji: '🏁', name: tr('Racer'),          threshold: tr('Play any race') },
+      { id: 'race_gold',      tier: 'gold',    emoji: '🥇', name: tr('Speed Demon'),    threshold: tr('Score 200+ in Individual Race') },
+      { id: 'race_plat',      tier: 'plat',    emoji: '💎', name: tr('Arena Champion'), threshold: tr('Score 400+ in Arena Race') },
     ],
   },
   {
     id: 'streak', icon: '🔥', name: 'Streak',
     badges: [
-      { id: 'streak_starter', tier: 'starter', emoji: '🔥', name: 'On Fire',        threshold: '2 perfect days in a row' },
-      { id: 'streak_gold',    tier: 'gold',    emoji: '🥇', name: 'Grinder',        threshold: '4 perfect days in a row' },
-      { id: 'streak_plat',    tier: 'plat',    emoji: '💎', name: 'Iron Will',      threshold: '7 perfect days in a row' },
+      { id: 'streak_starter', tier: 'starter', emoji: '🔥', name: tr('On Fire'),        threshold: tr('2 perfect days in a row') },
+      { id: 'streak_gold',    tier: 'gold',    emoji: '🥇', name: tr('Grinder'),        threshold: tr('4 perfect days in a row') },
+      { id: 'streak_plat',    tier: 'plat',    emoji: '💎', name: tr('Iron Will'),      threshold: tr('7 perfect days in a row') },
     ],
   },
   {
     id: 'focus', icon: '🎯', name: 'Monthly Focus',
     badges: [
-      { id: 'focus_starter',  tier: 'starter', emoji: '🎯', name: 'Focused',        threshold: 'Complete 5 Focus days' },
-      { id: 'focus_gold',     tier: 'gold',    emoji: '🥇', name: 'Consistent',     threshold: 'Complete 2 full Focus months' },
-      { id: 'focus_plat',     tier: 'plat',    emoji: '💎', name: 'Dedicated',      threshold: 'Complete 4 full Focus months' },
+      { id: 'focus_starter',  tier: 'starter', emoji: '🎯', name: tr('Focused'),        threshold: tr('Complete 5 Focus days') },
+      { id: 'focus_gold',     tier: 'gold',    emoji: '🥇', name: tr('Consistent'),     threshold: tr('Complete 2 full Focus months') },
+      { id: 'focus_plat',     tier: 'plat',    emoji: '💎', name: tr('Dedicated'),      threshold: tr('Complete 4 full Focus months') },
     ],
   },
   {
     id: 'tournament', icon: '🏆', name: 'Tournament',
     badges: [
-      { id: 'tournament_starter', tier: 'starter', emoji: '🏅', name: 'Competitor', threshold: '3 games without losing' },
-      { id: 'tournament_gold',    tier: 'gold',    emoji: '🥇', name: 'Veteran',     threshold: '6 games without losing' },
-      { id: 'tournament_plat',    tier: 'plat',    emoji: '💎', name: 'Champion',    threshold: '10 games without losing' },
+      { id: 'tournament_starter', tier: 'starter', emoji: '🏅', name: tr('Competitor'), threshold: tr('3 games without losing') },
+      { id: 'tournament_gold',    tier: 'gold',    emoji: '🥇', name: tr('Veteran'),     threshold: tr('6 games without losing') },
+      { id: 'tournament_plat',    tier: 'plat',    emoji: '💎', name: tr('Champion'),    threshold: tr('10 games without losing') },
     ],
   },
 ];
 
 const TIER_COLOR = { starter: '#6366f1', gold: 'var(--color-warning)', plat: 'var(--color-accent)' };
-const CROWN_LABELS = { gold: '👑 Gold Crown', platinum: '👑 Platinum Crown', gem: '💎 Gem Crown', none: null };
+const CROWN_LABELS = { gold: tr('👑 Gold Crown'), platinum: tr('👑 Platinum Crown'), gem: tr('💎 Gem Crown'), none: null };
 
 export default function PublicProfile() {
   const { displayName } = useParams();
@@ -78,15 +79,15 @@ export default function PublicProfile() {
       try {
         const res = await fetch(`${API}/api/public/profile/${encodeURIComponent(displayName)}`);
         if (res.status === 404) {
-          setError(`No player found with the name "${displayName}"`);
+          setError(tr("No player found with the name \"{displayName}\"", { displayName: displayName }));
         } else if (!res.ok) {
-          setError('Failed to load profile. Please try again.');
+          setError(tr('Failed to load profile. Please try again.'));
         } else {
           const data = await res.json();
           setProfile(data);
         }
       } catch {
-        setError('Network error. Please check your connection.');
+        setError(tr('Network error. Please check your connection.'));
       } finally {
         setLoading(false);
       }
@@ -105,7 +106,7 @@ export default function PublicProfile() {
       <div style={s.page}>
         <div style={s.card}>
           <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--color-text-muted)', fontSize: '18px' }}>
-            ⏳ Loading profile...
+            {tr("⏳ Loading profile...")}
           </div>
         </div>
       </div>
@@ -119,7 +120,7 @@ export default function PublicProfile() {
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
             <div style={{ fontSize: '20px', color: 'var(--color-danger)', marginBottom: '24px' }}>{error}</div>
-            <Link to="/" style={s.backBtn}>← Back to Home</Link>
+            <Link to="/" style={s.backBtn}>{tr("← Back to Home")}</Link>
           </div>
         </div>
       </div>
@@ -141,9 +142,9 @@ export default function PublicProfile() {
     <div style={s.page}>
       {/* Back / Share bar */}
       <div style={s.topBar}>
-        <Link to="/" style={s.backBtn}>← Home</Link>
+        <Link to="/" style={s.backBtn}>{tr("← Home")}</Link>
         <button onClick={handleCopyLink} style={s.shareBtn}>
-          {copied ? '✓ Link Copied!' : '🔗 Share Profile'}
+          {copied ? tr('✓ Link Copied!') : tr('🔗 Share Profile')}
         </button>
       </div>
 
@@ -195,7 +196,7 @@ export default function PublicProfile() {
             )}
             {profile.lichessUsername && (
               <a href={`https://lichess.org/@/${profile.lichessUsername}`} target="_blank" rel="noopener noreferrer" style={s.platformLink}>
-                ♜ Lichess: <strong>{profile.lichessUsername}</strong>
+                {tr("♜ Lichess:")} <strong>{profile.lichessUsername}</strong>
               </a>
             )}
           </div>
@@ -205,30 +206,30 @@ export default function PublicProfile() {
         <div style={s.statsGrid}>
           <div style={s.statCard}>
             <div style={s.statValue}>{profile.liveRating}</div>
-            <div style={s.statLabel}>⭐ Rating</div>
+            <div style={s.statLabel}>{tr("⭐ Rating")}</div>
           </div>
           <div style={s.statCard}>
             <div style={s.statValue}>{profile.highestArenaRaceScore}</div>
-            <div style={s.statLabel}>🏆 Best Arena Score</div>
+            <div style={s.statLabel}>{tr("🏆 Best Arena Score")}</div>
           </div>
           <div style={s.statCard}>
             <div style={s.statValue}>{profile.highestTimedRaceScore}</div>
-            <div style={s.statLabel}>🏁 Best Race Score</div>
+            <div style={s.statLabel}>{tr("🏁 Best Race Score")}</div>
           </div>
           <div style={s.statCard}>
             <div style={s.statValue}>{totalEarned}</div>
-            <div style={s.statLabel}>🏅 Badges ({totalEarned}/{totalBadges})</div>
+            <div style={s.statLabel}>{tr("🏅 Badges (")}{totalEarned}/{totalBadges})</div>
           </div>
         </div>
 
         {/* ── Badge Wall ──────────────────────────────────── */}
         <div style={s.badgeSection}>
           <div style={s.badgeSectionHeader}>
-            <h2 style={s.sectionTitle}>🏅 Achievements</h2>
+            <h2 style={s.sectionTitle}>{tr("🏅 Achievements")}</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span style={s.badgeCount}>{totalEarned}/{totalBadges}</span>
               <button style={s.showAllBtn} onClick={() => setShowAllBadges(v => !v)}>
-                {showAllBadges ? 'Show Less' : 'Show All'}
+                {showAllBadges ? tr('Show Less') : tr('Show All')}
               </button>
             </div>
           </div>
@@ -298,10 +299,10 @@ export default function PublicProfile() {
         {/* ── Footer ──────────────────────────────────────── */}
         <div style={{ textAlign: 'center', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--color-text)' }}>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', margin: '0 0 16px' }}>
-            Want to challenge {profile.displayName}? Join our chess community!
+            {tr("Want to challenge")} {profile.displayName}{tr("? Join our chess community!")}
           </p>
-          <Link to="/login" style={{ ...s.shareBtn, display: 'inline-block', textDecoration: 'none', marginRight: '12px' }}>Log In</Link>
-          <Link to="/signup" style={{ ...s.shareBtn, display: 'inline-block', textDecoration: 'none', background: 'var(--color-success)' }}>Sign Up Free</Link>
+          <Link to="/login" style={{ ...s.shareBtn, display: 'inline-block', textDecoration: 'none', marginRight: '12px' }}>{tr("Log In")}</Link>
+          <Link to="/signup" style={{ ...s.shareBtn, display: 'inline-block', textDecoration: 'none', background: 'var(--color-success)' }}>{tr("Sign Up Free")}</Link>
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ import {
   nodeAtPath, addMove, deleteNode, isMainlinePath,
   hasAnyVariations, clearAllVariations, treeStorageKey,
 } from './gameTree';
+import { t as tr } from '../i18n/LanguageContext';
 
 const ENGINE_LABEL = 'Stockfish 18';
 const ENGINE_DEPTH = 18;
@@ -287,7 +288,7 @@ function EnginePanel({ fen, numLines = ENGINE_LINES, enabled = true, onToggle })
             <span className="gr-engine-depth">
               {status === 'error' ? 'unavailable'
                 : status === 'init' ? 'loading…'
-                : `depth ${depth}/${ENGINE_DEPTH}`}
+                : tr("depth {depth}/{ENGINE_DEPTH}", { depth: depth, ENGINE_DEPTH: ENGINE_DEPTH })}
             </span>
           )}
           {/* On/off switch — lets the user stop the live engine entirely. */}
@@ -295,7 +296,7 @@ function EnginePanel({ fen, numLines = ENGINE_LINES, enabled = true, onToggle })
             type="button"
             className={`gr-engine-toggle${enabled ? ' on' : ''}`}
             onClick={onToggle}
-            title={enabled ? 'Turn the engine off' : 'Turn the engine on'}
+            title={enabled ? tr('Turn the engine off') : tr('Turn the engine on')}
             aria-pressed={enabled}
           >
             <span className="gr-engine-toggle-knob" />
@@ -305,9 +306,9 @@ function EnginePanel({ fen, numLines = ENGINE_LINES, enabled = true, onToggle })
       </div>
       {/* Off: just the header (name + switch) — no message line. */}
       {!enabled ? null : status === 'error' ? (
-        <div className="gr-engine-empty">Engine could not start in this browser.</div>
+        <div className="gr-engine-empty">{tr("Engine could not start in this browser.")}</div>
       ) : lines.length === 0 ? (
-        <div className="gr-engine-empty">Analysing…</div>
+        <div className="gr-engine-empty">{tr("Analysing…")}</div>
       ) : (
         <table className="gr-engine-table">
           <tbody>
@@ -331,10 +332,10 @@ function EnginePanel({ fen, numLines = ENGINE_LINES, enabled = true, onToggle })
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const CLASS_META = {
-  brilliant:   { icon: '✨', color: 'var(--color-success)', label: 'Brilliant!' },
-  blunder:     { icon: '⁉️', color: 'var(--color-danger)', label: 'Blunder' },
-  mistake:     { icon: '?!', color: 'var(--color-warning)', label: 'Mistake' },
-  inaccuracy:  { icon: '?!', color: 'var(--color-warning)', label: 'Inaccuracy' },
+  brilliant:   { icon: '✨', color: 'var(--color-success)', label: tr('Brilliant!') },
+  blunder:     { icon: '⁉️', color: 'var(--color-danger)', label: tr('Blunder') },
+  mistake:     { icon: '?!', color: 'var(--color-warning)', label: tr('Mistake') },
+  inaccuracy:  { icon: '?!', color: 'var(--color-warning)', label: tr('Inaccuracy') },
   good:        { icon: '',   color: 'var(--color-success)', label: '' },
 };
 
@@ -343,11 +344,11 @@ const CLASS_META = {
 // "good" moves get no badge — marking every move would drown out the ones that
 // matter.
 const MOVE_BADGE = {
-  brilliant:  { text: '!!', color: '#1baca6', title: 'Brilliant' },
-  best:       { text: '★',  color: '#3f9f4a', title: 'Best move' },
-  inaccuracy: { text: '?!', color: '#c99a06', title: 'Inaccuracy' },
-  mistake:    { text: '?',  color: '#e07b22', title: 'Mistake' },
-  blunder:    { text: '??', color: '#d63b3b', title: 'Blunder' },
+  brilliant:  { text: '!!', color: '#1baca6', title: tr('Brilliant') },
+  best:       { text: '★',  color: '#3f9f4a', title: tr('Best move') },
+  inaccuracy: { text: '?!', color: '#c99a06', title: tr('Inaccuracy') },
+  mistake:    { text: '?',  color: '#e07b22', title: tr('Mistake') },
+  blunder:    { text: '??', color: '#d63b3b', title: tr('Blunder') },
 };
 
 // ── Learn from your mistakes ──
@@ -931,7 +932,7 @@ export default function GameReplay({
   const squareBadges = useMemo(() => {
     if (practiceItem) {
       if (practice.status !== 'ask' || !practice.hint) return undefined;
-      return { [practiceItem.m.bestUci.slice(0, 2)]: { text: '💡', color: '#2f74c0', title: 'Hint' } };
+      return { [practiceItem.m.bestUci.slice(0, 2)]: { text: '💡', color: '#2f74c0', title: tr('Hint') } };
     }
     if (!currentAnalysis || !onMainline || !curNode.to) return undefined;
     const b = MOVE_BADGE[currentAnalysis.isBest ? 'best' : currentAnalysis.classification];
@@ -991,7 +992,7 @@ export default function GameReplay({
           </div>
         ) : !quick && (
           <div className="gr-header-info">
-            <span className="gr-game-num">Game {gameNumber}</span>
+            <span className="gr-game-num">{tr("Game")} {gameNumber}</span>
             <span className="gr-opening">{opening || 'Unknown'}</span>
           </div>
         )}
@@ -1030,7 +1031,7 @@ export default function GameReplay({
                 // keeping its space stops the board from jumping sideways.
                 ...(practice ? { visibility: 'hidden' } : null),
               }}
-              title={`White ${whiteWinPct}% · Black ${100 - whiteWinPct}%`}
+              title={tr("White {whiteWinPct}% · Black {v1}%", { whiteWinPct: whiteWinPct, v1: 100 - whiteWinPct })}
             >
               <div className="gr-vbar-white" style={{ height: `${whiteWinPct}%` }} />
             </div>
@@ -1041,10 +1042,10 @@ export default function GameReplay({
           {practiceEnabled && practiceList.length > 0 && !practice && (
             <div className="gr-practice gr-practice--cta" style={{ maxWidth: drawnBoardSize }}>
               <div className="gr-practice-cta-text">
-                <b>🎯 Learn from your mistakes</b>
-                <span>{practiceList.length} position{practiceList.length === 1 ? '' : 's'} where you can find a better move</span>
+                <b>{tr("🎯 Learn from your mistakes")}</b>
+                <span>{practiceList.length} {tr("position")}{practiceList.length === 1 ? '' : 's'} {tr("where you can find a better move")}</span>
               </div>
-              <button type="button" className="gr-practice-btn gr-practice-btn--go" onClick={startPractice}>Start</button>
+              <button type="button" className="gr-practice-btn gr-practice-btn--go" onClick={startPractice}>{tr("Start")}</button>
             </div>
           )}
 
@@ -1060,8 +1061,8 @@ export default function GameReplay({
               <div className="gr-winbar-white" style={{ width: `${whiteWinPct}%` }} />
             </div>
             <div className="gr-winbar-labels">
-              <span>White {whiteWinPct}%</span>
-              <span>Black {100 - whiteWinPct}%</span>
+              <span>{tr("White")} {whiteWinPct}%</span>
+              <span>{tr("Black")} {100 - whiteWinPct}%</span>
             </div>
           </div>
 
@@ -1070,23 +1071,23 @@ export default function GameReplay({
               over the shared engine for a second or two per click, which should
               be the user's choice. */}
           <div className="gr-boardtools" style={{ maxWidth: drawnBoardSize }}>
-            <button type="button" className="gr-boardtool" onClick={copyFen} title="Copy the position on the board (FEN)">
+            <button type="button" className="gr-boardtool" onClick={copyFen} title={tr("Copy the position on the board (FEN)")}>
               {copied === 'fen' ? '✓ Copied' : '📋 Copy FEN'}
             </button>
-            <button type="button" className="gr-boardtool" onClick={copyGame} title="Copy the game's moves">
+            <button type="button" className="gr-boardtool" onClick={copyGame} title={tr("Copy the game's moves")}>
               {copied === 'game' ? '✓ Copied' : '📝 Copy game'}
             </button>
-            <button type="button" className="gr-boardtool" onClick={exportPgn} title="Download this game as a .pgn file">
-              📥 Export PGN
+            <button type="button" className="gr-boardtool" onClick={exportPgn} title={tr("Download this game as a .pgn file")}>
+              {tr("📥 Export PGN")}
             </button>
             <button
               type="button"
               className={`gr-boardtool gr-boardtool--eval${squareEvalsOn ? ' on' : ''}`}
               onClick={toggleSquareEvals}
               aria-pressed={squareEvalsOn}
-              title="Click a piece and every square it can reach shows the eval after moving there"
+              title={tr("Click a piece and every square it can reach shows the eval after moving there")}
             >
-              🎯 Square evals
+              {tr("🎯 Square evals")}
               <span className="gr-boardtool-state">{squareEvalsOn ? (evalBusy ? '…' : 'On') : 'Off'}</span>
             </button>
           </div>
@@ -1102,9 +1103,9 @@ export default function GameReplay({
           {practice && (
             <div className={`gr-practice gr-practice--${practice.status}`} style={{ maxWidth: drawnBoardSize }}>
               <div className="gr-practice-head">
-                <b>🎯 Learn from your mistakes</b>
+                <b>{tr("🎯 Learn from your mistakes")}</b>
                 {practiceItem && <span className="gr-practice-count">{practice.idx + 1} / {practiceList.length}</span>}
-                <button type="button" className="gr-practice-x" onClick={stopPractice} title="Stop (Esc)" aria-label="Stop practising">✕</button>
+                <button type="button" className="gr-practice-x" onClick={stopPractice} title={tr("Stop (Esc)")} aria-label={tr("Stop practising")}>✕</button>
               </div>
 
               {practiceItem && (() => {
@@ -1117,50 +1118,50 @@ export default function GameReplay({
                 return (
                   <>
                     <div className="gr-practice-q">
-                      Move {m.moveNumber}{m.side === 'black' ? '…' : '.'} you played{' '}
+                      {tr("Move")} {m.moveNumber}{m.side === 'black' ? '…' : '.'} {tr("you played")}{' '}
                       <span className={`gr-practice-played c-${m.classification}`}>{m.move}{MOVE_BADGE[m.classification].text}</span>
-                      {' '}<span className="gr-practice-drop">−{m.winChanceDrop}% win chance</span>
+                      {' '}<span className="gr-practice-drop">−{m.winChanceDrop}{tr("% win chance")}</span>
                     </div>
 
                     {practice.status === 'ask' && (
                       <div className="gr-practice-msg">
-                        {n?.same ? <span className="bad">That's the move from the game. Look for something better.</span>
+                        {n?.same ? <span className="bad">{tr("That's the move from the game. Look for something better.")}</span>
                           : n?.unknown ? <span className="bad">Couldn't check {n.san}. Try again.</span>
                             : n?.drop != null ? <span className="bad">{n.san} isn't it: it loses {n.drop}% win chance. Try again.</span>
-                              : <>Find a better move for <b>{sideName}</b>.</>}
+                              : <>{tr("Find a better move for")} <b>{sideName}</b>.</>}
                         {practice.hint && hintPiece && (
-                          <div className="gr-practice-hint">💡 Look at your {PIECE_NAME[hintPiece]} on {fromSq}.</div>
+                          <div className="gr-practice-hint">{tr("💡 Look at your")} {PIECE_NAME[hintPiece]} {tr("on")} {fromSq}.</div>
                         )}
                       </div>
                     )}
                     {practice.status === 'checking' && <div className="gr-practice-msg">Checking {n?.san}…</div>}
                     {practice.status === 'wrong' && (
                       <div className="gr-practice-msg bad">
-                        {n?.same ? `${n.san} is what you played in the game.` : n?.drop != null ? `${n.san}: loses ${n.drop}% win chance.` : `${n?.san}: not it.`}
+                        {n?.same ? tr("{san} is what you played in the game.", { san: n.san }) : n?.drop != null ? tr("{san}: loses {drop}% win chance.", { san: n.san, drop: n.drop }) : tr("{san}: not it.", { san: n?.san })}
                       </div>
                     )}
                     {practice.status === 'right' && (
                       <div className="gr-practice-msg good">
                         {n.exact
-                          ? <>✓ <b>{n.san}</b>, the best move!</>
-                          : <>✓ <b>{n.san}</b> works too{n.drop > 0 ? ` (only −${n.drop}%)` : ''}. The engine's choice was <b>{m.bestMove}</b>.</>}
+                          ? <>✓ <b>{n.san}</b>{tr(", the best move!")}</>
+                          : <>✓ <b>{n.san}</b> works too{n.drop > 0 ? tr(" (only −{drop}%)", { drop: n.drop }) : ''}. The engine's choice was <b>{m.bestMove}</b>.</>}
                       </div>
                     )}
                     {practice.status === 'shown' && (
-                      <div className="gr-practice-msg">The best move was <b>{n?.san || m.bestMove}</b>.</div>
+                      <div className="gr-practice-msg">{tr("The best move was")} <b>{n?.san || m.bestMove}</b>.</div>
                     )}
 
                     <div className="gr-practice-actions">
                       {practice.status === 'ask' && (<>
                         {!practice.hint && (
-                          <button type="button" className="gr-practice-btn" onClick={() => setPractice(p => ({ ...p, hint: true }))}>💡 Hint</button>
+                          <button type="button" className="gr-practice-btn" onClick={() => setPractice(p => ({ ...p, hint: true }))}>{tr("💡 Hint")}</button>
                         )}
-                        <button type="button" className="gr-practice-btn" onClick={showPracticeSolution}>👁 Show answer</button>
-                        <button type="button" className="gr-practice-btn" onClick={nextPractice}>Skip →</button>
+                        <button type="button" className="gr-practice-btn" onClick={showPracticeSolution}>{tr("👁 Show answer")}</button>
+                        <button type="button" className="gr-practice-btn" onClick={nextPractice}>{tr("Skip →")}</button>
                       </>)}
                       {(practice.status === 'right' || practice.status === 'shown') && (
                         <button type="button" className="gr-practice-btn gr-practice-btn--go" onClick={nextPractice}>
-                          {practice.idx + 1 < practiceList.length ? 'Next mistake →' : 'Finish'}
+                          {practice.idx + 1 < practiceList.length ? tr('Next mistake →') : tr('Finish')}
                         </button>
                       )}
                     </div>
@@ -1174,14 +1175,14 @@ export default function GameReplay({
                 return (
                   <>
                     <div className="gr-practice-msg">
-                      You found <b>{solved}</b> of <b>{practiceList.length}</b> on your own
-                      {vals.length - solved > 0 ? `, ${vals.length - solved} with the answer shown` : ''}
-                      {practiceList.length - vals.length > 0 ? `, ${practiceList.length - vals.length} skipped` : ''}.
+                      {tr("You found")} <b>{solved}</b> {tr("of")} <b>{practiceList.length}</b> {tr("on your own")}
+                      {vals.length - solved > 0 ? tr(", {v0} with the answer shown", { v0: vals.length - solved }) : ''}
+                      {practiceList.length - vals.length > 0 ? tr(", {v0} skipped", { v0: practiceList.length - vals.length }) : ''}.
                       {solved === practiceList.length ? ' 🎉' : ''}
                     </div>
                     <div className="gr-practice-actions">
-                      <button type="button" className="gr-practice-btn" onClick={startPractice}>↻ Try again</button>
-                      <button type="button" className="gr-practice-btn gr-practice-btn--go" onClick={stopPractice}>Done</button>
+                      <button type="button" className="gr-practice-btn" onClick={startPractice}>{tr("↻ Try again")}</button>
+                      <button type="button" className="gr-practice-btn gr-practice-btn--go" onClick={stopPractice}>{tr("Done")}</button>
                     </div>
                   </>
                 );
@@ -1217,7 +1218,7 @@ export default function GameReplay({
               setMoveMenu({ x: e.clientX, y: e.clientY });
             }}
           >
-            <div className="gr-moves-head">Moves</div>
+            <div className="gr-moves-head">{tr("Moves")}</div>
             <div ref={moveListRef} className="gr-move-list-inner">
               <MoveTree
                 root={tree}
@@ -1230,13 +1231,13 @@ export default function GameReplay({
             {/* Controls — attached to the bottom of the moves card; walk the
                 current line (mainline or the variation you're in). */}
             <div className="gr-controls">
-              <button className="gr-ctrl-btn" onClick={goFirst} disabled={path.length <= 0} title="First move">⏮</button>
-              <button className="gr-ctrl-btn" onClick={goPrev} disabled={path.length <= 0} title="Previous (←)">◀</button>
-              <button className="gr-ctrl-btn gr-play-btn" onClick={() => setPlaying(p => !p)} title="Play / pause (Space)">
+              <button className="gr-ctrl-btn" onClick={goFirst} disabled={path.length <= 0} title={tr("First move")}>⏮</button>
+              <button className="gr-ctrl-btn" onClick={goPrev} disabled={path.length <= 0} title={tr("Previous (←)")}>◀</button>
+              <button className="gr-ctrl-btn gr-play-btn" onClick={() => setPlaying(p => !p)} title={tr("Play / pause (Space)")}>
                 {playing ? '⏸' : '▶'}
               </button>
-              <button className="gr-ctrl-btn" onClick={goNext} disabled={atEnd} title="Next (→)">▶</button>
-              <button className="gr-ctrl-btn" onClick={goLast} disabled={atEnd} title="Last move">⏭</button>
+              <button className="gr-ctrl-btn" onClick={goNext} disabled={atEnd} title={tr("Next (→)")}>▶</button>
+              <button className="gr-ctrl-btn" onClick={goLast} disabled={atEnd} title={tr("Last move")}>⏭</button>
             </div>
           </div>
 
@@ -1254,14 +1255,14 @@ export default function GameReplay({
                   className="gr-ctx-item"
                   onClick={() => { clearVariations(); setMoveMenu(null); }}
                 >
-                  🧹 Delete all variations
+                  {tr("🧹 Delete all variations")}
                 </button>
                 {exploring && (
                   <button
                     className="gr-ctx-item"
                     onClick={() => { deleteCurrentVariation(); setMoveMenu(null); }}
                   >
-                    🗑 Delete this line
+                    {tr("🗑 Delete this line")}
                   </button>
                 )}
               </div>
@@ -1275,7 +1276,7 @@ export default function GameReplay({
             {path.length === 0 && (
               <div className="gr-comment-bubble gr-comment-info">
                 <div className="gr-comment-text">
-                  Starting position. Press ▶ or → to step through moves.
+                  {tr("Starting position. Press ▶ or → to step through moves.")}
                 </div>
               </div>
             )}
@@ -1305,12 +1306,12 @@ export default function GameReplay({
                   </div>
                   {currentAnalysis.classification === 'brilliant' && currentAnalysis.winChanceGain > 0 && (
                     <div className="gr-comment-best" style={{ color: 'var(--color-success)' }}>
-                      Win chance gained: <strong>+{currentAnalysis.winChanceGain}%</strong>
+                      {tr("Win chance gained:")} <strong>+{currentAnalysis.winChanceGain}%</strong>
                     </div>
                   )}
                   {currentAnalysis.bestMove && currentAnalysis.classification !== 'good' && currentAnalysis.classification !== 'brilliant' && (
                     <div className="gr-comment-best">
-                      Best move was <strong>{currentAnalysis.bestMove}</strong>
+                      {tr("Best move was")} <strong>{currentAnalysis.bestMove}</strong>
                     </div>
                   )}
                 </div>
@@ -1322,35 +1323,35 @@ export default function GameReplay({
                 (Quick Analyze, or a single game not yet analysed). */}
             {showSummary && (
               <div className="gr-summary">
-                <h4 className="gr-summary-title">Game Summary</h4>
+                <h4 className="gr-summary-title">{tr("Game Summary")}</h4>
                 <div className="gr-summary-stats">
                   {totalBrilliant > 0 && (
                     <div className="gr-summary-stat">
                       <span className="gr-stat-val" style={{ color: 'var(--color-success)' }}>✨ {totalBrilliant}</span>
-                      <span className="gr-stat-lbl">Brilliant</span>
+                      <span className="gr-stat-lbl">{tr("Brilliant")}</span>
                     </div>
                   )}
                   <div className="gr-summary-stat">
                     <span className="gr-stat-val">{accuracy}%</span>
-                    <span className="gr-stat-lbl">Accuracy</span>
+                    <span className="gr-stat-lbl">{tr("Accuracy")}</span>
                   </div>
                   <div className="gr-summary-stat">
                     <span className="gr-stat-val" style={{ color: 'var(--color-danger)' }}>{totalBlunders}</span>
-                    <span className="gr-stat-lbl">Blunders</span>
+                    <span className="gr-stat-lbl">{tr("Blunders")}</span>
                   </div>
                   <div className="gr-summary-stat">
                     <span className="gr-stat-val" style={{ color: 'var(--color-warning)' }}>{totalMistakes}</span>
-                    <span className="gr-stat-lbl">Mistakes</span>
+                    <span className="gr-stat-lbl">{tr("Mistakes")}</span>
                   </div>
                   <div className="gr-summary-stat">
                     <span className="gr-stat-val" style={{ color: 'var(--color-warning)' }}>{totalInaccuracies}</span>
-                    <span className="gr-stat-lbl">Inaccuracies</span>
+                    <span className="gr-stat-lbl">{tr("Inaccuracies")}</span>
                   </div>
                 </div>
 
                 {gameThemes.length > 0 && (
                   <div className="gr-summary-focus">
-                    <div className="gr-focus-title">Tactics to focus on:</div>
+                    <div className="gr-focus-title">{tr("Tactics to focus on:")}</div>
                     {gameThemes.map((t, i) => (
                       <div key={i} className="gr-focus-item">• {t.description}</div>
                     ))}
@@ -1359,10 +1360,10 @@ export default function GameReplay({
 
                 <div className="gr-summary-nav">
                   {gameNumber > 1 && (
-                    <button className="gr-nav-btn" onClick={onPrev}>← Previous Game</button>
+                    <button className="gr-nav-btn" onClick={onPrev}>{tr("← Previous Game")}</button>
                   )}
                   {gameNumber < totalGames && (
-                    <button className="gr-nav-btn gr-nav-next" onClick={onNext}>Next Game →</button>
+                    <button className="gr-nav-btn gr-nav-next" onClick={onNext}>{tr("Next Game →")}</button>
                   )}
                   <button className="gr-nav-btn gr-nav-back" onClick={onClose}>{backLabel || 'Back to Overview'}</button>
                 </div>

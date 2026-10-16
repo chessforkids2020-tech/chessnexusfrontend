@@ -9,12 +9,13 @@
 // the permanent 👑 (see FoundingBadge). PlayerName owns that decision; this
 // component just draws the piece.
 import React from 'react';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function KnightBadge({ size = 14, title = 'Supports ChessNexus' }) {
   return (
     <span
       title={title}
-      aria-label="ChessNexus supporter"
+      aria-label={tr("ChessNexus supporter")}
       style={{
         display: 'inline-flex',
         alignItems: 'center',

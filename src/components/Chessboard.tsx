@@ -117,6 +117,14 @@ interface ChessboardProps {
   arrows?: Array<{ from: string; to: string; color?: string }>;
   /** Square highlights injected by the parent (square → color), e.g. from a synced study. */
   highlightSquares?: Record<string, string>;
+  /** Highlights someone ELSE drew (live classroom: the coach's squares). Shown on
+   *  top of local drawing and never cleared by this viewer's clicks — unlike
+   *  `highlightSquares`, which is copied into local state that a click wipes. */
+  syncedHighlights?: Record<string, string>;
+  /** When this value changes, the user's own arrows/highlights are cleared
+   *  (live classroom passes the FEN, so a new position starts clean for
+   *  everyone — the coach's screen no longer keeps arrows the class lost). */
+  clearDrawingsKey?: string;
   /** Called whenever the user draws/clears arrows or square highlights (for live sync). */
   onDrawingChange?: (drawing: { arrows: Array<{ from: string; to: string; color: string }>; highlights: Record<string, string> }) => void;
   /** Enable premove: player can queue a move while it's opponent's turn */
@@ -236,6 +244,8 @@ const Chessboard: React.FC<ChessboardProps> = ({
   allowMovePiece,
   arrows = [],
   highlightSquares,
+  syncedHighlights,
+  clearDrawingsKey,
   onDrawingChange,
   allowPremove = false,
   playerColor,
@@ -352,11 +362,28 @@ const Chessboard: React.FC<ChessboardProps> = ({
   // classroom can broadcast the coach's drawings to students in real time.
   const onDrawingChangeRef = useRef(onDrawingChange);
   onDrawingChangeRef.current = onDrawingChange;
-  const skipFirstDrawing = useRef(true);
+  // Notify only when the drawing's CONTENT changed. Every plain click resets the
+  // state to a fresh `[]` / `{}`, which is a new reference even when nothing was
+  // drawn — so in the live classroom each click by the board controller
+  // broadcast "no drawings" and wiped the coach's arrows off every student's
+  // board. Comparing content also covers the initial empty mount.
+  const lastDrawingRef = useRef('{"a":[],"h":{}}');
   useEffect(() => {
-    if (skipFirstDrawing.current) { skipFirstDrawing.current = false; return; }
+    const key = JSON.stringify({ a: localArrows, h: highlightedSquares });
+    if (key === lastDrawingRef.current) return;
+    lastDrawingRef.current = key;
     onDrawingChangeRef.current?.({ arrows: localArrows, highlights: highlightedSquares });
   }, [localArrows, highlightedSquares]);
+
+  // New position (per clearDrawingsKey) → drop the user's own drawing.
+  const prevClearKeyRef = useRef(clearDrawingsKey);
+  useEffect(() => {
+    if (prevClearKeyRef.current === clearDrawingsKey) return;
+    prevClearKeyRef.current = clearDrawingsKey;
+    setLocalArrows([]);
+    setPreviewArrow(null);
+    setHighlightedSquares({});
+  }, [clearDrawingsKey]);
 
   // Apply parent-injected highlights (e.g. synced from the coach). Only overwrite
   // when the prop is provided, so local drawing still works when it isn't.
@@ -1416,7 +1443,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
           </div>
         )}
         {/* Right-click highlight — inset ring so the square colour shows through */}
-        {highlightedSquares[squareId] && (
+        {(highlightedSquares[squareId] || syncedHighlights?.[squareId]) && (
           <div
             style={{
               position: 'absolute',
@@ -1424,7 +1451,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
               right: 0,
               bottom: 0,
               left: 0,
-              border: `${Math.max(3, Math.round(squareSize / 13))}px solid ${highlightedSquares[squareId]}`,
+              border: `${Math.max(3, Math.round(squareSize / 13))}px solid ${highlightedSquares[squareId] || syncedHighlights?.[squareId]}`,
               boxSizing: 'border-box',
               borderRadius: '1px',
               pointerEvents: 'none',

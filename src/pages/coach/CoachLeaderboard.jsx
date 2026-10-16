@@ -10,18 +10,19 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import ClassLeaderboard from '../../components/coach/ClassLeaderboard';
 import './CoachDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function CoachLeaderboard() {
   return (
     <div className="coach-dash">
       <div className="coach-dash-header">
         <div>
-          <h1>🏆 Leaderboard</h1>
+          <h1>{tr("🏆 Leaderboard")}</h1>
           <p className="coach-dash-sub">
-            Practice, homework, events and attendance — the same board your students see.
+            {tr("Practice, homework, events and attendance — the same board your students see.")}
           </p>
         </div>
-        <Link to="/coach/dashboard" className="btn-ghost">← Dashboard</Link>
+        <Link to="/coach/dashboard" className="btn-ghost">{tr("← Dashboard")}</Link>
       </div>
 
       <ClassLeaderboard mode="coach" />

@@ -2,6 +2,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../api';
 import Sidebar from '../../components/Sidebar';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function ArenaTournamentCreate() {
   const navigate = useNavigate();
@@ -100,7 +101,7 @@ export default function ArenaTournamentCreate() {
           // their Activities tab automatically (no join code to share).
           navigate(`/coach/arena-tournament/${response.data.tournament._id}`);
         } else {
-          alert(`Tournament created! Join code: ${response.data.tournament.joinCode}`);
+          alert(tr("Tournament created! Join code: {joinCode}", { joinCode: response.data.tournament.joinCode }));
           navigate('/arenatournament');
         }
       }
@@ -158,7 +159,7 @@ export default function ArenaTournamentCreate() {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
           }}>
-            {coachMode ? 'Create Class Tournament' : 'Create Arena Tournament'}
+            {coachMode ? tr('Create Class Tournament') : tr('Create Arena Tournament')}
           </h1>
           <p style={{
             color: 'var(--color-text-muted)',
@@ -186,9 +187,9 @@ export default function ArenaTournamentCreate() {
             }}>
               <span style={{ fontSize: 18, lineHeight: 1 }} aria-hidden="true">🎓</span>
               <div style={{ fontSize: 13, color: 'var(--color-text)', lineHeight: 1.6 }}>
-                <strong>Private to your class.</strong> This tournament will not
+                <strong>{tr("Private to your class.")}</strong> {tr("This tournament will not")}
                 appear in the public tournament list. Your students find it in
-                their <em>My Coach → Activities</em> tab — no join code to share.
+                {tr("their")} <em>{tr("My Coach → Activities")}</em> {tr("tab — no join code to share.")}
               </div>
             </div>
           )}
@@ -218,7 +219,7 @@ export default function ArenaTournamentCreate() {
                 color: 'var(--color-text)',
                 fontSize: '14px'
               }}>
-                Tournament Format *
+                {tr("Tournament Format *")}
               </label>
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 {/* Standard option */}
@@ -235,7 +236,7 @@ export default function ArenaTournamentCreate() {
                   }}
                 >
                   <div style={{ fontSize: '20px', marginBottom: '4px' }}>♟️</div>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-text)' }}>Standard</div>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-text)' }}>{tr("Standard")}</div>
                   <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px' }}>Custom time & duration</div>
                 </div>
                 {/* Marathon option */}
@@ -252,8 +253,8 @@ export default function ArenaTournamentCreate() {
                   }}
                 >
                   <div style={{ fontSize: '20px', marginBottom: '4px' }}>⚡</div>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-text)' }}>Bullet Blitz Marathon</div>
-                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px' }}>2 hrs · 2+1 → 3+2</div>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-text)' }}>{tr("Bullet Blitz Marathon")}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px' }}>{tr("2 hrs · 2+1 → 3+2")}</div>
                 </div>
                 {/* Team Battle option */}
                 <div
@@ -269,8 +270,8 @@ export default function ArenaTournamentCreate() {
                   }}
                 >
                   <div style={{ fontSize: '20px', marginBottom: '4px' }}>⚔️</div>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-text)' }}>Team Battle</div>
-                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px' }}>Teams compete together</div>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-text)' }}>{tr("Team Battle")}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px' }}>{tr("Teams compete together")}</div>
                 </div>
                 {/* Chess960 option */}
                 <div
@@ -286,8 +287,8 @@ export default function ArenaTournamentCreate() {
                   }}
                 >
                   <div style={{ fontSize: '20px', marginBottom: '4px' }}>🎲</div>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-text)' }}>Chess960</div>
-                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px' }}>Random starting positions</div>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-text)' }}>{tr("Chess960")}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px' }}>{tr("Random starting positions")}</div>
                 </div>
               </div>
 
@@ -301,19 +302,19 @@ export default function ArenaTournamentCreate() {
                   border: '1px solid var(--color-warning-a30)'
                 }}>
                   <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-warning)', marginBottom: '8px' }}>
-                    ⚡ Bullet Blitz Marathon — 1h 30min
+                    {tr("⚡ Bullet Blitz Marathon — 1h 30min")}
                   </div>
                   <div style={{ display: 'flex', gap: '16px' }}>
                     <div style={{ fontSize: '12px', color: 'var(--color-text)' }}>
-                      <span style={{ color: 'var(--color-warning)', fontWeight: '600' }}>45 min:</span> Bullet 2+1
+                      <span style={{ color: 'var(--color-warning)', fontWeight: '600' }}>{tr("45 min:")}</span> {tr("Bullet 2+1")}
                     </div>
                     <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>→</div>
                     <div style={{ fontSize: '12px', color: 'var(--color-text)' }}>
-                      <span style={{ color: 'var(--color-accent)', fontWeight: '600' }}>45 min:</span> Blitz 3+2
+                      <span style={{ color: 'var(--color-accent)', fontWeight: '600' }}>{tr("45 min:")}</span> {tr("Blitz 3+2")}
                     </div>
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '8px' }}>
-                    Players finish their current game before the phase switch. No games are dropped.
+                    {tr("Players finish their current game before the phase switch. No games are dropped.")}
                   </div>
                 </div>
               )}
@@ -328,11 +329,11 @@ export default function ArenaTournamentCreate() {
                   border: '1px solid rgba(168,85,247,0.3)'
                 }}>
                   <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-accent-2)', marginBottom: '12px' }}>
-                    ⚔️ Team Battle Settings
+                    {tr("⚔️ Team Battle Settings")}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <label style={{ fontSize: '13px', color: 'var(--color-text)', fontWeight: '600', whiteSpace: 'nowrap' }}>
-                      Number of Teams *
+                      {tr("Number of Teams *")}
                     </label>
                     <select
                       value={teamCount}
@@ -341,7 +342,7 @@ export default function ArenaTournamentCreate() {
                         setTeamCount(n);
                         setTeamNames(prev => {
                           const updated = [...prev];
-                          while (updated.length < n) updated.push(DEFAULT_TEAM_SUGGESTIONS[updated.length] || `Team ${updated.length + 1}`);
+                          while (updated.length < n) updated.push(DEFAULT_TEAM_SUGGESTIONS[updated.length] || tr("Team {v0}", { v0: updated.length + 1 }));
                           return updated.slice(0, n);
                         });
                       }}
@@ -359,18 +360,18 @@ export default function ArenaTournamentCreate() {
                       }}
                     >
                       {[2,3,4,5,6,7,8,9,10].map(n => (
-                        <option key={n} value={n} style={{ background: 'var(--color-surface)' }}>{n} Teams</option>
+                        <option key={n} value={n} style={{ background: 'var(--color-surface)' }}>{n} {tr("Teams")}</option>
                       ))}
                     </select>
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '10px' }}>
-                    👥 Max <strong style={{ color: 'var(--color-accent-2)' }}>30 players</strong> per team &nbsp;·&nbsp; Players pick their team when joining
+                    👥 Max <strong style={{ color: 'var(--color-accent-2)' }}>{tr("30 players")}</strong> per team &nbsp;·&nbsp; Players pick their team when joining
                   </div>
 
                   {/* Team name inputs */}
                   <div style={{ marginTop: '14px' }}>
                     <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-accent-2)', marginBottom: '8px' }}>
-                      ✏️ Name your teams (suggestions pre-filled — change as you like!)
+                      {tr("✏️ Name your teams (suggestions pre-filled — change as you like!)")}
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '8px' }}>
                       {Array.from({ length: teamCount }).map((_, i) => {
@@ -387,7 +388,7 @@ export default function ArenaTournamentCreate() {
                                 setTeamNames(updated);
                               }}
                               maxLength={20}
-                              placeholder={`Team ${i + 1}`}
+                              placeholder={tr("Team {v0}", { v0: i + 1 })}
                               style={{
                                 flex: 1,
                                 padding: '7px 10px',
@@ -420,14 +421,14 @@ export default function ArenaTournamentCreate() {
                   border: '1px solid rgba(34,197,94,0.3)'
                 }}>
                   <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-success)', marginBottom: '6px' }}>
-                    🎲 Chess960 (Fischer Random)
+                    {tr("🎲 Chess960 (Fischer Random)")}
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--color-text)', lineHeight: '1.6' }}>
-                    Each game starts from a <strong style={{ color: 'var(--color-success)' }}>unique random position</strong> chosen from
+                    {tr("Each game starts from a")} <strong style={{ color: 'var(--color-success)' }}>{tr("unique random position")}</strong> {tr("chosen from")}
                     960 possibilities. Opening theory doesn't apply — pure calculation and creativity win!
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '8px' }}>
-                    Custom time control & duration apply as usual.
+                    {tr("Custom time control & duration apply as usual.")}
                   </div>
                 </div>
               )}
@@ -443,7 +444,7 @@ export default function ArenaTournamentCreate() {
                     color: 'var(--color-text)',
                     fontSize: '14px'
                   }}>
-                    Club Visibility
+                    {tr("Club Visibility")}
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--color-text)', fontSize: '14px', marginBottom: '8px' }}>
                     <input
@@ -452,10 +453,10 @@ export default function ArenaTournamentCreate() {
                       onChange={(e) => setLinkToClub(e.target.checked)}
                       style={{ width: '16px', height: '16px', accentColor: 'var(--color-accent)' }}
                     />
-                    Show in this club's Featured Club Events
+                    {tr("Show in this club's Featured Club Events")}
                   </label>
                   <div style={{ color: 'var(--color-text-muted)', fontSize: '12px', marginBottom: '14px' }}>
-                    Turn this off to create a private/outside-club tournament.
+                    {tr("Turn this off to create a private/outside-club tournament.")}
                   </div>
                 </>
               )}
@@ -467,7 +468,7 @@ export default function ArenaTournamentCreate() {
                 color: 'var(--color-text)',
                 fontSize: '14px'
               }}>
-                Tournament Name *
+                {tr("Tournament Name *")}
               </label>
               <input
                 type="text"
@@ -487,7 +488,7 @@ export default function ArenaTournamentCreate() {
                   transition: 'all 0.3s ease',
                   outline: 'none'
                 }}
-                placeholder="My Arena Tournament"
+                placeholder={tr("My Arena Tournament")}
                 onFocus={(e) => {
                   e.target.style.borderColor = 'var(--color-accent)';
                   e.target.style.boxShadow = '0 0 0 3px var(--color-accent-a12)';
@@ -510,7 +511,7 @@ export default function ArenaTournamentCreate() {
                 color: 'var(--color-text)',
                 fontSize: '14px'
               }}>
-                Time Control (Minutes) *
+                {tr("Time Control (Minutes) *")}
               </label>
               <select
                 name="timeControlMinutes"
@@ -542,13 +543,13 @@ export default function ArenaTournamentCreate() {
                   e.target.style.boxShadow = 'none';
                 }}
               >
-                <option value="1" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>1 min</option>
-                <option value="3" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>3 min</option>
-                <option value="5" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>5 min</option>
-                <option value="10" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>10 min</option>
-                <option value="15" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>15 min</option>
-                <option value="20" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>20 min</option>
-                <option value="30" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>30 min</option>
+                <option value="1" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>{tr("1 min")}</option>
+                <option value="3" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>{tr("3 min")}</option>
+                <option value="5" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>{tr("5 min")}</option>
+                <option value="10" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>{tr("10 min")}</option>
+                <option value="15" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>{tr("15 min")}</option>
+                <option value="20" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>{tr("20 min")}</option>
+                <option value="30" style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}>{tr("30 min")}</option>
               </select>
             </div>
 
@@ -560,7 +561,7 @@ export default function ArenaTournamentCreate() {
                 color: 'var(--color-text)',
                 fontSize: '14px'
               }}>
-                Time Control (Seconds)
+                {tr("Time Control (Seconds)")}
               </label>
               <input
                 type="number"
@@ -600,7 +601,7 @@ export default function ArenaTournamentCreate() {
                 color: 'var(--color-text)',
                 fontSize: '14px'
               }}>
-                Tournament Duration
+                {tr("Tournament Duration")}
               </label>
               <div style={{ display: 'flex', gap: '12px' }}>
                 <div style={{ flex: 1 }}>
@@ -611,7 +612,7 @@ export default function ArenaTournamentCreate() {
                     color: 'var(--color-text-muted)',
                     fontWeight: '500'
                   }}>
-                    Hours
+                    {tr("Hours")}
                   </label>
                   <input
                     type="number"
@@ -650,7 +651,7 @@ export default function ArenaTournamentCreate() {
                     color: 'var(--color-text-muted)',
                     fontWeight: '500'
                   }}>
-                    Minutes *
+                    {tr("Minutes *")}
                   </label>
                   <input
                     type="number"
@@ -694,7 +695,7 @@ export default function ArenaTournamentCreate() {
                 color: 'var(--color-text)',
                 fontSize: '14px'
               }}>
-                Scheduled Start Date *
+                {tr("Scheduled Start Date *")}
               </label>
               <input
                 type="date"
@@ -734,7 +735,7 @@ export default function ArenaTournamentCreate() {
                 color: 'var(--color-text)',
                 fontSize: '14px'
               }}>
-                Scheduled Start Time *
+                {tr("Scheduled Start Time *")}
               </label>
               <input
                 type="time"
@@ -770,7 +771,7 @@ export default function ArenaTournamentCreate() {
                 marginTop: '8px',
                 fontWeight: '500'
               }}>
-                Your timezone: {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                {tr("Your timezone:")} {Intl.DateTimeFormat().resolvedOptions().timeZone}
               </small>
             </div>
 
@@ -782,7 +783,7 @@ export default function ArenaTournamentCreate() {
                 color: 'var(--color-text)',
                 fontSize: '14px'
               }}>
-                Description (Optional)
+                {tr("Description (Optional)")}
               </label>
               <textarea
                 name="description"
@@ -802,7 +803,7 @@ export default function ArenaTournamentCreate() {
                   transition: 'all 0.3s ease',
                   outline: 'none'
                 }}
-                placeholder="Describe your tournament..."
+                placeholder={tr("Describe your tournament...")}
                 onFocus={(e) => {
                   e.target.style.borderColor = 'var(--color-accent)';
                   e.target.style.boxShadow = '0 0 0 3px var(--color-accent-a12)';
@@ -845,7 +846,7 @@ export default function ArenaTournamentCreate() {
                   e.target.style.transform = 'translateY(0)';
                 }}
               >
-                Cancel
+                {tr("Cancel")}
               </button>
               <button
                 type="submit"
@@ -883,7 +884,7 @@ export default function ArenaTournamentCreate() {
               >
                 {loading ? (
                   <>
-                    <span style={{ position: 'relative', zIndex: 2 }}>Creating...</span>
+                    <span style={{ position: 'relative', zIndex: 2 }}>{tr("Creating...")}</span>
                     <div style={{
                       position: 'absolute',
                       top: 0,

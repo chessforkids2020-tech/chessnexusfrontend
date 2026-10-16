@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import './Training.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const PUZZLE_MODES = [
   {
@@ -9,8 +10,8 @@ const PUZZLE_MODES = [
     image: '/images/healthymixcard.png',
     badge: 'Recommended',
     badgeStyle: 'badge-recommended',
-    title: 'Healthy Mix',
-    desc: 'A balanced mix of all puzzle types from Lichess.',
+    title: tr('Healthy Mix'),
+    desc: tr('A balanced mix of all puzzle types from Lichess.'),
     tags: ['All Themes', 'All Types'],
     tagIcons: ['🧩', '📊'],
     btnLabel: 'Start Healthy Mix',
@@ -21,8 +22,8 @@ const PUZZLE_MODES = [
     id: 'themes',
     image: '/images/piecescard.png',
     badge: null,
-    title: 'Themes',
-    desc: 'Pick one theme — get puzzles only from it, near your rating.',
+    title: tr('Themes'),
+    desc: tr('Pick one theme — get puzzles only from it, near your rating.'),
     tags: ['Mate in 1', 'Forks', 'Pins', '...'],
     tagIcons: [],
     btnLabel: 'Choose Theme',
@@ -33,8 +34,8 @@ const PUZZLE_MODES = [
     id: 'pieces',
     image: '/images/themecard.png',
     badge: null,
-    title: 'Pieces',
-    desc: 'Pick how many pieces are on the board — fewer = simpler positions.',
+    title: tr('Pieces'),
+    desc: tr('Pick how many pieces are on the board — fewer = simpler positions.'),
     tags: ['4', '8', '16', '24', '32'],
     tagIcons: [],
     btnLabel: 'Select Pieces',
@@ -45,8 +46,8 @@ const PUZZLE_MODES = [
     id: 'rating',
     image: '/images/ratingcard.png',
     badge: null,
-    title: 'Rating',
-    desc: 'Practice puzzles based on your desired rating range.',
+    title: tr('Rating'),
+    desc: tr('Practice puzzles based on your desired rating range.'),
     tags: ['< 1200', '1200–1600', '1600–2000', '2000+'],
     tagIcons: [],
     btnLabel: 'Choose Rating',
@@ -87,11 +88,11 @@ export default function Training() {
   };
 
   const STAT_CARDS = stats ? [
-    { icon: '🏆', value: stats.rating,        label: 'Puzzle Rating',  cls: 'st-gold'   },
-    { icon: '🧩', value: stats.solved,        label: 'Solved',         cls: 'st-green'  },
-    { icon: '❌', value: stats.failed,        label: 'Failed',         cls: 'st-red'    },
-    { icon: '🎯', value: `${stats.accuracy}%`, label: 'Accuracy',       cls: 'st-blue'   },
-    { icon: '🔥', value: stats.streak,        label: 'Current Streak', cls: 'st-purple' },
+    { icon: '🏆', value: stats.rating,        label: tr('Puzzle Rating'),  cls: 'st-gold'   },
+    { icon: '🧩', value: stats.solved,        label: tr('Solved'),         cls: 'st-green'  },
+    { icon: '❌', value: stats.failed,        label: tr('Failed'),         cls: 'st-red'    },
+    { icon: '🎯', value: `${stats.accuracy}%`, label: tr('Accuracy'),       cls: 'st-blue'   },
+    { icon: '🔥', value: stats.streak,        label: tr('Current Streak'), cls: 'st-purple' },
   ] : [];
 
   return (
@@ -100,8 +101,8 @@ export default function Training() {
       {/* ── Header ── */}
       <div className="pz-header">
         <div className="pz-header-left">
-          <h1 className="pz-title">Train with Puzzles <span className="pz-puzzle-emoji">🧩</span></h1>
-          <p className="pz-subtitle">Choose a mode to practice and improve your chess.</p>
+          <h1 className="pz-title">{tr("Train with Puzzles")} <span className="pz-puzzle-emoji">🧩</span></h1>
+          <p className="pz-subtitle">{tr("Choose a mode to practice and improve your chess.")}</p>
         </div>
 
         {/* Two compact cards, top-right.
@@ -112,17 +113,17 @@ export default function Training() {
         <Link to="/puzzles" className="pz-moments-card pz-daily-card">
           <span className="pz-moments-icon">🧩</span>
           <span className="pz-moments-text">
-            <span className="pz-moments-title">Daily Puzzles</span>
-            <span className="pz-moments-sub">New five every day</span>
+            <span className="pz-moments-title">{tr("Daily Puzzles")}</span>
+            <span className="pz-moments-sub">{tr("New five every day")}</span>
           </span>
         </Link>
 
         <Link to="/training/my-moments" className="pz-moments-card">
           <span className="pz-moments-icon">🎯</span>
           <span className="pz-moments-text">
-            <span className="pz-moments-title">My Moments</span>
+            <span className="pz-moments-title">{tr("My Moments")}</span>
             <span className="pz-moments-sub">
-              {momentsCount > 0 ? `${momentsCount} to practise` : 'Mistakes from your games'}
+              {momentsCount > 0 ? tr("{momentsCount} to practise", { momentsCount: momentsCount }) : 'Mistakes from your games'}
             </span>
           </span>
           {momentsCount > 0 && <span className="pz-moments-badge">{momentsCount}</span>}
@@ -175,8 +176,8 @@ export default function Training() {
         <div className="pz-stats-section">
           <div className="pz-stats-header">
             <span className="pz-stats-icon">📊</span>
-            <span className="pz-stats-title">Your Puzzle Stats</span>
-            <span className="pz-stats-period">Last 7 days</span>
+            <span className="pz-stats-title">{tr("Your Puzzle Stats")}</span>
+            <span className="pz-stats-period">{tr("Last 7 days")}</span>
           </div>
           <div className="pz-stats-grid">
             {STAT_CARDS.map(s => (
@@ -196,20 +197,20 @@ export default function Training() {
           <div className="pz-modal" onClick={(e) => e.stopPropagation()}>
             <div className="pz-modal-header">
               <div>
-                <h3 className="pz-modal-title">Choose a Rating Range</h3>
-                <p className="pz-modal-sub">You'll only get puzzles from the range you pick.</p>
+                <h3 className="pz-modal-title">{tr("Choose a Rating Range")}</h3>
+                <p className="pz-modal-sub">{tr("You'll only get puzzles from the range you pick.")}</p>
               </div>
               <button className="pz-modal-close" onClick={() => setShowRatingModal(false)}>×</button>
             </div>
 
             {ratingBands.length === 0 ? (
-              <div className="pz-modal-loading">Loading ranges…</div>
+              <div className="pz-modal-loading">{tr("Loading ranges…")}</div>
             ) : (
               <div className="pz-band-grid">
                 {ratingBands.map(b => (
                   <button key={b.min} className="pz-band" onClick={() => chooseBand(b)}>
                     <span className="pz-band-range">{b.min}–{b.max}</span>
-                    <span className="pz-band-count">{b.count.toLocaleString()} puzzles</span>
+                    <span className="pz-band-count">{b.count.toLocaleString()} {tr("puzzles")}</span>
                   </button>
                 ))}
               </div>

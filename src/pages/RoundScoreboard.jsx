@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from '../api';
 import { useAuth } from "../contexts/AuthContext";
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function RoundScoreboard() {
   const { roundNumber } = useParams();
@@ -23,7 +24,7 @@ export default function RoundScoreboard() {
       const res = await api.get(`/api/public/rounds/points/${roundNumber}`);
       setUsers(res.data || []);
     } catch (err) {
-      alert('Failed to load round scores');
+      alert(tr('Failed to load round scores'));
     } finally {
       setLoading(false);
     }
@@ -47,9 +48,9 @@ export default function RoundScoreboard() {
 
       await fetchRoundScores();
       setEditingUser(null);
-      alert('Points updated successfully!');
+      alert(tr('Points updated successfully!'));
     } catch (err) {
-      alert('Failed to update points');
+      alert(tr('Failed to update points'));
     }
   };
 
@@ -274,7 +275,7 @@ export default function RoundScoreboard() {
         <div style={styles.background}></div>
         <div style={styles.container}>
           <div style={styles.loadingContainer}>
-            Loading Round {roundNumber} scores...
+            {tr("Loading Round")} {roundNumber} {tr("scores...")}
           </div>
         </div>
       </div>
@@ -298,10 +299,10 @@ export default function RoundScoreboard() {
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
-          ← Back to Rounds
+          {tr("← Back to Rounds")}
         </button>
         <div style={styles.headerContent}>
-          <h3 style={styles.title}>Round {roundNumber} Scoreboard</h3>
+          <h3 style={styles.title}>{tr("Round")} {roundNumber} {tr("Scoreboard")}</h3>
           <p style={styles.subtitle}>
             {isAdmin
               ? "Manage points for players in this round."
@@ -313,7 +314,7 @@ export default function RoundScoreboard() {
 
       {users.length === 0 ? (
         <div style={styles.emptyState}>
-          No users found.
+          {tr("No users found.")}
         </div>
       ) : (
         <div style={styles.tableWrapper}>
@@ -321,10 +322,10 @@ export default function RoundScoreboard() {
             <thead style={styles.thead}>
               <tr>
                 <th style={styles.th}>#</th>
-                <th style={styles.th}>Player</th>
-                <th style={styles.th}>Country</th>
-                <th style={styles.th}>Points</th>
-                {isAdmin && <th style={styles.th}>Actions</th>}
+                <th style={styles.th}>{tr("Player")}</th>
+                <th style={styles.th}>{tr("Country")}</th>
+                <th style={styles.th}>{tr("Points")}</th>
+                {isAdmin && <th style={styles.th}>{tr("Actions")}</th>}
               </tr>
             </thead>
             <tbody>
@@ -379,7 +380,7 @@ export default function RoundScoreboard() {
                               e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-a30)';
                             }}
                           >
-                            Save
+                            {tr("Save")}
                           </button>
                           <button 
                             onClick={cancelEditing} 
@@ -391,7 +392,7 @@ export default function RoundScoreboard() {
                               e.currentTarget.style.borderColor = 'var(--color-white-a10)';
                             }}
                           >
-                            Cancel
+                            {tr("Cancel")}
                           </button>
                         </div>
                       ) : (
@@ -405,7 +406,7 @@ export default function RoundScoreboard() {
                             e.currentTarget.style.background = 'var(--color-accent-a15)';
                           }}
                         >
-                          Edit
+                          {tr("Edit")}
                         </button>
                       )}
                     </td>
@@ -418,20 +419,20 @@ export default function RoundScoreboard() {
       )}
 
       <div style={styles.infoBox}>
-        <h4 style={styles.infoTitle}>Round {roundNumber} Instructions</h4>
+        <h4 style={styles.infoTitle}>{tr("Round")} {roundNumber} {tr("Instructions")}</h4>
         <ul style={styles.infoList}>
           {isAdmin ? (
             <>
-              <li>Click Edit next to any player to change their points for this round</li>
-              <li>Use the input field to set new points (must be 0 or greater)</li>
-              <li>Press Enter to save or Escape to cancel</li>
-              <li>Points are specific to Round {roundNumber} only</li>
+              <li>{tr("Click Edit next to any player to change their points for this round")}</li>
+              <li>{tr("Use the input field to set new points (must be 0 or greater)")}</li>
+              <li>{tr("Press Enter to save or Escape to cancel")}</li>
+              <li>{tr("Points are specific to Round")} {roundNumber} {tr("only")}</li>
             </>
           ) : (
             <>
-              <li>This shows your points for Round {roundNumber}</li>
-              <li>Points are awarded by administrators</li>
-              <li>Check back later for updates</li>
+              <li>{tr("This shows your points for Round")} {roundNumber}</li>
+              <li>{tr("Points are awarded by administrators")}</li>
+              <li>{tr("Check back later for updates")}</li>
             </>
           )}
         </ul>

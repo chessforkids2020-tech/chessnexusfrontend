@@ -9,6 +9,7 @@ import api from '../../api';
 import socket from '../../socket';
 import RoomCodeBadge, { joinLinkForCode } from '../../components/RoomCodeBadge';
 import './CoachDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Works BOTH as a route (/coach/arena/:roomId) and EMBEDDED inside the live class
 // stage: pass `roomId` + `embedded` + `onBack` as props and it renders inline with a
@@ -36,7 +37,7 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
     if (!sessionId || !code) return;
     socket.emit('liveclass:chat', {
       sessionId,
-      message: `🏁 Join the race: ${joinLinkForCode(code)}`,
+      message: tr("🏁 Join the race: {v0}", { v0: joinLinkForCode(code) }),
     });
     setSentToClass(true);
     setTimeout(() => setSentToClass(false), 2500);
@@ -146,13 +147,13 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
     }
   };
 
-  if (loading) return <div className="coach-loading">Loading live race…</div>;
+  if (loading) return <div className="coach-loading">{tr("Loading live race…")}</div>;
   if (error) return (
     <div className="coach-dash">
       <div className="coach-error">⚠️ {error}</div>
       {embedded
-        ? <button className="btn-ghost" onClick={onBack}>← Back to activities</button>
-        : <Link to="/coach/activities" className="btn-ghost">← Back to activities</Link>}
+        ? <button className="btn-ghost" onClick={onBack}>{tr("← Back to activities")}</button>
+        : <Link to="/coach/activities" className="btn-ghost">{tr("← Back to activities")}</Link>}
     </div>
   );
 
@@ -160,7 +161,7 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
   const isWaiting = data?.status === 'waiting';
   const isActive = data?.status === 'active';
   const isDone = data?.status === 'completed';
-  const statusLabel = isDone ? '✅ Completed' : isActive ? '🔴 Live' : '⏳ Waiting';
+  const statusLabel = isDone ? tr('✅ Completed') : isActive ? tr('🔴 Live') : tr('⏳ Waiting');
 
   // Pre-start countdown (auto mode): seconds until plannedStartTime.
   const plannedMs = data?.plannedStartTime ? new Date(data.plannedStartTime).getTime() : null;
@@ -177,7 +178,7 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
     <div className="coach-dash">
       <div className="coach-dash-header">
         <div>
-          <h1>🏁 {data?.name || 'Class Race'}</h1>
+          <h1>🏁 {data?.name || tr('Class Race')}</h1>
           <p className="coach-dash-sub">
             {data?.topic} · {statusLabel}
             {isActive && <> · <strong style={{ color: timeLeft != null && timeLeft < 60 ? '#f87171' : '#6ee7b7' }}>⏱ Ends in {fmtTime(timeLeft)}</strong></>}
@@ -197,7 +198,7 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
               {sessionId && (
                 <button
                   onClick={sendLinkToClass}
-                  title="Post the join link into class chat for every student"
+                  title={tr("Post the join link into class chat for every student")}
                   style={{
                     padding: '6px 14px', borderRadius: 'var(--radius-md)', fontSize: 12.5, fontWeight: 700,
                     cursor: 'pointer', whiteSpace: 'nowrap',
@@ -206,17 +207,17 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
                     color: sentToClass ? '#6ee7b7' : '#67e8f9',
                   }}
                 >
-                  {sentToClass ? '✓ Sent to class' : '💬 Send link to class'}
+                  {sentToClass ? tr('✓ Sent to class') : tr('💬 Send link to class')}
                 </button>
               )}
             </div>
           )}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn-ghost" onClick={load}>↻ Refresh</button>
+          <button className="btn-ghost" onClick={load}>{tr("↻ Refresh")}</button>
           {embedded
-            ? <button className="btn-ghost" onClick={onBack}>← Activities</button>
-            : <Link to="/coach/activities" className="btn-ghost">← Activities</Link>}
+            ? <button className="btn-ghost" onClick={onBack}>{tr("← Activities")}</button>
+            : <Link to="/coach/activities" className="btn-ghost">{tr("← Activities")}</Link>}
         </div>
       </div>
 
@@ -226,17 +227,17 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
           {isManual ? (
             <>
               <div>
-                <strong>Ready when you are.</strong> {lb.length} student{lb.length === 1 ? '' : 's'} joined — press start to begin the race for everyone.
+                <strong>{tr("Ready when you are.")}</strong> {lb.length} {tr("student")}{lb.length === 1 ? '' : 's'} {tr("joined — press start to begin the race for everyone.")}
               </div>
               <button className="btn-primary" onClick={startRace} disabled={starting}>
-                {starting ? 'Starting…' : '🏁 Start race now'}
+                {starting ? tr('Starting…') : tr('🏁 Start race now')}
               </button>
             </>
           ) : (
             <div>
-              <strong>Auto start.</strong>{' '}
+              <strong>{tr("Auto start.")}</strong>{' '}
               {startsInSec != null && startsInSec > 0
-                ? <>This race starts automatically in <strong style={{ color: '#fcd34d' }}>{fmtDur(startsInSec)}</strong>. {lb.length} joined.</>
+                ? <>{tr("This race starts automatically in")} <strong style={{ color: '#fcd34d' }}>{fmtDur(startsInSec)}</strong>. {lb.length} joined.</>
                 : <>Starting now… {lb.length} joined.</>}
             </div>
           )}
@@ -245,7 +246,7 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
       {startErr && <div className="coach-error" style={{ marginBottom: 16 }}>⚠️ {startErr}</div>}
 
       <div className="coach-section">
-        <div className="coach-section-head"><h2>Live leaderboard</h2></div>
+        <div className="coach-section-head"><h2>{tr("Live leaderboard")}</h2></div>
         {lb.length === 0 ? (
           <div className="coach-empty">
             No students have joined yet. This race appears automatically in their Activities tab —
@@ -257,12 +258,12 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
               <thead>
                 <tr>
                   <th className="cst-player">#</th>
-                  <th className="cst-player">Student</th>
-                  <th className="cst-num">Score</th>
-                  <th className="cst-num">Solved</th>
+                  <th className="cst-player">{tr("Student")}</th>
+                  <th className="cst-num">{tr("Score")}</th>
+                  <th className="cst-num">{tr("Solved")}</th>
                   <th className="cst-num">✓</th>
                   <th className="cst-num">✗</th>
-                  <th className="cst-num">Status</th>
+                  <th className="cst-num">{tr("Status")}</th>
                 </tr>
               </thead>
               <tbody>

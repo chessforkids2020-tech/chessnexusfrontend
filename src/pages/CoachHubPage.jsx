@@ -28,6 +28,7 @@ import { CoachCard } from './CoachesDirectoryPage';
 import './CoachesDirectoryPage.css';
 import { useAuth } from '../contexts/AuthContext';
 import './CoachHubPage.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // The coach-facing marketing pages, in the order they are shown. Pulled FROM the
 // FeatureLinkGrid registry rather than retyped, so an icon or title change there
@@ -125,22 +126,22 @@ export default function CoachHubPage() {
       <section className={offerOpen ? 'chub-hero' : 'chub-hero chub-hero-plain'}>
         {offerOpen && (
           <span className="chub-badge">
-            🏆 Founding coaches · first {spots?.total ?? 50} only
+            {tr("🏆 Founding coaches · first")} {spots?.total ?? 50} {tr("only")}
           </span>
         )}
         <h1 className="chub-title">
           {offerOpen
-            ? <>Be one of the first <em>{spots?.total ?? 50} coaches</em> on Chess Nexus</>
-            : <>Run your coaching on <em>Chess Nexus</em></>}
+            ? <>{tr("Be one of the first")} <em>{spots?.total ?? 50} coaches</em> {tr("on Chess Nexus")}</>
+            : <>{tr("Run your coaching on")} <em>{tr("Chess Nexus")}</em></>}
         </h1>
         <p className="chub-lead">
           {offerOpen
             ? <>We are opening Chess Nexus to its founding coaches. The first {spots?.total ?? 50} get
-                the <strong>Pro plan free for a whole year</strong> — the complete
-                coaching workspace, with nothing to pay and no card required.</>
+                {tr("the")} <strong>{tr("Pro plan free for a whole year")}</strong> {tr("— the complete")}
+                {tr("coaching workspace, with nothing to pay and no card required.")}</>
             : <>The complete coaching workspace: a live classroom, courses,
                 assignments, attendance and parent reports — free for up to 30
-                students, with no card required.</>}
+                {tr("students, with no card required.")}</>}
         </p>
 
         {/* The feature list belongs to the FOUNDING OFFER — it describes what the
@@ -151,15 +152,15 @@ export default function CoachHubPage() {
             state gets a single compact line instead. */}
         {offerOpen ? (
           <ul className="chub-gets">
-            <li><span aria-hidden="true">👥</span> Up to <strong>70 students</strong></li>
-            <li><span aria-hidden="true">🔴</span> <strong>Unlimited live classes</strong> — unlimited students in the room</li>
-            <li><span aria-hidden="true">⏱️</span> Classes up to 120 minutes, or with <strong>no time limit</strong></li>
-            <li><span aria-hidden="true">📚</span> Courses, assignments, attendance, parent reports</li>
+            <li><span aria-hidden="true">👥</span> {tr("Up to")} <strong>{tr("70 students")}</strong></li>
+            <li><span aria-hidden="true">🔴</span> <strong>{tr("Unlimited live classes")}</strong> {tr("— unlimited students in the room")}</li>
+            <li><span aria-hidden="true">⏱️</span> {tr("Classes up to 120 minutes, or with")} <strong>{tr("no time limit")}</strong></li>
+            <li><span aria-hidden="true">📚</span> {tr("Courses, assignments, attendance, parent reports")}</li>
             <li><span aria-hidden="true">⭐</span> Unlimited Team Race &amp; Monthly Focus</li>
           </ul>
         ) : (
           <p className="chub-gets-line">
-            Live classroom · courses · assignments · attendance · parent reports
+            {tr("Live classroom · courses · assignments · attendance · parent reports")}
           </p>
         )}
 
@@ -168,14 +169,14 @@ export default function CoachHubPage() {
         {spots && offerOpen && (
           <div className="chub-spots">
             <div className="chub-spots-n">
-              <strong>{spots.remaining}</strong> of {spots.total} spots left
+              <strong>{spots.remaining}</strong> {tr("of")} {spots.total} {tr("spots left")}
             </div>
             <div className="chub-spots-bar" role="img"
-                 aria-label={`${spots.claimed} of ${spots.total} founding coach spots claimed`}>
+                 aria-label={tr("{claimed} of {total} founding coach spots claimed", { claimed: spots.claimed, total: spots.total })}>
               <span style={{ width: `${pct}%` }} />
             </div>
             {spots.remaining <= 10 && spots.remaining > 0 && (
-              <div className="chub-spots-warn">Almost gone — {spots.remaining} left</div>
+              <div className="chub-spots-warn">{tr("Almost gone —")} {spots.remaining} {tr("left")}</div>
             )}
           </div>
         )}
@@ -184,7 +185,7 @@ export default function CoachHubPage() {
             is a free account buries the actual offer, and pricing already has its
             own page for anyone who wants it. */}
         {offerOpen && (
-          <div className="chub-worth">Worth <strong>$228</strong> over the year · yours free</div>
+          <div className="chub-worth">{tr("Worth")} <strong>$228</strong> {tr("over the year · yours free")}</div>
         )}
 
         <Link to={claimTo} className="chub-cta">{claimLabel}</Link>
@@ -192,7 +193,7 @@ export default function CoachHubPage() {
             carries the live counter but is thin on detail. */}
         {offerOpen && (
           <div className="chub-details">
-            <Link to="/founding-chess-coaches">What the founding year includes →</Link>
+            <Link to="/founding-chess-coaches">{tr("What the founding year includes →")}</Link>
           </div>
         )}
         {/* Fine print follows the offer state too: the founding-year wording
@@ -219,8 +220,8 @@ export default function CoachHubPage() {
       {coaches.length > 0 && (
         <section className="chub-coaches">
           <div className="chub-coaches-head">
-            <h2 className="chub-more-title">Coaches on Chess Nexus</h2>
-            <Link to="/coaches" className="chub-browse">Browse all coaches →</Link>
+            <h2 className="chub-more-title">{tr("Coaches on Chess Nexus")}</h2>
+            <Link to="/coaches" className="chub-browse">{tr("Browse all coaches →")}</Link>
           </div>
           <div className="cd-grid">
             {coaches.map(c => <CoachCard key={c.code} c={c} />)}
@@ -230,7 +231,7 @@ export default function CoachHubPage() {
 
       {/* ── DEEP LINKS ───────────────────────────────────────────────── */}
       <section className="chub-more">
-        <h2 className="chub-more-title">Want more detail on any of it?</h2>
+        <h2 className="chub-more-title">{tr("Want more detail on any of it?")}</h2>
         <div className="chub-links">
           {COACH_LINKS.map(f => (
             <Link key={f.slug} to={f.slug} className="chub-link">

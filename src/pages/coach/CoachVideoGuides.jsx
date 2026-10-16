@@ -6,6 +6,7 @@ import {
   youtubeSubscribeUrl as subscribeUrl,
 } from '../../data/coachVideoGuides';
 import './CoachVideoGuides.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // pages/coach/CoachVideoGuides.jsx
 //
@@ -31,19 +32,19 @@ export default function CoachVideoGuides() {
     <div className="cvg-page">
       <div className="cvg-head">
         <div>
-          <h1>🎬 Video guides</h1>
+          <h1>{tr("🎬 Video guides")}</h1>
           <p className="cvg-sub">
             Short walkthroughs of how Chess Nexus works, played right here — no need
             to leave the app.
           </p>
         </div>
-        <Link to="/coach/dashboard" className="btn-ghost">← Dashboard</Link>
+        <Link to="/coach/dashboard" className="btn-ghost">{tr("← Dashboard")}</Link>
       </div>
 
       {!anyReady && (
         <div className="cvg-empty">
           🎬 The walkthrough videos are being added. Check back shortly — in the
-          meantime the <Link to="/help">Help Center</Link> answers most questions
+          {tr("meantime the")} <Link to="/help">{tr("Help Center")}</Link> {tr("answers most questions")}
           in writing.
         </div>
       )}
@@ -70,7 +71,7 @@ export default function CoachVideoGuides() {
                   </span>
                 </span>
                 <span className="cvg-action" aria-hidden="true">
-                  {!ready ? 'Coming soon' : isOpen ? '▲' : '▶ Watch'}
+                  {!ready ? tr('Coming soon') : isOpen ? '▲' : tr('▶ Watch')}
                 </span>
               </button>
 
@@ -94,8 +95,8 @@ export default function CoachVideoGuides() {
       {subscribeUrl() && (
         <div className="cvg-subscribe">
           <div className="cvg-sub-text">
-            <strong>More walkthroughs on YouTube</strong>
-            <span>New guides land there first — subscribe and you will not miss them.</span>
+            <strong>{tr("More walkthroughs on YouTube")}</strong>
+            <span>{tr("New guides land there first — subscribe and you will not miss them.")}</span>
           </div>
           <a
             className="cvg-sub-btn"
@@ -103,14 +104,14 @@ export default function CoachVideoGuides() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            ▶ Subscribe
+            {tr("▶ Subscribe")}
           </a>
         </div>
       )}
 
       <p className="cvg-foot">
-        Still stuck after watching? Ask in <Link to="/help">the Help Center</Link>,
-        or message the Nexus team in <Link to="/chat">your chat</Link> — we answer
+        Still stuck after watching? Ask in <Link to="/help">{tr("the Help Center")}</Link>,
+        {tr("or message the Nexus team in")} <Link to="/chat">{tr("your chat")}</Link> {tr("— we answer")}
         there.
       </p>
     </div>

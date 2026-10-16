@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { t as tr } from '../../i18n/LanguageContext';
 
 /**
  * Single source of truth for the public SEO feature pages.
@@ -13,7 +14,7 @@ export const FEATURES = [
     slug: "/chess-puzzles",
     appPath: "/puzzles-hub",
     icon: "🧩",
-    title: "Chess Puzzles",
+    title: tr("Chess Puzzles"),
     blurb:
       "Daily puzzles from super-grandmaster games, the Monthly Focus challenge, TTT and Bingo. A free, fun way to train tactics.",
   },
@@ -21,7 +22,7 @@ export const FEATURES = [
     slug: "/chess-tactics-race",
     appPath: "/arena-race",
     icon: "🏁",
-    title: "Puzzle Race",
+    title: tr("Puzzle Race"),
     blurb:
       "Solve as many tactics as you can against the clock. Timed puzzle races by theme, with live leaderboards.",
   },
@@ -29,7 +30,7 @@ export const FEATURES = [
     slug: "/play-chess-online",
     appPath: "/games",
     icon: "♟️",
-    title: "Play Chess Online",
+    title: tr("Play Chess Online"),
     blurb:
       "Play live games against other members or challenge the Stockfish engine — all free, no ads.",
   },
@@ -37,7 +38,7 @@ export const FEATURES = [
     slug: "/play-chess-with-friends",
     appPath: "/friend/new",
     icon: "🤝",
-    title: "Play With Friends",
+    title: tr("Play With Friends"),
     blurb:
       "Create a private room, share a link and play 2-player chess with a friend in real time — free, no ads.",
   },
@@ -45,7 +46,7 @@ export const FEATURES = [
     slug: "/masters-chess-games",
     appPath: "/master-games",
     icon: "👑",
-    title: "Masters Games",
+    title: tr("Masters Games"),
     blurb:
       "Play through famous grandmaster and World Champion games move by move, and guess the master's move — free.",
   },
@@ -53,7 +54,7 @@ export const FEATURES = [
     slug: "/analyse-my-chess-game",
     appPath: "/game-analysis",
     icon: "🔬",
-    title: "Analyse My Game",
+    title: tr("Analyse My Game"),
     blurb:
       "Get a move-by-move review with a CAPS accuracy score, blunder detection, piece heatmaps and session badges.",
   },
@@ -61,7 +62,7 @@ export const FEATURES = [
     slug: "/improve-at-chess",
     appPath: "/dashboard",
     icon: "🧭",
-    title: "Improve at Chess",
+    title: tr("Improve at Chess"),
     blurb:
       "Your Nexus Guide studies your own games, finds your weaknesses, replays your mistakes and drills the tactics you keep missing — free.",
   },
@@ -69,7 +70,7 @@ export const FEATURES = [
     slug: "/chess-practice-streak",
     appPath: "/dashboard",
     icon: "🔥",
-    title: "Practice Streak & Weekly Report",
+    title: tr("Practice Streak & Weekly Report"),
     blurb:
       "Practise five days running and unlock a report on every game you played — accuracy by phase, how you defend, the endgames you reached, and a study plan from your own mistakes.",
   },
@@ -77,7 +78,7 @@ export const FEATURES = [
     slug: "/chess-coaching",
     appPath: "/coach/onboarding",
     icon: "🎓",
-    title: "Chess Coaching Platform",
+    title: tr("Chess Coaching Platform"),
     blurb:
       "A free toolkit for chess coaches and academies — student roster & batches, assignments, course builder, private class races and parent reports.",
   },
@@ -85,7 +86,7 @@ export const FEATURES = [
     slug: "/free-chess-coaching-software",
     appPath: "/coach/onboarding",
     icon: "🆓",
-    title: "Free Coach Plan",
+    title: tr("Free Coach Plan"),
     blurb:
       "Free forever for up to 30 students — no trial, no card. Exactly what is included, and exactly where the limits are.",
   },
@@ -93,7 +94,7 @@ export const FEATURES = [
     slug: "/founding-chess-coaches",
     appPath: "/coach-hub",
     icon: "🏆",
-    title: "Founding Coaches",
+    title: tr("Founding Coaches"),
     blurb:
       "The first 50 coaches get the Pro plan free for a full year — unlimited live classes, 70 students, no card. Worth $228.",
   },
@@ -101,7 +102,7 @@ export const FEATURES = [
     slug: "/chess-academy-software",
     appPath: "/coach/onboarding",
     icon: "🏫",
-    title: "Chess Academy Software",
+    title: tr("Chess Academy Software"),
     blurb:
       "Run a multi-coach academy from one place — invite your coaches, pay for everyone centrally, and oversee every coach, student and class while still coaching your own.",
   },
@@ -109,7 +110,7 @@ export const FEATURES = [
     slug: "/live-chess-classroom",
     appPath: "/coach/onboarding",
     icon: "🎥",
-    title: "Live Chess Classroom",
+    title: tr("Live Chess Classroom"),
     blurb:
       "Teach chess live without Zoom — HD video, screen share and one shared board every student sees, with attendance marked automatically.",
   },
@@ -117,7 +118,7 @@ export const FEATURES = [
     slug: "/chess-endgame-training",
     appPath: "/study/endgames",
     icon: "♔",
-    title: "Endgame Training",
+    title: tr("Endgame Training"),
     blurb:
       "Endgames pulled from real master games, grouped by type — then play them out against Stockfish until you can actually convert them.",
   },
@@ -125,7 +126,7 @@ export const FEATURES = [
     slug: "/chess-opening-repertoire",
     appPath: "/masters-chess-games",
     icon: "📖",
-    title: "Opening Repertoire",
+    title: tr("Opening Repertoire"),
     blurb:
       "Build your repertoire on the board, drill it with spaced repetition, and find the exact move where you left your prep in real games.",
   },
@@ -133,7 +134,7 @@ export const FEATURES = [
     slug: "/chess-courses",
     appPath: "/coach/onboarding",
     icon: "📚",
-    title: "Chess Course Builder",
+    title: tr("Chess Course Builder"),
     blurb:
       "Build an ordered syllabus from your studies, built-in studies, videos, master games and endgames — enrolled to a whole batch.",
   },
@@ -141,7 +142,7 @@ export const FEATURES = [
     slug: "/chess-progress-reports",
     appPath: "/coach/onboarding",
     icon: "📊",
-    title: "Progress Reports",
+    title: tr("Progress Reports"),
     blurb:
       "One shareable link per student — rating, puzzles, assignments, attendance and recent games. Parents need no account.",
   },
@@ -149,7 +150,7 @@ export const FEATURES = [
     slug: "/chess-coach-guide",
     appPath: "/coach/onboarding",
     icon: "📖",
-    title: "Complete Coach Guide",
+    title: tr("Complete Coach Guide"),
     blurb:
       "How everything works, step by step — onboarding, students, batches, assignments, courses, schedule, attendance, parent reports and the built-in live classroom.",
   },
@@ -157,7 +158,7 @@ export const FEATURES = [
     slug: "/chess-coach-referral",
     appPath: "/coach/profile",
     icon: "💰",
-    title: "Coach Referral Program",
+    title: tr("Coach Referral Program"),
     blurb:
       "Refer another coach and earn 25% of their first subscription as wallet credit toward your own plan — in your own currency, with no limit on referrals.",
   },
@@ -165,7 +166,7 @@ export const FEATURES = [
     slug: "/chess-coaching-questions",
     appPath: "/coach/onboarding",
     icon: "❓",
-    title: "Coaching Questions Answered",
+    title: tr("Coaching Questions Answered"),
     blurb:
       "Straight answers for coaches — managing students, running online classes, organizing batches, homework, tracking progress and starting an academy.",
   },
@@ -173,7 +174,7 @@ export const FEATURES = [
     slug: "/3d-chess-arena-tournament",
     appPath: "/3d-chess-arena-tournament",
     icon: "🏟️",
-    title: "3D Chess Arena",
+    title: tr("3D Chess Arena"),
     blurb:
       "Enter an immersive 3D world as an avatar — play real-time tournaments at the table and solve tactics in a 5-stage Puzzle Hall with live leaderboards and chat.",
   },
@@ -181,7 +182,7 @@ export const FEATURES = [
     slug: "/chess-study",
     appPath: "/study",
     icon: "📚",
-    title: "Chess Study",
+    title: tr("Chess Study"),
     blurb:
       "Structured lessons and tests — basic tactics, openings, endgames and positional play — chapter by chapter.",
   },
@@ -189,7 +190,7 @@ export const FEATURES = [
     slug: "/chess-community",
     appPath: "/social",
     icon: "🤝",
-    title: "Chess Community",
+    title: tr("Chess Community"),
     blurb:
       "Follow friends, join clubs, see live activity feeds and weekly leaderboards in the Chess Nexus social hub.",
   },
@@ -215,7 +216,7 @@ export default function FeatureLinkGrid({ exclude, linkTo = "slug" }) {
           <div className="mkt-card-icon">{f.icon}</div>
           <h3>{f.title}</h3>
           <p>{f.blurb}</p>
-          <span className="mkt-card-cta">Learn more →</span>
+          <span className="mkt-card-cta">{tr("Learn more →")}</span>
         </Link>
       ))}
     </div>

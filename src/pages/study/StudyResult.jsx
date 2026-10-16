@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const StudyResult = () => {
   const { resultId } = useParams();
@@ -14,7 +15,7 @@ const StudyResult = () => {
         const response = await api.get(`/api/study/result/${resultId}`);
         setResult(response.data);
       } catch (err) {
-        setError('Failed to load results');
+        setError(tr('Failed to load results'));
       } finally {
         setLoading(false);
       }
@@ -143,7 +144,7 @@ const StudyResult = () => {
     return (
       <div style={styles.page}>
         <div style={styles.container}>
-          <div style={styles.loading}>Loading results...</div>
+          <div style={styles.loading}>{tr("Loading results...")}</div>
         </div>
       </div>
     );
@@ -162,35 +163,35 @@ const StudyResult = () => {
   return (
     <div style={styles.page}>
       <div style={styles.container}>
-        <h1 style={styles.title}>Test Results</h1>
+        <h1 style={styles.title}>{tr("Test Results")}</h1>
 
         <div style={styles.statsGrid}>
           <div style={styles.statCard}>
             <div style={styles.statValue}>{result.puzzlesAttempted}</div>
-            <div style={styles.statLabel}>Total Puzzles</div>
+            <div style={styles.statLabel}>{tr("Total Puzzles")}</div>
           </div>
           <div style={styles.statCard}>
             <div style={styles.statValue}>{result.puzzlesCorrect}</div>
-            <div style={styles.statLabel}>Correct</div>
+            <div style={styles.statLabel}>{tr("Correct")}</div>
           </div>
           <div style={styles.statCard}>
             <div style={styles.statValue}>{result.score}%</div>
-            <div style={styles.statLabel}>Total Points</div>
+            <div style={styles.statLabel}>{tr("Total Points")}</div>
           </div>
           <div style={styles.statCard}>
             <div style={styles.statValue}>{Math.floor(result.totalTime / 60)}:{(result.totalTime % 60).toString().padStart(2, '0')}</div>
-            <div style={styles.statLabel}>Avg Time</div>
+            <div style={styles.statLabel}>{tr("Avg Time")}</div>
           </div>
         </div>
 
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>Puzzle</th>
-              <th style={styles.th}>Your Moves</th>
-              <th style={styles.th}>Correct Moves</th>
-              <th style={styles.th}>Result</th>
-              <th style={styles.th}>Time</th>
+              <th style={styles.th}>{tr("Puzzle")}</th>
+              <th style={styles.th}>{tr("Your Moves")}</th>
+              <th style={styles.th}>{tr("Correct Moves")}</th>
+              <th style={styles.th}>{tr("Result")}</th>
+              <th style={styles.th}>{tr("Time")}</th>
             </tr>
           </thead>
           <tbody>
@@ -210,7 +211,7 @@ const StudyResult = () => {
 
         <div style={{ textAlign: 'center' }}>
           <Link to="/study/learn" style={styles.retryButton}>
-            Click to Study
+            {tr("Click to Study")}
           </Link>
         </div>
       </div>

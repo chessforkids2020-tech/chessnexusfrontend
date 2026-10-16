@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import api from '../api';
 import { useNavigate } from "react-router-dom";
+import { t as tr } from '../i18n/LanguageContext';
 
 const s = {
   page: {
@@ -208,7 +209,7 @@ function EventSubmissions() {
 
   async function sendConfirm(id) {
     if (!confirmForm.day || !confirmForm.time || !confirmForm.zoomLink.trim()) {
-      alert('Please fill day, time and Zoom link.');
+      alert(tr('Please fill day, time and Zoom link.'));
       return;
     }
     setConfirmSending(true);
@@ -231,7 +232,7 @@ function EventSubmissions() {
 
   // delete all entries for a given eventId
   async function deleteEventGroup(eventId, eventName) {
-    if (!window.confirm('Delete all submissions for this event? This action cannot be undone.')) return;
+    if (!window.confirm(tr('Delete all submissions for this event? This action cannot be undone.'))) return;
     try {
       const url = `/api/admin/event-submissions/event/${encodeURIComponent(eventId || '')}`;
       const opts = {};
@@ -244,7 +245,7 @@ function EventSubmissions() {
       fetchSubmissions();
     } catch (err) {
       console.error('failed to delete event group', err);
-      alert('Failed to delete event submissions');
+      alert(tr('Failed to delete event submissions'));
     }
   }
 
@@ -261,7 +262,7 @@ function EventSubmissions() {
       setSubmissions(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       if (err.response?.status === 401) {
-        alert('Session expired. Please login again.');
+        alert(tr('Session expired. Please login again.'));
         nav('/login?role=admin');
       }
     } finally {
@@ -283,9 +284,9 @@ function EventSubmissions() {
           <div style={s.header}>
             <div style={s.titleWrap}>
               <span style={s.titleIcon}>📅</span>
-              <h1 style={s.title}>Event Submissions</h1>
+              <h1 style={s.title}>{tr("Event Submissions")}</h1>
               {!loading && (
-                <span style={s.countBadge}>{submissions.length} entries</span>
+                <span style={s.countBadge}>{submissions.length} {tr("entries")}</span>
               )}
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
@@ -296,7 +297,7 @@ function EventSubmissions() {
                 onClick={fetchSubmissions}
                 disabled={loading}
               >
-                {loading ? '…' : '🔄 Refresh'}
+                {loading ? '…' : tr('🔄 Refresh')}
               </button>
               <button
                 style={s.backBtn}
@@ -312,7 +313,7 @@ function EventSubmissions() {
                 }}
                 onClick={() => nav('/admin')}
               >
-                ← Back to Dashboard
+                {tr("← Back to Dashboard")}
               </button>
             </div>
           </div>
@@ -321,21 +322,21 @@ function EventSubmissions() {
           {loading ? (
             <div style={s.stateBox}>
               <div style={s.spinner} />
-              <p style={s.stateTitle}>Loading Submissions</p>
-              <p style={s.stateText}>Fetching event registrations…</p>
+              <p style={s.stateTitle}>{tr("Loading Submissions")}</p>
+              <p style={s.stateText}>{tr("Fetching event registrations…")}</p>
             </div>
           ) : submissions.length === 0 ? (
             <div style={s.stateBox}>
               <div style={s.stateIcon}>📭</div>
-              <p style={s.stateTitle}>No Submissions Yet</p>
-              <p style={s.stateText}>Event registrations will appear here once people sign up.</p>
+              <p style={s.stateTitle}>{tr("No Submissions Yet")}</p>
+              <p style={s.stateText}>{tr("Event registrations will appear here once people sign up.")}</p>
             </div>
           ) : (
             // group by event name
             (() => {
               const grouped = submissions.reduce((acc, s) => {
                 // if the event fields are missing we categorize them separately
-                const key = s.eventName || s.eventId || 'Unspecified event';
+                const key = s.eventName || s.eventId || tr('Unspecified event');
                 if (!acc[key]) acc[key] = [];
                 acc[key].push(s);
                 return acc;
@@ -347,7 +348,7 @@ function EventSubmissions() {
                     <div key={evt}>
                       <h2 style={{ color: 'var(--color-success)', marginBottom: 12, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                         <span>{evt}</span>
-                        {evt !== 'Unspecified event' && (
+                        {evt !== tr('Unspecified event') && (
                           <button
                             onClick={() => deleteEventGroup(items[0].eventId, evt)}
                             style={{
@@ -359,19 +360,19 @@ function EventSubmissions() {
                               fontSize: 12,
                               cursor: 'pointer'
                             }}
-                          >Delete Event</button>
+                          >{tr("Delete Event")}</button>
                         )}
                       </h2>
                       {items[0].eventId === 'collaborate-request' ? (
                       <table style={{ width: '100%', borderCollapse: 'collapse', background: 'var(--color-surface)', color: '#f0f0f0' }}>
                         <thead>
                           <tr>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Name</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Email</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Streamer?</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Platform / Link</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>WhatsApp</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Submitted</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Name")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Email")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Streamer?")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Platform / Link")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("WhatsApp")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Submitted")}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -382,8 +383,8 @@ function EventSubmissions() {
                                 {sub.email ? <a href={`mailto:${sub.email}`} style={{ color: 'var(--color-success)' }}>{sub.email}</a> : <span style={{ color: 'var(--color-text-faint)' }}>—</span>}
                               </td>
                               <td style={{ padding: '8px 12px' }}>
-                                {sub.isStreamer === true ? <span style={{ color: 'var(--color-accent-2)', fontWeight: 600 }}>🎬 Yes</span>
-                                  : sub.isStreamer === false ? <span style={{ color: 'var(--color-text-muted)' }}>No</span>
+                                {sub.isStreamer === true ? <span style={{ color: 'var(--color-accent-2)', fontWeight: 600 }}>{tr("🎬 Yes")}</span>
+                                  : sub.isStreamer === false ? <span style={{ color: 'var(--color-text-muted)' }}>{tr("No")}</span>
                                   : <span style={{ color: 'var(--color-text-faint)' }}>—</span>}
                               </td>
                               <td style={{ padding: '8px 12px' }}>
@@ -409,13 +410,13 @@ function EventSubmissions() {
                       <table style={{ width: '100%', borderCollapse: 'collapse', background: 'var(--color-surface)', color: '#f0f0f0' }}>
                         <thead>
                           <tr>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Name</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Email</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Academy</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Country</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Preferred slots (IST)</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Submitted</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Action</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Name")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Email")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Academy")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Country")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Preferred slots (IST)")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Submitted")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Action")}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -448,7 +449,7 @@ function EventSubmissions() {
                                 <button
                                   onClick={() => (confirmId === sub._id ? setConfirmId(null) : openConfirm(sub))}
                                   disabled={!sub.email}
-                                  title={!sub.email ? 'No email on this submission' : 'Send confirmation email'}
+                                  title={!sub.email ? tr('No email on this submission') : tr('Send confirmation email')}
                                   style={{
                                     background: confirmId === sub._id ? '#334155' : 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent-2))',
                                     color: 'var(--color-text)', border: 'none', borderRadius: 'var(--radius-sm)', padding: '6px 12px',
@@ -467,26 +468,26 @@ function EventSubmissions() {
                                     </div>
                                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                                       <input value={confirmForm.day} onChange={e => setConfirmForm({ ...confirmForm, day: e.target.value })}
-                                        placeholder="Day (e.g. Monday)"
+                                        placeholder={tr("Day (e.g. Monday)")}
                                         style={{ flex: '1 1 160px', padding: '9px 11px', borderRadius: 'var(--radius-md)', border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13 }} />
                                       <input value={confirmForm.time} onChange={e => setConfirmForm({ ...confirmForm, time: e.target.value })}
-                                        placeholder="Time IST (e.g. 4 – 6 PM)"
+                                        placeholder={tr("Time IST (e.g. 4 – 6 PM)")}
                                         style={{ flex: '1 1 160px', padding: '9px 11px', borderRadius: 'var(--radius-md)', border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13 }} />
                                     </div>
                                     <input value={confirmForm.zoomLink} onChange={e => setConfirmForm({ ...confirmForm, zoomLink: e.target.value })}
-                                      placeholder="Zoom link (https://zoom.us/j/…)"
+                                      placeholder={tr("Zoom link (https://zoom.us/j/…)")}
                                       style={{ padding: '9px 11px', borderRadius: 'var(--radius-md)', border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13 }} />
                                     <textarea value={confirmForm.note} onChange={e => setConfirmForm({ ...confirmForm, note: e.target.value })}
-                                      placeholder="Optional note to include in the email…" rows={2}
+                                      placeholder={tr("Optional note to include in the email…")} rows={2}
                                       style={{ padding: '9px 11px', borderRadius: 'var(--radius-md)', border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13, resize: 'vertical' }} />
                                     <div style={{ display: 'flex', gap: 10 }}>
                                       <button onClick={() => sendConfirm(sub._id)} disabled={confirmSending}
                                         style={{ background: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent-2))', color: 'var(--color-text)', border: 'none', borderRadius: 'var(--radius-md)', padding: '9px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: confirmSending ? 0.6 : 1 }}>
-                                        {confirmSending ? 'Sending…' : '📧 Send confirmation email'}
+                                        {confirmSending ? tr('Sending…') : tr('📧 Send confirmation email')}
                                       </button>
                                       <button onClick={() => setConfirmId(null)} disabled={confirmSending}
                                         style={{ background: '#334155', color: 'var(--color-text-muted)', border: 'none', borderRadius: 'var(--radius-md)', padding: '9px 18px', fontSize: 13, cursor: 'pointer' }}>
-                                        Cancel
+                                        {tr("Cancel")}
                                       </button>
                                     </div>
                                   </div>
@@ -501,13 +502,13 @@ function EventSubmissions() {
                       <table style={{ width: '100%', borderCollapse: 'collapse', background: 'var(--color-surface)', color: '#f0f0f0' }}>
                         <thead>
                           <tr>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Name</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Age</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>FIDE</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>WhatsApp</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>State</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>WA Group?</th>
-                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>Submitted</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Name")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Age")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("FIDE")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("WhatsApp")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("State")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("WA Group?")}</th>
+                            <th style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a10)', textAlign: 'left' }}>{tr("Submitted")}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -519,7 +520,7 @@ function EventSubmissions() {
                                 {sub.hasFide === true
                                   ? <span style={{ color: 'var(--color-warning)', fontWeight: 700 }}>✅ Yes — {sub.fideRating ?? '?'}</span>
                                   : sub.hasFide === false
-                                    ? <span style={{ color: 'var(--color-text-muted)' }}>❌ No</span>
+                                    ? <span style={{ color: 'var(--color-text-muted)' }}>{tr("❌ No")}</span>
                                     : <span style={{ color: 'var(--color-text-faint)' }}>—</span>}
                               </td>
                               <td style={{ padding: '8px 12px' }}>
@@ -534,9 +535,9 @@ function EventSubmissions() {
                               </td>
                               <td style={{ padding: '8px 12px' }}>
                                 {sub.joinWhatsapp === true
-                                  ? <span style={{ color: '#25d366', fontWeight: 700 }}>✅ Yes</span>
+                                  ? <span style={{ color: '#25d366', fontWeight: 700 }}>{tr("✅ Yes")}</span>
                                   : sub.joinWhatsapp === false
-                                    ? <span style={{ color: 'var(--color-danger)' }}>❌ No</span>
+                                    ? <span style={{ color: 'var(--color-danger)' }}>{tr("❌ No")}</span>
                                     : <span style={{ color: 'var(--color-text-faint)' }}>—</span>}
                               </td>
                               <td style={{ padding: '8px 12px' }}>{new Date(sub.submittedAt).toLocaleString()}</td>

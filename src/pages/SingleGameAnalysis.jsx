@@ -21,11 +21,12 @@ import { analyzeGame } from '../components/masterGames/analyzeGame';
 import { StockfishService } from '../services/stockfishService';
 import './GameAnalysis.css';
 import './SingleGameAnalysis.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const ANALYSIS_DEPTH = 12;
 const CACHE_PREFIX = 'sga:v1:';
 
-const TYPE_LABEL = { arena: 'Arena', friend: 'vs Friend', stockfish: 'vs Stockfish' };
+const TYPE_LABEL = { arena: tr('Arena'), friend: tr('vs Friend'), stockfish: tr('vs Stockfish') };
 
 const REASON_LABEL = {
   checkmate: 'Checkmate', resignation: 'Resignation', resign: 'Resignation',
@@ -52,8 +53,8 @@ const moveAccuracy = (drop) => Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.
 
 function buildPgn(game) {
   const headers = [
-    `[White "${(game.white || 'White').replace(/"/g, '')}"]`,
-    `[Black "${(game.black || 'Black').replace(/"/g, '')}"]`,
+    `[White "${(game.white || tr('White')).replace(/"/g, '')}"]`,
+    `[Black "${(game.black || tr('Black')).replace(/"/g, '')}"]`,
     `[Result "${resultScore(game.result).replace('½-½', '1/2-1/2')}"]`,
   ];
   if (game.startFen) headers.push('[SetUp "1"]', `[FEN "${game.startFen}"]`);
@@ -150,7 +151,7 @@ function EvalGraph({ points, cursor, onSeek }) {
   };
 
   return (
-    <svg className="sga-graph" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" onClick={handle} role="img" aria-label="Evaluation graph — click to jump to a move">
+    <svg className="sga-graph" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" onClick={handle} role="img" aria-label={tr("Evaluation graph — click to jump to a move")}>
       <rect x="0" y="0" width={W} height={H} className="sga-graph-bg" />
       <path d={area} className="sga-graph-area" />
       <line x1="0" x2={W} y1={H / 2} y2={H / 2} className="sga-graph-mid" />
@@ -235,7 +236,7 @@ export default function SingleGameAnalysis() {
       try { localStorage.setItem(cacheKey, JSON.stringify(slim)); } catch { /* storage full — fine */ }
       setRows(slim);
     } catch (e) {
-      if (run === runRef.current && e?.message !== 'cancelled') setAnalysisError('Analysis failed. Please try again.');
+      if (run === runRef.current && e?.message !== 'cancelled') setAnalysisError(tr('Analysis failed. Please try again.'));
     } finally {
       if (run === runRef.current) { setProgress(null); dropEngine(); }
     }
@@ -288,13 +289,13 @@ export default function SingleGameAnalysis() {
       <div className="ga-page sga-page">
         <div className="sga-empty">
           <p>{error}</p>
-          <button className="sga-btn" onClick={goBack}>← Back</button>
+          <button className="sga-btn" onClick={goBack}>{tr("← Back")}</button>
         </div>
       </div>
     );
   }
   if (!game) {
-    return <div className="ga-page sga-page"><div className="sga-empty">Loading game…</div></div>;
+    return <div className="ga-page sga-page"><div className="sga-empty">{tr("Loading game…")}</div></div>;
   }
 
   const date = game.finishedAt ? new Date(game.finishedAt) : null;
@@ -319,7 +320,7 @@ export default function SingleGameAnalysis() {
         {ratingBit(game[`${side}Rating`], game[`${side}RatingChange`])}
         {s && (
           <span className="sga-side-stats">
-            <b>{s.accuracy}%</b> accuracy
+            <b>{s.accuracy}%</b> {tr("accuracy")}
             {s.inaccuracy > 0 && <span className="sga-c-inacc"> · {s.inaccuracy} ?!</span>}
             {s.mistake > 0 && <span className="sga-c-mist"> · {s.mistake} ?</span>}
             {s.blunder > 0 && <span className="sga-c-blun"> · {s.blunder} ??</span>}
@@ -335,8 +336,8 @@ export default function SingleGameAnalysis() {
         <div className="sga-meta">
           <span className={`sga-type sga-type-${game.type}`}>{typeLabel}</span>
           <span>{tcText(game.timeControl)}</span>
-          {game.rated && <span>Rated</span>}
-          {game.chess960 && <span>Chess960</span>}
+          {game.rated && <span>{tr("Rated")}</span>}
+          {game.chess960 && <span>{tr("Chess960")}</span>}
           {date && <span>{date.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
         </div>
         <div className="sga-players">
@@ -346,19 +347,19 @@ export default function SingleGameAnalysis() {
         <div className="sga-result">
           <b>{resultScore(game.result)}</b>
           {reasonText(game.resultReason) && <span> · {reasonText(game.resultReason)}</span>}
-          <span> · {game.moves.length} plies</span>
+          <span> · {game.moves.length} {tr("plies")}</span>
         </div>
 
         {progress && (
           <div className="sga-progress">
             <div className="sga-progress-bar"><div style={{ width: `${Math.round((progress.done / Math.max(1, progress.total)) * 100)}%` }} /></div>
-            <span>Reviewing every move for blunders… {progress.done}/{progress.total}</span>
+            <span>{tr("Reviewing every move for blunders…")} {progress.done}/{progress.total}</span>
           </div>
         )}
         {analysisError && (
           <div className="sga-error">
             {analysisError}{' '}
-            <button className="sga-btn" onClick={runAnalysis}>Try again</button>
+            <button className="sga-btn" onClick={runAnalysis}>{tr("Try again")}</button>
           </div>
         )}
       </div>
@@ -381,10 +382,10 @@ export default function SingleGameAnalysis() {
         belowBoard={showGraph && (
           <div className="sga-graph-box">
             <div className="sga-graph-head">
-              <span className="sga-graph-title">📈 Advantage Graph</span>
+              <span className="sga-graph-title">{tr("📈 Advantage Graph")}</span>
               <span className="sga-graph-legend">
-                <span className="sga-key sga-key-white" /> White
-                <span className="sga-key sga-key-black" /> Black
+                <span className="sga-key sga-key-white" /> {tr("White")}
+                <span className="sga-key sga-key-black" /> {tr("Black")}
               </span>
             </div>
             <EvalGraph points={moveAnalysis} cursor={ply} onSeek={seekTo} />

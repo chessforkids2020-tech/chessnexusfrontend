@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-tactics-race";
 
@@ -25,7 +26,7 @@ export default function ChessTacticsRacePage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
   const webPageSchema = {
@@ -41,7 +42,7 @@ export default function ChessTacticsRacePage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "Chess Puzzle Race — Timed Tactics Training",
+        title: tr("Chess Puzzle Race — Timed Tactics Training"),
         description:
           "Solve as many chess puzzles as you can against the clock. Timed puzzle races by theme, solo or in teams, with live leaderboards — 100% free, no ads.",
         keywords:
@@ -52,18 +53,18 @@ export default function ChessTacticsRacePage() {
       hero={{
         icon: "🏁",
         h1: "Chess Puzzle Race — Beat the Clock",
-        sub: "Test your tactical speed in timed chess puzzle races. Solve as many positions as you can before time runs out, race by theme, team up with friends and climb live leaderboards — all free, no ads.",
-        primary: { label: "Start a Puzzle Race", to: "/arena-race" },
-        secondary: { label: "Browse all features", to: "/features" },
+        sub: tr("Test your tactical speed in timed chess puzzle races. Solve as many positions as you can before time runs out, race by theme, team up with friends and climb live leaderboards — all free, no ads."),
+        primary: { label: tr("Start a Puzzle Race"), to: "/arena-race" },
+        secondary: { label: tr("Browse all features"), to: "/features" },
       }}
     >
       <section className="mkt-section">
         <div className="mkt-split">
           <div className="mkt-split-media">
-            <img src="/features/racehub.png" alt="Chess Puzzle Race — timed tactics training" loading="lazy" width="220" height="220" />
+            <img src="/features/racehub.png" alt={tr("Chess Puzzle Race — timed tactics training")} loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
-            <h2>Ways to race</h2>
+            <h2>{tr("Ways to race")}</h2>
             <p>
               Solo sprints, themed drills or team battles — pick your race and get
               solving.
@@ -72,34 +73,34 @@ export default function ChessTacticsRacePage() {
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">⏱️</span>
                 <span className="mkt-feat-tx">
-                  <strong>Timed Puzzle Race</strong>
-                  <span>Pick a duration — 5, 10 or 15 minutes — and chase your best score, streak and accuracy before the clock runs out.</span>
+                  <strong>{tr("Timed Puzzle Race")}</strong>
+                  <span>{tr("Pick a duration — 5, 10 or 15 minutes — and chase your best score, streak and accuracy before the clock runs out.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🎯</span>
                 <span className="mkt-feat-tx">
-                  <strong>Race by theme</strong>
-                  <span>Drill a specific pattern — forks, pins, mating nets and more — with a tailored set of puzzles.</span>
+                  <strong>{tr("Race by theme")}</strong>
+                  <span>{tr("Drill a specific pattern — forks, pins, mating nets and more — with a tailored set of puzzles.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">👥</span>
                 <span className="mkt-feat-tx">
-                  <strong>Team Race</strong>
-                  <span>Every solve adds to your side's score — turning solo practice into a shared team challenge.</span>
+                  <strong>{tr("Team Race")}</strong>
+                  <span>{tr("Every solve adds to your side's score — turning solo practice into a shared team challenge.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🏆</span>
                 <span className="mkt-feat-tx">
-                  <strong>Live leaderboards</strong>
-                  <span>Every race feeds live leaderboards — see how you stack up this week and track the best racers of all time.</span>
+                  <strong>{tr("Live leaderboards")}</strong>
+                  <span>{tr("Every race feeds live leaderboards — see how you stack up this week and track the best racers of all time.")}</span>
                 </span>
               </li>
             </ul>
             <Link to="/arena-race" className="mkt-card-cta">
-              Start a race →
+              {tr("Start a race →")}
             </Link>
           </div>
         </div>
@@ -108,7 +109,7 @@ export default function ChessTacticsRacePage() {
       <div className="mkt-callout">
         <div className="mkt-callout-icon">📅</div>
         <div>
-          <h2>New races every single day</h2>
+          <h2>{tr("New races every single day")}</h2>
           <p>
             There's always something live. Arena Races and Team Races run every day
             at different times, so whenever you sit down you'll find a fresh race to
@@ -118,7 +119,7 @@ export default function ChessTacticsRacePage() {
       </div>
 
       <section className="mkt-section">
-        <h2>Why race your tactics</h2>
+        <h2>{tr("Why race your tactics")}</h2>
         <p className="mkt-section-lead">
           Speed wins games. Racing trains you to recognise tactical patterns
           instantly and calculate under pressure — exactly what you need for blitz,
@@ -127,16 +128,16 @@ export default function ChessTacticsRacePage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <Link to="/arena-race" className="mkt-btn mkt-btn-primary">
-            Race now
+            {tr("Race now")}
           </Link>
           <Link to="/best-racers" className="mkt-btn mkt-btn-ghost">
-            See the best racers
+            {tr("See the best racers")}
           </Link>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

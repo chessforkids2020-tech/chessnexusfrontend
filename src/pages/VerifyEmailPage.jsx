@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";
+import { t as tr } from '../i18n/LanguageContext';
 
 const STATUS = { LOADING: "loading", SUCCESS: "success", EXPIRED: "expired", ERROR: "error" };
 
@@ -18,7 +19,7 @@ export default function VerifyEmailPage() {
         setMessage(res.data.message || "Email verified successfully!");
       })
       .catch((err) => {
-        const msg = err.response?.data?.message || "Verification failed.";
+        const msg = err.response?.data?.message || tr("Verification failed.");
         if (msg === "LINK_EXPIRED") {
           setStatus(STATUS.EXPIRED);
         } else {
@@ -34,42 +35,42 @@ export default function VerifyEmailPage() {
     <div style={s.page}>
       <div style={s.bg} />
       <div style={s.card}>
-        <div style={s.logo}><img src="/logo.png" alt="Chess Nexus" style={{ height: 48, width: 'auto', objectFit: 'contain' }} /></div>
-        <h1 style={s.title}>Chess Nexus</h1>
+        <div style={s.logo}><img src="/logo.png" alt={tr("Chess Nexus")} style={{ height: 48, width: 'auto', objectFit: 'contain' }} /></div>
+        <h1 style={s.title}>{tr("Chess Nexus")}</h1>
 
         {status === STATUS.LOADING && (
           <>
             <div style={s.spinner} />
-            <p style={s.sub}>Verifying your email…</p>
+            <p style={s.sub}>{tr("Verifying your email…")}</p>
           </>
         )}
 
         {status === STATUS.SUCCESS && (
           <>
             <div style={{ fontSize: 56, marginBottom: 12 }}>✅</div>
-            <h2 style={{ ...s.heading, color: "#4ade80" }}>Email Verified!</h2>
+            <h2 style={{ ...s.heading, color: "#4ade80" }}>{tr("Email Verified!")}</h2>
             <p style={s.body}>{message}</p>
-            <Link to="/login" style={s.btn}>Go to Login →</Link>
+            <Link to="/login" style={s.btn}>{tr("Go to Login →")}</Link>
           </>
         )}
 
         {status === STATUS.EXPIRED && (
           <>
             <div style={{ fontSize: 56, marginBottom: 12 }}>⏰</div>
-            <h2 style={{ ...s.heading, color: "var(--color-warning)" }}>Link Expired</h2>
+            <h2 style={{ ...s.heading, color: "var(--color-warning)" }}>{tr("Link Expired")}</h2>
             <p style={s.body}>
-              This verification link has expired. Verification links are valid for 24 hours.
+              {tr("This verification link has expired. Verification links are valid for 24 hours.")}
             </p>
-            <Link to="/resend-verification" style={s.btn}>Request a New Link →</Link>
+            <Link to="/resend-verification" style={s.btn}>{tr("Request a New Link →")}</Link>
           </>
         )}
 
         {status === STATUS.ERROR && (
           <>
             <div style={{ fontSize: 56, marginBottom: 12 }}>❌</div>
-            <h2 style={{ ...s.heading, color: "var(--color-danger)" }}>Verification Failed</h2>
+            <h2 style={{ ...s.heading, color: "var(--color-danger)" }}>{tr("Verification Failed")}</h2>
             <p style={s.body}>{message}</p>
-            <Link to="/resend-verification" style={s.btn}>Request a New Link →</Link>
+            <Link to="/resend-verification" style={s.btn}>{tr("Request a New Link →")}</Link>
           </>
         )}
       </div>

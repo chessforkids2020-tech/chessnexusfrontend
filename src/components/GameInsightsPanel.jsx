@@ -3,8 +3,12 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from './Chessboard';
+import StudyMovesCard from './StudyMovesCard';
+import EnginePanel from './EnginePanel';
+import { useMomentFreePlay } from '../hooks/useMomentFreePlay';
 import api from '../api';
 import './GameInsightsPanel.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Friendly labels for the extractor's snake_case themes.
 const THEME_LABEL = {
@@ -13,7 +17,7 @@ const THEME_LABEL = {
   discovered_attack: '💥 Discovered Attack', sacrifice: '🎯 Sacrifice',
   long_combination: '🧩 Combination', tactic: '♟️ Healthy Mix',
 };
-const themeLabel = (t) => THEME_LABEL[t] || '♟️ Healthy Mix';
+const themeLabel = (t) => THEME_LABEL[t] || tr('♟️ Healthy Mix');
 
 /**
  * NEXUS GUIDE — a personal-coach persona on the dashboard. Speaks to the player
@@ -224,6 +228,12 @@ export default function GameInsightsPanel() {
     api.post(`/api/game-insights/${active._id}/solve`, { solved: false }).catch(() => {});
   };
 
+  // Once answered (solved or best move shown) the board is a free analysis
+  // board — solution as the mainline, any move a sideline, engine on demand.
+  // Same as Healthy Mix after a puzzle; see hooks/useMomentFreePlay.js.
+  const done = !!active && (feedback === 'correct' || revealed);
+  const fp = useMomentFreePlay(active, done, playedMove);
+
   if (loading) return null;
 
   const hasData = guide?.hasData;
@@ -245,14 +255,14 @@ export default function GameInsightsPanel() {
       <div className="gip-coach">
         <div className="gip-avatar">🧙</div>
         <div className="gip-speech">
-          <div className="gip-coach-name">Nexus Guide <span className="gip-coach-tag">your training buddy</span></div>
+          <div className="gip-coach-name">{tr("Nexus Guide")} <span className="gip-coach-tag">{tr("your training buddy")}</span></div>
           <p className="gip-coach-msg">
             {gen.running
               ? "Give me a moment — I'm studying your recent games…"
               : (guide?.message || "Hi! I'm your Nexus Guide. Let me look at your games and help you improve.")}
           </p>
           <div className="gip-coach-actions">
-            <div className="gip-tc-select" role="group" aria-label="Time control to analyse">
+            <div className="gip-tc-select" role="group" aria-label={tr("Time control to analyse")}>
               {['all', 'bullet', 'blitz', 'rapid'].map((tc) => (
                 <button
                   key={tc}
@@ -266,14 +276,14 @@ export default function GameInsightsPanel() {
               ))}
             </div>
             <button className="gip-analyze-btn" onClick={startGenerate} disabled={gen.running}>
-              {gen.running ? 'Analyzing…' : (hasData ? '🔄 Re-check my games' : '🔎 Analyze my games')}
+              {gen.running ? tr('Analyzing…') : (hasData ? tr('🔄 Re-check my games') : tr('🔎 Analyze my games'))}
             </button>
           </div>
 
           {/* One "train" chip per weakness — the player is usually weak at several. */}
           {hasData && guide?.weaknesses?.length > 0 && (
             <div className="gip-weak-train">
-              <span className="gip-weak-label">🎯 Train a weakness:</span>
+              <span className="gip-weak-label">{tr("🎯 Train a weakness:")}</span>
               {guide.weaknesses.slice(0, 5).map((w) => (
                 <button key={w.trainKey} className="gip-weak-chip" onClick={() => trainWeakness(w.trainKey)}>
                   {w.noun}{w.count > 1 ? ` ×${w.count}` : ''}
@@ -288,14 +298,14 @@ export default function GameInsightsPanel() {
       {report && (
         <div className="gip-report">
           <div className="gip-report-head">
-            📅 Monthly progress
+            {tr("📅 Monthly progress")}
             <span className="gip-report-months">
               {report.hasComparison ? `${report.lastMonth.label} → ${report.thisMonth.label}` : report.thisMonth.label}
             </span>
           </div>
           <div className="gip-report-grid">
             <div className="gip-report-stat">
-              <div className="gip-report-label">Mistakes found</div>
+              <div className="gip-report-label">{tr("Mistakes found")}</div>
               <div className="gip-report-value">
                 {report.thisMonth.momentsFound}
                 {report.hasComparison && foundTrend && (
@@ -303,11 +313,11 @@ export default function GameInsightsPanel() {
                 )}
               </div>
               {report.hasComparison && (
-                <div className="gip-report-prev">{report.lastMonth.momentsFound} last month · fewer is better</div>
+                <div className="gip-report-prev">{report.lastMonth.momentsFound} {tr("last month · fewer is better")}</div>
               )}
             </div>
             <div className="gip-report-stat">
-              <div className="gip-report-label">Blunders / game</div>
+              <div className="gip-report-label">{tr("Blunders / game")}</div>
               <div className="gip-report-value">
                 {report.thisMonth.blundersPerGame ?? '—'}
                 {report.hasComparison && bpgTrend && (
@@ -315,28 +325,28 @@ export default function GameInsightsPanel() {
                 )}
               </div>
               {report.hasComparison && report.lastMonth.blundersPerGame != null && (
-                <div className="gip-report-prev">was {report.lastMonth.blundersPerGame} last month</div>
+                <div className="gip-report-prev">{tr("was")} {report.lastMonth.blundersPerGame} {tr("last month")}</div>
               )}
             </div>
             <div className="gip-report-stat">
-              <div className="gip-report-label">Moments practised</div>
+              <div className="gip-report-label">{tr("Moments practised")}</div>
               <div className="gip-report-value">{report.thisMonth.momentsPractised}</div>
               {report.hasComparison && (
-                <div className="gip-report-prev">{report.lastMonth.momentsPractised} last month</div>
+                <div className="gip-report-prev">{report.lastMonth.momentsPractised} {tr("last month")}</div>
               )}
             </div>
             <div className="gip-report-stat">
-              <div className="gip-report-label">Focus this month</div>
+              <div className="gip-report-label">{tr("Focus this month")}</div>
               <div className="gip-report-value gip-report-weak">
                 {report.thisMonth.topWeakness ? report.thisMonth.topWeakness.noun : '—'}
               </div>
               {report.hasComparison && report.lastMonth.topWeakness && (
-                <div className="gip-report-prev">was {report.lastMonth.topWeakness.noun}</div>
+                <div className="gip-report-prev">{tr("was")} {report.lastMonth.topWeakness.noun}</div>
               )}
             </div>
           </div>
           {!report.hasComparison && (
-            <div className="gip-report-note">Keep analysing — next month you'll see how you're improving.</div>
+            <div className="gip-report-note">{tr("Keep analysing — next month you'll see how you're improving.")}</div>
           )}
         </div>
       )}
@@ -348,7 +358,7 @@ export default function GameInsightsPanel() {
               style={{ width: `${gen.total ? Math.round((gen.current / gen.total) * 100) : 10}%` }} />
           </div>
           <span className="gip-progress-text">
-            Studying game {gen.current || 0}/{gen.total || '…'} · {gen.found || 0} moments found
+            {tr("Studying game")} {gen.current || 0}/{gen.total || '…'} · {gen.found || 0} {tr("moments found")}
           </span>
         </div>
       )}
@@ -360,19 +370,19 @@ export default function GameInsightsPanel() {
         <div className="gip-critical">
           <span className="gip-critical-icon">🚨</span>
           <div className="gip-critical-body">
-            <div className="gip-critical-title">Weakest part: {guide.weaknessNoun}</div>
+            <div className="gip-critical-title">{tr("Weakest part:")} {guide.weaknessNoun}</div>
             <div className="gip-critical-text">
-              You've lost to {guide.weaknessNoun} <strong>{guide.weaknessCount} times</strong> — immediate practice needed.
+              {tr("You've lost to")} {guide.weaknessNoun} <strong>{guide.weaknessCount} {tr("times")}</strong> {tr("— immediate practice needed.")}
             </div>
           </div>
-          <button className="gip-critical-btn" onClick={() => trainWeakness()}>Train now →</button>
+          <button className="gip-critical-btn" onClick={() => trainWeakness()}>{tr("Train now →")}</button>
         </div>
       )}
 
       {/* ── Mistakes from your games ── */}
       {hasData && puzzles.length > 0 && (
         <>
-          <div className="gip-count">{counts.unsolved} moment{counts.unsolved === 1 ? '' : 's'} from your games to learn from</div>
+          <div className="gip-count">{counts.unsolved} {tr("moment")}{counts.unsolved === 1 ? '' : 's'} {tr("from your games to learn from")}</div>
           <div className="gip-grid">
             {puzzles.map((p) => (
               <button key={p._id} className="gip-card" onClick={() => openPuzzle(p)}>
@@ -382,9 +392,9 @@ export default function GameInsightsPanel() {
                 <div className="gip-card-info">
                   <span className="gip-card-theme">{themeLabel(p.theme)}</span>
                   <span className="gip-card-meta">
-                    {p.opponentName ? `vs ${p.opponentName} · ` : ''}move {p.moveNumber}
+                    {p.opponentName ? tr("vs {opponentName} · ", { opponentName: p.opponentName }) : ''}move {p.moveNumber}
                   </span>
-                  <span className="gip-card-cta">Find the better move →</span>
+                  <span className="gip-card-cta">{tr("Find the better move →")}</span>
                 </div>
               </button>
             ))}
@@ -401,8 +411,9 @@ export default function GameInsightsPanel() {
             <button className="gip-modal-close" onClick={closePuzzle}>✕</button>
             <div className="gip-modal-body">
               <div className="gip-modal-board">
-                <Chessboard position={fen} boardWidth={modalBoard} draggable={feedback !== 'correct'}
-                  onDrop={handleDrop} orientation={active.sideToMove} />
+                <Chessboard position={done ? fp.fen : fen} boardWidth={modalBoard}
+                  draggable={done || feedback !== 'correct'}
+                  onDrop={done ? fp.onDrop : handleDrop} orientation={active.sideToMove} />
               </div>
               {/* Side column: text scrolls, nav stays pinned to its bottom so
                   the panel is only as tall as the board (bigger board). */}
@@ -411,26 +422,26 @@ export default function GameInsightsPanel() {
                <div className="gip-modal-side-main">
                 <h3>{themeLabel(active.theme)}</h3>
                 <p className="gip-modal-context">
-                  {active.opponentName ? `vs ${active.opponentName} · ` : ''}move {active.moveNumber}
+                  {active.opponentName ? tr("vs {opponentName} · ", { opponentName: active.opponentName }) : ''}move {active.moveNumber}
                 </p>
                 <p className="gip-modal-prompt">
-                  You played <strong className="gip-bad">{active.blunderMove}</strong> here.
-                  <br />Can you find a better move? ({active.sideToMove} to move)
+                  {tr("You played")} <strong className="gip-bad">{active.blunderMove}</strong> {tr("here.")}
+                  <br />{tr("Can you find a better move? (")}{active.sideToMove} {tr("to move)")}
                 </p>
 
-                {feedback === 'wrong' && <div className="gip-fb gip-fb-wrong">Not quite — try again.</div>}
+                {feedback === 'wrong' && <div className="gip-fb gip-fb-wrong">{tr("Not quite — try again.")}</div>}
                 {feedback === 'correct' && (
                   <div className="gip-fb gip-fb-correct">
-                    ✓ Yes! <strong>{playedMove || active.bestMove}</strong> is a great move.
+                    {tr("✓ Yes!")} <strong>{playedMove || active.bestMove}</strong> {tr("is a great move.")}
                     {playedMove && playedMove !== active.bestMove && (
-                      <span className="gip-alt"> (engine's top pick was {active.bestMove})</span>
+                      <span className="gip-alt"> {tr("(engine's top pick was")} {active.bestMove})</span>
                     )}
                   </div>
                 )}
 
                 {!revealed && feedback !== 'correct' && (
                   <button className="gip-reveal" onClick={showBestMove}>
-                    💡 Show best move
+                    {tr("💡 Show best move")}
                   </button>
                 )}
 
@@ -443,21 +454,35 @@ export default function GameInsightsPanel() {
                           <p className="gip-why-text">{explainText}</p>
                           {!explainAI && (
                             <button className="gip-explain-more" onClick={explainMore} disabled={explaining}>
-                              {explaining ? 'Thinking…' : '💡 Explain in more detail'}
+                              {explaining ? tr('Thinking…') : tr('💡 Explain in more detail')}
                             </button>
                           )}
                         </div>
                       </div>
                     )}
-                    <p>You should have played:</p>
+                    <p>{tr("You should have played:")}</p>
                     <div className="gip-line">
                       {active.solution.map((m, i) => (
                         <span key={i} className={`gip-move ${i === 0 ? 'gip-move-best' : ''}`}>{m}</span>
                       ))}
                     </div>
                     <p className="gip-swing">
-                      Your move lost about <strong>{Math.abs(active.evalSwing)}</strong> points of advantage.
+                      {tr("Your move lost about")} <strong>{Math.abs(active.evalSwing)}</strong> {tr("points of advantage.")}
                     </p>
+                  </div>
+                )}
+
+                {done && (
+                  <div className="gip-free" data-testid="gip-free">
+                    <p className="gip-free-hint">{tr("Free board — play any move for either side to see what happens.")}</p>
+                    <StudyMovesCard
+                      compact
+                      tree={fp.tree} currentId={fp.currentId}
+                      onSelect={fp.goTo}
+                      onFirst={fp.toStart} onPrev={fp.back} onNext={fp.forward} onLast={fp.toEnd}
+                      emptyText=""
+                    />
+                    <EnginePanel fen={fp.fen} enabled={fp.engineOn} onToggle={fp.toggleEngine} numLines={3} />
                   </div>
                 )}
                </div>
@@ -471,16 +496,16 @@ export default function GameInsightsPanel() {
                 className="gip-nav-btn"
                 onClick={() => goToPuzzle(prevPuzzle)}
                 disabled={!prevPuzzle}
-                aria-label="Previous moment"
-              >← Prev</button>
+                aria-label={tr("Previous moment")}
+              >{tr("← Prev")}</button>
               <span className="gip-nav-count">
-                {sessionIndex >= 0 ? `${sessionIndex + 1} of ${session.length}` : ''}
+                {sessionIndex >= 0 ? tr("{v0} of {length}", { v0: sessionIndex + 1, length: session.length }) : ''}
               </span>
               <button
                 className="gip-nav-btn gip-nav-next"
                 onClick={() => nextPuzzle ? goToPuzzle(nextPuzzle) : closePuzzle()}
-                aria-label={nextPuzzle ? 'Next moment' : 'Finish'}
-              >{nextPuzzle ? 'Next →' : 'Done'}</button>
+                aria-label={nextPuzzle ? tr('Next moment') : tr('Finish')}
+              >{nextPuzzle ? tr('Next →') : tr('Done')}</button>
             </div>
                </div>
               </div>

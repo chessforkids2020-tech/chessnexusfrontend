@@ -2,18 +2,19 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 const TIER_LABELS = {
-  none: { label: 'No tier yet', color: 'var(--color-text-faint)', bg: 'rgba(100,116,139,0.15)' },
-  mentor: { label: '⭐ Mentor', color: 'var(--color-warning)', bg: 'var(--color-warning-a12)' },
-  ambassador: { label: '🌟 Ambassador', color: 'var(--color-accent-2)', bg: 'var(--color-accent-2-a15)' }
+  none: { label: tr('No tier yet'), color: 'var(--color-text-faint)', bg: 'rgba(100,116,139,0.15)' },
+  mentor: { label: tr('⭐ Mentor'), color: 'var(--color-warning)', bg: 'var(--color-warning-a12)' },
+  ambassador: { label: tr('🌟 Ambassador'), color: 'var(--color-accent-2)', bg: 'var(--color-accent-2-a15)' }
 };
 
 const AVATAR_LABELS = {
-  none: { label: 'No avatar unlock yet', color: 'var(--color-text-faint)' },
-  basic: { label: '🖼️ Basic Avatars (5 invites)', color: 'var(--color-accent)' },
-  custom: { label: '📷 Custom Photo (15 invites)', color: 'var(--color-success)' },
-  '3d': { label: '🎭 3D Models (45 invites)', color: 'var(--color-accent-2)' }
+  none: { label: tr('No avatar unlock yet'), color: 'var(--color-text-faint)' },
+  basic: { label: tr('🖼️ Basic Avatars (5 invites)'), color: 'var(--color-accent)' },
+  custom: { label: tr('📷 Custom Photo (15 invites)'), color: 'var(--color-success)' },
+  '3d': { label: tr('🎭 3D Models (45 invites)'), color: 'var(--color-accent-2)' }
 };
 
 export default function InvitePage() {
@@ -64,7 +65,7 @@ export default function InvitePage() {
 
         {/* ── LEFT: Leaderboard ──────────────────────────────────── */}
         <aside style={s.sidebar}>
-          <h3 style={s.sidebarTitle}>🏆 Top Inviters</h3>
+          <h3 style={s.sidebarTitle}>{tr("🏆 Top Inviters")}</h3>
           <div style={s.lbList}>
             {leaderboard.slice(0, 25).map((u, i) => (
               <div key={u._id} style={{
@@ -90,7 +91,7 @@ export default function InvitePage() {
             ))}
             {leaderboard.length === 0 && (
               <p style={{ color: 'var(--color-text-faint)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>
-                Be the first to invite friends!
+                {tr("Be the first to invite friends!")}
               </p>
             )}
           </div>
@@ -98,12 +99,12 @@ export default function InvitePage() {
 
         {/* ── MAIN: Invite Content ───────────────────────────────── */}
         <main style={s.main}>
-          <h1 style={s.pageTitle}>🎁 Invite Friends</h1>
-          <p style={s.pageSub}>Grow the Chess Nexus community and unlock rewards for bringing in active players.</p>
+          <h1 style={s.pageTitle}>{tr("🎁 Invite Friends")}</h1>
+          <p style={s.pageSub}>{tr("Grow the Chess Nexus community and unlock rewards for bringing in active players.")}</p>
 
           {/* My referral link */}
           <div style={s.card}>
-            <h2 style={s.cardTitle}>Your Invite Link</h2>
+            <h2 style={s.cardTitle}>{tr("Your Invite Link")}</h2>
             <div style={s.linkRow}>
               <input
                 readOnly
@@ -112,11 +113,11 @@ export default function InvitePage() {
                 onFocus={(e) => e.target.select()}
               />
               <button style={{ ...s.btn, ...(copied ? s.btnCopied : {}) }} onClick={copyLink}>
-                {copied ? '✓ Copied!' : 'Copy'}
+                {copied ? tr('✓ Copied!') : tr('Copy')}
               </button>
             </div>
             <p style={s.hint}>
-              Your referral code: <strong style={{ color: 'var(--color-accent-2)', fontFamily: 'monospace' }}>{myData?.referralCode}</strong>
+              {tr("Your referral code:")} <strong style={{ color: 'var(--color-accent-2)', fontFamily: 'monospace' }}>{myData?.referralCode}</strong>
             </p>
           </div>
 
@@ -124,21 +125,21 @@ export default function InvitePage() {
           <div style={s.statsRow}>
             <div style={s.stat}>
               <div style={s.statNum}>{myData?.totalReferrals ?? 0}</div>
-              <div style={s.statLabel}>Total Invites Sent</div>
+              <div style={s.statLabel}>{tr("Total Invites Sent")}</div>
             </div>
             <div style={s.stat}>
               <div style={{ ...s.statNum, color: '#4ade80' }}>{myData?.activeReferrals ?? 0}</div>
-              <div style={s.statLabel}>Active Friends</div>
+              <div style={s.statLabel}>{tr("Active Friends")}</div>
             </div>
             <div style={s.stat}>
               <div style={{ ...s.statNum, color: 'var(--color-warning)' }}>{myData?.inviteQualityScore ?? 0}</div>
-              <div style={s.statLabel}>Quality Score</div>
+              <div style={s.statLabel}>{tr("Quality Score")}</div>
             </div>
           </div>
 
           {/* Mentor tier */}
           <div style={s.card}>
-            <h2 style={s.cardTitle}>Your Status</h2>
+            <h2 style={s.cardTitle}>{tr("Your Status")}</h2>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <span style={{ ...s.badge, background: tier.bg, color: tier.color }}>
                 {tier.label}
@@ -149,9 +150,9 @@ export default function InvitePage() {
             </div>
             <div style={s.milestoneBar}>
               {[
-                { need: 5, label: 'Basic Avatars', tier: 'basic' },
-                { need: 15, label: 'Custom Photo', tier: 'custom' },
-                { need: 45, label: '3D Models + Ambassador', tier: '3d' }
+                { need: 5, label: tr('Basic Avatars'), tier: 'basic' },
+                { need: 15, label: tr('Custom Photo'), tier: 'custom' },
+                { need: 45, label: tr('3D Models + Ambassador'), tier: '3d' }
               ].map(({ need, label }) => {
                 const done = (myData?.totalReferrals || 0) >= need;
                 return (
@@ -161,7 +162,7 @@ export default function InvitePage() {
                       <div style={{ color: done ? 'var(--color-text)' : 'var(--color-text-faint)', fontSize: 13, fontWeight: 600 }}>
                         {done ? '✓ ' : ''}{label}
                       </div>
-                      <div style={{ color: 'var(--color-text-faint)', fontSize: 12 }}>{need} verified invites</div>
+                      <div style={{ color: 'var(--color-text-faint)', fontSize: 12 }}>{need} {tr("verified invites")}</div>
                     </div>
                   </div>
                 );
@@ -171,10 +172,10 @@ export default function InvitePage() {
 
           {/* My Invites */}
           <div style={s.card}>
-            <h2 style={s.cardTitle}>People You Invited ({invites.length})</h2>
+            <h2 style={s.cardTitle}>{tr("People You Invited (")}{invites.length})</h2>
             {invites.length === 0 ? (
               <p style={{ color: 'var(--color-text-faint)', fontSize: 14 }}>
-                No invites yet. Share your link above to get started!
+                {tr("No invites yet. Share your link above to get started!")}
               </p>
             ) : (
               <div style={s.inviteList}>
@@ -182,7 +183,7 @@ export default function InvitePage() {
                   <div key={inv.id} style={s.inviteRow}>
                     <div>
                       <div style={s.inviteName}>{inv.user?.displayName || inv.user?.username || 'Unknown'}</div>
-                      <div style={{ color: 'var(--color-text-faint)', fontSize: 12 }}>Joined {new Date(inv.joinedAt).toLocaleDateString()}</div>
+                      <div style={{ color: 'var(--color-text-faint)', fontSize: 12 }}>{tr("Joined")} {new Date(inv.joinedAt).toLocaleDateString()}</div>
                     </div>
                     <span style={{
                       ...s.badge,
@@ -200,12 +201,12 @@ export default function InvitePage() {
 
           {/* How it works */}
           <div style={s.card}>
-            <h2 style={s.cardTitle}>How It Works</h2>
+            <h2 style={s.cardTitle}>{tr("How It Works")}</h2>
             <ol style={{ paddingLeft: 20, color: 'var(--color-text-muted)', fontSize: 14, lineHeight: 2, margin: 0 }}>
-              <li>Share your invite link with friends.</li>
-              <li>They sign up and verify their email.</li>
-              <li>Once they play games or solve puzzles (earning 10 activity points), they become <strong style={{ color: '#4ade80' }}>Active</strong>.</li>
-              <li>Unlock avatar tiers, mentor status, and climb the leaderboard!</li>
+              <li>{tr("Share your invite link with friends.")}</li>
+              <li>{tr("They sign up and verify their email.")}</li>
+              <li>{tr("Once they play games or solve puzzles (earning 10 activity points), they become")} <strong style={{ color: '#4ade80' }}>{tr("Active")}</strong>.</li>
+              <li>{tr("Unlock avatar tiers, mentor status, and climb the leaderboard!")}</li>
             </ol>
           </div>
         </main>

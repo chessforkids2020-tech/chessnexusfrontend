@@ -3,6 +3,7 @@ import api from '../api';
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import io from 'socket.io-client';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function PuzzleTournament() {
   const [rounds, setRounds] = useState([]);
@@ -61,10 +62,10 @@ export default function PuzzleTournament() {
       }
 
       if (e.response?.status === 401) {
-        setErr('Session expired. Please log in again.');
+        setErr(tr('Session expired. Please log in again.'));
         setTimeout(() => navigate('/login'), 3000);
       } else if (e.code === 'NETWORK_ERROR' || e.code === 'ERR_NETWORK' || !navigator.onLine) {
-        setErr('Network connection issue. Please check your internet and try again.');
+        setErr(tr('Network connection issue. Please check your internet and try again.'));
       } else {
         setErr(e?.response?.data?.message || e.message || String(e) || 'Failed to load tournament data');
       }
@@ -90,14 +91,14 @@ export default function PuzzleTournament() {
         
         // Listen for real-time tournament updates
         socket.on('roundCreated', (data) => {
-          setRealTimeUpdate(`✨ New round created: ${data.roundName}`);
+          setRealTimeUpdate(tr("✨ New round created: {roundName}", { roundName: data.roundName }));
           setTimeout(() => setRealTimeUpdate(null), 5000);
           // Refresh data to show new round
           fetchData();
         });
         
         socket.on('batchCreated', (data) => {
-          setRealTimeUpdate(`🎯 New batch created: ${data.batchName} in ${data.roundName}`);
+          setRealTimeUpdate(tr("🎯 New batch created: {batchName} in {roundName}", { batchName: data.batchName, roundName: data.roundName }));
           setTimeout(() => setRealTimeUpdate(null), 5000);
           // Refresh data to show new batch
           fetchData();
@@ -105,12 +106,12 @@ export default function PuzzleTournament() {
         
         socket.on('userAssigned', (data) => {
           // Update latest assigned user display
-          const name = data.displayName || data.username || `User ${data.userId}`;
+          const name = data.displayName || data.username || tr("User {userId}", { userId: data.userId });
           setLatestAssignedUser({ id: data.userId, name, batchName: data.batchName });
 
           // Check if this assignment is for current user
           if (user && data.userId === user._id) {
-            setRealTimeUpdate(`🎉 You've been assigned to batch: ${data.batchName}!`);
+            setRealTimeUpdate(tr("🎉 You've been assigned to batch: {batchName}!", { batchName: data.batchName }));
             setTimeout(() => setRealTimeUpdate(null), 7000);
             // Refresh user data to show new assignment
             fetchData();
@@ -468,9 +469,9 @@ export default function PuzzleTournament() {
         <div style={styles.content}>
           <div style={styles.loadingContainer}>
             <div style={styles.loadingIcon}>⏳</div>
-            <h2 style={styles.loadingTitle}>Loading Tournament Data</h2>
+            <h2 style={styles.loadingTitle}>{tr("Loading Tournament Data")}</h2>
             <p style={styles.loadingText}>
-              Fetching available rounds and batches...
+              {tr("Fetching available rounds and batches...")}
             </p>
           </div>
         </div>
@@ -485,7 +486,7 @@ export default function PuzzleTournament() {
         <div style={styles.content}>
           <div style={styles.errorContainer}>
             <div style={styles.loadingIcon}>⚠️</div>
-            <h2 style={styles.errorTitle}>Error</h2>
+            <h2 style={styles.errorTitle}>{tr("Error")}</h2>
             <p style={styles.errorText}>{err}</p>
             <motion.button 
               onClick={() => fetchData(0)} 
@@ -496,7 +497,7 @@ export default function PuzzleTournament() {
               }}
               transition={{ duration: 0.2 }}
             >
-              Retry
+              {tr("Retry")}
             </motion.button>
           </div>
         </div>
@@ -539,16 +540,16 @@ export default function PuzzleTournament() {
         <div style={styles.header}>
           <h1 style={styles.title}>
             <span style={styles.trophyIcon}>🏆</span>
-            Tournament Rounds
+            {tr("Tournament Rounds")}
           </h1>
           <p style={styles.subtitle}>
-            Welcome, {user?.displayName}!
+            {tr("Welcome,")} {user?.displayName}!
             Choose a round and pick a batch to join. Admin controls when each batch goes live.
           </p>
 
           {latestAssignedUser && (
             <div style={{ color: 'var(--color-text-muted)', marginTop: 8, fontSize: 14 }}>
-              🔔 Latest assigned: <strong style={{ color: 'var(--color-accent)' }}>{latestAssignedUser.name}</strong> — {latestAssignedUser.batchName}
+              {tr("🔔 Latest assigned:")} <strong style={{ color: 'var(--color-accent)' }}>{latestAssignedUser.name}</strong> — {latestAssignedUser.batchName}
             </div>
           )}
         </div>
@@ -560,9 +561,9 @@ export default function PuzzleTournament() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <h3 style={{ color: 'var(--color-danger)', margin: '0 0 12px 0' }}>📋 Assignment Status</h3>
+            <h3 style={{ color: 'var(--color-danger)', margin: '0 0 12px 0' }}>{tr("📋 Assignment Status")}</h3>
             <p style={{ color: 'var(--color-text-muted)', margin: '0' }}>
-              You are not assigned to any round yet. Please contact an administrator.
+              {tr("You are not assigned to any round yet. Please contact an administrator.")}
             </p>
           </motion.div>
         )}
@@ -584,10 +585,10 @@ export default function PuzzleTournament() {
               >
                 <div style={styles.roundHeader}>
                   <h2 style={styles.roundTitle}>
-                    {round.name || `Round ${round.number || 'Unknown'}`}
+                    {round.name || tr("Round {v0}", { v0: round.number || tr('Unknown') })}
                   </h2>
                   <span style={styles.globalTime}>
-                    Global time: {round.startDate ? new Date(round.startDate).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) : 'Not set'}
+                    {tr("Global time:")} {round.startDate ? new Date(round.startDate).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) : tr('Not set')}
                   </span>
                 </div>
 
@@ -612,18 +613,18 @@ export default function PuzzleTournament() {
                         {/* Latest assigned user for this batch */}
                         {batch?.users && batch.users.length > 0 && (
                           <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
-                            Latest assigned: {formatDisplayName(batch.users[batch.users.length - 1])}
+                            {tr("Latest assigned:")} {formatDisplayName(batch.users[batch.users.length - 1])}
                           </div>
                         )}
                       </div>
 
                       <div style={styles.batchInfo}>
-                        <span style={styles.duration}>Duration: {durationMinutes} min</span>
-                        <span style={styles.participants}>• {totalParticipants} participants</span>
+                        <span style={styles.duration}>{tr("Duration:")} {durationMinutes} {tr("min")}</span>
+                        <span style={styles.participants}>• {totalParticipants} {tr("participants")}</span>
                       </div>
 
                       <div style={styles.viewResults}>
-                        💡 View results & leaderboard anytime
+                        {tr("💡 View results & leaderboard anytime")}
                       </div>
 
                       <div style={styles.actionButtons}>
@@ -636,7 +637,7 @@ export default function PuzzleTournament() {
                           if (batchDone) {
                             return (
                               <span style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>
-                                ✅ Batch finished
+                                {tr("✅ Batch finished")}
                               </span>
                             );
                           }
@@ -644,7 +645,7 @@ export default function PuzzleTournament() {
                           if (!isAssignedToBatch) {
                             return (
                               <span style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>
-                                Contact admin to be assigned
+                                {tr("Contact admin to be assigned")}
                               </span>
                             );
                           }
@@ -654,7 +655,7 @@ export default function PuzzleTournament() {
                             return (
                               <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
                                 <Link to={`/waiting/${round._id}/${batch._id}`} style={styles.joinButton}>
-                                  🎯 Join Now
+                                  {tr("🎯 Join Now")}
                                 </Link>
                               </motion.div>
                             );
@@ -666,9 +667,9 @@ export default function PuzzleTournament() {
                               <Link
                                 to={`/waiting/${round._id}/${batch._id}`}
                                 style={{ ...styles.joinButtonWaiting, opacity: 0.95 }}
-                                aria-label={`Enter waiting room for ${batch.name}`}
+                                aria-label={tr("Enter waiting room for {name}", { name: batch.name })}
                               >
-                                ⏳ Enter Waiting Room
+                                {tr("⏳ Enter Waiting Room")}
                               </Link>
                             </motion.div>
                           );
@@ -685,7 +686,7 @@ export default function PuzzleTournament() {
                           }}
                           transition={{ duration: 0.2 }}
                         >
-                          📊 Results
+                          {tr("📊 Results")}
                         </motion.button>
 
                         <motion.button 
@@ -698,7 +699,7 @@ export default function PuzzleTournament() {
                           }}
                           transition={{ duration: 0.2 }}
                         >
-                          🏆 Leaderboard
+                          {tr("🏆 Leaderboard")}
                         </motion.button>
                       </div>
                     </motion.div>
@@ -723,12 +724,12 @@ export default function PuzzleTournament() {
                 <div style={styles.roundHeader}>
                   <h2 style={styles.roundTitle}>{round.name}</h2>
                   <span style={styles.globalTime}>
-                    Global time: {new Date(round.startDate).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+                    {tr("Global time:")} {new Date(round.startDate).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
                   </span>
                 </div>
 
                 <div style={styles.noBatchesMessage}>
-                  No batches available for you in this round
+                  {tr("No batches available for you in this round")}
                 </div>
               </motion.div>
             );
@@ -742,9 +743,9 @@ export default function PuzzleTournament() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px 0' }}>📭 No Assigned Rounds</h3>
+            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px 0' }}>{tr("📭 No Assigned Rounds")}</h3>
             <p style={{ color: 'var(--color-text-muted)', margin: '0' }}>
-              You don't have any tournament rounds assigned yet. Contact an administrator to be assigned to a round.
+              {tr("You don't have any tournament rounds assigned yet. Contact an administrator to be assigned to a round.")}
             </p>
           </motion.div>
         )}
@@ -756,9 +757,9 @@ export default function PuzzleTournament() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px 0' }}>📭 No Rounds Available</h3>
+            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px 0' }}>{tr("📭 No Rounds Available")}</h3>
             <p style={{ color: 'var(--color-text-muted)', margin: '0' }}>
-              There are currently no tournament rounds available. Check back later!
+              {tr("There are currently no tournament rounds available. Check back later!")}
             </p>
           </motion.div>
         )}

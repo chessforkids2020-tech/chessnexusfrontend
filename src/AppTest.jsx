@@ -1,15 +1,16 @@
 import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
+import { t as tr } from './i18n/LanguageContext';
 
 function TestPage() {
-  return <div>Test Page Works!</div>;
+  return <div>{tr("Test Page Works!")}</div>;
 }
 
 function HomePage() {
   return (
     <div>
-      <h1>Home Page</h1>
-      <Link to="/test">Go to Test Page</Link>
+      <h1>{tr("Home Page")}</h1>
+      <Link to="/test">{tr("Go to Test Page")}</Link>
     </div>
   );
 }
@@ -17,9 +18,9 @@ function HomePage() {
 export default function AppTest() {
   return (
     <div>
-      <h1>Router Test</h1>
+      <h1>{tr("Router Test")}</h1>
       <nav>
-        <Link to="/">Home</Link> | <Link to="/test">Test</Link>
+        <Link to="/">{tr("Home")}</Link> | <Link to="/test">{tr("Test")}</Link>
       </nav>
       <Routes>
         <Route path="/" element={<HomePage />} />

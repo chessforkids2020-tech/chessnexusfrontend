@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
 import { trackEvent } from '../lib/analytics';
 import './HealthyMix.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Depth for the per-square evaluations. Matches GameReplay: one search per
 // candidate square, so this is deliberately shallower than the engine panel's.
@@ -120,17 +121,17 @@ function MovesPanel({ plies, shownPlyIdx, atLive, navFirst, navPrev, navNext, na
   return (
     <div className={`hm-moves ${variant || ''}`}>
       <div className="hm-moves-head">
-        <span className="hm-moves-title">Moves</span>
+        <span className="hm-moves-title">{tr("Moves")}</span>
       </div>
       <div className="hm-moves-list">
-        {rows.length ? rows : <span className="hm-moves-empty">No moves yet — make a move on the board.</span>}
+        {rows.length ? rows : <span className="hm-moves-empty">{tr("No moves yet — make a move on the board.")}</span>}
       </div>
       <div className="hm-moves-foot">
         <span className="hm-moves-nav">
-          <button className="hm-nav-btn" onClick={navFirst} disabled={atStart} title="Start">⏮</button>
-          <button className="hm-nav-btn" onClick={navPrev} disabled={atStart} title="Previous move">◀</button>
-          <button className="hm-nav-btn" onClick={navNext} disabled={atLive} title="Next move">▶</button>
-          <button className="hm-nav-btn" onClick={navLast} disabled={atLive} title="Latest">⏭</button>
+          <button className="hm-nav-btn" onClick={navFirst} disabled={atStart} title={tr("Start")}>⏮</button>
+          <button className="hm-nav-btn" onClick={navPrev} disabled={atStart} title={tr("Previous move")}>◀</button>
+          <button className="hm-nav-btn" onClick={navNext} disabled={atLive} title={tr("Next move")}>▶</button>
+          <button className="hm-nav-btn" onClick={navLast} disabled={atLive} title={tr("Latest")}>⏭</button>
         </span>
       </div>
     </div>
@@ -142,7 +143,7 @@ function MovesPanel({ plies, shownPlyIdx, atLive, navFirst, navPrev, navNext, na
 // every caller sets that with setOrientation() in the same tick, so the state
 // still holds the PREVIOUS puzzle's side when the message is built.
 function turnPrompt(game) {
-  return `${game.turn() === 'w' ? 'White' : 'Black'} to move — find the best move.`;
+  return tr("{v0} to move — find the best move.", { v0: game.turn() === 'w' ? 'White' : 'Black' });
 }
 
 export default function HealthyMix() {
@@ -992,7 +993,7 @@ export default function HealthyMix() {
   const loadPuzzle = useCallback(async (excludeId) => {
     setLoading(true);
     setStatusSynced('loading');
-    setMessage('Loading…');
+    setMessage(tr('Loading…'));
     setRatingDelta(null);
     setLastMove(null);
 
@@ -1002,7 +1003,7 @@ export default function HealthyMix() {
         if (!redoQueueRef.current) {
           let ids = [];
           try { ids = JSON.parse(sessionStorage.getItem('redoPuzzleIds') || '[]'); } catch { ids = []; }
-          if (!ids.length) { setMessage('No puzzles to redo.'); setLoading(false); return; }
+          if (!ids.length) { setMessage(tr('No puzzles to redo.')); setLoading(false); return; }
           const res = await api.post('/api/public/healthymix/by-ids', { ids });
           redoQueueRef.current = res.data.puzzles || [];
           redoIdxRef.current = 0;
@@ -1019,7 +1020,7 @@ export default function HealthyMix() {
         }
         renderPuzzle(queue[redoIdxRef.current]);
       } catch {
-        setMessage('Could not load redo puzzles.');
+        setMessage(tr('Could not load redo puzzles.'));
         setLoading(false);
       }
       return;
@@ -1101,9 +1102,9 @@ export default function HealthyMix() {
     } catch (err) {
       setStatusSynced('loading');
       setMessage(
-        hasTheme ? `No ${themeLabel} puzzles available right now.`
-        : hasPieces ? `No ${piecesParam}-piece puzzles available right now.`
-        : hasBand ? `No puzzles in the ${bandMin}–${bandMax} range.`
+        hasTheme ? tr("No {themeLabel} puzzles available right now.", { themeLabel: themeLabel })
+        : hasPieces ? tr("No {piecesParam}-piece puzzles available right now.", { piecesParam: piecesParam })
+        : hasBand ? tr("No puzzles in the {bandMin}–{bandMax} range.", { bandMin: bandMin, bandMax: bandMax })
         : 'No puzzles available. Try again later.');
       setLoading(false);
     }
@@ -1162,7 +1163,7 @@ export default function HealthyMix() {
       // A correct-but-too-easy solve earns nothing (anti-farm). Tell the user
       // why, so a flat 0 doesn't look like a bug.
       if (solved && res.data.tooEasy) {
-        setMessage('Correct — too easy for your level. Try harder.');
+        setMessage(tr('Correct — too easy for your level. Try harder.'));
       }
       // If this is a coach assignment, count this attempt toward it.
       reportAssignmentAttempt(solved);
@@ -1300,10 +1301,10 @@ export default function HealthyMix() {
         // Puzzle complete. Only counts as a "solve" if it was never failed.
         setStatusSynced('solved');
         if (failedRef.current) {
-          setMessage('Correct line. (No points — puzzle was failed.) Free play enabled.');
+          setMessage(tr('Correct line. (No points — puzzle was failed.) Free play enabled.'));
           playSound('complete');
         } else {
-          setMessage('Success! Well played.');
+          setMessage(tr('Success! Well played.'));
           playSound('correct');
           setSessionCorrect(c => c + 1);
           setStreak(s => s + 1);
@@ -1325,9 +1326,9 @@ export default function HealthyMix() {
       setStreak(0);
       pushHistory(false);
       submitResult(false); // applies the penalty exactly once
-      setMessage('That’s not the move. Try again — no points now.');
+      setMessage(tr('That’s not the move. Try again — no points now.'));
     } else {
-      setMessage('Still not it. Try again, or view the solution.');
+      setMessage(tr('Still not it. Try again, or view the solution.'));
     }
     logAttempt(result.san, false, fenBeforeAttempt);
     playSound('wrong');
@@ -1381,7 +1382,7 @@ export default function HealthyMix() {
     if (!mv) return;
     markFailedOnce();
     setHint({ san: mv.san, from: mv.from });
-    setMessage('Hint shown. Still your move — try to find it.');
+    setMessage(tr('Hint shown. Still your move — try to find it.'));
   }, [nextSolutionMove, markFailedOnce]);
 
   // ── View solution ──
@@ -1409,7 +1410,7 @@ export default function HealthyMix() {
       if (i >= sol.length) {
         setBotThinking(false);
         setStatus('failed');
-        setMessage('That was the full line — step back through it with ◀ to replay it.');
+        setMessage(tr('That was the full line — step back through it with ◀ to replay it.'));
         return;
       }
       const game = new Chess(chessRef.current.fen());
@@ -1738,7 +1739,7 @@ export default function HealthyMix() {
           gap: 16,
           boxShadow: '0 4px 20px var(--color-black-a35)'
         }}>
-          <span>📋 Coach assignment{assignTarget > 0 ? ` · ${assignProgress}/${assignTarget} puzzles` : ''}</span>
+          <span>📋 Coach assignment{assignTarget > 0 ? tr(" · {assignProgress}/{assignTarget} puzzles", { assignProgress: assignProgress, assignTarget: assignTarget }) : ''}</span>
           {assignTarget > 0 && (
             <div style={{ flex: 1, maxWidth: 240, height: 8, background: 'var(--color-white-a07)', borderRadius: 'var(--radius-pill)', overflow: 'hidden' }}>
               <div style={{ width: `${Math.min(100, Math.round((assignProgress / assignTarget) * 100))}%`, height: '100%', background: 'linear-gradient(90deg,var(--color-accent-2),var(--color-accent))' }} />
@@ -1752,20 +1753,20 @@ export default function HealthyMix() {
         <div style={{ position: 'fixed', inset: 0, background: 'var(--color-black-a65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
           <div style={{ background: 'rgba(20,22,30,0.9)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid var(--color-accent-2-a30)', borderRadius: 'var(--radius-2xl)', padding: '32px 36px', textAlign: 'center', maxWidth: 420, width: '90%', boxShadow: '0 24px 64px var(--color-black-a65)' }}>
             <div style={{ fontSize: 52, marginBottom: 12 }}>🎉</div>
-            <h2 style={{ color: 'var(--color-text)', fontSize: 24, fontWeight: 800, margin: '0 0 8px' }}>Assignment finished!</h2>
-            <p style={{ color: 'var(--color-text-muted)', margin: '0 0 22px' }}>You completed all {assignTarget} puzzles your coach assigned.</p>
+            <h2 style={{ color: 'var(--color-text)', fontSize: 24, fontWeight: 800, margin: '0 0 8px' }}>{tr("Assignment finished!")}</h2>
+            <p style={{ color: 'var(--color-text-muted)', margin: '0 0 22px' }}>{tr("You completed all")} {assignTarget} {tr("puzzles your coach assigned.")}</p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 24 }}>
               <div style={{ flex: 1, background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a20)', borderRadius: 'var(--radius-lg)', padding: '12px 8px' }}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-success)' }}>{assignDone.solved}</div>
-                <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>SOLVED</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{tr("SOLVED")}</div>
               </div>
               <div style={{ flex: 1, background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a20)', borderRadius: 'var(--radius-lg)', padding: '12px 8px' }}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-danger)' }}>{assignDone.failed}</div>
-                <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>FAILED</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{tr("FAILED")}</div>
               </div>
               <div style={{ flex: 1, background: 'rgba(251,191,36,0.08)', border: '1px solid var(--color-warning-a20)', borderRadius: 'var(--radius-lg)', padding: '12px 8px' }}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-warning)' }}>🔥 {assignDone.maxStreak}</div>
-                <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>BEST STREAK</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{tr("BEST STREAK")}</div>
               </div>
             </div>
             <button
@@ -1773,7 +1774,7 @@ export default function HealthyMix() {
               disabled={assignSubmitting}
               style={{ width: '100%', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: 'var(--color-text)', border: 'none', borderRadius: 'var(--radius-lg)', padding: '13px 0', fontSize: 15, fontWeight: 700, cursor: assignSubmitting ? 'wait' : 'pointer', boxShadow: '0 6px 24px var(--color-accent-a30)' }}
             >
-              {assignSubmitting ? 'Submitting…' : 'Submit to coach'}
+              {assignSubmitting ? tr('Submitting…') : tr('Submit to coach')}
             </button>
           </div>
         </div>
@@ -1788,47 +1789,47 @@ export default function HealthyMix() {
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="hm-brand-title">
                 {hasTheme ? themeLabel
-                  : hasPieces ? `${piecesParam} Pieces`
+                  : hasPieces ? tr("{piecesParam} Pieces", { piecesParam: piecesParam })
                   : 'Healthy Mix'}
               </div>
               <div className="hm-brand-sub">
-                {hasTheme ? 'Themed training (±100 your rating)'
+                {hasTheme ? tr('Themed training (±100 your rating)')
                   : hasPieces ? 'Pieces training (±400 your rating)'
-                  : hasBand ? `Rating ${bandMin}–${bandMax}`
+                  : hasBand ? tr("Rating {bandMin}–{bandMax}", { bandMin: bandMin, bandMax: bandMax })
                   : 'Endless tactics'}
               </div>
             </div>
             <button
               className="hm-back-btn"
               onClick={() => navigate('/training')}
-              title="Back to Training"
-              aria-label="Back to Training"
+              title={tr("Back to Training")}
+              aria-label={tr("Back to Training")}
             >
-              ← Back
+              {tr("← Back")}
             </button>
           </div>
 
           {hasTheme && (
             <div className="hm-band-badge">
-              🎯 Theme: {themeLabel} only — near your rating
+              {tr("🎯 Theme:")} {themeLabel} {tr("only — near your rating")}
             </div>
           )}
 
           {!hasTheme && hasPieces && (
             <div className="hm-band-badge">
-              ♟️ {piecesParam} pieces on the board — near your rating
+              ♟️ {piecesParam} {tr("pieces on the board — near your rating")}
             </div>
           )}
 
           {!hasTheme && !hasPieces && hasBand && (
             <div className="hm-band-badge">
-              🎯 Filtered: {bandMin}–{bandMax} rated puzzles
+              {tr("🎯 Filtered:")} {bandMin}–{bandMax} {tr("rated puzzles")}
             </div>
           )}
 
           {/* Rating card */}
           <div className="hm-rating-card">
-            <div className="hm-rating-label">Your Puzzle Rating</div>
+            <div className="hm-rating-label">{tr("Your Puzzle Rating")}</div>
             <div className="hm-rating-value">
               {rating}
               {ratingDelta != null && ratingDelta !== 0 && (
@@ -1843,9 +1844,9 @@ export default function HealthyMix() {
             <button
               className="hm-dash-btn"
               onClick={() => navigate('/puzzle-dashboard')}
-              title="Open your Puzzle Dashboard"
+              title={tr("Open your Puzzle Dashboard")}
             >
-              📊 My Puzzle Dashboard
+              {tr("📊 My Puzzle Dashboard")}
             </button>
           </div>
 
@@ -1853,26 +1854,26 @@ export default function HealthyMix() {
           <div className="hm-stats">
             <div className="hm-stat">
               <span className="hm-stat-num hm-green">{sessionCorrect}</span>
-              <span className="hm-stat-label">Solved</span>
+              <span className="hm-stat-label">{tr("Solved")}</span>
             </div>
             <div className="hm-stat">
               <span className="hm-stat-num hm-red">{sessionWrong}</span>
-              <span className="hm-stat-label">Failed</span>
+              <span className="hm-stat-label">{tr("Failed")}</span>
             </div>
             <div className="hm-stat">
               <span className="hm-stat-num hm-orange">{streak}</span>
-              <span className="hm-stat-label">Streak</span>
+              <span className="hm-stat-label">{tr("Streak")}</span>
             </div>
           </div>
 
           {/* Training-mode switcher */}
           <div className="hm-modes-wrap">
-            <div className="hm-modes-label">Training mode</div>
+            <div className="hm-modes-label">{tr("Training mode")}</div>
             <div className="hm-modes">
-              <button className={`hm-mode-btn ${trainingMode === 'healthymix' ? 'hm-mode-on' : ''}`} onClick={() => navigate('/training/healthy-mix')}>🧩 Healthy Mix</button>
-              <button className={`hm-mode-btn ${trainingMode === 'themes' ? 'hm-mode-on' : ''}`} onClick={() => navigate('/puzzles/themes')}>🎯 Themes</button>
-              <button className={`hm-mode-btn ${trainingMode === 'pieces' ? 'hm-mode-on' : ''}`} onClick={() => navigate('/puzzles/pieces')}>♟️ Pieces</button>
-              <button className={`hm-mode-btn ${trainingMode === 'rating' ? 'hm-mode-on' : ''}`} onClick={() => setShowRatingModal(true)}>📊 Rating</button>
+              <button className={`hm-mode-btn ${trainingMode === 'healthymix' ? 'hm-mode-on' : ''}`} onClick={() => navigate('/training/healthy-mix')}>{tr("🧩 Healthy Mix")}</button>
+              <button className={`hm-mode-btn ${trainingMode === 'themes' ? 'hm-mode-on' : ''}`} onClick={() => navigate('/puzzles/themes')}>{tr("🎯 Themes")}</button>
+              <button className={`hm-mode-btn ${trainingMode === 'pieces' ? 'hm-mode-on' : ''}`} onClick={() => navigate('/puzzles/pieces')}>{tr("♟️ Pieces")}</button>
+              <button className={`hm-mode-btn ${trainingMode === 'rating' ? 'hm-mode-on' : ''}`} onClick={() => setShowRatingModal(true)}>{tr("📊 Rating")}</button>
             </div>
           </div>
         </aside>
@@ -1918,17 +1919,17 @@ export default function HealthyMix() {
                 <div className="hm-exhausted-card">
                   <div className="hm-exhausted-icon">✅</div>
                   <h3 className="hm-exhausted-title">
-                    All {exhausted.pieces}-piece puzzles done!
+                    {tr("All")} {exhausted.pieces}{tr("-piece puzzles done!")}
                   </h3>
                   <p className="hm-exhausted-text">
-                    You've completed all {exhausted.total} puzzle{exhausted.total === 1 ? '' : 's'} with
-                    {' '}{exhausted.pieces} pieces. Pick a different piece count to keep training.
+                    {tr("You've completed all")} {exhausted.total} {tr("puzzle")}{exhausted.total === 1 ? '' : 's'} {tr("with")}
+                    {' '}{exhausted.pieces} {tr("pieces. Pick a different piece count to keep training.")}
                   </p>
                   <button
                     className="hm-btn hm-btn-primary"
                     onClick={() => navigate('/puzzles/pieces')}
                   >
-                    Pick another piece count →
+                    {tr("Pick another piece count →")}
                   </button>
                 </div>
               </div>
@@ -1943,7 +1944,7 @@ export default function HealthyMix() {
                   <div className="hm-exhausted-card">
                     <div className="hm-exhausted-icon">{good ? '🎉' : '📈'}</div>
                     <h3 className="hm-exhausted-title">
-                      Redo complete — {redoSolved}/{redoTotal} solved ({pct}%)
+                      {tr("Redo complete —")} {redoSolved}/{redoTotal} {tr("solved (")}{pct}%)
                     </h3>
                     <p className="hm-exhausted-text">
                       {redoSolved === redoTotal
@@ -1962,7 +1963,7 @@ export default function HealthyMix() {
                         className="hm-btn hm-btn-primary"
                         onClick={() => navigate('/puzzle-dashboard')}
                       >
-                        Back to Puzzle Dashboard →
+                        {tr("Back to Puzzle Dashboard →")}
                       </button>
                       <button
                         className="hm-btn"
@@ -1976,7 +1977,7 @@ export default function HealthyMix() {
                           navigate('/training/healthy-mix', { replace: true });
                         }}
                       >
-                        Continue training →
+                        {tr("Continue training →")}
                       </button>
                     </div>
                   </div>
@@ -2003,10 +2004,10 @@ export default function HealthyMix() {
                 dead while solving even after moves had been played, which is
                 not how the moves card behaves. */}
             <span className="hm-mobilebar-nav">
-              <button className="hm-nav-btn" onClick={navFirst} disabled={atStart} title="Start">⏮</button>
-              <button className="hm-nav-btn" onClick={navPrev}  disabled={atStart} title="Previous move">◀</button>
-              <button className="hm-nav-btn" onClick={navNext}  disabled={atLive}  title="Next move">▶</button>
-              <button className="hm-nav-btn" onClick={navLast}  disabled={atLive}  title="Latest">⏭</button>
+              <button className="hm-nav-btn" onClick={navFirst} disabled={atStart} title={tr("Start")}>⏮</button>
+              <button className="hm-nav-btn" onClick={navPrev}  disabled={atStart} title={tr("Previous move")}>◀</button>
+              <button className="hm-nav-btn" onClick={navNext}  disabled={atLive}  title={tr("Next move")}>▶</button>
+              <button className="hm-nav-btn" onClick={navLast}  disabled={atLive}  title={tr("Latest")}>⏭</button>
             </span>
 
             {puzzleOver && (
@@ -2015,7 +2016,7 @@ export default function HealthyMix() {
                 className={`hm-mobilebar-engine${engineOn ? ' on' : ''}`}
                 onClick={() => setEngineOn(v => !v)}
                 aria-pressed={engineOn}
-                title="Stockfish analysis"
+                title={tr("Stockfish analysis")}
               >
                 🐟 <span className="hm-mobilebar-engine-state">{engineOn ? 'On' : 'Off'}</span>
               </button>
@@ -2025,8 +2026,8 @@ export default function HealthyMix() {
               type="button"
               className="hm-mobilebar-burger"
               onClick={() => setMobileMenuOpen(true)}
-              aria-label="Training modes, rating and session"
-              title="More"
+              aria-label={tr("Training modes, rating and session")}
+              title={tr("More")}
             >
               ☰
             </button>
@@ -2042,23 +2043,23 @@ export default function HealthyMix() {
               Width-matched to the board so the row lines up with it exactly. */}
           {puzzleOver && (
             <div className="hm-boardtools" style={{ width: boardSize }}>
-              <button className="hm-boardtool" onClick={retry}>↻ Retry</button>
+              <button className="hm-boardtool" onClick={retry}>{tr("↻ Retry")}</button>
               <button className="hm-boardtool" onClick={copyFen}>
-                {fenCopied ? '✓ Copied' : '📋 Copy FEN'}
+                {fenCopied ? tr('✓ Copied') : tr('📋 Copy FEN')}
               </button>
               <button
                 type="button"
                 className={`hm-boardtool hm-boardtool--eval${squareEvalsOn ? ' on' : ''}`}
                 onClick={toggleSquareEvals}
                 aria-pressed={squareEvalsOn}
-                title="Click a piece and every square it can reach shows the eval after moving there."
+                title={tr("Click a piece and every square it can reach shows the eval after moving there.")}
               >
                 {/* Labelled just "Eval" on the narrow mobile row — "Square
                     evals" is the long form kept for wider screens. */}
-                🎯 <span className="hm-boardtool-longlabel">Square evals</span>
-                <span className="hm-boardtool-shortlabel">Eval</span>
+                🎯 <span className="hm-boardtool-longlabel">{tr("Square evals")}</span>
+                <span className="hm-boardtool-shortlabel">{tr("Eval")}</span>
                 <span className="hm-boardtool-state">
-                  {squareEvalsOn ? (evalBusy ? '…' : 'On') : 'Off'}
+                  {squareEvalsOn ? (evalBusy ? '…' : tr('On')) : tr('Off')}
                 </span>
               </button>
             </div>
@@ -2068,7 +2069,7 @@ export default function HealthyMix() {
           {sessionHistory.length > 0 && (
             <div className="hm-history" style={{ width: boardSize }}>
               <div className="hm-history-head">
-                <span className="hm-history-title">This session</span>
+                <span className="hm-history-title">{tr("This session")}</span>
                 <span className="hm-history-count">
                   <span className="hm-green">{sessionCorrect} ✓</span>
                   {' · '}
@@ -2089,7 +2090,7 @@ export default function HealthyMix() {
                   const label = scored ? (pts > 0 ? `+${pts}` : `${pts}`) : (h.correct ? '✓' : '✗');
                   const outcome = h.correct ? 'solved' : 'failed';
                   const ptsNote = scored
-                    ? ` · ${pts > 0 ? '+' : ''}${pts} rating`
+                    ? tr(" · {v0}{pts} rating", { v0: pts > 0 ? '+' : '', pts: pts })
                     : (pts === 0 ? ' · no rating change' : '');
                   return (
                     <span
@@ -2137,15 +2138,15 @@ export default function HealthyMix() {
                 <button
                   className="hm-bulb"
                   onClick={showHint}
-                  title="Hint"
-                  aria-label="Show a hint"
+                  title={tr("Hint")}
+                  aria-label={tr("Show a hint")}
                 >
                   {/* The word matters as much as the icon. A bare bulb assumes
                       the reader already knows what it does — beginners do not,
                       and the `title` tooltip needs a hover, so on a phone it
                       never appears at all. */}
                   <span aria-hidden="true">💡</span>
-                  <span className="hm-bulb-label">Hint</span>
+                  <span className="hm-bulb-label">{tr("Hint")}</span>
                 </button>
               )}
               {/* Mute. Sits beside the hint because this row is the one place
@@ -2153,8 +2154,8 @@ export default function HealthyMix() {
               <button
                 className={`hm-sound ${soundOn ? 'is-on' : 'is-off'}`}
                 onClick={toggleSound}
-                title={soundOn ? 'Mute sounds' : 'Turn sounds on'}
-                aria-label={soundOn ? 'Mute sounds' : 'Turn sounds on'}
+                title={soundOn ? tr('Mute sounds') : tr('Turn sounds on')}
+                aria-label={soundOn ? tr('Mute sounds') : tr('Turn sounds on')}
                 aria-pressed={!soundOn}
               >
                 {soundOn ? '🔊' : '🔇'}
@@ -2165,9 +2166,9 @@ export default function HealthyMix() {
                 names its square. Mirrors the board overlay exactly. */}
             {status === 'solving' && atLive && hint && (
               <div className="hm-help-note">
-                <span className="hm-help-label">Hint:</span>
+                <span className="hm-help-label">{tr("Hint:")}</span>
                 <span className="hm-help-sub">
-                  look at the piece on <strong>{hint.from}</strong>
+                  {tr("look at the piece on")} <strong>{hint.from}</strong>
                 </span>
               </div>
             )}
@@ -2175,7 +2176,7 @@ export default function HealthyMix() {
             {/* While solving */}
             {status === 'solving' && failedRef.current && (
               <button className="hm-btn hm-btn-ghost" onClick={retry}>
-                ↻ Retry from start
+                {tr("↻ Retry from start")}
               </button>
             )}
             {/* ── View solution ─────────────────────────────────────────────
@@ -2186,7 +2187,7 @@ export default function HealthyMix() {
                 Costs the point, exactly as a wrong move does. */}
             {status === 'solving' && atLive && !botThinking && (
               <button className="hm-btn hm-btn-ghost" onClick={viewSolution}>
-                👁 View solution
+                {tr("👁 View solution")}
               </button>
             )}
 
@@ -2194,7 +2195,7 @@ export default function HealthyMix() {
             {(status === 'solved' || status === 'failed') && (
               <>
                 <button className="hm-btn hm-btn-primary" onClick={next}>
-                  Next puzzle →
+                  {tr("Next puzzle →")}
                 </button>
               </>
             )}
@@ -2210,15 +2211,15 @@ export default function HealthyMix() {
           move buttons. */}
       {mobileMenuOpen && (
         <div className="hm-sheet-overlay" onClick={() => setMobileMenuOpen(false)}>
-          <div className="hm-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Training menu">
+          <div className="hm-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={tr("Training menu")}>
             <div className="hm-sheet-head">
-              <span className="hm-sheet-title">Training</span>
-              <button className="hm-sheet-close" onClick={() => setMobileMenuOpen(false)} aria-label="Close">×</button>
+              <span className="hm-sheet-title">{tr("Training")}</span>
+              <button className="hm-sheet-close" onClick={() => setMobileMenuOpen(false)} aria-label={tr("Close")}>×</button>
             </div>
 
             {/* Rating + dashboard */}
             <div className="hm-sheet-rating">
-              <div className="hm-sheet-rating-label">Your Puzzle Rating</div>
+              <div className="hm-sheet-rating-label">{tr("Your Puzzle Rating")}</div>
               <div className="hm-sheet-rating-value">
                 {rating}
                 {ratingDelta !== 0 && (
@@ -2231,25 +2232,25 @@ export default function HealthyMix() {
                 className="hm-dash-btn"
                 onClick={() => { setMobileMenuOpen(false); navigate('/puzzle-dashboard'); }}
               >
-                📊 My Puzzle Dashboard
+                {tr("📊 My Puzzle Dashboard")}
               </button>
             </div>
 
             {/* Training modes — all four */}
             <div className="hm-sheet-section">
-              <div className="hm-modes-label">Training mode</div>
+              <div className="hm-modes-label">{tr("Training mode")}</div>
               <div className="hm-modes">
-                <button className={`hm-mode-btn ${trainingMode === 'healthymix' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); navigate('/training/healthy-mix'); }}>🧩 Healthy Mix</button>
-                <button className={`hm-mode-btn ${trainingMode === 'themes' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); navigate('/puzzles/themes'); }}>🎯 Themes</button>
-                <button className={`hm-mode-btn ${trainingMode === 'pieces' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); navigate('/puzzles/pieces'); }}>♟️ Pieces</button>
-                <button className={`hm-mode-btn ${trainingMode === 'rating' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); setShowRatingModal(true); }}>📊 Rating</button>
+                <button className={`hm-mode-btn ${trainingMode === 'healthymix' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); navigate('/training/healthy-mix'); }}>{tr("🧩 Healthy Mix")}</button>
+                <button className={`hm-mode-btn ${trainingMode === 'themes' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); navigate('/puzzles/themes'); }}>{tr("🎯 Themes")}</button>
+                <button className={`hm-mode-btn ${trainingMode === 'pieces' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); navigate('/puzzles/pieces'); }}>{tr("♟️ Pieces")}</button>
+                <button className={`hm-mode-btn ${trainingMode === 'rating' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); setShowRatingModal(true); }}>{tr("📊 Rating")}</button>
               </div>
             </div>
 
             {/* This session */}
             {sessionHistory.length > 0 && (
               <div className="hm-sheet-section">
-                <div className="hm-modes-label">This session</div>
+                <div className="hm-modes-label">{tr("This session")}</div>
                 <div className="hm-history-count">
                   <span className="hm-green">{sessionCorrect} ✓</span>
                   {' · '}
@@ -2279,13 +2280,13 @@ export default function HealthyMix() {
           <div className="hm-modal" onClick={(e) => e.stopPropagation()}>
             <div className="hm-modal-head">
               <div>
-                <h3 className="hm-modal-title">Choose a Rating Range</h3>
-                <p className="hm-modal-sub">You'll only get puzzles from the range you pick.</p>
+                <h3 className="hm-modal-title">{tr("Choose a Rating Range")}</h3>
+                <p className="hm-modal-sub">{tr("You'll only get puzzles from the range you pick.")}</p>
               </div>
               <button className="hm-modal-close" onClick={() => setShowRatingModal(false)}>×</button>
             </div>
             {ratingBands.length === 0 ? (
-              <div className="hm-modal-loading">Loading ranges…</div>
+              <div className="hm-modal-loading">{tr("Loading ranges…")}</div>
             ) : (
               <div className="hm-band-grid">
                 {ratingBands.map(b => (
@@ -2296,7 +2297,7 @@ export default function HealthyMix() {
                   >
                     <span className="hm-band-range">{b.min}–{b.max}</span>
                     {typeof b.count === 'number' && (
-                      <span className="hm-band-count">{b.count.toLocaleString()} puzzles</span>
+                      <span className="hm-band-count">{b.count.toLocaleString()} {tr("puzzles")}</span>
                     )}
                   </button>
                 ))}

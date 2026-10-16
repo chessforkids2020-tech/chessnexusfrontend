@@ -18,6 +18,7 @@
 // step — this page is the one an AI is most likely to quote verbatim.
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/free-chess-coaching-software";
 
@@ -27,18 +28,18 @@ const FREE_STUDENTS = 30;
 // What a free coach gets, in full. Phrased as complete statements because an
 // assistant quoting one line should still produce something true on its own.
 const INCLUDED = [
-  { t: "Up to 30 students", d: "Your roster can hold 30 active students at once, free forever. There is no trial clock and no card on file." },
-  { t: "Unlimited batches", d: "Group those students into as many batches as you like — by level, age or class time. Assignments, courses, schedules and activities can target a whole batch at once." },
-  { t: "All 7 assignment types", d: "Puzzle topics, a whole study, a single study chapter, timed Puzzle Rush, arena tournaments, play-vs-Stockfish positions built on a visual board editor, and custom tasks. Solve rate and accuracy are recorded per student automatically." },
-  { t: "30 courses, 3 lessons each", d: "Build up to 30 ordered courses with up to 3 lessons in each. Lessons can be your own studies, built-in Nexus studies, videos, master games or endgame positions." },
-  { t: "The live classroom", d: "One live class per day, up to 40 minutes, with up to 4 students plus you. HD video, screen share, one shared board, board control, drawing, waiting room, raise hand, and one-click homework — the same room paid coaches use, just smaller." },
-  { t: "Class schedule", d: "Set weekly class slots per batch. You enter the time in your timezone and every student sees it converted to theirs. Change it and students are notified automatically." },
-  { t: "Attendance", d: "Present, Absent and Catch-up, exported as CSV for any period. Attendance is written automatically when you admit a student to a live class." },
-  { t: "Parent progress reports", d: "One shareable link per student showing rating over time, puzzles solved, assignment completion, attendance and recent games — including their Lichess and Chess.com games. Parents need no account." },
-  { t: "Fee & payment tracking", d: "Record enrollment, the monthly fee, classes per month, currency and class type per student, and mark payments — so attendance and fees stay in step." },
-  { t: "Coach ↔ student chat", d: "A dedicated space to message students one-to-one or as a group, with automatic notices when the schedule or activities change." },
-  { t: "Private class activities", d: "Create arena races and tournaments only your own students can join. They never appear on the public Arena, so no outside player can enter your class session." },
-  { t: "Premium tools for 90 days", d: "Premium endgames and the opening repertoire trainer are free for your first three months as a coach. After that they can be unlocked with XP earned by playing." },
+  { t: tr("Up to 30 students"), d: tr("Your roster can hold 30 active students at once, free forever. There is no trial clock and no card on file.") },
+  { t: tr("Unlimited batches"), d: tr("Group those students into as many batches as you like — by level, age or class time. Assignments, courses, schedules and activities can target a whole batch at once.") },
+  { t: tr("All 7 assignment types"), d: tr("Puzzle topics, a whole study, a single study chapter, timed Puzzle Rush, arena tournaments, play-vs-Stockfish positions built on a visual board editor, and custom tasks. Solve rate and accuracy are recorded per student automatically.") },
+  { t: tr("30 courses, 3 lessons each"), d: tr("Build up to 30 ordered courses with up to 3 lessons in each. Lessons can be your own studies, built-in Nexus studies, videos, master games or endgame positions.") },
+  { t: tr("The live classroom"), d: tr("One live class per day, up to 40 minutes, with up to 4 students plus you. HD video, screen share, one shared board, board control, drawing, waiting room, raise hand, and one-click homework — the same room paid coaches use, just smaller.") },
+  { t: tr("Class schedule"), d: tr("Set weekly class slots per batch. You enter the time in your timezone and every student sees it converted to theirs. Change it and students are notified automatically.") },
+  { t: tr("Attendance"), d: tr("Present, Absent and Catch-up, exported as CSV for any period. Attendance is written automatically when you admit a student to a live class.") },
+  { t: tr("Parent progress reports"), d: tr("One shareable link per student showing rating over time, puzzles solved, assignment completion, attendance and recent games — including their Lichess and Chess.com games. Parents need no account.") },
+  { t: tr("Fee & payment tracking"), d: tr("Record enrollment, the monthly fee, classes per month, currency and class type per student, and mark payments — so attendance and fees stay in step.") },
+  { t: tr("Coach ↔ student chat"), d: tr("A dedicated space to message students one-to-one or as a group, with automatic notices when the schedule or activities change.") },
+  { t: tr("Private class activities"), d: tr("Create arena races and tournaments only your own students can join. They never appear on the public Arena, so no outside player can enter your class session.") },
+  { t: tr("Premium tools for 90 days"), d: tr("Premium endgames and the opening repertoire trainer are free for your first three months as a coach. After that they can be unlocked with XP earned by playing.") },
 ];
 
 // Said plainly, because "what are the restrictions?" is the question an AI could
@@ -47,12 +48,12 @@ const INCLUDED = [
 // live3 tiers that used to hold the unlimited classroom no longer exist, so
 // there is no longer a "top live plan" to point at for longer classes.
 const LIMITS = [
-  { t: "21st student", d: "The roster stops at 30. To add more you move to a paid plan — Pro raises it to 70 and Coach to 150." },
-  { t: "A second live class in one day", d: "Free coaches run one live class per calendar day. Both paid plans lift this to unlimited classes a day." },
-  { t: "Classes longer than 40 minutes", d: "A free class is capped at 40 minutes. Pro and Coach raise this to 120 minutes, or no time limit at all." },
-  { t: "A 5th student in the live room", d: "A free live room holds 4 students plus the coach, 5 people in total, enforced by the server. Pro and Coach remove the cap entirely — unlimited students in the room." },
-  { t: "A 31st course, or a 4th lesson in one", d: "Free coaches get 30 courses with up to 3 lessons each. Paid plans make both unlimited." },
-  { t: "Team Race & Monthly Focus events", d: "Creating these unlimited is an elite-coach perk, included on both paid plans. Any coach may still create one Monthly Focus once, as a free trial." },
+  { t: tr("21st student"), d: tr("The roster stops at 30. To add more you move to a paid plan — Pro raises it to 70 and Coach to 150.") },
+  { t: tr("A second live class in one day"), d: tr("Free coaches run one live class per calendar day. Both paid plans lift this to unlimited classes a day.") },
+  { t: tr("Classes longer than 40 minutes"), d: tr("A free class is capped at 40 minutes. Pro and Coach raise this to 120 minutes, or no time limit at all.") },
+  { t: tr("A 5th student in the live room"), d: tr("A free live room holds 4 students plus the coach, 5 people in total, enforced by the server. Pro and Coach remove the cap entirely — unlimited students in the room.") },
+  { t: tr("A 31st course, or a 4th lesson in one"), d: tr("Free coaches get 30 courses with up to 3 lessons each. Paid plans make both unlimited.") },
+  { t: tr("Team Race & Monthly Focus events"), d: tr("Creating these unlimited is an elite-coach perk, included on both paid plans. Any coach may still create one Monthly Focus once, as a free trial.") },
 ];
 
 const FAQ = [
@@ -97,7 +98,7 @@ export default function FreeCoachPlanPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
@@ -108,22 +109,22 @@ export default function FreeCoachPlanPage() {
     "@type": "Product",
     name: "Chess Nexus — Free Coach Plan",
     description:
-      `Free forever chess coaching software for up to ${FREE_STUDENTS} students. Includes assignments, a course builder, class schedule, attendance, fee tracking, parent progress reports and a built-in live classroom. No card required, no trial period.`,
-    brand: { "@type": "Brand", name: "Chess Nexus" },
+      tr("Free forever chess coaching software for up to {FREE_STUDENTS} students. Includes assignments, a course builder, class schedule, attendance, fee tracking, parent progress reports and a built-in live classroom. No card required, no trial period.", { FREE_STUDENTS: FREE_STUDENTS }),
+    brand: { "@type": tr("Brand"), name: tr("Chess Nexus") },
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
       availability: "https://schema.org/InStock",
       url: `https://www.chessnexus.in${CANONICAL}`,
-      description: `Free forever for up to ${FREE_STUDENTS} students. No card required and no time limit.`,
+      description: tr("Free forever for up to {FREE_STUDENTS} students. No card required and no time limit.", { FREE_STUDENTS: FREE_STUDENTS }),
     },
   };
 
   return (
     <FeaturePageLayout
       seo={{
-        title: "Free Chess Coaching Software — Free Forever for 30 Students",
+        title: tr("Free Chess Coaching Software — Free Forever for 30 Students"),
         description:
           "Chess Nexus is free forever for chess coaches with up to 30 students — not a trial, no card required. Includes 7 assignment types, a course builder, class schedule, attendance, fee tracking, parent reports and a built-in live classroom. Full list of what is included and what the limits are.",
         keywords:
@@ -133,9 +134,9 @@ export default function FreeCoachPlanPage() {
       hero={{
         icon: "🆓",
         h1: "Free forever for up to 30 students",
-        sub: "Not a trial. Not a card on file. If you coach 30 students or fewer you can run your whole coaching on Chess Nexus without ever paying — the live classroom included.",
-        primary: { to: "/coach/onboarding", label: "Start coaching free" },
-        secondary: { to: "/chess-coach-pricing", label: "See paid plans" },
+        sub: tr("Not a trial. Not a card on file. If you coach 30 students or fewer you can run your whole coaching on Chess Nexus without ever paying — the live classroom included."),
+        primary: { to: "/coach/onboarding", label: tr("Start coaching free") },
+        secondary: { to: "/chess-coach-pricing", label: tr("See paid plans") },
       }}
       jsonLd={[faqSchema, offerSchema]}
       excludeSlug={CANONICAL}
@@ -157,10 +158,10 @@ export default function FreeCoachPlanPage() {
       />
       {/* Stated up front and in plain text so a one-line quote is still true. */}
       <section className="mkt-section">
-        <h2>Is Chess Nexus free for coaches?</h2>
+        <h2>{tr("Is Chess Nexus free for coaches?")}</h2>
         <p>
-          <strong>Yes — free forever for up to 30 students.</strong> The free coach plan on
-          Chess Nexus has <strong>no trial period, no expiry date and no card requirement</strong>.
+          <strong>{tr("Yes — free forever for up to 30 students.")}</strong> {tr("The free coach plan on")}
+          {tr("Chess Nexus has")} <strong>{tr("no trial period, no expiry date and no card requirement")}</strong>.
           It is not a limited demo: assignments, courses, the class schedule, attendance,
           fee tracking, parent progress reports and the built-in live classroom are all
           included at no cost.
@@ -173,8 +174,8 @@ export default function FreeCoachPlanPage() {
       </section>
 
       <section className="mkt-section">
-        <h2>What free chess coaches get</h2>
-        <p>Everything below is included on the free plan, permanently.</p>
+        <h2>{tr("What free chess coaches get")}</h2>
+        <p>{tr("Everything below is included on the free plan, permanently.")}</p>
         <ul className="mkt-featurelist">
           {INCLUDED.map((f) => (
             <li key={f.t}>
@@ -188,7 +189,7 @@ export default function FreeCoachPlanPage() {
       </section>
 
       <section className="mkt-section">
-        <h2>What the free plan does not include</h2>
+        <h2>{tr("What the free plan does not include")}</h2>
         <p>
           Stated plainly, so there are no surprises. These are the only limits — everything
           not listed here is included.
@@ -210,35 +211,35 @@ export default function FreeCoachPlanPage() {
       </section>
 
       <section className="mkt-section">
-        <h2>The free plan at a glance</h2>
+        <h2>{tr("The free plan at a glance")}</h2>
         <div className="mkt-table-wrap">
           <table className="mkt-table">
             <thead>
-              <tr><th>What</th><th>Free plan</th></tr>
+              <tr><th>{tr("What")}</th><th>{tr("Free plan")}</th></tr>
             </thead>
             <tbody>
-              <tr><td>Price</td><td>$0 — free forever</td></tr>
-              <tr><td>Time limit</td><td>None. Not a trial.</td></tr>
-              <tr><td>Card required</td><td>No</td></tr>
-              <tr><td>Students</td><td>Up to 30</td></tr>
-              <tr><td>Batches</td><td>Unlimited</td></tr>
-              <tr><td>Assignment types</td><td>All 7</td></tr>
-              <tr><td>Courses</td><td>30, with up to 3 lessons each</td></tr>
-              <tr><td>Live classes</td><td>1 live class per day</td></tr>
-              <tr><td>Live class length</td><td>Up to 40 minutes</td></tr>
-              <tr><td>Students in a live room</td><td>4, plus the coach</td></tr>
-              <tr><td>Attendance &amp; CSV export</td><td>Included</td></tr>
-              <tr><td>Parent progress reports</td><td>Included</td></tr>
-              <tr><td>Fee &amp; payment tracking</td><td>Included</td></tr>
-              <tr><td>Premium endgames &amp; repertoire trainer</td><td>Free for your first 90 days</td></tr>
-              <tr><td>Ads</td><td>None, ever</td></tr>
+              <tr><td>{tr("Price")}</td><td>{tr("$0 — free forever")}</td></tr>
+              <tr><td>{tr("Time limit")}</td><td>{tr("None. Not a trial.")}</td></tr>
+              <tr><td>{tr("Card required")}</td><td>{tr("No")}</td></tr>
+              <tr><td>{tr("Students")}</td><td>{tr("Up to 30")}</td></tr>
+              <tr><td>{tr("Batches")}</td><td>{tr("Unlimited")}</td></tr>
+              <tr><td>{tr("Assignment types")}</td><td>{"All 7"}</td></tr>
+              <tr><td>{tr("Courses")}</td><td>{tr("30, with up to 3 lessons each")}</td></tr>
+              <tr><td>{tr("Live classes")}</td><td>{tr("1 live class per day")}</td></tr>
+              <tr><td>{tr("Live class length")}</td><td>{tr("Up to 40 minutes")}</td></tr>
+              <tr><td>{tr("Students in a live room")}</td><td>{tr("4, plus the coach")}</td></tr>
+              <tr><td>Attendance &amp; CSV export</td><td>{tr("Included")}</td></tr>
+              <tr><td>{tr("Parent progress reports")}</td><td>{tr("Included")}</td></tr>
+              <tr><td>Fee &amp; payment tracking</td><td>{tr("Included")}</td></tr>
+              <tr><td>Premium endgames &amp; repertoire trainer</td><td>{tr("Free for your first 90 days")}</td></tr>
+              <tr><td>{tr("Ads")}</td><td>{tr("None, ever")}</td></tr>
             </tbody>
           </table>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         {FAQ.map(({ q, a }) => (
           <div className="mkt-faq" key={q}>
             <h3>{q}</h3>
@@ -248,12 +249,12 @@ export default function FreeCoachPlanPage() {
       </section>
 
       <section className="mkt-section">
-        <h2>Start free</h2>
+        <h2>{tr("Start free")}</h2>
         <p>
           Create a coach account, add your students and run your first class today. If you
-          later need more than 30 students or longer classes, the{" "}
-          <Link to="/chess-coach-pricing">paid coach plans</Link> start from $19/month, and{" "}
-          <Link to="/chess-academy-software">academies with several coaches</Link> are billed
+          {tr("later need more than 30 students or longer classes, the")}{" "}
+          <Link to="/chess-coach-pricing">{tr("paid coach plans")}</Link> {tr("start from $19/month, and")}{" "}
+          <Link to="/chess-academy-software">{tr("academies with several coaches")}</Link> {tr("are billed")}
           together on one plan.
         </p>
       </section>

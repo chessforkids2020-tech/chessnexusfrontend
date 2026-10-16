@@ -8,6 +8,7 @@ import FenBar from './FenBar';
 import SetupControls from './SetupControls';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CATEGORIES = [['basics', '📗 Basics'], ['positional', '📘 Positional']];
 
@@ -29,7 +30,7 @@ function validatePosition(chess) {
     if (bk !== 1) return 'Black must have exactly 1 king';
     return null; // valid
   } catch (e) {
-    return e.message || 'Invalid position';
+    return e.message || tr('Invalid position');
   }
 }
 
@@ -207,8 +208,8 @@ export default function PositionEditor({ initialFen = START_FEN }) {
       let chapterId = selectedChapterId;
 
       if (isNewStudy) {
-        if (!newStudyName.trim()) { setModalError('Study name is required'); setModalSaving(false); return; }
-        if (isPublicStudy && nameAvailable === false) { setModalError('Study name is already taken'); setModalSaving(false); return; }
+        if (!newStudyName.trim()) { setModalError(tr('Study name is required')); setModalSaving(false); return; }
+        if (isPublicStudy && nameAvailable === false) { setModalError(tr('Study name is already taken')); setModalSaving(false); return; }
         // Create study + first chapter
         const studyRes = await api.post('/api/user-studies', {
           name: newStudyName.trim(),
@@ -216,14 +217,14 @@ export default function PositionEditor({ initialFen = START_FEN }) {
           isPublic: isPublicStudy,
         });
         studyId = studyRes.data._id;
-        const chapRes = await api.post(`/api/user-studies/${studyId}/chapters`, { name: newChapterName.trim() || 'Chapter 1' });
+        const chapRes = await api.post(`/api/user-studies/${studyId}/chapters`, { name: newChapterName.trim() || tr('Chapter 1') });
         chapterId = chapRes.data.chapter._id;
       } else {
-        if (!studyId) { setModalError('Please select a study'); setModalSaving(false); return; }
-        if (!chapterId) { setModalError('Please select a chapter'); setModalSaving(false); return; }
+        if (!studyId) { setModalError(tr('Please select a study')); setModalSaving(false); return; }
+        if (!chapterId) { setModalError(tr('Please select a chapter')); setModalSaving(false); return; }
         // Add a brand-new chapter to the chosen existing study
         if (chapterId === '__new__') {
-          const name = newChapterInStudy.trim() || `Chapter ${(pickedStudy?.chapters?.length || 0) + 1}`;
+          const name = newChapterInStudy.trim() || tr("Chapter {v0}", { v0: (pickedStudy?.chapters?.length || 0) + 1 });
           const chapRes = await api.post(`/api/user-studies/${studyId}/chapters`, { name });
           chapterId = chapRes.data.chapter._id;
         }
@@ -293,14 +294,14 @@ export default function PositionEditor({ initialFen = START_FEN }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 180, flex: '0 0 190px' }}>
         <div style={cardStyle}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#a5b4fc', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>
-            Pieces
+            {tr("Pieces")}
           </div>
           <PieceSelector selectedPiece={selectedPiece} onSelectPiece={setSelectedPiece} />
         </div>
 
         <div style={cardStyle}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#a5b4fc', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>
-            Setup
+            {tr("Setup")}
           </div>
           <SetupControls
             chess={chess}
@@ -313,17 +314,17 @@ export default function PositionEditor({ initialFen = START_FEN }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: '0 0 auto', minWidth: 320 }}>
         {/* Toolbar */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button onClick={() => setOrientation(o => (o === 'white' ? 'black' : 'white'))} title="Flip the board" style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 8, color: '#e6e8ee', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-            ⇅ Flip Board
+          <button onClick={() => setOrientation(o => (o === 'white' ? 'black' : 'white'))} title={tr("Flip the board")} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 8, color: '#e6e8ee', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
+            {tr("⇅ Flip Board")}
           </button>
           <button onClick={handleClear} style={{ padding: '8px 16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, color: '#f87171', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-            🗑 Clear Board
+            {tr("🗑 Clear Board")}
           </button>
           <button onClick={handleReset} style={{ padding: '8px 16px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, color: '#34d399', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-            ♟ Starting Pos
+            {tr("♟ Starting Pos")}
           </button>
           <button onClick={handleMirror} style={{ padding: '8px 16px', background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.3)', borderRadius: 8, color: '#fbbf24', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-            ⇆ Mirror Colors
+            {tr("⇆ Mirror Colors")}
           </button>
         </div>
 
@@ -340,7 +341,7 @@ export default function PositionEditor({ initialFen = START_FEN }) {
 
         {/* FEN bar */}
         <div style={cardStyle}>
-          <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>FEN String</div>
+          <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>{tr("FEN String")}</div>
           <FenBar fen={chess.fen()} onFenChange={handleFenChange} />
         </div>
 
@@ -355,17 +356,17 @@ export default function PositionEditor({ initialFen = START_FEN }) {
             fontSize: 13,
             fontWeight: 500,
           }}>
-            ⚠ {validationError} — Fix the position before playing
+            ⚠ {validationError} {tr("— Fix the position before playing")}
           </div>
         )}
 
         {/* Save title */}
         <div style={cardStyle}>
-          <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Save Title (optional)</div>
+          <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>{tr("Save Title (optional)")}</div>
           <input
             value={titleInput}
             onChange={e => setTitleInput(e.target.value)}
-            placeholder="e.g. Sicilian Dragon starting position..."
+            placeholder={tr("e.g. Sicilian Dragon starting position...")}
             style={{
               width: '100%',
               background: 'rgba(0,0,0,0.4)',
@@ -414,36 +415,36 @@ export default function PositionEditor({ initialFen = START_FEN }) {
               onClick={e => e.stopPropagation()}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9' }}>💾 Save Position</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9' }}>{tr("💾 Save Position")}</div>
                 <button onClick={() => setShowSaveModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: 20, lineHeight: 1 }}>✕</button>
               </div>
 
               {/* common fields */}
               <div style={{ marginBottom: 12 }}>
-                <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>TITLE (optional)</label>
+                <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>{tr("TITLE (optional)")}</label>
                 <input
                   value={modalTitle}
                   onChange={e => setModalTitle(e.target.value)}
-                  placeholder="e.g. Sicilian Dragon – key position"
+                  placeholder={tr("e.g. Sicilian Dragon – key position")}
                   style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
               <div style={{ marginBottom: 18 }}>
-                <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>MOVES (optional)</label>
+                <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>{tr("MOVES (optional)")}</label>
                 <input
                   value={modalSolution}
                   onChange={e => setModalSolution(e.target.value)}
-                  placeholder="e.g. 1. Nf6+ gxf6 2. Bxf7#"
+                  placeholder={tr("e.g. 1. Nf6+ gxf6 2. Bxf7#")}
                   style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
                 />
                 <div style={{ fontSize: 11, color: '#64748b', marginTop: 5 }}>
-                  Easier: leave this empty, save, then just play the moves on the board — they're saved automatically, sidelines too.
+                  {tr("Easier: leave this empty, save, then just play the moves on the board — they're saved automatically, sidelines too.")}
                 </div>
               </div>
 
               {/* Where to save: Study → Chapter, with "new" inline */}
               {studiesLoading ? (
-                <div style={{ fontSize: 13, color: '#64748b', textAlign: 'center', padding: 16 }}>Loading your studies...</div>
+                <div style={{ fontSize: 13, color: '#64748b', textAlign: 'center', padding: 16 }}>{tr("Loading your studies...")}</div>
               ) : (() => {
                 const fieldStyle = { width: '100%', background: '#1e293b', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, boxSizing: 'border-box' };
                 const inputStyle = { width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' };
@@ -453,7 +454,7 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                 return (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <div>
-                      <label style={labelStyle}>SAVE TO STUDY</label>
+                      <label style={labelStyle}>{tr("SAVE TO STUDY")}</label>
                       <select
                         data-testid="save-study"
                         value={selectedStudyId}
@@ -468,7 +469,7 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                         {myStudies.map(s => (
                           <option key={s._id} value={s._id}>{s.isPublic ? '🌐' : '🔒'} {s.name}</option>
                         ))}
-                        <option value="__new__">➕ New study…</option>
+                        <option value="__new__">{tr("➕ New study…")}</option>
                       </select>
                     </div>
 
@@ -479,13 +480,13 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                             data-testid="new-study-name"
                             value={newStudyName}
                             onChange={e => handleNewStudyNameChange(e.target.value)}
-                            placeholder="New study name (e.g. My Tactics)"
+                            placeholder={tr("New study name (e.g. My Tactics)")}
                             autoFocus
                             style={{ ...inputStyle, ...(nameAvailable === false && newStudyPublic ? { border: '1px solid #ef4444' } : {}) }}
                           />
                           {newStudyPublic && nameChecking && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 11, color: '#64748b' }}>checking...</span>}
-                          {newStudyPublic && !nameChecking && nameAvailable === true && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#10b981' }}>✓ available</span>}
-                          {newStudyPublic && !nameChecking && nameAvailable === false && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#ef4444' }}>✗ taken</span>}
+                          {newStudyPublic && !nameChecking && nameAvailable === true && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#10b981' }}>{tr("✓ available")}</span>}
+                          {newStudyPublic && !nameChecking && nameAvailable === false && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#ef4444' }}>{tr("✗ taken")}</span>}
                         </div>
                         <div style={{ display: 'flex', gap: 8 }}>
                           {[[false, '🔒 Private', 'Only you'], [true, '🌐 Public', 'Anyone can study it']].map(([pub, label, hint]) => {
@@ -501,7 +502,7 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                           })}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#64748b' }}>
-                          Category:
+                          {tr("Category:")}
                           {CATEGORIES.map(([cat, label]) => (
                             <button
                               key={cat}
@@ -512,13 +513,13 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                           ))}
                         </div>
                         <div>
-                          <label style={labelStyle}>FIRST CHAPTER</label>
-                          <input value={newChapterName} onChange={e => setNewChapterName(e.target.value)} placeholder="Chapter 1" style={{ ...inputStyle, border: '1px solid rgba(255,255,255,0.12)' }} />
+                          <label style={labelStyle}>{tr("FIRST CHAPTER")}</label>
+                          <input value={newChapterName} onChange={e => setNewChapterName(e.target.value)} placeholder={tr("Chapter 1")} style={{ ...inputStyle, border: '1px solid rgba(255,255,255,0.12)' }} />
                         </div>
                       </>
                     ) : study && (
                       <div>
-                        <label style={labelStyle}>CHAPTER</label>
+                        <label style={labelStyle}>{tr("CHAPTER")}</label>
                         <select
                           data-testid="save-chapter"
                           value={selectedChapterId}
@@ -526,13 +527,13 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                           style={fieldStyle}
                         >
                           {chapters.map(c => <option key={c._id} value={c._id}>{c.name}{c.puzzleCount != null ? ` (${c.puzzleCount})` : ''}</option>)}
-                          <option value="__new__">➕ New chapter…</option>
+                          <option value="__new__">{tr("➕ New chapter…")}</option>
                         </select>
                         {selectedChapterId === '__new__' && (
                           <input
                             value={newChapterInStudy}
                             onChange={e => setNewChapterInStudy(e.target.value)}
-                            placeholder={`New chapter name (e.g. Chapter ${chapters.length + 1})`}
+                            placeholder={tr("New chapter name (e.g. Chapter {v0})", { v0: chapters.length + 1 })}
                             autoFocus
                             style={{ ...inputStyle, marginTop: 8 }}
                           />
@@ -558,19 +559,19 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                     onClick={() => setShowSaveModal(false)}
                     disabled={modalSaving}
                     style={{ flex: 1, padding: '11px 0', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontSize: 14 }}
-                  >Cancel</button>
+                  >{tr("Cancel")}</button>
                   <button
                     onClick={handlePublicSave}
                     disabled={modalSaving}
                     style={{ flex: 2, padding: '11px 0', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 700, opacity: modalSaving ? 0.7 : 1 }}
-                  >{modalSaving ? '⏳ Saving...' : '💾 Save'}</button>
+                  >{modalSaving ? tr('⏳ Saving...') : tr('💾 Save')}</button>
                 </div>
               )}
               {modalSuccess && (
                 <button
                   onClick={() => setShowSaveModal(false)}
                   style={{ width: '100%', marginTop: 16, padding: '11px 0', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}
-                >Done ✓</button>
+                >{tr("Done ✓")}</button>
               )}
             </motion.div>
           </motion.div>

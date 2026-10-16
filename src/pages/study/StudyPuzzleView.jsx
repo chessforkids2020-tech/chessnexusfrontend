@@ -1,11 +1,15 @@
-﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
+﻿import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import Chessboard from '../../components/Chessboard';
 import FenCopyBar from '../../components/FenCopyBar';
+import StudyMovesCard from '../../components/StudyMovesCard';
+import { useAnalysisTree } from '../../hooks/useAnalysisTree';
+import { parseSolutionTree } from '../../utils/solutionLine';
 
 import { Chess } from 'chess.js';
 import { motion } from 'framer-motion';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ── Full-screen board layout budget ────────────────────────────────────────
 // This route renders OUTSIDE UserLayout (see App.jsx), so there is no sidebar
@@ -20,6 +24,9 @@ const LEFT_W = 220;            // positions list column
 const RIGHT_W = 340;           // solution / moves column
 const COL_GAP = 12;
 const BOARD_CARD_CHROME = 20;  // board card padding + border
+// The board draws its rank/file labels in a gutter OUTSIDE boardWidth (left and
+// bottom). Not budgeting for it pushed the h-file past the card's edge.
+const COORD_GUTTER = 30;
 
 
 const StudyPuzzleView = () => {
@@ -28,10 +35,14 @@ const StudyPuzzleView = () => {
   
   const [puzzles, setPuzzles] = useState([]);
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
-  const [chess, setChess] = useState(new Chess());
-  const [userMoves, setUserMoves] = useState([]);
-  const [moveHistory, setMoveHistory] = useState([]);
-  const [currentMoveIndex, setCurrentMoveIndex] = useState(-1);
+  // Lichess-style move tree, same as the user study page: the admin's solution
+  // is the mainline (extra solutions are sidelines) and every move a user plays
+  // is added as a sideline. The board always shows the tree's current node.
+  const analysis = useAnalysisTree(new Chess().fen());
+  const { current: currentNode } = analysis;
+  const chess = useMemo(() => new Chess(currentNode.fen), [currentNode.fen]);
+  // A solution that isn't readable as moves (written notes) is shown as text.
+  const [solutionNotes, setSolutionNotes] = useState('');
   const [studyTitle, setStudyTitle] = useState('');
   const [chapterTitle, setChapterTitle] = useState('');
   const [loading, setLoading] = useState(true);
@@ -52,7 +63,6 @@ const StudyPuzzleView = () => {
 
   // ── Analysis mode (evaluate the CURRENT position; does not play moves) ──
   const [anMode, setAnMode] = useState(false);
-  const [anEval, setAnEval] = useState(null);   // { cp } | { mate } — White's POV
   // Top-3 engine lines, keyed by MultiPV index: { 1: {cp|mate, san}, 2: …, 3: … }.
   // Keyed rather than an array because Stockfish emits each line separately and
   // out of order, so we overwrite per index and render whatever we have.
@@ -68,12 +78,16 @@ const StudyPuzzleView = () => {
   const sfModeRef = useRef(false);
   const sfThinkingRef = useRef(false);
   const humanColorRef = useRef('white');
-  const currentMoveIndexRef = useRef(0);
   // Analysis uses its OWN worker so it never competes with the play-vs-Stockfish
   // engine (two `go` commands on one worker cancel each other).
   const anWorkerRef = useRef(null);
   const anModeRef = useRef(false);
   const anFenRef = useRef('');   // FEN the current search is running on (SAN + POV)
+  // This engine build crashes ("RuntimeError: unreachable") if a new search is
+  // started while one with MultiPV 3 is still running. So a new position waits
+  // in anPendingFenRef until the engine answers 'bestmove'.
+  const anSearchingRef = useRef(false);
+  const anPendingFenRef = useRef(null);
 
   const studyTypeColors = {
     positional: {
@@ -135,8 +149,9 @@ const StudyPuzzleView = () => {
         // The old version capped the board at 900, subtracted a 170px sidebar
         // that this route does not render, and measured `top` on a scrolling
         // page — all of which shrank the board for no reason.
-        const centre = width - SHELL_W - PAGE_PAD_X * 2 - LEFT_W - RIGHT_W - COL_GAP * 2;
-        const byHeight = window.innerHeight - PAGE_PAD_TOP - PAGE_PAD_BOTTOM - BOARD_CARD_CHROME;
+        const centre = width - SHELL_W - PAGE_PAD_X * 2 - LEFT_W - RIGHT_W - COL_GAP * 2
+          - BOARD_CARD_CHROME - COORD_GUTTER;
+        const byHeight = window.innerHeight - PAGE_PAD_TOP - PAGE_PAD_BOTTOM - BOARD_CARD_CHROME - COORD_GUTTER;
         setBoardWidth(Math.max(360, Math.floor(Math.min(centre, byHeight))));
       }
     };
@@ -180,7 +195,7 @@ const StudyPuzzleView = () => {
 
       api.post('/api/study/view', { studyId, chapterId }).catch(() => {});
     } catch {
-      setError('Failed to load puzzles');
+      setError(tr('Failed to load puzzles'));
     } finally {
       setLoading(false);
     }
@@ -193,65 +208,45 @@ const StudyPuzzleView = () => {
       sfReadyRef.current = false; sfModeRef.current = false; sfThinkingRef.current = false;
       setSfMode(false); setSfReady(false); setSfThinking(false);
     }
-    const newChess = new Chess(puzzle.puzzleFen);
-    const turnColor = newChess.turn();
-    const orientation = turnColor === 'b' ? 'black' : 'white';
-    setChess(newChess);
-    setBoardOrientation(orientation);
-    setUserMoves([]);
-    setMoveHistory([puzzle.puzzleFen]);
-    setCurrentMoveIndex(0);
-  };
-
-  const handleMove = (sourceSquare, targetSquare, promotion) => {
+    // Every solution the admin wrote goes into the tree: the first is the
+    // mainline, the others become sidelines. A solution that is written notes
+    // rather than moves is shown as text under the moves card.
+    const sols = (puzzle.puzzleSolutions || []).map(x => (x?.pgn || '').trim()).filter(Boolean);
+    const kids = [];
+    const notes = [];
+    for (const pgn of sols) {
+      const parsed = parseSolutionTree(pgn, puzzle.puzzleFen);
+      if (parsed && parsed.children?.length) kids.push(...parsed.children);
+      else notes.push(pgn);
+    }
+    setSolutionNotes(notes.join('\n\n'));
     try {
-      const move = chess.move({
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: promotion || 'q'
-      });
-
-      if (move) {
-        const newMoves = [...userMoves, move.san];
-        setUserMoves(newMoves);
-        
-        const newHistory = moveHistory.slice(0, currentMoveIndex + 1);
-        newHistory.push(chess.fen());
-        setMoveHistory(newHistory);
-        setCurrentMoveIndex(newHistory.length - 1);
-        
-        return true;
-      }
+      const c = new Chess(puzzle.puzzleFen);
+      setBoardOrientation(c.turn() === 'b' ? 'black' : 'white');
+      analysis.load(c.fen(), { children: kids });
     } catch {
-    }
-    return false;
-  };
-
-  const moveBackward = () => {
-    if (currentMoveIndex > 0) {
-      const newIndex = currentMoveIndex - 1;
-      setCurrentMoveIndex(newIndex);
-      const newChess = new Chess(moveHistory[newIndex]);
-      setChess(newChess);
-      
-      const newUserMoves = userMoves.slice(0, newIndex);
-      setUserMoves(newUserMoves);
+      setBoardOrientation('white');
+      analysis.load(new Chess().fen(), null);
     }
   };
 
-  const moveForward = () => {
-    if (currentMoveIndex < moveHistory.length - 1) {
-      const newIndex = currentMoveIndex + 1;
-      setCurrentMoveIndex(newIndex);
-      const newChess = new Chess(moveHistory[newIndex]);
-      setChess(newChess);
-      
-      if (newIndex <= userMoves.length) {
-        const newUserMoves = userMoves.slice(0, newIndex);
-        setUserMoves(newUserMoves);
-      }
-    }
+  // Same move advances; a different move from a past position starts a sideline.
+  const handleMove = (sourceSquare, targetSquare, promotion) => (
+    !!analysis.playMove({ from: sourceSquare, to: targetSquare, promotion: promotion || 'q' })
+  );
+
+  const moveBackward = () => analysis.back();
+  const moveForward = () => analysis.forward();
+  // ⏭ — follow the current line (first children) to its end.
+  const moveToEnd = () => {
+    let n = analysis.tree.nodes[analysis.tree.currentId];
+    while (n?.children.length) n = analysis.tree.nodes[n.children[0]];
+    if (n) analysis.goTo(n.id);
   };
+  const atStart = currentNode.id === analysis.tree.rootId;
+  const atEnd = !currentNode.children.length;
+  const lastMove = (currentNode.from && currentNode.to)
+    ? { from: currentNode.from, to: currentNode.to } : null;
 
   const selectPuzzle = (index) => {
     setCurrentPuzzleIndex(index);
@@ -266,8 +261,6 @@ const StudyPuzzleView = () => {
   };
 
   // ── Stockfish Mode ────────────────────────────────────────────────────────
-  // Keep currentMoveIndex in a ref so SF callbacks always read the latest value
-  useEffect(() => { currentMoveIndexRef.current = currentMoveIndex; }, [currentMoveIndex]);
 
   // Cleanup SF worker on unmount
   useEffect(() => {
@@ -306,7 +299,7 @@ const StudyPuzzleView = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardOrientation]);
 
-  // When sfReady changes or userMoves changes: check if it's SF's turn and fire
+  // When sfReady changes or the board position changes: if it's SF's turn, fire
   useEffect(() => {
     if (!sfMode || !sfReady || sfThinkingRef.current) return;
     if (chess.isGameOver()) return;
@@ -330,19 +323,9 @@ const StudyPuzzleView = () => {
         w.removeEventListener('message', handler);
         const mv = e.data.split(' ')[1];
         if (mv && mv !== '(none)' && /^[a-h][1-8][a-h][1-8][qrbn]?$/.test(mv)) {
-          try {
-            const from = mv.slice(0, 2), to = mv.slice(2, 4), promo = mv[4] || 'q';
-            const move = chess.move({ from, to, promotion: promo });
-            if (move) {
-              setUserMoves(prev => [...prev, move.san]);
-              setMoveHistory(prev => {
-                const h = prev.slice(0, currentMoveIndexRef.current + 1);
-                h.push(chess.fen());
-                return h;
-              });
-              setCurrentMoveIndex(prev => prev + 1);
-            }
-          } catch {}
+          const from = mv.slice(0, 2), to = mv.slice(2, 4), promo = mv[4] || 'q';
+          // The engine's reply goes into the move tree; the board follows.
+          analysis.playMove({ from, to, promotion: promo });
         }
         sfThinkingRef.current = false;
         setSfThinking(false);
@@ -355,7 +338,7 @@ const StudyPuzzleView = () => {
 
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userMoves, sfReady, sfMode]);
+  }, [currentNode.fen, sfReady, sfMode]);
 
   /* ── Analysis mode ─────────────────────────────
      Evaluates the position on the board and streams depth / score / best line.
@@ -365,42 +348,69 @@ const StudyPuzzleView = () => {
   const stopAnalysis = useCallback(() => {
     if (anWorkerRef.current) { anWorkerRef.current.terminate(); anWorkerRef.current = null; }
     anModeRef.current = false;
-    setAnMode(false); setAnEval(null); setAnLines({}); setAnDepth(0);
+    anSearchingRef.current = false;
+    anPendingFenRef.current = null;
+    setAnMode(false); setAnLines({}); setAnDepth(0);
   }, []);
+
+  // Start a search on `fen` now, or — if one is still running — stop it and
+  // start once the engine confirms with 'bestmove' (see anPendingFenRef).
+  const startAnSearch = (w, fen) => {
+    anFenRef.current = fen;
+    anSearchingRef.current = true;
+    w.postMessage(`position fen ${fen}`);
+    w.postMessage('go depth 20');
+  };
+  const requestAnSearch = (fen) => {
+    const w = anWorkerRef.current;
+    if (!w) return;
+    if (anSearchingRef.current) {
+      const alreadyStopping = anPendingFenRef.current !== null;
+      anPendingFenRef.current = fen;
+      if (!alreadyStopping) w.postMessage('stop');
+    } else {
+      startAnSearch(w, fen);
+    }
+  };
 
   const toggleAnalysis = useCallback(() => {
     if (anModeRef.current) { stopAnalysis(); return; }
     anModeRef.current = true;
     setAnMode(true);
-    setAnEval(null); setAnLines({}); setAnDepth(0);
+    setAnLines({}); setAnDepth(0);
     if (anWorkerRef.current) anWorkerRef.current.terminate();
+    anSearchingRef.current = false;
+    anPendingFenRef.current = null;
     const w = new Worker('/stockfish.js');
     anWorkerRef.current = w;
     w.onmessage = (e) => {
       const line = typeof e.data === 'string' ? e.data : '';
-      if (line.includes('uciok')) {
-        // Ask for THREE lines before the search starts. MultiPV must be set while
-        // the engine is idle — sending it mid-search is ignored.
-        w.postMessage('setoption name MultiPV value 3');
-        w.postMessage('isready');
+      if (line.startsWith('bestmove')) {
+        anSearchingRef.current = false;
+        const next = anPendingFenRef.current;
+        if (next !== null) { anPendingFenRef.current = null; startAnSearch(w, next); }
         return;
       }
+      // Lines still arriving from a search we've asked to stop are for the old
+      // position — ignore them.
+      if (anPendingFenRef.current !== null) return;
       if (!line.startsWith('info') || !line.includes(' pv ')) return;
+      // "info depth 18 multipv 2 ... score cp 34 ... pv e2e4 e7e5 ..."
       const d = /\bdepth (\d+)/.exec(line);
       const k = /\bmultipv (\d+)/.exec(line);
       const cp = /\bscore cp (-?\d+)/.exec(line);
       const mate = /\bscore mate (-?\d+)/.exec(line);
       const pv = /\bpv (.+)$/.exec(line);
       if (d) setAnDepth(Number(d[1]));
-      // Scores come from the SIDE TO MOVE; flip to White's POV so the sign is stable.
+      // Engine scores are from the SIDE TO MOVE; flip to White's POV so the number
+      // means the same thing regardless of whose turn it is.
       const sideToMove = anFenRef.current.split(' ')[1] === 'b' ? -1 : 1;
       const idx = k ? Number(k[1]) : 1;          // no multipv tag → single line
       const evalObj = mate ? { mate: Number(mate[1]) * sideToMove }
                     : cp   ? { cp: Number(cp[1]) * sideToMove }
                     : null;
-      // Line 1 is the engine's best — it drives the headline evaluation.
-      if (idx === 1 && evalObj) setAnEval(evalObj);
       if (!pv) return;
+      // Convert the UCI principal variation to SAN for readability.
       try {
         const tmp = new Chess(anFenRef.current);
         const sans = [];
@@ -415,66 +425,25 @@ const StudyPuzzleView = () => {
       } catch { /* malformed pv — keep whatever we already have */ }
     };
     w.onerror = () => stopAnalysis();
+    // THREE lines, set once while the engine is idle — before any search. (It
+    // used to be sent on 'uciok', after the first search had already started,
+    // so it was ignored and the first position only ever showed one line.)
     w.postMessage('uci');
+    w.postMessage('setoption name MultiPV value 3');
+    w.postMessage('isready');
   }, [stopAnalysis]);
 
-  // Re-run the search whenever the position changes while analysis is on. Keyed on
-  // userMoves (same signal the play-vs-Stockfish effect uses in this file).
+  // Re-run the search whenever the board position changes while analysis is on.
   useEffect(() => {
-    const fen = chess.fen();
-    anFenRef.current = fen;
-    const w = anWorkerRef.current;
-    if (!anMode || !w) return;
-    setAnEval(null); setAnLines({}); setAnDepth(0);
-    w.postMessage('stop');
-    w.postMessage(`position fen ${fen}`);
-    w.postMessage('go depth 20');
+    if (!anMode || !anWorkerRef.current) return;
+    setAnLines({}); setAnDepth(0);
+    requestAnSearch(currentNode.fen);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userMoves, anMode]);
+  }, [currentNode.fen, anMode]);
   // ─────────────────────────────────────────────────────────────────────────
 
   
   
-
-  const formatMovesDisplay = () => {
-    const moves = [];
-    
-    if (!puzzles[currentPuzzleIndex]?.puzzleFen) {
-      return moves;
-    }
-    
-    const startingTurn = new Chess(puzzles[currentPuzzleIndex].puzzleFen).turn();
-    let moveNumber = 1;
-    
-    if (startingTurn === 'b' && userMoves.length > 0) {
-      moves.push({
-        number: moveNumber,
-        white: '...',
-        black: userMoves[0],
-      });
-      moveNumber++;
-      
-      for (let i = 1; i < userMoves.length; i += 2) {
-        moves.push({
-          number: moveNumber,
-          white: userMoves[i] || '',
-          black: userMoves[i + 1] || '',
-        });
-        moveNumber++;
-      }
-    } else {
-      for (let i = 0; i < userMoves.length; i += 2) {
-        moves.push({
-          number: moveNumber,
-          white: userMoves[i] || '',
-          black: userMoves[i + 1] || '',
-        });
-        moveNumber++;
-      }
-    }
-    
-    return moves;
-  };
 
   const styles = {
     // FULL-SCREEN: exactly one viewport tall, never scrolls. Each column
@@ -875,7 +844,7 @@ const StudyPuzzleView = () => {
         <div style={styles.background}></div>
         <div style={styles.gridPattern}></div>
         <div style={styles.container}>
-          <div style={styles.loading}>Loading puzzles...</div>
+          <div style={styles.loading}>{tr("Loading puzzles...")}</div>
         </div>
       </div>
     );
@@ -900,7 +869,7 @@ const StudyPuzzleView = () => {
               boxShadow: `0 8px 32px ${currentColor.accentColor}`,
             }}
           >
-            <span>←</span> Back to Chapters
+            <span>←</span> {tr("Back to Chapters")}
           </motion.button>
           <div style={styles.error}>{error || 'No puzzles available for this chapter'}</div>
         </div>
@@ -930,7 +899,7 @@ const StudyPuzzleView = () => {
                 boxShadow: `0 8px 32px ${currentColor.accentColor}`,
               }}
             >
-              <span>←</span> Back to Chapters
+              <span>←</span> {tr("Back to Chapters")}
             </motion.button>
           )}
 
@@ -948,7 +917,7 @@ const StudyPuzzleView = () => {
                 boxShadow: `0 8px 32px ${currentColor.accentColor}`,
               }}
             >
-              {showPuzzleList ? 'Hide Puzzles' : 'Show Puzzles'}
+              {showPuzzleList ? tr('Hide Puzzles') : tr('Show Puzzles')}
             </motion.button>
           )}
 
@@ -976,7 +945,7 @@ const StudyPuzzleView = () => {
                   style={{ ...styles.backButton, ...styles.navigationButton }}
                   onClick={() => navigate(`/study/learn/${studyId}`)}
                 >
-                  <span>←</span> Back to Chapters
+                  <span>←</span> {tr("Back to Chapters")}
                 </button>
               )}
               <div style={styles.puzzleTable}>
@@ -984,7 +953,7 @@ const StudyPuzzleView = () => {
                   <thead>
                     <tr style={styles.tableHeaderRow}>
                       <th style={styles.tableHeader}>#</th>
-                      <th style={{...styles.tableHeader, textAlign: 'left'}}>Puzzle Name</th>
+                      <th style={{...styles.tableHeader, textAlign: 'left'}}>{tr("Puzzle Name")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1002,7 +971,7 @@ const StudyPuzzleView = () => {
                       >
                         <td style={styles.tableCell}>{index + 1}</td>
                         <td style={styles.tableCellName}>
-                          {puzzle.name || `Puzzle ${index + 1}`}
+                          {puzzle.name || tr("Puzzle {v0}", { v0: index + 1 })}
                         </td>
                       </motion.tr>
                     ))}
@@ -1032,7 +1001,8 @@ const StudyPuzzleView = () => {
               transition={{ duration: 0.5 }}
             >
               <Chessboard
-                position={chess.fen()}
+                position={currentNode.fen}
+                lastMove={lastMove}
                 onDrop={handleMove}
                 boardWidth={boardWidth}
                 draggable={true}
@@ -1048,36 +1018,36 @@ const StudyPuzzleView = () => {
                 style={{
                   ...styles.button,
                   ...styles.navigationButton,
-                  ...(currentMoveIndex <= 0 ? styles.navigationButtonDisabled : {})
+                  ...(atStart ? styles.navigationButtonDisabled : {})
                 }}
                 onClick={moveBackward}
-                disabled={currentMoveIndex <= 0}
-                title="Undo last move"
-                whileHover={currentMoveIndex > 0 ? { 
+                disabled={atStart}
+                title={tr("Previous move")}
+                whileHover={!atStart ? { 
                   scale: 1.05,
                   background: currentColor.accentColor,
                   boxShadow: `0 8px 24px ${currentColor.accentColor}`,
                 } : {}}
               >
-                <span>←</span> Back
+                <span>←</span> {tr("Back")}
               </motion.button>
               
               <motion.button
                 style={{
                   ...styles.button,
                   ...styles.navigationButton,
-                  ...(currentMoveIndex >= moveHistory.length - 1 ? styles.navigationButtonDisabled : {})
+                  ...(atEnd ? styles.navigationButtonDisabled : {})
                 }}
                 onClick={moveForward}
-                disabled={currentMoveIndex >= moveHistory.length - 1}
-                title="Redo move"
-                whileHover={currentMoveIndex < moveHistory.length - 1 ? { 
+                disabled={atEnd}
+                title={tr("Next move")}
+                whileHover={!atEnd ? { 
                   scale: 1.05,
                   background: currentColor.accentColor,
                   boxShadow: `0 8px 24px ${currentColor.accentColor}`,
                 } : {}}
               >
-                Forward <span>→</span>
+                {tr("Forward")} <span>→</span>
               </motion.button>
               
               <motion.button
@@ -1089,7 +1059,7 @@ const StudyPuzzleView = () => {
                   boxShadow: '0 8px 24px rgba(156, 163, 175, 0.2)',
                 }}
               >
-                <span>↺</span> Reset
+                <span>↺</span> {tr("Reset")}
               </motion.button>
               
 
@@ -1100,10 +1070,10 @@ const StudyPuzzleView = () => {
               <motion.button
                 style={{ ...styles.button, ...styles.resetButton, background: 'rgba(99,102,241,0.1)', borderColor: 'rgba(99,102,241,0.3)', color: 'var(--color-accent-2)' }}
                 onClick={() => navigate('/create-position', { state: { customFen: puzzles[currentPuzzleIndex]?.puzzleFen } })}
-                title="Open this position in the board editor"
+                title={tr("Open this position in the board editor")}
                 whileHover={{ scale: 1.05, background: 'rgba(99,102,241,0.2)', boxShadow: '0 8px 24px rgba(99,102,241,0.15)' }}
               >
-                🔧 Edit Position
+                {tr("🔧 Edit Position")}
               </motion.button>
             </div>
           </div>
@@ -1115,33 +1085,31 @@ const StudyPuzzleView = () => {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            {/* ── Analyze with Stockfish (evaluates the position; plays nothing) ── */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: anMode ? 8 : 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: anMode ? '#38bdf8' : 'var(--color-text-faint)', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
-                🔍 {anMode ? (anDepth ? `Analysing · depth ${anDepth}` : 'Starting…') : 'Analysis'}
-              </div>
+            {/* ── Engine row: Stockfish on/off (evaluates the position, plays
+                nothing) + play vs Stockfish, side by side ── */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <button
+                data-testid="sf-analysis-toggle"
                 onClick={toggleAnalysis}
-                style={{ padding: '5px 14px', borderRadius: 'var(--radius-2xl)', cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'var(--color-danger-a12)' : 'rgba(56,189,248,0.12)', color: anMode ? 'var(--color-danger)' : '#38bdf8', border: `1px solid ${anMode ? 'var(--color-danger-a30)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
-              >{anMode ? '■ Stop' : '🔍 Analyse'}</button>
+                title={anMode ? tr('Turn the engine evaluation off') : tr('Show the engine evaluation for this position')}
+                style={{ flex: 1, padding: '8px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap', background: anMode ? 'rgba(56,189,248,0.16)' : 'var(--color-white-a04)', color: anMode ? '#38bdf8' : 'var(--color-text-muted)', border: `1px solid ${anMode ? 'rgba(56,189,248,0.45)' : 'var(--color-white-a10)'}`, transition: 'all 0.2s' }}
+              >
+                {tr("🔍 Stockfish")} {anMode ? tr('On') : tr('Off')}
+                {anMode && anDepth ? <span style={{ fontWeight: 500, opacity: 0.75 }}> · d{anDepth}</span> : null}
+              </button>
+              <button
+                data-testid="sf-play-toggle"
+                onClick={toggleSfMode}
+                style={{ flex: 1, padding: '8px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap', background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
+              >{sfMode ? (sfReady ? tr('■ Stop vs Stockfish') : tr('Loading…')) : tr('🤖 vs Stockfish')}</button>
             </div>
             {anMode && (
-              <div style={{ marginBottom: 14, padding: '10px 12px', borderRadius: 'var(--radius-md)', background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                  <span style={{ fontSize: 20, fontWeight: 800, color: '#e0f2fe', fontVariantNumeric: 'tabular-nums' }}>
-                    {anEval == null ? '…'
-                      : anEval.mate != null
-                        ? `M${Math.abs(anEval.mate)}${anEval.mate < 0 ? ' ♚' : ''}`
-                        : `${anEval.cp > 0 ? '+' : ''}${(anEval.cp / 100).toFixed(2)}`}
-                  </span>
-                  <span style={{ fontSize: 11, color: 'var(--color-accent-2)' }}>
-                    {anEval == null ? '' : anEval.mate != null
-                      ? (anEval.mate > 0 ? 'White mates' : 'Black mates')
-                      : anEval.cp > 30 ? 'White is better' : anEval.cp < -30 ? 'Black is better' : 'Equal'}
-                  </span>
-                </div>
-                {/* Top 3 engine lines, in MultiPV order: line 1 is the engine's
-                    preference, 2–3 are the next-best alternatives. */}
+              <div data-testid="sf-lines" style={{ marginBottom: 14, padding: '6px 12px 10px', borderRadius: 'var(--radius-md)', background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
+                {!anLines[1] && (
+                  <div style={{ marginTop: 4, fontSize: 11.5, color: 'var(--color-text-faint)' }}>{tr("Thinking…")}</div>
+                )}
+                {/* Top 3 engine lines (no separate headline score). Rendered in
+                    MultiPV order: line 1 is the engine's best, 2–3 the next-best. */}
                 {[1, 2, 3].map((i) => {
                   const ln = anLines[i];
                   if (!ln) return null;
@@ -1161,17 +1129,6 @@ const StudyPuzzleView = () => {
               </div>
             )}
 
-            {/* ── Stockfish Toggle ── */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: sfMode ? 'var(--color-success)' : 'var(--color-text-faint)', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
-                🤖
-                {sfMode ? (sfThinking ? 'Thinking…' : sfReady ? 'Stockfish ON' : 'Loading…') : 'vs Computer'}
-              </div>
-              <button
-                onClick={toggleSfMode}
-                style={{ padding: '5px 14px', borderRadius: 'var(--radius-2xl)', cursor: 'pointer', fontSize: 12, fontWeight: 700, background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
-              >{sfMode ? '■ Stop' : '▶ Play vs Stockfish'}</button>
-            </div>
             {sfMode && (
               <>
                 <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
@@ -1180,8 +1137,8 @@ const StudyPuzzleView = () => {
                   ))}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginBottom: 14, textAlign: 'center' }}>
-                  You play <span style={{ color: 'var(--color-accent-2)' }}>{humanColor}</span> · Stockfish plays <span style={{ color: 'var(--color-danger)' }}>{humanColor === 'white' ? 'black' : 'white'}</span>
-                  {sfThinking && <span style={{ marginLeft: 8, color: 'var(--color-warning)' }}>● thinking</span>}
+                  {tr("You play")} <span style={{ color: 'var(--color-accent-2)' }}>{humanColor}</span> {tr("· Stockfish plays")} <span style={{ color: 'var(--color-danger)' }}>{humanColor === 'white' ? 'black' : 'white'}</span>
+                  {sfThinking && <span style={{ marginLeft: 8, color: 'var(--color-warning)' }}>{tr("● thinking")}</span>}
                 </div>
               </>
             )}
@@ -1196,47 +1153,42 @@ const StudyPuzzleView = () => {
               </div>
             </div>
 
-            <div style={styles.movesContainer}>
-              <h3 style={styles.sectionTitle}>Your Moves</h3>
-              <div style={styles.movesList}>
-                {userMoves.length === 0 ? (
-                  <div style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
-                    No moves yet. Make a move on the board!
-                  </div>
-                ) : (
-                  formatMovesDisplay().map((move, index) => (
-                    <div key={index} style={styles.moveRow}>
-                      <span style={styles.moveNumber}>{move.number}.</span>
-                      <span style={styles.whiteMove}>{move.white}</span>
-                      <span style={styles.blackMove}>{move.black}</span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
+            {/* One moves card (like the user study page): the admin's solution is
+                the mainline, extra solutions and the user's own moves are
+                sidelines. */}
+            <StudyMovesCard
+              tree={analysis.tree}
+              currentId={analysis.tree.currentId}
+              accentColor={currentColor.color}
+              onSelect={(nid) => analysis.goTo(nid)}
+              onFirst={() => analysis.toStart()}
+              onPrev={moveBackward}
+              onNext={moveForward}
+              onLast={moveToEnd}
+              emptyText={tr("No moves yet — make a move on the board.")}
+            />
 
-            <motion.div
-                style={styles.solutionContainer}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.4 }}
-              >
-                <h3 style={{ ...styles.sectionTitle, marginBottom: 8 }}>Solution</h3>
-                <div style={{ fontFamily: 'monospace', fontSize: 14, color: currentColor.color, lineHeight: 1.9, letterSpacing: 0.2 }}>
-                  {puzzles[currentPuzzleIndex]?.puzzleSolutions?.[0]?.pgn || <span style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>No solution provided</span>}
-                </div>
-                {currentPuzzle.puzzleSolutions?.[0]?.description && (
-                  <div style={{ ...styles.descriptionText, marginTop: 12, fontSize: 13 }}>
-                    {currentPuzzle.puzzleSolutions[0].description}
-                  </div>
-                )}
-              </motion.div>
+            {/* A solution written as notes rather than moves. */}
+            {solutionNotes && (
+              <div style={{ ...styles.descriptionContainer, marginBottom: 12 }}>
+                <h3 style={styles.sectionTitle}>{tr("Notes")}</h3>
+                <div style={{ ...styles.descriptionText, whiteSpace: 'pre-wrap' }}>{solutionNotes}</div>
+              </div>
+            )}
+
+            {/* The admin's explanation for each solution line, if written. */}
+            {(currentPuzzle.puzzleSolutions || []).filter(x => x?.description?.trim()).map((x, i, arr) => (
+              <div key={i} style={{ ...styles.descriptionContainer, marginBottom: 12 }}>
+                <h3 style={styles.sectionTitle}>{arr.length > 1 ? tr("Explanation {v0}", { v0: i + 1 }) : 'Explanation'}</h3>
+                <div style={styles.descriptionText}>{x.description}</div>
+              </div>
+            ))}
 
             {/* Admin studies only. Shown only when the admin wrote one — leaving
                 the description blank in Admin → Study Management hides it. */}
             {currentPuzzle.puzzleDescription?.trim() && (
               <div style={styles.descriptionContainer}>
-                <h3 style={styles.sectionTitle}>Description</h3>
+                <h3 style={styles.sectionTitle}>{tr("Description")}</h3>
                 <div style={styles.descriptionText}>{currentPuzzle.puzzleDescription}</div>
               </div>
             )}

@@ -7,6 +7,7 @@ import {
   buildTreeFromGame, applyMove, pathToNode,
   nextNode, prevNode, lastNode, fenAt, lastMoveAt
 } from './moveTree';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ── Opening Study card (Master Games home page) ───────────────────────────────
 // A Lichess-study-style opening trainer that sits above the featured players.
@@ -160,12 +161,12 @@ export default function OpeningStudy() {
     <div style={st.wrap}>
       <div style={st.head}>
         <div>
-          <h2 style={st.title}>Opening Study</h2>
-          <p style={st.sub}>Play moves on the board to explore. Turn on the engine for the top 3 lines, or open the databases to see how masters continued.</p>
+          <h2 style={st.title}>{tr("Opening Study")}</h2>
+          <p style={st.sub}>{tr("Play moves on the board to explore. Turn on the engine for the top 3 lines, or open the databases to see how masters continued.")}</p>
         </div>
         <div style={st.headBtns}>
-          <button style={st.ghostBtn} onClick={() => setOrientation(o => (o === 'white' ? 'black' : 'white'))}>⇅ Flip</button>
-          <button style={st.ghostBtn} onClick={resetStudy}>↺ Reset</button>
+          <button style={st.ghostBtn} onClick={() => setOrientation(o => (o === 'white' ? 'black' : 'white'))}>{tr("⇅ Flip")}</button>
+          <button style={st.ghostBtn} onClick={resetStudy}>{tr("↺ Reset")}</button>
         </div>
       </div>
 
@@ -193,22 +194,22 @@ export default function OpeningStudy() {
               style={{ ...st.engineBtn, ...(engineOn ? st.engineBtnOn : {}) }}
               onClick={() => setEngineOn(v => !v)}
             >
-              ⚙ Stockfish {engineOn ? 'on' : 'off'}
+              {tr("⚙ Stockfish")} {engineOn ? 'on' : 'off'}
             </button>
             <span style={{ flex: 1 }} />
             {/* Masters DB toggle (narrower; ChessNexus/arena source hidden for now) */}
             <button
               style={{ ...st.dbBtn, ...(dbOpen ? st.dbBtnOn : {}) }}
               onClick={() => setDbOpen(v => !v)}
-            >Masters DB</button>
+            >{tr("Masters DB")}</button>
           </div>
 
           {/* Explorer results — floating overlay LAYERED OVER the engine + notation
               (higher z-index, doesn't push the cards down). Close with × or the toggle. */}
           {dbOpen && (
             <div style={st.explorerOverlay}>
-              <button style={st.explorerClose} onClick={() => setDbOpen(false)} aria-label="Close">×</button>
-              {exLoading && <div style={st.exMuted}>Loading…</div>}
+              <button style={st.explorerClose} onClick={() => setDbOpen(false)} aria-label={tr("Close")}>×</button>
+              {exLoading && <div style={st.exMuted}>{tr("Loading…")}</div>}
               {!exLoading && explorer && (
                 <Explorer
                   data={explorer}
@@ -234,11 +235,11 @@ export default function OpeningStudy() {
 
           {/* Nav bar */}
           <div style={st.nav}>
-            <button style={st.navBtn} onClick={goStart} title="Start">⏮</button>
-            <button style={st.navBtn} onClick={goPrev} title="Back (←)">◀</button>
+            <button style={st.navBtn} onClick={goStart} title={tr("Start")}>⏮</button>
+            <button style={st.navBtn} onClick={goPrev} title={tr("Back (←)")}>◀</button>
             <span style={st.plyTag}>{currentPly}</span>
-            <button style={st.navBtn} onClick={goNext} title="Forward (→)">▶</button>
-            <button style={st.navBtn} onClick={goEnd} title="End">⏭</button>
+            <button style={st.navBtn} onClick={goNext} title={tr("Forward (→)")}>▶</button>
+            <button style={st.navBtn} onClick={goEnd} title={tr("End")}>⏭</button>
           </div>
         </div>
       </div>
@@ -264,7 +265,7 @@ function Explorer({ data, source, onPlay, onOpenGame }) {
   return (
     <>
       <div style={st.exHeader}>
-        {total.toLocaleString()} {source === 'arena' ? 'arena' : 'master'} game{total === 1 ? '' : 's'} reached this position
+        {total.toLocaleString()} {source === 'arena' ? 'arena' : 'master'} {tr("game")}{total === 1 ? '' : 's'} {tr("reached this position")}
       </div>
 
       {/* Next-move distribution */}
@@ -276,7 +277,7 @@ function Explorer({ data, source, onPlay, onOpenGame }) {
             const dPct = Math.round((m.draw / g) * 100);
             const bPct = 100 - wPct - dPct;
             return (
-              <button key={m.san} style={st.moveTableRow} onClick={() => onPlay(m.san)} title={`Play ${m.san}`}>
+              <button key={m.san} style={st.moveTableRow} onClick={() => onPlay(m.san)} title={tr("Play {san}", { san: m.san })}>
                 <span style={st.mtSan}>{m.san}</span>
                 <span style={st.mtCount}>
                   <span style={st.mtBar}><span style={{ ...st.mtBarFill, width: `${(m.games / maxGames) * 100}%` }} /></span>
@@ -295,7 +296,7 @@ function Explorer({ data, source, onPlay, onOpenGame }) {
 
       {/* Matching games */}
       <div style={st.gamesList}>
-        {games.length === 0 && <div style={st.exMuted}>No games at this position.</div>}
+        {games.length === 0 && <div style={st.exMuted}>{tr("No games at this position.")}</div>}
         {games.map(g => {
           const clickable = source === 'masters';
           return (
@@ -348,7 +349,7 @@ function Notation({ tree, currentId, activePath, onGo }) {
     return out;
   };
   const first = root.children[0];
-  if (!first) return <div style={st.empty}>Play a move on the board to begin your study line.</div>;
+  if (!first) return <div style={st.empty}>{tr("Play a move on the board to begin your study line.")}</div>;
   return <div>{renderLine(first, 0)}</div>;
 }
 

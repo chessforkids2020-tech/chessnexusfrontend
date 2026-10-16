@@ -4,6 +4,7 @@ import api from '../../api';
 import Chessboard from '../../components/Chessboard';
 import { Chess } from 'chess.js';
 import useResponsiveBoardSize from '../../hooks/useResponsiveBoardSize';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -136,7 +137,7 @@ const StudyTest = () => {
       );
 
       if (response.data.completed) {
-        setMessage('Test completed! Click Finish to see results.');
+        setMessage(tr('Test completed! Click Finish to see results.'));
         return;
       }
 
@@ -365,7 +366,7 @@ const StudyTest = () => {
     return (
       <div style={styles.page}>
         <div style={styles.container}>
-          <div style={styles.loading}>Loading test...</div>
+          <div style={styles.loading}>{tr("Loading test...")}</div>
         </div>
       </div>
     );
@@ -375,7 +376,7 @@ const StudyTest = () => {
     return (
       <div style={styles.page}>
         <div style={styles.container}>
-          <div style={styles.loading}>No puzzles available</div>
+          <div style={styles.loading}>{tr("No puzzles available")}</div>
         </div>
       </div>
     );
@@ -385,25 +386,25 @@ const StudyTest = () => {
     <div style={styles.page}>
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.title}>Test Mode: {studyTitle}</h1>
-          <p style={styles.subtitle}>Solve puzzles with Stockfish as your opponent</p>
+          <h1 style={styles.title}>{tr("Test Mode:")} {studyTitle}</h1>
+          <p style={styles.subtitle}>{tr("Solve puzzles with Stockfish as your opponent")}</p>
         </div>
 
         <div style={styles.statsBar}>
           <div style={styles.statItem}>
-            <div style={styles.statLabel}>Puzzle</div>
+            <div style={styles.statLabel}>{tr("Puzzle")}</div>
             <div style={styles.statValue}>{puzzleNumber} / {totalPuzzles}</div>
           </div>
           <div style={styles.statItem}>
-            <div style={styles.statLabel}>Total Time</div>
+            <div style={styles.statLabel}>{tr("Total Time")}</div>
             <div style={styles.statValue}>{formatTime(timer)}</div>
           </div>
           <div style={styles.statItem}>
-            <div style={styles.statLabel}>Puzzle Time</div>
+            <div style={styles.statLabel}>{tr("Puzzle Time")}</div>
             <div style={styles.statValue}>{formatTime(puzzleTimer)}</div>
           </div>
           <div style={styles.statItem}>
-            <div style={styles.statLabel}>Attempts</div>
+            <div style={styles.statLabel}>{tr("Attempts")}</div>
             <div style={styles.statValue}>{attempts}</div>
           </div>
         </div>
@@ -415,7 +416,7 @@ const StudyTest = () => {
             <div ref={boardRef} style={{ ...styles.chessboardContainer, width: '100%' }}>
               {waitingForStockfish && (
                 <div style={styles.waitingOverlay}>
-                  Stockfish is thinking...
+                  {tr("Stockfish is thinking...")}
                 </div>
               )}
               <Chessboard
@@ -428,11 +429,11 @@ const StudyTest = () => {
           </div>
 
           <div style={styles.rightSection}>
-            <h3 style={styles.sectionTitle}>Your Moves</h3>
+            <h3 style={styles.sectionTitle}>{tr("Your Moves")}</h3>
             <div style={styles.movesList}>
               {userMoves.length === 0 ? (
                 <div style={{ color: 'var(--color-text-muted)', fontStyle: 'italic' }}>
-                  Make your first move!
+                  {tr("Make your first move!")}
                 </div>
               ) : (
                 formatMovesDisplay().map((move, index) => (
@@ -459,7 +460,7 @@ const StudyTest = () => {
                     e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
                   }}
                 >
-                  Next Puzzle →
+                  {tr("Next Puzzle →")}
                 </button>
               )}
               {(isSolved || puzzleNumber === totalPuzzles) && (
@@ -475,7 +476,7 @@ const StudyTest = () => {
                     e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
                   }}
                 >
-                  Finish Test
+                  {tr("Finish Test")}
                 </button>
               )}
             </div>

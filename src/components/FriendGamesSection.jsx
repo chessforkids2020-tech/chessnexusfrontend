@@ -3,6 +3,7 @@ import { Chess } from 'chess.js';
 import Chessboard from './Chessboard';
 // Reuse the exact tournament-games styling.
 import '../pages/arenatournament/ArenaTournamentLeaderboard.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -192,7 +193,7 @@ export default function FriendGamesSection({ userId }) {
       <div className="atg-games-section atg-games-section--full">
         <div className="section-header" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
           <span style={{ fontSize: 22 }}>🤝</span>
-          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800 }}>Games with Friends</h2>
+          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800 }}>{tr("Games with Friends")}</h2>
         </div>
 
         {/* Search */}
@@ -201,7 +202,7 @@ export default function FriendGamesSection({ userId }) {
             <svg className="atg-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <input type="text" className="atg-search-input" placeholder="Search by opponent name…"
+            <input type="text" className="atg-search-input" placeholder={tr("Search by opponent name…")}
               value={search} onChange={e => setSearch(e.target.value)} />
             {search && (
               <button type="button" className="atg-search-clear" onClick={() => setSearch('')}>
@@ -213,7 +214,7 @@ export default function FriendGamesSection({ userId }) {
           </div>
           {search.trim() && (
             <span className="atg-search-results-count">
-              {filtered.length} {filtered.length === 1 ? 'game' : 'games'} found
+              {filtered.length} {filtered.length === 1 ? 'game' : 'games'} {tr("found")}
             </span>
           )}
         </div>
@@ -221,7 +222,7 @@ export default function FriendGamesSection({ userId }) {
         {filtered.length === 0 ? (
           <div className="atg-empty">
             <div className="atg-empty-icon">♟</div>
-            <p>{search.trim() ? `No games found for "${search}"` : 'No friend games yet.'}</p>
+            <p>{search.trim() ? tr("No games found for \"{search}\"", { search: search }) : tr('No friend games yet.')}</p>
           </div>
         ) : (
           <div className="atg-games-grid">
@@ -242,7 +243,7 @@ export default function FriendGamesSection({ userId }) {
                   <span>{game.blackPlayerDisplayName || game.blackPlayerUsername}</span>
                 </div>
                 <div className="atg-card-meta">
-                  <span>{game.moves?.length ?? 0} moves</span>
+                  <span>{game.moves?.length ?? 0} {tr("moves")}</span>
                   <span>{game.finishedAt ? new Date(game.finishedAt).toLocaleDateString() : '—'}</span>
                 </div>
               </button>
@@ -268,7 +269,7 @@ export default function FriendGamesSection({ userId }) {
                       <span className="atg-modal-color-dot atg-dot-white" />
                       {selectedGame.whitePlayerDisplayName || selectedGame.whitePlayerUsername}
                     </span>
-                    <span className="atg-modal-vs">vs</span>
+                    <span className="atg-modal-vs">{tr("vs")}</span>
                     <span className="atg-modal-player atg-modal-player--black">
                       <span className="atg-modal-color-dot atg-dot-black" />
                       {selectedGame.blackPlayerDisplayName || selectedGame.blackPlayerUsername}
@@ -286,7 +287,7 @@ export default function FriendGamesSection({ userId }) {
                 <div className="atg-notation-panel">
                   <div className="atg-notation-scroll">
                     {!rootId || !nodes[rootId]?.childIds.length ? (
-                      <div className="atg-notation-empty">No moves recorded</div>
+                      <div className="atg-notation-empty">{tr("No moves recorded")}</div>
                     ) : (
                       <div className="atg-analysis-moves">
                         {renderMoves(nodes[rootId]?.childIds[0])}
@@ -295,15 +296,15 @@ export default function FriendGamesSection({ userId }) {
                   </div>
                 </div>
                 <div className="atg-controls">
-                  <button type="button" className="atg-ctrl-btn" onClick={navStart} title="Start">⏮</button>
-                  <button type="button" className="atg-ctrl-btn" onClick={navPrev} title="Previous">◀</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navStart} title={tr("Start")}>⏮</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navPrev} title={tr("Previous")}>◀</button>
                   <div className="atg-ctrl-counter">
                     <span className="atg-ctrl-cur">{currentNode?.ply ?? 0}</span>
                     <span className="atg-ctrl-sep">/</span>
                     <span className="atg-ctrl-tot">{selectedGame.moves?.length ?? 0}</span>
                   </div>
-                  <button type="button" className="atg-ctrl-btn" onClick={navNext} title="Next">▶</button>
-                  <button type="button" className="atg-ctrl-btn" onClick={navEnd} title="End">⏭</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navNext} title={tr("Next")}>▶</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navEnd} title={tr("End")}>⏭</button>
                 </div>
               </div>
             </div>

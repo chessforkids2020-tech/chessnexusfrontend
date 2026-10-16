@@ -534,9 +534,9 @@ const UserAttendancePage = () => {
         toDate: '',
         feesAmount: ''
       });
-      alert('Payment request submitted successfully! Admin will review it.');
+      alert(tr('Payment request submitted successfully! Admin will review it.'));
     } catch (err) {
-      alert('Failed to submit payment request');
+      alert(tr('Failed to submit payment request'));
     }
   };
 
@@ -619,8 +619,8 @@ const UserAttendancePage = () => {
       return (
         <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--color-text-muted)' }}>
           <div style={{ fontSize: 44, marginBottom: 10 }}>📅</div>
-          <h3 style={{ color: 'var(--color-text)', margin: '0 0 6px' }}>No classes scheduled yet</h3>
-          <p style={{ margin: 0 }}>When your coach sets your class days and times, they'll show up here.</p>
+          <h3 style={{ color: 'var(--color-text)', margin: '0 0 6px' }}>{tr("No classes scheduled yet")}</h3>
+          <p style={{ margin: 0 }}>{tr("When your coach sets your class days and times, they'll show up here.")}</p>
         </div>
       );
     }
@@ -635,7 +635,7 @@ const UserAttendancePage = () => {
             gap: 14, flexWrap: 'wrap',
           }}>
             <div>
-              <div style={{ color: 'var(--color-accent)', fontSize: 12, fontWeight: 700, letterSpacing: 0.5 }}>⏰ NEXT CLASS</div>
+              <div style={{ color: 'var(--color-accent)', fontSize: 12, fontWeight: 700, letterSpacing: 0.5 }}>{tr("⏰ NEXT CLASS")}</div>
               <div style={{ color: 'var(--color-text)', fontSize: 16, fontWeight: 600, marginTop: 3 }}>
                 {next.when.toLocaleString([], { weekday: 'long', hour: 'numeric', minute: '2-digit' })}
                 {' — '}{next.item.title} · {next.item.coachName}
@@ -645,7 +645,7 @@ const UserAttendancePage = () => {
               <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer"
                  style={{ padding: '8px 18px', borderRadius: 'var(--radius-md)', background: 'var(--color-accent)',
                           color: 'var(--color-bg)', fontWeight: 700, textDecoration: 'none' }}>
-                Join
+                {tr("Join")}
               </a>
             )}
           </div>
@@ -653,7 +653,7 @@ const UserAttendancePage = () => {
 
         {classes.length > 0 && (
           <>
-            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px' }}>Weekly classes</h3>
+            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px' }}>{tr("Weekly classes")}</h3>
             <div style={{ display: 'grid', gap: 12, marginBottom: 26 }}>
               {classes.map(c => (
                 <div key={c._id} style={{
@@ -672,12 +672,12 @@ const UserAttendancePage = () => {
                   </div>
                   <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
                     🕐 {(c.days || []).length > 0 ? localTimeLabel(c.days[0], c.timeUTC) : ''}
-                    {c.durationMinutes ? ` · ${c.durationMinutes} min` : ''}
+                    {c.durationMinutes ? tr(" · {durationMinutes} min", { durationMinutes: c.durationMinutes }) : ''}
                   </div>
                   {c.meetingLink && (
                     <a href={c.meetingLink} target="_blank" rel="noopener noreferrer"
                        style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8, display: 'inline-block' }}>
-                      Join link ↗
+                      {tr("Join link ↗")}
                     </a>
                   )}
                 </div>
@@ -688,7 +688,7 @@ const UserAttendancePage = () => {
 
         {upcomingHolidays.length > 0 && (
           <>
-            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px' }}>Upcoming holidays</h3>
+            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px' }}>{tr("Upcoming holidays")}</h3>
             <div style={{ display: 'grid', gap: 8 }}>
               {upcomingHolidays.map(h => (
                 <div key={h.date} style={{
@@ -720,7 +720,7 @@ const UserAttendancePage = () => {
     if (!c) {
       return (
         <div style={{ ...styles.section, textAlign: 'center', color: 'var(--color-text-muted)' }}>
-          No class leaderboard yet — you are not enrolled with a coach.
+          {tr("No class leaderboard yet — you are not enrolled with a coach.")}
         </div>
       );
     }
@@ -737,7 +737,7 @@ const UserAttendancePage = () => {
     <div>
       {adminCoaches.length === 0 ? (
         <div style={{ ...styles.section, textAlign: 'center', color: 'var(--color-text-muted)' }}>
-          No enrollment details yet.
+          {tr("No enrollment details yet.")}
         </div>
       ) : (
         adminCoaches.map(c => (
@@ -747,34 +747,34 @@ const UserAttendancePage = () => {
               <div className="mcp-player-hero-text">
                 <div className="mcp-player-coach">{c.coachName}</div>
                 <div className="mcp-player-sub">
-                  {c.studentName || 'Student'}
-                  {c.onBreak && <span className="mcp-break-tag" style={{ marginLeft: 8 }}>On Break</span>}
+                  {c.studentName || tr('Student')}
+                  {c.onBreak && <span className="mcp-break-tag" style={{ marginLeft: 8 }}>{tr("On Break")}</span>}
                 </div>
               </div>
               <div className="mcp-player-code">
-                <span className="mcp-player-code-label">CODE</span>
+                <span className="mcp-player-code-label">{tr("CODE")}</span>
                 <span className="mcp-player-code-val">{c.coachCode || '—'}</span>
               </div>
             </div>
             <div className="mcp-player-rows">
               <div className="mcp-player-row">
                 <span className="mcp-player-row-ic">📅</span>
-                <span className="mcp-player-row-label">Classes / month</span>
+                <span className="mcp-player-row-label">{tr("Classes / month")}</span>
                 <span className="mcp-player-row-val">{c.classesPerMonth || 0}</span>
               </div>
               <div className="mcp-player-row">
                 <span className="mcp-player-row-ic">💸</span>
-                <span className="mcp-player-row-label">Monthly fees</span>
+                <span className="mcp-player-row-label">{tr("Monthly fees")}</span>
                 <span className="mcp-player-row-val">{curSym(c.currency)}{c.fees || 0}</span>
               </div>
               <div className="mcp-player-row">
                 <span className="mcp-player-row-ic">👥</span>
-                <span className="mcp-player-row-label">Class type</span>
+                <span className="mcp-player-row-label">{tr("Class type")}</span>
                 <span className="mcp-player-row-val">{c.classType || 'Private'}</span>
               </div>
               <div className="mcp-player-row">
                 <span className="mcp-player-row-ic">🗓️</span>
-                <span className="mcp-player-row-label">Joined</span>
+                <span className="mcp-player-row-label">{tr("Joined")}</span>
                 <span className="mcp-player-row-val">{fmtEnrollDate(c.enrollmentDate)}</span>
               </div>
             </div>
@@ -809,7 +809,7 @@ const UserAttendancePage = () => {
             gap: 14, flexWrap: 'wrap',
           }}>
             <div>
-              <div style={{ color: 'var(--color-accent)', fontSize: 12, fontWeight: 700, letterSpacing: 0.5 }}>⏰ NEXT CLASS</div>
+              <div style={{ color: 'var(--color-accent)', fontSize: 12, fontWeight: 700, letterSpacing: 0.5 }}>{tr("⏰ NEXT CLASS")}</div>
               <div style={{ color: 'var(--color-text)', fontSize: 16, fontWeight: 600, marginTop: 3 }}>
                 {next.when.toLocaleString([], { weekday: 'long', hour: 'numeric', minute: '2-digit' })}
                 {' — '}{next.item.title} · {next.item.coachName}
@@ -820,14 +820,14 @@ const UserAttendancePage = () => {
                 <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer"
                    style={{ padding: '8px 18px', borderRadius: 'var(--radius-md)', background: 'var(--color-accent)',
                             color: 'var(--color-bg)', fontWeight: 700, textDecoration: 'none' }}>
-                  Join
+                  {tr("Join")}
                 </a>
               )}
               <button onClick={() => setActiveTab('schedule')}
                 style={{ padding: '8px 18px', borderRadius: 'var(--radius-md)', cursor: 'pointer',
                          background: 'transparent', border: '1px solid var(--color-accent-a40)',
                          color: 'var(--color-accent)', fontWeight: 600 }}>
-                Full schedule
+                {tr("Full schedule")}
               </button>
             </div>
           </div>
@@ -838,27 +838,27 @@ const UserAttendancePage = () => {
         {[
           {
             number: attendanceData.filter(a => a.status === 'Present' || a.status === 'Catch-up').length,
-            label: 'Classes Attended This Month',
+            label: tr('Classes Attended This Month'),
             icon: '✅'
           },
           {
             number: paymentHistory.length === 0 ? 'No Payments' : (isMonthPaid(paymentHistory) ? 'Paid' : 'Pending'),
-            label: 'Payment Status',
+            label: tr('Payment Status'),
             icon: '💰'
           },
           {
             number: finishedAssignments,
-            label: `Assignments Finished (${currentMonth.toLocaleDateString('en-US', { month: 'long' })})`,
+            label: tr("Assignments Finished ({v0})", { v0: currentMonth.toLocaleDateString('en-US', { month: 'long' }) }),
             icon: '📋'
           },
           {
             number: pendingAssignments,
-            label: 'Pending Assignments',
+            label: tr('Pending Assignments'),
             icon: '⏳'
           },
           {
             number: `${avgAccuracy}%`,
-            label: 'Accuracy',
+            label: tr('Accuracy'),
             icon: '🎯'
           }
         ].map((stat, idx) => (
@@ -900,22 +900,22 @@ const UserAttendancePage = () => {
               return (
                 <div key={a._id} className={`mcp-current-assign ${isNew ? 'mcp-assign-new' : ''}`}>
                   <div className="mcp-current-assign-label">
-                    {isNew ? '🆕 New assignment' : '📋 Current assignment'}
+                    {isNew ? tr('🆕 New assignment') : tr('📋 Current assignment')}
                   </div>
                   <div className="mcp-current-assign-title">{a.title}</div>
                   <div className="mcp-current-assign-row">
                     {isTest
-                      ? <span>Timed test{a.targetGrade > 0 ? <> · goal <strong>{a.targetGrade}%</strong></> : null}</span>
+                      ? <span>Timed test{a.targetGrade > 0 ? <> {tr("· goal")} <strong>{a.targetGrade}%</strong></> : null}</span>
                       : isRush
-                        ? <span>⚡ {a.rushTopicLabel || a.rushTopic || 'Mixed'} · {a.rushMinutes || 5} min{a.rushTargetSolved > 0 ? <> · goal <strong>{a.rushTargetSolved}</strong></> : null}</span>
+                        ? <span>⚡ {a.rushTopicLabel || a.rushTopic || tr('Mixed')} · {a.rushMinutes || 5} min{a.rushTargetSolved > 0 ? <> {tr("· goal")} <strong>{a.rushTargetSolved}</strong></> : null}</span>
                         : isArena
-                          ? <span>🏆 Arena tournament{a.arenaTournamentCode ? <> · code <strong>{a.arenaTournamentCode}</strong></> : null}</span>
-                          : <span>Your progress: <strong>{cur}/{tot}{isPgn ? ' found' : ''}</strong></span>}
-                    {a.totalStudents > 0 && <span>Students done: <strong>{a.completedStudents}/{a.totalStudents}</strong></span>}
+                          ? <span>🏆 Arena tournament{a.arenaTournamentCode ? <> {tr("· code")} <strong>{a.arenaTournamentCode}</strong></> : null}</span>
+                          : <span>{tr("Your progress:")} <strong>{cur}/{tot}{isPgn ? ' found' : ''}</strong></span>}
+                    {a.totalStudents > 0 && <span>{tr("Students done:")} <strong>{a.completedStudents}/{a.totalStudents}</strong></span>}
                   </div>
                   {!isTest && !isRush && !isArena && <div className="mcp-assign-bar" style={{ marginTop: 8 }}><div style={{ width: `${pct}%` }} /></div>}
                   <div style={{ marginTop: 10, fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                    Open the <strong style={{ color: '#e7eaf0' }}>Assignments</strong> tab to do this.
+                    {tr("Open the")} <strong style={{ color: '#e7eaf0' }}>{tr("Assignments")}</strong> {tr("tab to do this.")}
                   </div>
                 </div>
               );
@@ -938,7 +938,7 @@ const UserAttendancePage = () => {
           onMouseEnter={() => setHoverStates(prev => ({ ...prev, navButtons: { ...prev.navButtons, prev: true } }))}
           onMouseLeave={() => setHoverStates(prev => ({ ...prev, navButtons: { ...prev.navButtons, prev: false } }))}
         >
-          ← Previous Month
+          {tr("← Previous Month")}
         </button>
         <h2 style={styles.monthTitle}>
           {currentMonth.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
@@ -952,7 +952,7 @@ const UserAttendancePage = () => {
           onMouseEnter={() => setHoverStates(prev => ({ ...prev, navButtons: { ...prev.navButtons, next: true } }))}
           onMouseLeave={() => setHoverStates(prev => ({ ...prev, navButtons: { ...prev.navButtons, next: false } }))}
         >
-          Next Month →
+          {tr("Next Month →")}
         </button>
       </div>
 
@@ -960,9 +960,9 @@ const UserAttendancePage = () => {
         <table style={styles.table}>
           <thead style={styles.tableHeader}>
             <tr>
-              <th style={styles.th}>Date</th>
-              <th style={styles.th}>Time (IST)</th>
-              <th style={styles.th}>Status</th>
+              <th style={styles.th}>{tr("Date")}</th>
+              <th style={styles.th}>{tr("Time (IST)")}</th>
+              <th style={styles.th}>{tr("Status")}</th>
             </tr>
           </thead>
           <tbody>
@@ -999,7 +999,7 @@ const UserAttendancePage = () => {
             {attendanceData.length === 0 && (
               <tr>
                 <td colSpan="3" style={{...styles.td, textAlign: 'center', color: 'var(--color-text-muted)', padding: '40px'}}>
-                  No attendance records for this month
+                  {tr("No attendance records for this month")}
                 </td>
               </tr>
             )}
@@ -1025,7 +1025,7 @@ const UserAttendancePage = () => {
           onMouseEnter={() => setHoverStates(prev => ({ ...prev, paymentBtn: true }))}
           onMouseLeave={() => setHoverStates(prev => ({ ...prev, paymentBtn: false }))}
         >
-          ➕ Submit Payment Request
+          {tr("➕ Submit Payment Request")}
         </button>
       </div>
 
@@ -1033,10 +1033,10 @@ const UserAttendancePage = () => {
         <table style={styles.table}>
           <thead style={styles.tableHeader}>
             <tr>
-              <th style={styles.th}>Period (From - To)</th>
-              <th style={styles.th}>Fees</th>
-              <th style={styles.th}>Status</th>
-              <th style={styles.th}>Submitted Date</th>
+              <th style={styles.th}>{tr("Period (From - To)")}</th>
+              <th style={styles.th}>{tr("Fees")}</th>
+              <th style={styles.th}>{tr("Status")}</th>
+              <th style={styles.th}>{tr("Submitted Date")}</th>
             </tr>
           </thead>
           <tbody>
@@ -1079,7 +1079,7 @@ const UserAttendancePage = () => {
             {paymentHistory.length === 0 && (
               <tr>
                 <td colSpan="4" style={{...styles.td, textAlign: 'center', color: 'var(--color-text-muted)', padding: '40px'}}>
-                  No payment records found
+                  {tr("No payment records found")}
                 </td>
               </tr>
             )}
@@ -1095,7 +1095,7 @@ const UserAttendancePage = () => {
         <div style={styles.pageBackground} />
         <div style={styles.loadingContainer}>
           <div style={styles.loadingText}>
-            {loading ? 'Loading attendance data...' : 'Loading user data...'}
+            {loading ? tr('Loading attendance data...') : tr('Loading user data...')}
           </div>
         </div>
       </div>
@@ -1106,8 +1106,8 @@ const UserAttendancePage = () => {
     <div style={styles.page}>
       <div style={styles.pageBackground} />
       <div style={styles.header}>
-        <h1 style={styles.title}>📚 Student Portal</h1>
-        <p style={styles.subtitle}>Track your attendance, manage payments, and monitor your academic progress</p>
+        <h1 style={styles.title}>{tr("📚 Student Portal")}</h1>
+        <p style={styles.subtitle}>{tr("Track your attendance, manage payments, and monitor your academic progress")}</p>
       </div>
 
       <div style={styles.tabs}>
@@ -1115,25 +1115,25 @@ const UserAttendancePage = () => {
           style={{...styles.tab, ...(activeTab === 'overview' ? styles.activeTab : {})}}
           onClick={() => setActiveTab('overview')}
         >
-          📊 Overview
+          {tr("📊 Overview")}
         </div>
         <div
           style={{...styles.tab, ...(activeTab === 'assignments' ? styles.activeTab : {})}}
           onClick={() => setActiveTab('assignments')}
         >
-          📋 Assignments
+          {tr("📋 Assignments")}
         </div>
         <div
           style={{...styles.tab, ...(activeTab === 'schedule' ? styles.activeTab : {})}}
           onClick={() => setActiveTab('schedule')}
         >
-          📅 Schedule
+          {tr("📅 Schedule")}
         </div>
         <div
           style={{...styles.tab, ...(activeTab === 'messages' ? styles.activeTab : {}), position: 'relative'}}
           onClick={() => setActiveTab('messages')}
         >
-          💬 Messages
+          {tr("💬 Messages")}
           {msgUnread > 0 && (
             <span style={{
               marginLeft: 6, minWidth: 18, height: 18, padding: '0 5px',
@@ -1147,25 +1147,25 @@ const UserAttendancePage = () => {
           style={{...styles.tab, ...(activeTab === 'player' ? styles.activeTab : {})}}
           onClick={() => setActiveTab('player')}
         >
-          👤 Player
+          {tr("👤 Player")}
         </div>
         <div
           style={{...styles.tab, ...(activeTab === 'leaderboard' ? styles.activeTab : {})}}
           onClick={() => setActiveTab('leaderboard')}
         >
-          🏆 Leaderboard
+          {tr("🏆 Leaderboard")}
         </div>
         <div
           style={{...styles.tab, ...(activeTab === 'attendance' ? styles.activeTab : {})}}
           onClick={() => setActiveTab('attendance')}
         >
-          📝 Attendance
+          {tr("📝 Attendance")}
         </div>
         <div
           style={{...styles.tab, ...(activeTab === 'payments' ? styles.activeTab : {})}}
           onClick={() => setActiveTab('payments')}
         >
-          💰 Payments
+          {tr("💰 Payments")}
         </div>
       </div>
 
@@ -1186,7 +1186,7 @@ const UserAttendancePage = () => {
         <div style={styles.modal}>
           <div style={styles.modalContent}>
             <div style={styles.modalHeader}>
-              <h3 style={styles.modalTitle}>Submit Payment Request</h3>
+              <h3 style={styles.modalTitle}>{tr("Submit Payment Request")}</h3>
               <button
                 style={{
                   ...styles.closeBtn,
@@ -1200,7 +1200,7 @@ const UserAttendancePage = () => {
               </button>
             </div>
             <div style={styles.formGroup}>
-              <label style={styles.formLabel}>Kid Name</label>
+              <label style={styles.formLabel}>{tr("Kid Name")}</label>
               <input
                 type="text"
                 value={paymentFormData.kidName}
@@ -1210,7 +1210,7 @@ const UserAttendancePage = () => {
               />
             </div>
             <div style={styles.formGroup}>
-              <label style={styles.formLabel}>Paid Date</label>
+              <label style={styles.formLabel}>{tr("Paid Date")}</label>
               <input
                 type="date"
                 value={paymentFormData.paidDate}
@@ -1220,7 +1220,7 @@ const UserAttendancePage = () => {
             </div>
             <div style={{display: 'flex', gap: '16px'}}>
               <div style={styles.formGroup}>
-                <label style={styles.formLabel}>From Date</label>
+                <label style={styles.formLabel}>{tr("From Date")}</label>
                 <input
                   type="date"
                   value={paymentFormData.fromDate}
@@ -1229,7 +1229,7 @@ const UserAttendancePage = () => {
                 />
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.formLabel}>To Date</label>
+                <label style={styles.formLabel}>{tr("To Date")}</label>
                 <input
                   type="date"
                   value={paymentFormData.toDate}
@@ -1240,11 +1240,11 @@ const UserAttendancePage = () => {
             </div>
             <div style={styles.formGroup}>
               <label style={styles.formLabel}>
-                Fees ({paymentCurrency === 'INR' ? '₹' : '$'})
+                {tr("Fees (")}{paymentCurrency === 'INR' ? '₹' : '$'})
               </label>
               <input
                 type="number"
-                placeholder="Enter amount"
+                placeholder={tr("Enter amount")}
                 value={paymentFormData.feesAmount}
                 onChange={(e) => setPaymentFormData({...paymentFormData, feesAmount: e.target.value})}
                 style={styles.input}
@@ -1255,13 +1255,13 @@ const UserAttendancePage = () => {
                 style={styles.secondaryBtn}
                 onClick={() => setShowPaymentForm(false)}
               >
-                Cancel
+                {tr("Cancel")}
               </button>
               <button
                 style={styles.primaryBtn}
                 onClick={handlePaymentSubmit}
               >
-                Submit Payment
+                {tr("Submit Payment")}
               </button>
             </div>
           </div>
@@ -1272,3 +1272,5 @@ const UserAttendancePage = () => {
 };
 
 export default UserAttendancePage;
+
+import { t as tr } from '../i18n/LanguageContext';

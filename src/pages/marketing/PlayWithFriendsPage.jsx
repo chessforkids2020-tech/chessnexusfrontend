@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/play-chess-with-friends";
 
@@ -29,7 +30,7 @@ export default function PlayWithFriendsPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
@@ -46,7 +47,7 @@ export default function PlayWithFriendsPage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "Play Chess With Friends — Free 2-Player Online Chess",
+        title: tr("Play Chess With Friends — Free 2-Player Online Chess"),
         description:
           "Play chess with friends online for free on Chess Nexus. Create a private room, share a link and play 2-player chess in your browser — no ads, no downloads, no sign-up needed to join.",
         keywords:
@@ -57,13 +58,13 @@ export default function PlayWithFriendsPage() {
       hero={{
         icon: "🤝",
         h1: "Play Chess With Friends — Free, No Ads",
-        sub: "Challenge a friend to a game in seconds. Create a private room, share the link, and play 2-player chess online in real time — or pass one device back and forth. No ads, no downloads, no fuss.",
-        primary: { label: "Start a Friend Game", to: "/friend/new" },
-        secondary: { label: "Browse all features", to: "/features" },
+        sub: tr("Challenge a friend to a game in seconds. Create a private room, share the link, and play 2-player chess online in real time — or pass one device back and forth. No ads, no downloads, no fuss."),
+        primary: { label: tr("Start a Friend Game"), to: "/friend/new" },
+        secondary: { label: tr("Browse all features"), to: "/features" },
       }}
     >
       <section className="mkt-section">
-        <h2>A private board for you and a friend</h2>
+        <h2>{tr("A private board for you and a friend")}</h2>
         <p className="mkt-section-lead">
           Sometimes you don't want a stranger from the matchmaking pool — you want
           to beat your friend, your sibling, or your study partner. Chess Nexus
@@ -84,7 +85,7 @@ export default function PlayWithFriendsPage() {
       <div className="mkt-callout">
         <div className="mkt-callout-icon">📱</div>
         <div>
-          <h2>2-player chess, on one device or two</h2>
+          <h2>{tr("2-player chess, on one device or two")}</h2>
           <p>
             Want a quick game side by side? Play 2-player chess on a single
             screen and pass the device between moves — great for a coffee-table
@@ -97,7 +98,7 @@ export default function PlayWithFriendsPage() {
       </div>
 
       <section className="mkt-section">
-        <h2>More ways to play once you're hooked</h2>
+        <h2>{tr("More ways to play once you're hooked")}</h2>
         <p className="mkt-section-lead">
           A friendly game is just the start. When you want a fresh challenge, jump
           into live games against other members from around the world, test
@@ -108,16 +109,16 @@ export default function PlayWithFriendsPage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <Link to="/friend/new" className="mkt-btn mkt-btn-primary">
-            Create a private game
+            {tr("Create a private game")}
           </Link>
           <Link to="/play-chess-online" className="mkt-btn mkt-btn-ghost">
-            Play chess online
+            {tr("Play chess online")}
           </Link>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

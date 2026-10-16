@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import SEO from "../../components/SEO";
+import { getLanguage } from '../../i18n/LanguageContext';
 import "../../components/marketing/marketing.css";
 
 const CANONICAL = "/terms";
@@ -41,6 +42,13 @@ export default function TermsPage() {
         <header className="mkt-hero">
           <img src="/logo.png" alt="Chess Nexus logo" className="mkt-hero-logo" />
           <h1>Terms &amp; Conditions</h1>
+          {/* Legal text is kept in English on purpose: a machine translation of a
+              legal document could change its meaning. Spanish readers are told so. */}
+          {getLanguage() === 'es' && (
+            <p style={{ color: "#fbbf24", fontSize: 14, marginTop: 8 }} lang="es">
+              Este documento legal solo está disponible en inglés.
+            </p>
+          )}
           <p className="mkt-hero-sub">
             These terms are the agreement between you and Chess Nexus. Please read
             them carefully — by using the service you agree to them.

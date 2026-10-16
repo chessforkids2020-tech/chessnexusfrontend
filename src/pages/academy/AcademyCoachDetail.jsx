@@ -9,6 +9,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import './AcademyDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'];
@@ -126,11 +127,11 @@ export default function AcademyCoachDetail() {
   }, [coachId, month]);
   useEffect(() => { load(); }, [load]);
 
-  if (loading && !data) return <div className="acad-wrap"><div className="acad-empty">Loading coach…</div></div>;
+  if (loading && !data) return <div className="acad-wrap"><div className="acad-empty">{tr("Loading coach…")}</div></div>;
   if (err && !data) return (
     <div className="acad-wrap">
       <div className="acad-error">⚠️ {err}</div>
-      <button className="btn-ghost" onClick={() => navigate('/academy/coaches')}>← Back to coaches</button>
+      <button className="btn-ghost" onClick={() => navigate('/academy/coaches')}>{tr("← Back to coaches")}</button>
     </div>
   );
   if (!data) return null;
@@ -142,7 +143,7 @@ export default function AcademyCoachDetail() {
   return (
     <div className="acad-wrap">
       <button className="btn-ghost" onClick={() => navigate('/academy/coaches')} style={{ marginBottom: 12 }}>
-        ← All coaches
+        {tr("← All coaches")}
       </button>
 
       {/* ── Profile ── */}
@@ -154,12 +155,12 @@ export default function AcademyCoachDetail() {
           <h1 style={{ margin: 0, color: 'var(--color-text)' }}>
             {coach.title ? <span className="acad-coach-title">{coach.title}</span> : null}
             {coach.name}
-            {coach.verified && <span className="acad-coach-verified" title="Verified">✓</span>}
+            {coach.verified && <span className="acad-coach-verified" title={tr("Verified")}>✓</span>}
           </h1>
           <div className="acad-coach-sub">
             @{coach.username}
             {coach.country ? ` · ${coach.country}` : ''}
-            {coach.fideRating ? ` · FIDE ${coach.fideRating}` : ''}
+            {coach.fideRating ? tr(" · FIDE {fideRating}", { fideRating: coach.fideRating }) : ''}
           </div>
           {coach.languages?.length > 0 && (
             <div className="acad-coach-tags">
@@ -172,28 +173,28 @@ export default function AcademyCoachDetail() {
 
       {/* ── Month picker ── */}
       <div className="acad-month-bar">
-        <button className="btn-ghost" onClick={() => setMonth(m => shiftMonth(m, -1))}>← Prev</button>
+        <button className="btn-ghost" onClick={() => setMonth(m => shiftMonth(m, -1))}>{tr("← Prev")}</button>
         <strong style={{ color: 'var(--color-text)' }}>{MONTHS[mm - 1]} {yy}</strong>
         <button
           className="btn-ghost"
           onClick={() => setMonth(m => shiftMonth(m, 1))}
           disabled={month >= thisMonthKey()}
         >
-          Next →
+          {tr("Next →")}
         </button>
         {month !== thisMonthKey() && (
-          <button className="btn-ghost" onClick={() => setMonth(thisMonthKey())}>This month</button>
+          <button className="btn-ghost" onClick={() => setMonth(thisMonthKey())}>{tr("This month")}</button>
         )}
       </div>
 
       {/* ── Headline numbers ── */}
       <div className="acad-stat-grid">
         {[
-          { label: 'Students', value: totals.students, sub: totals.onBreak ? `${totals.onBreak} on break` : 'all active', color: '#38bdf8' },
-          { label: 'Classes this month', value: totals.classes, sub: `${totals.classHours}h taught`, color: 'var(--color-accent-2)' },
-          { label: 'Attendance', value: totals.attendanceRate == null ? '—' : `${totals.attendanceRate}%`, sub: `${totals.present} present · ${totals.absent} absent`, color: 'var(--color-success)' },
-          { label: 'Assignments set', value: totals.assignments, sub: 'this month', color: 'var(--color-warning)' },
-          { label: 'Fees received', value: fmtMoney(totals.approvedByCurrency), sub: `${totals.feeApproved} approved`, color: 'var(--color-success)' },
+          { label: tr('Students'), value: totals.students, sub: totals.onBreak ? tr("{onBreak} on break", { onBreak: totals.onBreak }) : tr('all active'), color: '#38bdf8' },
+          { label: tr('Classes this month'), value: totals.classes, sub: tr("{classHours}h taught", { classHours: totals.classHours }), color: 'var(--color-accent-2)' },
+          { label: tr('Attendance'), value: totals.attendanceRate == null ? '—' : `${totals.attendanceRate}%`, sub: tr("{present} present · {absent} absent", { present: totals.present, absent: totals.absent }), color: 'var(--color-success)' },
+          { label: tr('Assignments set'), value: totals.assignments, sub: tr('this month'), color: 'var(--color-warning)' },
+          { label: tr('Fees received'), value: fmtMoney(totals.approvedByCurrency), sub: tr("{feeApproved} approved", { feeApproved: totals.feeApproved }), color: 'var(--color-success)' },
         ].map(s => (
           <div key={s.label} className="acad-stat">
             <div className="acad-stat-label">{s.label}</div>
@@ -205,14 +206,14 @@ export default function AcademyCoachDetail() {
 
       {/* ── Attendance breakdown ── */}
       <div className="acad-panel">
-        <h3>📊 Attendance — {MONTHS[mm - 1]}</h3>
+        <h3>{tr("📊 Attendance —")} {MONTHS[mm - 1]}</h3>
         {(totals.present + totals.absent + totals.catchup) === 0 ? (
-          <div className="acad-muted">No attendance marked this month.</div>
+          <div className="acad-muted">{tr("No attendance marked this month.")}</div>
         ) : (
           <>
-            <Bar label="Present"  value={totals.present} max={totals.present + totals.absent + totals.catchup} color="var(--color-success)" />
-            <Bar label="Absent"   value={totals.absent}  max={totals.present + totals.absent + totals.catchup} color="var(--color-danger)" />
-            <Bar label="Catch-up" value={totals.catchup} max={totals.present + totals.absent + totals.catchup} color="var(--color-warning)" />
+            <Bar label={tr("Present")}  value={totals.present} max={totals.present + totals.absent + totals.catchup} color="var(--color-success)" />
+            <Bar label={tr("Absent")}   value={totals.absent}  max={totals.present + totals.absent + totals.catchup} color="var(--color-danger)" />
+            <Bar label={tr("Catch-up")} value={totals.catchup} max={totals.present + totals.absent + totals.catchup} color="var(--color-warning)" />
           </>
         )}
       </div>
@@ -220,7 +221,7 @@ export default function AcademyCoachDetail() {
       {/* ── Calendars ── */}
       <div className="acad-cal-row">
         <MonthCalendar
-          title="🗓 Attendance" month={month} daysInMonth={daysInMonth} firstWeekday={firstWeekday}
+          title={tr("🗓 Attendance")} month={month} daysInMonth={daysInMonth} firstWeekday={firstWeekday}
           legend="green = present · red = absent · amber = catch-up"
           render={(k) => {
             const c = calendars.attendanceByDay?.[k];
@@ -230,51 +231,51 @@ export default function AcademyCoachDetail() {
               : c.catchup > 0 && c.present === 0 ? 'var(--color-warning-a30)'
               : 'rgba(52,211,153,0.32)';
             return { label: `${c.present}/${c.present + c.absent + c.catchup}`, color,
-              title: `${k}: ${c.present} present, ${c.absent} absent, ${c.catchup} catch-up` };
+              title: tr("{k}: {present} present, {absent} absent, {catchup} catch-up", { k: k, present: c.present, absent: c.absent, catchup: c.catchup }) };
           }}
         />
         <MonthCalendar
-          title="🎥 Classes" month={month} daysInMonth={daysInMonth} firstWeekday={firstWeekday}
+          title={tr("🎥 Classes")} month={month} daysInMonth={daysInMonth} firstWeekday={firstWeekday}
           legend="darker = more classes that day"
           render={(k) => {
             const n = calendars.classesByDay?.[k];
             if (!n) return null;
             const a = 0.18 + 0.55 * (n / maxClasses);
-            return { label: n, color: `rgba(167,139,250,${a.toFixed(2)})`, title: `${k}: ${n} class${n === 1 ? '' : 'es'}` };
+            return { label: n, color: `rgba(167,139,250,${a.toFixed(2)})`, title: tr("{k}: {n} class{v2}", { k: k, n: n, v2: n === 1 ? '' : 'es' }) };
           }}
         />
         <MonthCalendar
-          title="💰 Fee requests" month={month} daysInMonth={daysInMonth} firstWeekday={firstWeekday}
+          title={tr("💰 Fee requests")} month={month} daysInMonth={daysInMonth} firstWeekday={firstWeekday}
           legend="days a parent sent a fee request"
           render={(k) => {
             const n = calendars.feesByDay?.[k];
             if (!n) return null;
-            return { label: n, color: 'rgba(244,114,182,0.32)', title: `${k}: ${n} fee request${n === 1 ? '' : 's'}` };
+            return { label: n, color: 'rgba(244,114,182,0.32)', title: tr("{k}: {n} fee request{v2}", { k: k, n: n, v2: n === 1 ? '' : 's' }) };
           }}
         />
         <MonthCalendar
-          title="📋 Activities set" month={month} daysInMonth={daysInMonth} firstWeekday={firstWeekday}
+          title={tr("📋 Activities set")} month={month} daysInMonth={daysInMonth} firstWeekday={firstWeekday}
           legend="assignments this coach created"
           render={(k) => {
             const n = calendars.activityByDay?.[k];
             if (!n) return null;
-            return { label: n, color: 'var(--color-warning-a30)', title: `${k}: ${n} assignment${n === 1 ? '' : 's'}` };
+            return { label: n, color: 'var(--color-warning-a30)', title: tr("{k}: {n} assignment{v2}", { k: k, n: n, v2: n === 1 ? '' : 's' }) };
           }}
         />
       </div>
 
       {/* ── Students ── */}
       <div className="acad-panel">
-        <h3>🎓 Students ({students.length})</h3>
+        <h3>{tr("🎓 Students (")}{students.length})</h3>
         {students.length === 0 ? (
-          <div className="acad-muted">This coach has no students yet.</div>
+          <div className="acad-muted">{tr("This coach has no students yet.")}</div>
         ) : (
           <div className="acad-table-wrap">
             <table className="acad-table">
               <thead>
                 <tr>
-                  <th>Student</th><th>Username</th><th>Batch</th>
-                  <th>Joined</th><th>Last active</th><th>Status</th>
+                  <th>{tr("Student")}</th><th>{tr("Username")}</th><th>{tr("Batch")}</th>
+                  <th>{tr("Joined")}</th><th>{tr("Last active")}</th><th>{tr("Status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -287,8 +288,8 @@ export default function AcademyCoachDetail() {
                     <td>{s.lastActivity ? fmtDate(s.lastActivity) : '—'}</td>
                     <td>
                       {s.onBreak
-                        ? <span className="acad-pill acad-pill--warn">On break</span>
-                        : <span className="acad-pill acad-pill--ok">Active</span>}
+                        ? <span className="acad-pill acad-pill--warn">{tr("On break")}</span>
+                        : <span className="acad-pill acad-pill--ok">{tr("Active")}</span>}
                     </td>
                   </tr>
                 ))}
@@ -300,31 +301,31 @@ export default function AcademyCoachDetail() {
 
       {/* ── Fee requests ── */}
       <div className="acad-panel">
-        <h3>💰 Fees — {MONTHS[mm - 1]}</h3>
+        <h3>{tr("💰 Fees —")} {MONTHS[mm - 1]}</h3>
 
         {/* Received / pending / rejected, with amounts. The coaches list shows
             only "received"; the full picture belongs here. */}
         <div className="acad-fee-split">
           {[
-            { key: 'received', label: '✅ Received', amount: totals.approvedByCurrency, n: totals.feeApproved, cls: 'acad-fee--ok' },
-            { key: 'pending',  label: '⏳ Pending',  amount: totals.pendingByCurrency,  n: totals.feePending,  cls: 'acad-fee--warn' },
-            { key: 'rejected', label: '❌ Rejected', amount: totals.rejectedByCurrency, n: totals.feeRejected, cls: 'acad-fee--bad' },
+            { key: 'received', label: tr('✅ Received'), amount: totals.approvedByCurrency, n: totals.feeApproved, cls: 'acad-fee--ok' },
+            { key: 'pending',  label: tr('⏳ Pending'),  amount: totals.pendingByCurrency,  n: totals.feePending,  cls: 'acad-fee--warn' },
+            { key: 'rejected', label: tr('❌ Rejected'), amount: totals.rejectedByCurrency, n: totals.feeRejected, cls: 'acad-fee--bad' },
           ].map(f => (
             <div key={f.key} className={`acad-fee-card ${f.cls}`}>
               <div className="acad-fee-label">{f.label}</div>
               <MoneyCells byCurrency={f.amount} />
-              <div className="acad-fee-count">{f.n} request{f.n === 1 ? '' : 's'}</div>
+              <div className="acad-fee-count">{f.n} {tr("request")}{f.n === 1 ? '' : 's'}</div>
             </div>
           ))}
         </div>
 
         {fees.length === 0 ? (
-          <div className="acad-muted">No fee requests this month.</div>
+          <div className="acad-muted">{tr("No fee requests this month.")}</div>
         ) : (
           <div className="acad-table-wrap">
             <table className="acad-table">
               <thead>
-                <tr><th>Student</th><th>Amount</th><th>For</th><th>Sent</th><th>Status</th></tr>
+                <tr><th>{tr("Student")}</th><th>{tr("Amount")}</th><th>{tr("For")}</th><th>{tr("Sent")}</th><th>{tr("Status")}</th></tr>
               </thead>
               <tbody>
                 {fees.map((f, i) => (

@@ -12,6 +12,7 @@ import CoachProse from '../../components/CoachProse';
 import './CoachDashboard.css';
 import './CoachOnboarding.css'; // .btn-ghost / .btn-primary live here
 import './CoachProfile.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Only these are editable server-side (routes/coach.js `allowed`). Keep in sync.
 const EDITABLE = ['coachName', 'coachCountry', 'hourlyRate', 'monthlyRate', 'rateCurrency',
@@ -29,12 +30,12 @@ const EDITABLE = ['coachName', 'coachCountry', 'hourlyRate', 'monthlyRate', 'rat
   // already linked from the account handles and shown beside the ratings.
   'instagramUrl', 'youtubeUrl', 'websiteUrl'];
 const LEVELS = [
-  { key: 'beginner', label: 'Beginner' },
-  { key: 'intermediate', label: 'Intermediate' },
-  { key: 'advanced', label: 'Advanced' },
+  { key: 'beginner', label: tr('Beginner') },
+  { key: 'intermediate', label: tr('Intermediate') },
+  { key: 'advanced', label: tr('Advanced') },
 ];
 
-const NOT_SET = <span className="cp-not-set">Not set</span>;
+const NOT_SET = <span className="cp-not-set">{tr("Not set")}</span>;
 
 // Gallery limits. Mirrored from routes/coach.js — the server enforces both;
 // these exist so a coach is told before a doomed upload, not after it.
@@ -50,7 +51,7 @@ const GALLERY_MAX_BYTES = 900 * 1024;
 const PHOTO_MAX_BYTES = 700 * 1024;
 
 // Pretty label for the verification-handle platform (stored as a short enum).
-const SOCIAL_LABEL = { facebook: 'Facebook', instagram: 'Instagram', chesscom: 'Chess.com', lichess: 'Lichess' };
+const SOCIAL_LABEL = { facebook: tr('Facebook'), instagram: tr('Instagram'), chesscom: tr('Chess.com'), lichess: tr('Lichess') };
 
 // Initials for the avatar (up to 2 letters).
 function initials(name) {
@@ -115,7 +116,7 @@ export default function CoachProfile() {
          .map(x => ({ id: String(x._id), url: x.url, caption: x.caption || '' }))
       );
     } catch {
-      setError('Could not load your profile.');
+      setError(tr('Could not load your profile.'));
     }
   };
 
@@ -131,11 +132,11 @@ export default function CoachProfile() {
     // Checked client-side too so a coach on a slow connection is told straight
     // away rather than after an upload the proxy will reject outright.
     if (file.size > GALLERY_MAX_BYTES) {
-      setGalleryError('That image is over 900 KB. Shrink it first — squoosh.app resizes and compresses in your browser.');
+      setGalleryError(tr('That image is over 900 KB. Shrink it first — squoosh.app resizes and compresses in your browser.'));
       return;
     }
     if (gallery.length >= GALLERY_MAX) {
-      setGalleryError(`You can have at most ${GALLERY_MAX} photos.`);
+      setGalleryError(tr("You can have at most {GALLERY_MAX} photos.", { GALLERY_MAX: GALLERY_MAX }));
       return;
     }
 
@@ -189,7 +190,7 @@ export default function CoachProfile() {
   useEffect(() => { load(); }, []);
 
   const requestLeaveAcademy = async () => {
-    if (!window.confirm('Ask your academy to release you as an individual coach? Your students and data stay with you. The academy will review and confirm.')) return;
+    if (!window.confirm(tr('Ask your academy to release you as an individual coach? Your students and data stay with you. The academy will review and confirm.'))) return;
     try {
       const r = await api.post('/api/academy/leave');
       setAcademyInfo(prev => prev ? { ...prev, leaveRequested: true } : prev);
@@ -200,7 +201,7 @@ export default function CoachProfile() {
   };
 
   if (error && !status) return <div className="coach-dash"><div className="coach-error">⚠️ {error}</div></div>;
-  if (!status) return <div className="coach-dash"><div className="coach-empty">Loading your profile…</div></div>;
+  if (!status) return <div className="coach-dash"><div className="coach-empty">{tr("Loading your profile…")}</div></div>;
 
   const p = status.coachProfile || {};
   const access = status.access || {};
@@ -255,16 +256,16 @@ export default function CoachProfile() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
-      setError('Use a PNG, JPG or WebP image.');
+      setError(tr('Use a PNG, JPG or WebP image.'));
       return;
     }
     if (file.size > PHOTO_MAX_BYTES) {
-      setError('That photo is over 700 KB. Shrink it first — squoosh.app resizes and compresses in your browser.');
+      setError(tr('That photo is over 700 KB. Shrink it first — squoosh.app resizes and compresses in your browser.'));
       return;
     }
     const reader = new FileReader();
     reader.onload = () => { setError(''); setForm(f => ({ ...f, profilePhotoUrl: reader.result })); };
-    reader.onerror = () => setError('Could not read that file.');
+    reader.onerror = () => setError(tr('Could not read that file.'));
     reader.readAsDataURL(file);
   };
 
@@ -346,31 +347,31 @@ export default function CoachProfile() {
         <div className="cp-avatar" aria-hidden="true">{initials(p.coachName)}</div>
         <div className="cp-hero-body">
           <h1 className="cp-hero-name">
-            {p.coachName || 'Your profile'}
+            {p.coachName || tr('Your profile')}
             {p.verified
-              ? <span className="cp-chip verified">🎓 Verified Coach</span>
-              : <span className="cp-chip pending">⏳ Awaiting verification</span>}
+              ? <span className="cp-chip verified">{tr("🎓 Verified Coach")}</span>
+              : <span className="cp-chip pending">{tr("⏳ Awaiting verification")}</span>}
           </h1>
           <p className="cp-hero-meta">
-            <b>{isAcademy ? (p.academyName || 'Academy') : 'Individual coach'}</b>
+            <b>{isAcademy ? (p.academyName || tr('Academy')) : tr('Individual coach')}</b>
             {p.coachCountry ? ` · ${p.coachCountry}` : ''}
             {p.specialization ? ` · ${p.specialization}` : ''}
-            {p.onboardedAt ? ` · Coaching since ${new Date(p.onboardedAt).toLocaleDateString()}` : ''}
+            {p.onboardedAt ? tr(" · Coaching since {v0}", { v0: new Date(p.onboardedAt).toLocaleDateString() }) : ''}
           </p>
           <div className="cp-hero-chips">
             {rate && <span className="cp-chip">💵 {rate}</span>}
             {p.coachCode && (
               <span className="cp-code">
                 {p.coachCode}
-                <button onClick={copyCode}>{codeCopied ? '✓ Copied' : 'Copy'}</button>
-                <button onClick={copyReferralLink}>{linkCopied ? '✓ Copied' : '🔗 Copy referral link'}</button>
+                <button onClick={copyCode}>{codeCopied ? tr('✓ Copied') : tr('Copy')}</button>
+                <button onClick={copyReferralLink}>{linkCopied ? tr('✓ Copied') : tr('🔗 Copy referral link')}</button>
               </span>
             )}
           </div>
         </div>
         <div className="cp-hero-actions">
-          {!editing && <button className="btn-primary" onClick={startEdit}>✏️ Edit profile</button>}
-          <Link to="/coach/dashboard" className="btn-ghost">← Dashboard</Link>
+          {!editing && <button className="btn-primary" onClick={startEdit}>{tr("✏️ Edit profile")}</button>}
+          <Link to="/coach/dashboard" className="btn-ghost">{tr("← Dashboard")}</Link>
         </div>
       </div>
 
@@ -380,7 +381,7 @@ export default function CoachProfile() {
       {counts && (
         <div className="coach-stat-row">
           <div className="coach-stat-card">
-            <div className="stat-label">Students</div>
+            <div className="stat-label">{tr("Students")}</div>
             <div className="stat-value">
               {counts.studentsCount ?? 0}
               <span className="stat-cap"> / {access.maxStudents ?? '—'}</span>
@@ -390,10 +391,10 @@ export default function CoachProfile() {
                 <div style={{ width: `${Math.min(100, Math.round(((counts.studentsCount ?? 0) / access.maxStudents) * 100))}%` }} />
               </div>
             ) : null}
-            <div className="stat-foot">{counts.studentsRemaining ?? 0} slots remaining</div>
+            <div className="stat-foot">{counts.studentsRemaining ?? 0} {tr("slots remaining")}</div>
           </div>
           <div className="coach-stat-card">
-            <div className="stat-label">Plan</div>
+            <div className="stat-label">{tr("Plan")}</div>
             <div className="stat-value" style={{ textTransform: 'capitalize' }}>{access.plan || 'free'}</div>
           </div>
           {/* Wallet card with a "?" that pops the referral explainer. */}
@@ -408,11 +409,11 @@ export default function CoachProfile() {
             return (
               <div className="coach-stat-card cp-wallet-stat">
                 <div className="stat-label">
-                  Wallet
+                  {tr("Wallet")}
                   <button
                     type="button"
                     className="cp-wallet-help-btn"
-                    aria-label="How the referral wallet works"
+                    aria-label={tr("How the referral wallet works")}
                     onClick={() => setWalletHelp(v => !v)}
                   >?</button>
                   {walletHelp && (
@@ -420,9 +421,9 @@ export default function CoachProfile() {
                       <div className="cp-wallet-help-backdrop" onClick={() => setWalletHelp(false)} />
                       <div className="cp-wallet-help-pop" role="dialog">
                         Invite another coach with your code. When they make their first paid
-                        subscription, you earn <strong>{rewardPct}%</strong> of what they pay as
-                        wallet credit — spendable on your own plan (covers up to {maxPct}% of a purchase).
-                        <Link to="/coach/subscription" className="cp-wallet-help-link">Use credit →</Link>
+                        {tr("subscription, you earn")} <strong>{rewardPct}%</strong> {tr("of what they pay as")}
+                        {tr("wallet credit — spendable on your own plan (covers up to")} {maxPct}{tr("% of a purchase).")}
+                        <Link to="/coach/subscription" className="cp-wallet-help-link">{tr("Use credit →")}</Link>
                       </div>
                     </>
                   )}
@@ -439,33 +440,33 @@ export default function CoachProfile() {
       <div className="cp-card">
         <div className="cp-card-head">
           <span className="cp-card-ic" aria-hidden="true">👤</span>
-          <h2>{editing ? 'Edit your details' : 'About you'}</h2>
+          <h2>{editing ? tr('Edit your details') : tr('About you')}</h2>
         </div>
 
         {editing ? (
           <div className="cp-form">
             <div className="cp-form-grid">
               <div className="cp-field">
-                <label>Name</label>
+                <label>{tr("Name")}</label>
                 <input className="cp-input" value={form.coachName} onChange={set('coachName')} />
               </div>
               <div className="cp-field">
-                <label>Country</label>
+                <label>{tr("Country")}</label>
                 <input className="cp-input" value={form.coachCountry} onChange={set('coachCountry')} />
               </div>
               <div className="cp-field">
-                <label>Coach type</label>
+                <label>{tr("Coach type")}</label>
                 <select
                   value={form.coachType}
                   onChange={set('coachType')}
                   disabled={academyLocked}
                 >
-                  <option value="individual">Individual</option>
-                  <option value="academy">Academy</option>
+                  <option value="individual">{tr("Individual")}</option>
+                  <option value="academy">{tr("Academy")}</option>
                 </select>
                 {academyLocked && (
                   <span className="cp-hint">
-                    🏛️ You teach under {academyInfo.academy.name}, so your profile stays
+                    {tr("🏛️ You teach under")} {academyInfo.academy.name}{tr(", so your profile stays")}
                     listed as part of it. Leave the academy to be listed as an
                     individual coach.
                   </span>
@@ -473,7 +474,7 @@ export default function CoachProfile() {
               </div>
               {form.coachType === 'academy' && (
                 <div className="cp-field">
-                  <label>Academy name</label>
+                  <label>{tr("Academy name")}</label>
                   <input
                     className="cp-input"
                     value={academyLocked ? academyInfo.academy.name : form.academyName}
@@ -482,7 +483,7 @@ export default function CoachProfile() {
                   />
                   {academyLocked && (
                     <span className="cp-hint">
-                      Set by your academy — only {academyInfo.academy.name} can change this.
+                      {tr("Set by your academy — only")} {academyInfo.academy.name} {tr("can change this.")}
                     </span>
                   )}
                 </div>
@@ -491,34 +492,34 @@ export default function CoachProfile() {
                   and only quote an hourly figure for one-off lessons; others do
                   the reverse. Leave one blank and only the other is shown. */}
               <div className="cp-field">
-                <label>Hourly rate <span className="cp-optional">optional</span></label>
+                <label>{tr("Hourly rate")} <span className="cp-optional">{tr("optional")}</span></label>
                 <input className="cp-input" type="number" min="0" value={form.hourlyRate} onChange={set('hourlyRate')} />
               </div>
               <div className="cp-field">
-                <label>Monthly rate <span className="cp-optional">optional</span></label>
+                <label>{tr("Monthly rate")} <span className="cp-optional">{tr("optional")}</span></label>
                 <input className="cp-input" type="number" min="0" value={form.monthlyRate} onChange={set('monthlyRate')} />
               </div>
               <div className="cp-field">
-                <label>Currency</label>
+                <label>{tr("Currency")}</label>
                 <select value={form.rateCurrency} onChange={set('rateCurrency')}>
-                  <option value="INR">INR (₹)</option>
-                  <option value="USD">USD ($)</option>
+                  <option value="INR">{tr("INR (₹)")}</option>
+                  <option value="USD">{tr("USD ($)")}</option>
                 </select>
               </div>
               <div className="cp-field">
-                <label>Specialization</label>
-                <input className="cp-input" placeholder="e.g. Openings, endgames, kids" value={form.specialization} onChange={set('specialization')} />
+                <label>{tr("Specialization")}</label>
+                <input className="cp-input" placeholder={tr("e.g. Openings, endgames, kids")} value={form.specialization} onChange={set('specialization')} />
               </div>
             </div>
             <div className="cp-field">
-              <label>Bio</label>
+              <label>{tr("Bio")}</label>
               {/* Rich text so a coach can head sections and list things, rather
                   than one unbroken wall of prose. No link button — see
                   components/CoachRichText.jsx. */}
               <CoachRichText
                 value={form.bio}
                 onChange={(html) => setForm(f => ({ ...f, bio: html }))}
-                placeholder="Tell students and parents about your coaching. How long you have taught, how a lesson runs, who you work best with. Write as much as you like — there is no limit." />
+                placeholder={tr("Tell students and parents about your coaching. How long you have taught, how a lesson runs, who you work best with. Write as much as you like — there is no limit.")} />
             </div>
 
             {/* ── PUBLIC PROFILE ──────────────────────────────────────────
@@ -527,7 +528,7 @@ export default function CoachProfile() {
                 those are account settings, while these are published. */}
             <div className="cp-public">
               <div className="cp-public-head">
-                <h3>Your public coach page</h3>
+                <h3>{tr("Your public coach page")}</h3>
                 <p>
                   This is what students and parents see at your own page and in
                   the coach directory. Everything here is optional.
@@ -545,16 +546,16 @@ export default function CoachProfile() {
                 </div>
                 <div className="cp-photo-ctl">
                   <label className="cp-photo-btn">
-                    📷 {form.profilePhotoUrl ? 'Change photo' : 'Add a photo'}
+                    📷 {form.profilePhotoUrl ? tr('Change photo') : tr('Add a photo')}
                     <input type="file" accept="image/png,image/jpeg,image/webp" onChange={onPhoto} hidden />
                   </label>
                   {form.profilePhotoUrl && (
                     <button type="button" className="cp-photo-clear"
                             onClick={() => setForm(f => ({ ...f, profilePhotoUrl: '' }))}>
-                      Remove
+                      {tr("Remove")}
                     </button>
                   )}
-                  <span className="cp-photo-hint">PNG, JPG or WebP · up to 700 KB</span>
+                  <span className="cp-photo-hint">{tr("PNG, JPG or WebP · up to 700 KB")}</span>
                 </div>
               </div>
 
@@ -564,37 +565,37 @@ export default function CoachProfile() {
                     document, so it is not something to re-type per coach
                     profile. Shown here so a coach can see what will appear. */}
                 <div className="cp-field">
-                  <label>FIDE title</label>
+                  <label>{tr("FIDE title")}</label>
                   <div className="cp-static">
                     {myTitle
                       ? <span className="cp-title-badge">{myTitle}</span>
-                      : <span className="cp-static-empty">No verified title</span>}
+                      : <span className="cp-static-empty">{tr("No verified title")}</span>}
                   </div>
                   <span className="cp-hint">
                     {myTitle
                       ? 'Verified — this shows on your public page.'
-                      : <>Claim your title in <Link to="/settings?tab=profile">Settings → Profile</Link>. It appears here once approved.</>}
+                      : <>{tr("Claim your title in")} <Link to="/settings?tab=profile">{tr("Settings → Profile")}</Link>{tr(". It appears here once approved.")}</>}
                   </span>
                 </div>
                 <div className="cp-field">
-                  <label>Years teaching</label>
+                  <label>{tr("Years teaching")}</label>
                   <input className="cp-input" type="number" min="0" max="80" placeholder="e.g. 12"
                          value={form.experienceYears} onChange={set('experienceYears')} />
                 </div>
                 {/* Public links. The server checks the HOST of each of these, so a
                     student clicking "Instagram" cannot be sent somewhere else. */}
                 <div className="cp-field">
-                  <label>Instagram</label>
+                  <label>{tr("Instagram")}</label>
                   <input className="cp-input" type="url" placeholder="https://instagram.com/yourhandle"
                          value={form.instagramUrl} onChange={set('instagramUrl')} />
                 </div>
                 <div className="cp-field">
-                  <label>YouTube</label>
+                  <label>{tr("YouTube")}</label>
                   <input className="cp-input" type="url" placeholder="https://youtube.com/@yourchannel"
                          value={form.youtubeUrl} onChange={set('youtubeUrl')} />
                 </div>
                 <div className="cp-field">
-                  <label>Website</label>
+                  <label>{tr("Website")}</label>
                   <input className="cp-input" type="url" placeholder="https://your-academy.com"
                          value={form.websiteUrl} onChange={set('websiteUrl')} />
                   <span className="cp-hint">
@@ -603,17 +604,17 @@ export default function CoachProfile() {
                   </span>
                 </div>
                 <div className="cp-field">
-                  <label>FIDE rating</label>
+                  <label>{tr("FIDE rating")}</label>
                   <input className="cp-input" type="number" min="0" max="3000" placeholder="e.g. 2145"
                          value={form.fideRating} onChange={set('fideRating')} />
                 </div>
                 <div className="cp-field">
-                  <label>Lichess rating</label>
+                  <label>{tr("Lichess rating")}</label>
                   <input className="cp-input" type="number" min="0" max="4000" placeholder="e.g. 2280"
                          value={form.lichessRating} onChange={set('lichessRating')} />
                 </div>
                 <div className="cp-field">
-                  <label>Chess.com rating</label>
+                  <label>{tr("Chess.com rating")}</label>
                   <input className="cp-input" type="number" min="0" max="4000" placeholder="e.g. 2190"
                          value={form.chessComRating} onChange={set('chessComRating')} />
                 </div>
@@ -621,27 +622,27 @@ export default function CoachProfile() {
                     these the public page can only print the number as plain
                     text, because it has no profile to point at. */}
                 <div className="cp-field">
-                  <label>Lichess username</label>
-                  <input className="cp-input" placeholder="e.g. yourhandle"
+                  <label>{tr("Lichess username")}</label>
+                  <input className="cp-input" placeholder={tr("e.g. yourhandle")}
                          value={form.lichessUsername} onChange={set('lichessUsername')} />
-                  <span className="cp-hint">Makes your Lichess rating a link to your profile.</span>
+                  <span className="cp-hint">{tr("Makes your Lichess rating a link to your profile.")}</span>
                 </div>
                 <div className="cp-field">
-                  <label>Chess.com username</label>
-                  <input className="cp-input" placeholder="e.g. yourhandle"
+                  <label>{tr("Chess.com username")}</label>
+                  <input className="cp-input" placeholder={tr("e.g. yourhandle")}
                          value={form.chessComUsername} onChange={set('chessComUsername')} />
-                  <span className="cp-hint">Makes your Chess.com rating a link to your profile.</span>
+                  <span className="cp-hint">{tr("Makes your Chess.com rating a link to your profile.")}</span>
                 </div>
                 <div className="cp-field">
-                  <label>Teaching languages</label>
-                  <input className="cp-input" placeholder="English, Tamil, Hindi"
+                  <label>{tr("Teaching languages")}</label>
+                  <input className="cp-input" placeholder={tr("English, Tamil, Hindi")}
                          value={form.languages} onChange={set('languages')} />
-                  <span className="cp-hint">Separate with commas</span>
+                  <span className="cp-hint">{tr("Separate with commas")}</span>
                 </div>
               </div>
 
               <div className="cp-field">
-                <label>Who you teach</label>
+                <label>{tr("Who you teach")}</label>
                 <div className="cp-levels">
                   {LEVELS.map(l => (
                     <button key={l.key} type="button"
@@ -654,11 +655,11 @@ export default function CoachProfile() {
               </div>
 
               <div className="cp-field">
-                <label>Achievements</label>
+                <label>{tr("Achievements")}</label>
                 <CoachRichText
                   value={form.coachAchievements}
                   onChange={(html) => setForm(f => ({ ...f, coachAchievements: html }))}
-                  placeholder="Titles, tournament results, students you have coached to norms or national events. A bulleted list reads best." />
+                  placeholder={tr("Titles, tournament results, students you have coached to norms or national events. A bulleted list reads best.")} />
               </div>
 
               {/* ── Gallery ─────────────────────────────────────────────────
@@ -667,9 +668,9 @@ export default function CoachProfile() {
                   files on the server, not part of the profile form, so making
                   them wait for "Save changes" would be misleading. */}
               <div className="cp-field">
-                <label>Gallery</label>
+                <label>{tr("Gallery")}</label>
                 <div className="cp-hint">
-                  Up to {GALLERY_MAX} photos, each under 900 KB. Shown on your
+                  {tr("Up to")} {GALLERY_MAX} {tr("photos, each under 900 KB. Shown on your")}
                   public page — medals, classes, tournaments.
                 </div>
 
@@ -688,13 +689,13 @@ export default function CoachProfile() {
                         className="cp-gal-del"
                         onClick={() => removeGalleryImage(img.id)}
                         disabled={galleryBusy}
-                        aria-label="Remove this photo"
-                        title="Remove"
+                        aria-label={tr("Remove this photo")}
+                        title={tr("Remove")}
                       >✕</button>
                       <input
                         type="text"
                         className="cp-gal-caption"
-                        placeholder="Add a caption…"
+                        placeholder={tr("Add a caption…")}
                         defaultValue={img.caption || ''}
                         maxLength={120}
                         onBlur={(e) => saveGalleryCaption(img.id, e.target.value)}
@@ -713,14 +714,14 @@ export default function CoachProfile() {
                       />
                       <span className="cp-gal-add-ic">{galleryBusy ? '…' : '+'}</span>
                       <span className="cp-gal-add-tx">
-                        {galleryBusy ? 'Uploading…' : 'Add photo'}
+                        {galleryBusy ? tr('Uploading…') : tr('Add photo')}
                       </span>
                     </label>
                   )}
                 </div>
 
                 <div className="cp-gal-foot">
-                  <span>{gallery.length} / {GALLERY_MAX} photos</span>
+                  <span>{gallery.length} / {GALLERY_MAX} {tr("photos")}</span>
                   {galleryError && <span className="cp-gal-err">{galleryError}</span>}
                 </div>
               </div>
@@ -730,15 +731,15 @@ export default function CoachProfile() {
                   <input type="checkbox" checked={!!form.acceptingStudents}
                          onChange={e => setForm(f => ({ ...f, acceptingStudents: e.target.checked }))} />
                   <span>
-                    <strong>I am taking new students</strong>
-                    <em>Shows an "open to students" badge. Turn it off when you are full.</em>
+                    <strong>{tr("I am taking new students")}</strong>
+                    <em>{tr("Shows an \"open to students\" badge. Turn it off when you are full.")}</em>
                   </span>
                 </label>
                 <label className="cp-toggle">
                   <input type="checkbox" checked={!!form.publicListed}
                          onChange={e => setForm(f => ({ ...f, publicListed: e.target.checked }))} />
                   <span>
-                    <strong>List me in the public coach directory</strong>
+                    <strong>{tr("List me in the public coach directory")}</strong>
                     <em>
                       Off by default. Your page only goes live once you are
                       verified by the Nexus team AND this is on.
@@ -749,50 +750,50 @@ export default function CoachProfile() {
             </div>
             <div className="cp-form-actions">
               <button className="btn-primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : '✓ Save changes'}</button>
-              <button className="btn-ghost" onClick={() => setEditing(false)} disabled={saving}>Cancel</button>
+              <button className="btn-ghost" onClick={() => setEditing(false)} disabled={saving}>{tr("Cancel")}</button>
             </div>
           </div>
         ) : (
           <div className="cp-rows">
-            <Row label="Name">{p.coachName || NOT_SET}</Row>
-            <Row label="Country">{p.coachCountry || NOT_SET}</Row>
-            <Row label="Coach type">{isAcademy ? 'Academy' : 'Individual'}</Row>
-            {isAcademy && <Row label="Academy">{p.academyName || NOT_SET}</Row>}
-            <Row label="Specialization">{p.specialization || NOT_SET}</Row>
+            <Row label={tr("Name")}>{p.coachName || NOT_SET}</Row>
+            <Row label={tr("Country")}>{p.coachCountry || NOT_SET}</Row>
+            <Row label={tr("Coach type")}>{isAcademy ? tr('Academy') : tr('Individual')}</Row>
+            {isAcademy && <Row label={tr("Academy")}>{p.academyName || NOT_SET}</Row>}
+            <Row label={tr("Specialization")}>{p.specialization || NOT_SET}</Row>
             {/* "Rate", not "Hourly rate" — this line may now show an hourly
                 figure, a monthly one, or both. */}
-            <Row label="Rate">{rate || NOT_SET}</Row>
-            <Row label="Bio">
+            <Row label={tr("Rate")}>{rate || NOT_SET}</Row>
+            <Row label={tr("Bio")}>
               {p.bio
                 ? <CoachProse html={p.bio} />
                 : NOT_SET}
             </Row>
             {/* User.chessTitle — granted by an approved title claim, never
                 typed on this page. */}
-            <Row label="FIDE title">
+            <Row label={tr("FIDE title")}>
               {myTitle
                 ? <span className="cp-title-badge">{myTitle}</span>
-                : <>{NOT_SET} · <Link to="/settings?tab=profile">claim your title</Link></>}
+                : <>{NOT_SET} · <Link to="/settings?tab=profile">{tr("claim your title")}</Link></>}
             </Row>
-            <Row label="Ratings">
+            <Row label={tr("Ratings")}>
               {(p.fideRating || p.lichessRating || p.chessComRating)
                 ? [
-                    p.fideRating && `FIDE ${p.fideRating}`,
-                    p.lichessRating && `Lichess ${p.lichessRating}`,
-                    p.chessComRating && `Chess.com ${p.chessComRating}`,
+                    p.fideRating && tr("FIDE {fideRating}", { fideRating: p.fideRating }),
+                    p.lichessRating && tr("Lichess {lichessRating}", { lichessRating: p.lichessRating }),
+                    p.chessComRating && tr("Chess.com {chessComRating}", { chessComRating: p.chessComRating }),
                   ].filter(Boolean).join(' · ')
                 : NOT_SET}
             </Row>
-            <Row label="Years teaching">{p.experienceYears ?? NOT_SET}</Row>
-            <Row label="Languages">
+            <Row label={tr("Years teaching")}>{p.experienceYears ?? NOT_SET}</Row>
+            <Row label={tr("Languages")}>
               {(p.languages || []).length ? p.languages.join(', ') : NOT_SET}
             </Row>
-            <Row label="Teaches">
+            <Row label={tr("Teaches")}>
               {(p.teaches || []).length
                 ? p.teaches.map(t => t[0].toUpperCase() + t.slice(1)).join(', ')
                 : NOT_SET}
             </Row>
-            <Row label="Achievements">
+            <Row label={tr("Achievements")}>
               {p.coachAchievements
                 ? <CoachProse html={p.coachAchievements} />
                 : NOT_SET}
@@ -800,45 +801,45 @@ export default function CoachProfile() {
             {/* Where the public page stands. Both gates are shown because a
                 coach who ticked "list me" and is still unverified would
                 otherwise wonder why their page 404s. */}
-            <Row label="Public page">
+            <Row label={tr("Public page")}>
               {!p.publicListed
-                ? <span className="cp-not-set">Not listed — turn it on in Edit profile</span>
+                ? <span className="cp-not-set">{tr("Not listed — turn it on in Edit profile")}</span>
                 : !p.verified
-                  ? <span style={{ color: '#fcd34d' }}>Waiting for verification by the Nexus team</span>
+                  ? <span style={{ color: '#fcd34d' }}>{tr("Waiting for verification by the Nexus team")}</span>
                   : (
                     <span className="cp-joinlink">
                       <code>{`${window.location.origin}/coaches/${p.coachCode}`.replace(/^https?:\/\//, '')}</code>
-                      <a href={`/coaches/${p.coachCode}`} target="_blank" rel="noreferrer">View</a>
+                      <a href={`/coaches/${p.coachCode}`} target="_blank" rel="noreferrer">{tr("View")}</a>
                     </span>
                   )}
             </Row>
-            <Row label="Coach code">
+            <Row label={tr("Coach code")}>
               {p.coachCode ? (
                 <span className="cp-code">
                   {p.coachCode}
-                  <button onClick={copyCode}>{codeCopied ? '✓ Copied' : 'Copy'}</button>
+                  <button onClick={copyCode}>{codeCopied ? tr('✓ Copied') : tr('Copy')}</button>
                 </span>
               ) : NOT_SET}
             </Row>
-            <Row label="Student invite link">
+            <Row label={tr("Student invite link")}>
               {p.coachCode ? (
                 <span className="cp-joinlink">
                   <code>{joinLink.replace(/^https?:\/\//, '')}</code>
-                  <button onClick={copyJoinLink}>{joinCopied ? '✓ Copied' : '🔗 Copy'}</button>
-                  <em>Send this to a student or parent. They ask to join, and you approve.</em>
+                  <button onClick={copyJoinLink}>{joinCopied ? tr('✓ Copied') : tr('🔗 Copy')}</button>
+                  <em>{tr("Send this to a student or parent. They ask to join, and you approve.")}</em>
                 </span>
               ) : NOT_SET}
             </Row>
-            <Row label="Verification">
+            <Row label={tr("Verification")}>
               {p.verified
-                ? <span style={{ color: '#6ee7b7' }}>🎓 Verified by the Nexus team</span>
-                : <span style={{ color: '#fcd34d' }}>⏳ Awaiting verification</span>}
+                ? <span style={{ color: '#6ee7b7' }}>{tr("🎓 Verified by the Nexus team")}</span>
+                : <span style={{ color: '#fcd34d' }}>{tr("⏳ Awaiting verification")}</span>}
             </Row>
             {p.socialUsername && (
-              <Row label="Social">{SOCIAL_LABEL[p.socialPlatform] || p.socialPlatform} · @{p.socialUsername}</Row>
+              <Row label={tr("Social")}>{SOCIAL_LABEL[p.socialPlatform] || p.socialPlatform} · @{p.socialUsername}</Row>
             )}
             {p.onboardedAt && (
-              <Row label="Coaching since">{new Date(p.onboardedAt).toLocaleDateString()}</Row>
+              <Row label={tr("Coaching since")}>{new Date(p.onboardedAt).toLocaleDateString()}</Row>
             )}
           </div>
         )}
@@ -849,34 +850,34 @@ export default function CoachProfile() {
         <div className="cp-card">
           <div className="cp-card-head">
             <span className="cp-card-ic" aria-hidden="true">⭐</span>
-            <h2>Your plan</h2>
+            <h2>{tr("Your plan")}</h2>
           </div>
           <div className="cp-rows">
-            <Row label="Plan"><span style={{ textTransform: 'capitalize' }}>{access.plan || 'free'}</span></Row>
-            <Row label="Student limit">{access.maxStudents ?? '—'}</Row>
-            {counts && <Row label="Slots remaining">{counts.studentsRemaining ?? '—'}</Row>}
-            {access.daysRemaining != null && <Row label="Days remaining">{access.daysRemaining}</Row>}
+            <Row label={tr("Plan")}><span style={{ textTransform: 'capitalize' }}>{access.plan || 'free'}</span></Row>
+            <Row label={tr("Student limit")}>{access.maxStudents ?? '—'}</Row>
+            {counts && <Row label={tr("Slots remaining")}>{counts.studentsRemaining ?? '—'}</Row>}
+            {access.daysRemaining != null && <Row label={tr("Days remaining")}>{access.daysRemaining}</Row>}
             {status?.coachSubscription?.sponsoredByAcademy && academyInfo?.academy && (
-              <Row label="Academy">
-                <span style={{ color: '#67e8f9' }}>🏛️ Member of {academyInfo.academy.name}</span>
+              <Row label={tr("Academy")}>
+                <span style={{ color: '#67e8f9' }}>{tr("🏛️ Member of")} {academyInfo.academy.name}</span>
               </Row>
             )}
             {access.downgraded && !status?.coachSubscription?.sponsoredByAcademy && (
-              <Row label="Status">
-                <span style={{ color: '#fcd34d' }}>Your paid plan lapsed — you're on the free tier.</span>
+              <Row label={tr("Status")}>
+                <span style={{ color: '#fcd34d' }}>{tr("Your paid plan lapsed — you're on the free tier.")}</span>
               </Row>
             )}
           </div>
           {status?.coachSubscription?.sponsoredByAcademy && academyInfo?.academy ? (
             <div className="cp-academy-block">
               <div className="cp-academy-line">
-                🏛️ You were added by <strong>{academyInfo.academy.name}</strong>
+                {tr("🏛️ You were added by")} <strong>{academyInfo.academy.name}</strong>
                 {academyInfo.role && academyInfo.role !== 'coach' ? ` · ${academyInfo.role}` : ''}
               </div>
               {academyInfo.academy.planName && (
                 <div className="cp-academy-line">
-                  Plan bought for you: <strong style={{ color: '#67e8f9' }}>{academyInfo.academy.planName}</strong>
-                  {academyInfo.academy.planStudentsPerCoach ? ` · up to ${academyInfo.academy.planStudentsPerCoach} students` : ''}
+                  {tr("Plan bought for you:")} <strong style={{ color: '#67e8f9' }}>{academyInfo.academy.planName}</strong>
+                  {academyInfo.academy.planStudentsPerCoach ? tr(" · up to {planStudentsPerCoach} students", { planStudentsPerCoach: academyInfo.academy.planStudentsPerCoach }) : ''}
                 </div>
               )}
               {academyInfo.academy.planFeatures?.length > 0 && (
@@ -885,22 +886,22 @@ export default function CoachProfile() {
                 </ul>
               )}
               <div className="cp-academy-note">
-                Your academy pays for your subscription — you don't buy a plan yourself.
+                {tr("Your academy pays for your subscription — you don't buy a plan yourself.")}
               </div>
               {/* Members (not the head) can ask to leave and go independent. */}
               {!academyInfo.isOwner && (
                 academyInfo.leaveRequested ? (
-                  <div className="cp-academy-pending">⏳ Your request to become an individual coach is pending with the academy.</div>
+                  <div className="cp-academy-pending">{tr("⏳ Your request to become an individual coach is pending with the academy.")}</div>
                 ) : (
                   <button className="btn-ghost" style={{ marginTop: 12 }} onClick={requestLeaveAcademy}>
-                    Become an individual coach
+                    {tr("Become an individual coach")}
                   </button>
                 )
               )}
             </div>
           ) : (
             <div style={{ marginTop: 16 }}>
-              <Link to="/coach/subscription" className="btn-primary">Manage subscription</Link>
+              <Link to="/coach/subscription" className="btn-primary">{tr("Manage subscription")}</Link>
             </div>
           )}
         </div>

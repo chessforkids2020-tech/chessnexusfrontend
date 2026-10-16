@@ -6,6 +6,7 @@ import api from '../../api';
 import { getTopicTitle } from '../../utils/topicTitles';
 import PlayerName from '../../components/PlayerName';
 import './TeamSelection.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 function TeamSelection() {
   const { raceId } = useParams();
@@ -143,7 +144,7 @@ function TeamSelection() {
         // Race already running - go straight to puzzle page
         navigate(`/team-race/${raceId}/race`);
       } else {
-        alert(`Successfully joined team! You are at position #${data.position}`);
+        alert(tr("Successfully joined team! You are at position #{position}", { position: data.position }));
         navigate(`/team-race/${raceId}/lobby`);
       }
     } catch (err) {
@@ -154,11 +155,11 @@ function TeamSelection() {
   };
 
   if (loading) {
-    return <div style={{ padding: '40px', textAlign: 'center' }}>Loading teams...</div>;
+    return <div style={{ padding: '40px', textAlign: 'center' }}>{tr("Loading teams...")}</div>;
   }
 
   if (!race) {
-    return <div style={{ padding: '40px', textAlign: 'center' }}>Race not found</div>;
+    return <div style={{ padding: '40px', textAlign: 'center' }}>{tr("Race not found")}</div>;
   }
 
   return (
@@ -167,38 +168,38 @@ function TeamSelection() {
         <h1>🏁 {race.raceName}</h1>
         <div className="race-info">
           <span>📚 {getTopicTitle(race.topic)}</span>
-          <span>⏱️ {Math.floor(race.duration / 60)} min</span>
-          <span>⭐ {race.pointsPerPuzzle} pts/puzzle</span>
+          <span>⏱️ {Math.floor(race.duration / 60)} {tr("min")}</span>
+          <span>⭐ {race.pointsPerPuzzle} {tr("pts/puzzle")}</span>
         </div>
         <button onClick={() => navigate('/team-race')} className="btn-back">
-          ← Back to Races
+          {tr("← Back to Races")}
         </button>
         {userTeam && (
           <button onClick={() => navigate(`/team-race/${raceId}/lobby`)} className="btn-lobby" style={{ marginLeft: '10px' }}>
-            🚪 Go to Lobby
+            {tr("🚪 Go to Lobby")}
           </button>
         )}
       </div>
 
       {race && race.status === 'running' && !userTeam && (
         <div style={{ padding: '20px', background: '#fff3cd', color: '#856404', borderRadius: 'var(--radius-md)', margin: '20px', textAlign: 'center', fontWeight: 600 }}>
-          🏃 Race is live! Join a team now to start solving puzzles.
+          {tr("🏃 Race is live! Join a team now to start solving puzzles.")}
         </div>
       )}
 
       {userTeam && (
         <div style={{ padding: '20px', background: '#d4edda', color: '#155724', borderRadius: 'var(--radius-md)', margin: '20px', textAlign: 'center' }}>
-          ✅ You are already in <strong>{userTeam.teamName}</strong> team!
+          {tr("✅ You are already in")} <strong>{userTeam.teamName}</strong> {tr("team!")}
         </div>
       )}
 
       <div className="team-selection-content">
-        <h2>Choose Your Team</h2>
-        <p className="instruction">Select a team to join the race. Players compete together to achieve the highest team score!</p>
+        <h2>{tr("Choose Your Team")}</h2>
+        <p className="instruction">{tr("Select a team to join the race. Players compete together to achieve the highest team score!")}</p>
 
         {teams.length === 0 ? (
           <div className="empty-state">
-            <p>No teams available yet. Please wait for the admin to create teams.</p>
+            <p>{tr("No teams available yet. Please wait for the admin to create teams.")}</p>
           </div>
         ) : (
           <div className="teams-grid">
@@ -225,13 +226,13 @@ function TeamSelection() {
 
                     {isTooUnbalanced && !isUserInThisTeam && (
                       <div style={{ padding: '6px 10px', background: '#fff3cd', color: '#856404', borderRadius: 'var(--radius-sm)', fontSize: '12px', margin: '0 0 8px 0', textAlign: 'center' }}>
-                        ⚖️ Team too large — please join a smaller team
+                        {tr("⚖️ Team too large — please join a smaller team")}
                       </div>
                     )}
 
                     <div className="team-members">
                       {team.players.length === 0 ? (
-                        <div className="no-members">Be the first to join!</div>
+                        <div className="no-members">{tr("Be the first to join!")}</div>
                       ) : (
                         <div className="members-list">
                           {team.players
@@ -248,7 +249,7 @@ function TeamSelection() {
                           }
                           {team.players.length > 5 && (
                             <div className="member-more">
-                              +{team.players.length - 5} more
+                              +{team.players.length - 5} {tr("more")}
                             </div>
                           )}
                         </div>
@@ -260,7 +261,7 @@ function TeamSelection() {
                       className="btn-join-team"
                       disabled={cannotJoin || joining}
                     >
-                      {isUserInThisTeam ? '✅ You are in this team'
+                      {isUserInThisTeam ? tr('✅ You are in this team')
                         : isFull ? '✓ Team Full'
                         : isTooUnbalanced ? '⚖️ Join a smaller team'
                         : joining ? 'Joining...'

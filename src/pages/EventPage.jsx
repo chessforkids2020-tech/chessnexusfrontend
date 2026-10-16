@@ -3,6 +3,7 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import mockEvents from '../data/mockEvents';
 import "./EventPage.css";
+import { t as tr } from '../i18n/LanguageContext';
 
 // For now we look up event by id from mock list
 
@@ -24,7 +25,7 @@ export default function EventPage() {
             navigate(`/event/${event.id}/register`, { state: { event } })
           }
         >
-          Join Event
+          {tr("Join Event")}
         </button>
       </div>
     </div>

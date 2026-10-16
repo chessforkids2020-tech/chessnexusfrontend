@@ -5,6 +5,7 @@ import api from '../api';
 import StudyPuzzleSidebar from '../components/StudyPuzzleSidebar';
 import PlayerName from '../components/PlayerName';
 import { motion } from 'framer-motion';
+import { t as tr } from '../i18n/LanguageContext';
 
 const Leaderboard = () => {
   const { batchId } = useParams();
@@ -46,7 +47,7 @@ const Leaderboard = () => {
       setLeaderboard(rankedData);
       
     } catch (err) {
-      setError('Failed to load leaderboard');
+      setError(tr('Failed to load leaderboard'));
     } finally {
       setLoading(false);
     }
@@ -401,9 +402,9 @@ const Leaderboard = () => {
         <div style={styles.content}>
           <div style={styles.loadingContainer}>
             <div style={styles.loadingIcon}>⏳</div>
-            <h2 style={styles.loadingTitle}>Loading Leaderboard</h2>
+            <h2 style={styles.loadingTitle}>{tr("Loading Leaderboard")}</h2>
             <p style={styles.loadingText}>
-              Fetching tournament results and rankings...
+              {tr("Fetching tournament results and rankings...")}
             </p>
           </div>
         </div>
@@ -418,7 +419,7 @@ const Leaderboard = () => {
         <div style={styles.content}>
           <div style={styles.errorContainer}>
             <div style={styles.loadingIcon}>⚠️</div>
-            <h2 style={styles.errorTitle}>Error Loading Leaderboard</h2>
+            <h2 style={styles.errorTitle}>{tr("Error Loading Leaderboard")}</h2>
             <p style={styles.errorText}>{error}</p>
             <motion.button 
               onClick={() => fetchLeaderboard()} 
@@ -429,7 +430,7 @@ const Leaderboard = () => {
               }}
               transition={{ duration: 0.2 }}
             >
-              Retry
+              {tr("Retry")}
             </motion.button>
           </div>
         </div>
@@ -442,8 +443,8 @@ const Leaderboard = () => {
   return (
     <div style={styles.container}>
       <SEO
-        title="Chess Leaderboard — Top Players"
-        description="See the top chess players on Chess Nexus. Global rankings, puzzle ratings, and arena race champions. Compete and climb the leaderboard."
+        title={tr("Chess Leaderboard — Top Players")}
+        description={tr("See the top chess players on Chess Nexus. Global rankings, puzzle ratings, and arena race champions. Compete and climb the leaderboard.")}
         keywords="chess leaderboard, top chess players, chess rankings, chess nexus leaderboard, chess rating"
         canonical="/leaderboard"
       />
@@ -459,17 +460,17 @@ const Leaderboard = () => {
         >
           <h1 style={styles.title}>
             <span style={styles.trophyIcon}>🏆</span>
-            Final Leaderboard
+            {tr("Final Leaderboard")}
           </h1>
           <div style={styles.batchInfo}>
             <span style={styles.batchInfoItem}>
-              <strong style={{color: 'var(--color-text)'}}>Batch:</strong> {batchInfo?.name || 'Unknown'}
+              <strong style={{color: 'var(--color-text)'}}>{tr("Batch:")}</strong> {batchInfo?.name || 'Unknown'}
             </span>
             <span style={styles.batchInfoItem}>
-              <strong style={{color: 'var(--color-text)'}}>Round:</strong> {batchInfo?.round?.number || 'N/A'}
+              <strong style={{color: 'var(--color-text)'}}>{tr("Round:")}</strong> {batchInfo?.round?.number || 'N/A'}
             </span>
             <span style={styles.batchInfoItem}>
-              <strong style={{color: 'var(--color-text)'}}>Participants:</strong> {leaderboard.length}
+              <strong style={{color: 'var(--color-text)'}}>{tr("Participants:")}</strong> {leaderboard.length}
             </span>
           </div>
         </motion.div>
@@ -482,7 +483,7 @@ const Leaderboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            <h2 style={styles.userTitle}>Your Final Result</h2>
+            <h2 style={styles.userTitle}>{tr("Your Final Result")}</h2>
             <div style={styles.userCard}>
               <div style={styles.userRank}>
                 <span style={{...styles.rankDisplay, color: getRankColor(currentUserEntry.rank)}}>
@@ -492,15 +493,15 @@ const Leaderboard = () => {
               <div style={styles.userStats}>
                 <div style={styles.userStat}>
                   <span style={styles.statValue}>{currentUserEntry.totalScore}</span>
-                  <span style={styles.statLabel}>Points</span>
+                  <span style={styles.statLabel}>{tr("Points")}</span>
                 </div>
                 <div style={styles.userStat}>
                   <span style={styles.statValue}>{currentUserEntry.totalCorrect}/{currentUserEntry.puzzlesAttempted}</span>
-                  <span style={styles.statLabel}>Correct</span>
+                  <span style={styles.statLabel}>{tr("Correct")}</span>
                 </div>
                 <div style={styles.userStat}>
                   <span style={styles.statValue}>{formatTime(currentUserEntry.totalTime)}</span>
-                  <span style={styles.statLabel}>Total Time</span>
+                  <span style={styles.statLabel}>{tr("Total Time")}</span>
                 </div>
               </div>
             </div>
@@ -514,18 +515,18 @@ const Leaderboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <h2 style={styles.sectionTitle}>All Participants</h2>
+          <h2 style={styles.sectionTitle}>{tr("All Participants")}</h2>
           <div style={styles.tableContainer}>
             <table style={styles.table}>
               <thead>
                 <tr style={styles.headerRow}>
-                  <th style={styles.th}>Rank</th>
-                  <th style={styles.th}>Username</th>
-                  <th style={styles.th}>Country</th>
-                  <th style={styles.th}>Points</th>
-                  <th style={styles.th}>Correct</th>
-                  <th style={styles.th}>Total Time</th>
-                  <th style={styles.th}>Performance</th>
+                  <th style={styles.th}>{tr("Rank")}</th>
+                  <th style={styles.th}>{tr("Username")}</th>
+                  <th style={styles.th}>{tr("Country")}</th>
+                  <th style={styles.th}>{tr("Points")}</th>
+                  <th style={styles.th}>{tr("Correct")}</th>
+                  <th style={styles.th}>{tr("Total Time")}</th>
+                  <th style={styles.th}>{tr("Performance")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -566,7 +567,7 @@ const Leaderboard = () => {
                     </td>
                     <td style={styles.td}>
                       <div style={styles.countryCell}>
-                        {entry.user.country || 'Unknown'}
+                        {entry.user.country || tr('Unknown')}
                       </div>
                     </td>
                     <td style={styles.td}>
@@ -617,7 +618,7 @@ const Leaderboard = () => {
             }}
             transition={{ duration: 0.2 }}
           >
-            📊 View Your Detailed Results
+            {tr("📊 View Your Detailed Results")}
           </motion.button>
           <motion.button 
             style={styles.actionButton}
@@ -628,7 +629,7 @@ const Leaderboard = () => {
             }}
             transition={{ duration: 0.2 }}
           >
-            🏠 Back to Dashboard
+            {tr("🏠 Back to Dashboard")}
           </motion.button>
         </motion.div>
 
@@ -639,9 +640,9 @@ const Leaderboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.4 }}
         >
-          🎉 Congratulations to all participants! 
+          {tr("🎉 Congratulations to all participants!")}
           <br />
-          Great chess puzzle solving everyone! 🔥
+          {tr("Great chess puzzle solving everyone! 🔥")}
         </motion.div>
       </div>
     </div>

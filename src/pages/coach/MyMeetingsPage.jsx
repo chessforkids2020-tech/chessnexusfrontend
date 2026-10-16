@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import TrialClassesPanel from './TrialClassesPage';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Meeting lengths a coach may pick. 0 = UNLIMITED (runs until the coach ends
 // it) and is offered only on plans with unlimited classes a day — matching the
@@ -91,7 +92,7 @@ export default function MyMeetingsPage() {
     } catch (e) {
       // Fallback only — the 'pending' screen above is the primary path for unverified
       // coaches. Keep the wording friendly (not "not enabled", which sounds fixable).
-      if (e.response?.status === 403) setMsg('Please wait for the Nexus team to verify you. Once verified, you can start your live classroom.');
+      if (e.response?.status === 403) setMsg(tr('Please wait for the Nexus team to verify you. Once verified, you can start your live classroom.'));
     } finally { setLoading(false); }
   }, []);
   useEffect(() => { load(); }, [load]);
@@ -108,14 +109,14 @@ export default function MyMeetingsPage() {
       await api.post('/api/coach-live/meetings', { title: title.trim(), durationMinutes: duration });
       setTitle('');
       await load();
-    } catch (e) { setMsg(e.response?.data?.message || 'Could not create meeting.'); }
+    } catch (e) { setMsg(e.response?.data?.message || tr('Could not create meeting.')); }
     finally { setCreating(false); }
   };
 
   const remove = async (id) => {
-    if (!window.confirm('Deactivate this meeting? Its link will stop working.')) return;
+    if (!window.confirm(tr('Deactivate this meeting? Its link will stop working.'))) return;
     try { await api.delete(`/api/coach-live/meetings/${id}`); setMeetings(m => m.filter(x => x.id !== id)); }
-    catch { alert('Failed to deactivate'); }
+    catch { alert(tr('Failed to deactivate')); }
   };
 
   const start = async (id) => {
@@ -123,7 +124,7 @@ export default function MyMeetingsPage() {
       const r = await api.post(`/api/coach-live/meetings/${id}/start`);
       const sid = r.data?.session?.id;
       nav(`/coach/live/session/${sid}`);
-    } catch (e) { alert(e.response?.data?.message || 'Could not start the class.'); }
+    } catch (e) { alert(e.response?.data?.message || tr('Could not start the class.')); }
   };
 
   const copy = async (link, id) => {
@@ -141,16 +142,16 @@ export default function MyMeetingsPage() {
         <div style={s.bgGlow} />
         <div style={s.pendingCard}>
           <div style={s.pendingIcon}><IconVideo size={30} /></div>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#67e8f9' }}>Verification in progress</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#67e8f9' }}>{tr("Verification in progress")}</h1>
           <p style={{ color: C.dim, fontSize: 14.5, lineHeight: 1.6, marginTop: 12 }}>
-            Please <b style={{ color: C.text }}>wait for the Nexus team to verify you</b>.
+            {tr("Please")} <b style={{ color: C.text }}>{tr("wait for the Nexus team to verify you")}</b>.
             Once verified, you can start your live classroom.
           </p>
           <p style={{ color: C.dim, fontSize: 13, marginTop: 10 }}>
-            Thanks for your patience! 🙏
+            {tr("Thanks for your patience! 🙏")}
           </p>
           <div style={s.pendingHint}>
-            💡 Meanwhile, you can set up your courses, assignments, batches and schedule — everything’s ready for your first class.
+            {tr("💡 Meanwhile, you can set up your courses, assignments, batches and schedule — everything’s ready for your first class.")}
           </div>
         </div>
       </div>
@@ -159,7 +160,7 @@ export default function MyMeetingsPage() {
 
   // Confirmed not a coach at all → generic message.
   if (!privileged && hostState === 'no') {
-    return <div style={s.wrap}><div style={s.bgGlow} /><p style={{ color: C.dim, textAlign: 'center', marginTop: 60 }}>This area is only available to coaches.</p></div>;
+    return <div style={s.wrap}><div style={s.bgGlow} /><p style={{ color: C.dim, textAlign: 'center', marginTop: 60 }}>{tr("This area is only available to coaches.")}</p></div>;
   }
 
   const unlimited = limits?.limitToday === -1;
@@ -178,9 +179,9 @@ export default function MyMeetingsPage() {
                 here would print the same words twice; the eyebrow keeps the live
                 dot and says what the page lists instead. */}
             <div style={s.eyebrow}>
-              <span style={s.liveDot} />Your classrooms
+              <span style={s.liveDot} />{tr("Your classrooms")}
             </div>
-            <h1 style={s.h1}>Live Classroom</h1>
+            <h1 style={s.h1}>{tr("Live Classroom")}</h1>
             <p style={s.sub}>
               Create a reusable classroom once — it gets a permanent
               link you can share with a batch and reuse any day.
@@ -202,9 +203,9 @@ export default function MyMeetingsPage() {
                     ? '∞'
                     : <>{limits.usedToday ?? 0}<small style={s.chipUnit}>/{limits.limitToday}</small></>}
                 </span>
-                <span style={s.chipKey}>Classes today</span>
+                <span style={s.chipKey}>{tr("Classes today")}</span>
                 <span style={{ ...s.chipTag, color: atDailyLimit ? C.red : C.green }}>
-                  {unlimited ? 'Unlimited' : atDailyLimit ? 'None left today' : 'Used today'}
+                  {unlimited ? tr('Unlimited') : atDailyLimit ? tr('None left today') : tr('Used today')}
                 </span>
               </div>
               <div style={s.chip}>
@@ -212,20 +213,20 @@ export default function MyMeetingsPage() {
                 <span style={s.chipVal}>
                   {canPickUnlimited ? '∞' : <>{limits.durationMin}<small style={s.chipUnit}>min</small></>}
                 </span>
-                <span style={s.chipKey}>Per class</span>
+                <span style={s.chipKey}>{tr("Per class")}</span>
                 {/* When the plan allows a no-limit class the headline is already
                     ∞, so the tag says "Unlimited" like the card beside it. The
                     old "Up to 120 min or unlimited" restated the ceiling under a
                     ∞ and read as a cap. The exact minutes are still offered in
                     the Duration dropdown, which is where the choice is made. */}
                 <span style={{ ...s.chipTag, color: C.green }}>
-                  {canPickUnlimited ? 'Unlimited' : 'Max length'}
+                  {canPickUnlimited ? tr('Unlimited') : tr('Max length')}
                 </span>
               </div>
               <div style={s.chip}>
                 <span style={{ ...s.chipIc, ...s.chipIcBlue }}><IconUsers size={17} /></span>
                 <span style={s.chipVal}>{limits.maxStudents === -1 ? '∞' : limits.maxStudents}</span>
-                <span style={s.chipKey}>Students + coach</span>
+                <span style={s.chipKey}>{tr("Students + coach")}</span>
                 <span style={{ ...s.chipTag, color: '#60a5fa' }}>
                   {limits.maxStudents === -1 ? 'Unlimited' : 'Per meeting'}
                 </span>
@@ -243,14 +244,14 @@ export default function MyMeetingsPage() {
             style={{ ...s.tab, ...(tab === 'meeting' ? s.tabOn : {}) }}
             onClick={() => setTab('meeting')}
           >
-            Classroom meeting
+            {tr("Classroom meeting")}
           </button>
           <button
             role="tab" aria-selected={tab === 'trial'}
             style={{ ...s.tab, ...(tab === 'trial' ? s.tabOn : {}) }}
             onClick={() => setTab('trial')}
           >
-            Trial classroom
+            {tr("Trial classroom")}
           </button>
         </div>
 
@@ -264,37 +265,37 @@ export default function MyMeetingsPage() {
         {limits && !unlimited && atDailyLimit && (
           <div style={{ ...s.usage, ...s.usageFull }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
-              <IconLock size={16} /> You’ve used today’s live class ({limits.usedToday}/{limits.limitToday}). Resets at midnight IST.
+              <IconLock size={16} /> {tr("You’ve used today’s live class (")}{limits.usedToday}/{limits.limitToday}{tr("). Resets at midnight IST.")}
             </span>
-            <a href="/coach/subscription" style={s.usageLink}>Get more →</a>
+            <a href="/coach/subscription" style={s.usageLink}>{tr("Get more →")}</a>
           </div>
         )}
 
         {/* ── Create ── */}
         <div style={s.card}>
-          <div style={s.cardTitle}><span style={s.cardTitleIc}><IconPlus size={15} /></span>New meeting</div>
+          <div style={s.cardTitle}><span style={s.cardTitleIc}><IconPlus size={15} /></span>{tr("New meeting")}</div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ flex: '2 1 260px' }}>
-              <label style={s.label}>Title</label>
-              <input style={s.input} value={title} maxLength={100} placeholder="e.g. Beginner Batch — Tuesday"
+              <label style={s.label}>{tr("Title")}</label>
+              <input style={s.input} value={title} maxLength={100} placeholder={tr("e.g. Beginner Batch — Tuesday")}
                 onChange={e => setTitle(e.target.value)} />
             </div>
             <div style={{ flex: '0 1 150px' }}>
-              <label style={s.label}>Duration</label>
+              <label style={s.label}>{tr("Duration")}</label>
               <select style={s.input} value={duration} onChange={e => setDuration(Number(e.target.value))}>
                 {allowedDurations.map(d => <option key={d} value={d}>{d} min</option>)}
-                {canPickUnlimited && <option value={UNLIMITED}>Unlimited</option>}
+                {canPickUnlimited && <option value={UNLIMITED}>{tr("Unlimited")}</option>}
               </select>
             </div>
             <button style={{ ...s.primary, ...(creating ? { opacity: 0.6, cursor: 'default' } : {}) }} disabled={creating} onClick={create}>
-              {creating ? 'Creating…' : 'Create meeting'}
+              {creating ? tr('Creating…') : tr('Create meeting')}
             </button>
           </div>
           {limits && !canPickUnlimited && (
             <p style={s.upsell}>
               💡 Unlimited-length classes, unlimited students in the room and more
-              classes per day come with the{' '}
-              <a href="/coach/subscription" style={s.upsellLink}>With Live Classroom</a> plans.
+              {tr("classes per day come with the")}{' '}
+              <a href="/coach/subscription" style={s.upsellLink}>{tr("With Live Classroom")}</a> {tr("plans.")}
             </p>
           )}
           {msg && <p style={{ color: C.red, fontSize: 13, marginTop: 10 }}>{msg}</p>}
@@ -302,7 +303,7 @@ export default function MyMeetingsPage() {
 
         {/* ── List ── */}
         <div style={s.listHead}>
-          <span>Your meetings</span>
+          <span>{tr("Your meetings")}</span>
           {meetings.length > 0 && <span style={s.count}>{meetings.length}</span>}
         </div>
 
@@ -313,9 +314,9 @@ export default function MyMeetingsPage() {
         ) : meetings.length === 0 ? (
           <div style={s.empty}>
             <div style={s.emptyIcon}><IconVideo size={26} /></div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: C.text }}>No meetings yet</div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: C.text }}>{tr("No meetings yet")}</div>
             <p style={{ color: C.dim, fontSize: 13.5, margin: '6px 0 0' }}>
-              Create one above — you’ll get a link to share with your batch.
+              {tr("Create one above — you’ll get a link to share with your batch.")}
             </p>
           </div>
         ) : (
@@ -328,25 +329,25 @@ export default function MyMeetingsPage() {
                     <div style={{ minWidth: 0 }}>
                       <div style={s.meetingName}>{m.title || 'Untitled meeting'}</div>
                       <div style={s.meetingMeta}>
-                        <span style={s.pill}><IconClock size={13} />{m.durationMinutes > 0 ? `${m.durationMinutes} min` : 'Unlimited'}</span>
+                        <span style={s.pill}><IconClock size={13} />{m.durationMinutes > 0 ? tr("{durationMinutes} min", { durationMinutes: m.durationMinutes }) : 'Unlimited'}</span>
                         {limits && (
                           <span style={s.pill}><IconUsers size={13} />
-                            {limits.maxStudents === -1 ? 'Unlimited students' : `up to ${limits.maxStudents} students (+ coach)`}
+                            {limits.maxStudents === -1 ? 'Unlimited students' : tr("up to {maxStudents} students (+ coach)", { maxStudents: limits.maxStudents })}
                           </span>
                         )}
                       </div>
                     </div>
                   </div>
                   <div style={s.meetingActions}>
-                    <button style={s.start} onClick={() => start(m.id)}><IconPlay size={15} />Start class</button>
+                    <button style={s.start} onClick={() => start(m.id)}><IconPlay size={15} />{tr("Start class")}</button>
                     <button style={s.ghost} onClick={() => copy(buildJoinLink(m.joinCode), m.id)}>
-                      {copied === m.id ? <><IconCheck size={15} />Copied</> : <><IconCopy size={15} />Copy link</>}
+                      {copied === m.id ? <><IconCheck size={15} />{tr("Copied")}</> : <><IconCopy size={15} />{tr("Copy link")}</>}
                     </button>
-                    <button style={s.iconDanger} title="Deactivate meeting" onClick={() => remove(m.id)}><IconTrash size={16} /></button>
+                    <button style={s.iconDanger} title={tr("Deactivate meeting")} onClick={() => remove(m.id)}><IconTrash size={16} /></button>
                   </div>
                 </div>
                 <div style={s.linkRow}>
-                  <span style={s.linkLabel}><IconLink size={13} />Share link</span>
+                  <span style={s.linkLabel}><IconLink size={13} />{tr("Share link")}</span>
                   <code style={s.linkbox}>{buildJoinLink(m.joinCode)}</code>
                 </div>
               </div>

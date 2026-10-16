@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from '../api';
 import socket from "../socket";
 import { motion } from "framer-motion";
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function WaitingRoom() {
   const { roundId, batchId } = useParams();
@@ -56,14 +57,14 @@ export default function WaitingRoom() {
               isAssignedViaBatchUsers,
               reason: 'User not found in batch assignments'
             });
-            setAccessError('You are not assigned to this batch. Please contact an administrator.');
+            setAccessError(tr('You are not assigned to this batch. Please contact an administrator.'));
           } else {
             // Clear any existing access error if access is granted
             setAccessError(null);
           }
         }
       } catch (err) {
-        setAccessError('Failed to load waiting room data');
+        setAccessError(tr('Failed to load waiting room data'));
       } finally {
         setLoading(false);
       }
@@ -115,7 +116,7 @@ export default function WaitingRoom() {
     const batchStartedHandler = (data) => {
       // Only react to the event when it matches this batch
       if (data.batchId === batchId) {
-        setMessages((m) => [{ ts: Date.now(), text: "Batch started by admin — redirecting to puzzle..." }, ...m]);
+        setMessages((m) => [{ ts: Date.now(), text: tr("Batch started by admin — redirecting to puzzle...") }, ...m]);
         // small delay then redirect to first puzzle in batch if present
         setTimeout(() => {
           // find first puzzle for the batch by fetching fresh data
@@ -124,7 +125,7 @@ export default function WaitingRoom() {
             if (!r) return;
             const b = (r.batches || []).find(bb => bb._id === batchId);
             if (!b || !b.puzzles || b.puzzles.length === 0) {
-              alert("No puzzles assigned to this batch yet.");
+              alert(tr("No puzzles assigned to this batch yet."));
               return;
             }
             const firstPuzzleId = b.puzzles[0]._id;
@@ -136,7 +137,7 @@ export default function WaitingRoom() {
 
     const batchStoppedHandler = (data) => {
       if (data.batchId === batchId) {
-        setMessages((m) => [{ ts: Date.now(), text: "Batch stopped by admin — waiting room closed." }, ...m]);
+        setMessages((m) => [{ ts: Date.now(), text: tr("Batch stopped by admin — waiting room closed.") }, ...m]);
         // Redirect to results after a short delay
         setTimeout(() => {
           nav(`/results/${batchId}`);
@@ -403,9 +404,9 @@ export default function WaitingRoom() {
         <div style={styles.content}>
           <div style={styles.loadingContainer}>
             <div style={styles.loadingIcon}>⏳</div>
-            <h2 style={styles.loadingTitle}>Loading Waiting Room</h2>
+            <h2 style={styles.loadingTitle}>{tr("Loading Waiting Room")}</h2>
             <p style={styles.loadingText}>
-              Please wait while we load the waiting room data...
+              {tr("Please wait while we load the waiting room data...")}
             </p>
           </div>
         </div>
@@ -420,7 +421,7 @@ export default function WaitingRoom() {
         <div style={styles.content}>
           <div style={styles.errorContainer}>
             <div style={styles.loadingIcon}>🚫</div>
-            <h2 style={styles.errorTitle}>Access Denied</h2>
+            <h2 style={styles.errorTitle}>{tr("Access Denied")}</h2>
             <p style={styles.errorText}>{accessError}</p>
             <motion.button 
               style={styles.primaryButton}
@@ -431,7 +432,7 @@ export default function WaitingRoom() {
               }}
               transition={{ duration: 0.2 }}
             >
-              Back to Dashboard
+              {tr("Back to Dashboard")}
             </motion.button>
           </div>
         </div>
@@ -491,7 +492,7 @@ export default function WaitingRoom() {
           transition={{ duration: 0.3 }}
         >
           <h2 style={styles.title}>
-            {round?.name || `Round ${round?.number || 'Unknown'}`}
+            {round?.name || tr("Round {v0}", { v0: round?.number || tr('Unknown') })}
           </h2>
 
           <div style={styles.metaInfo}>
@@ -506,16 +507,16 @@ export default function WaitingRoom() {
             </div>
             <div style={styles.metaItem}>
               Status: <span style={{...styles.metaValue, color: batch?.isLive ? 'var(--color-success)' : 'var(--color-warning)'}}>
-                {batch?.isLive ? 'Live' : 'Waiting'}
+                {batch?.isLive ? tr('Live') : tr('Waiting')}
               </span>
             </div>
           </div>
 
-          <h3 style={styles.sectionTitle}>🟢 Joined Participants</h3>
+          <h3 style={styles.sectionTitle}>{tr("🟢 Joined Participants")}</h3>
           <div style={styles.messagesContainer}>
             {joinedParticipants.length === 0 ? (
               <div style={styles.noMessages}>
-                No participants have joined yet
+                {tr("No participants have joined yet")}
               </div>
             ) : (
               joinedParticipants.map(participant => (
@@ -526,7 +527,7 @@ export default function WaitingRoom() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {formatDisplayName(participant)} - Joined
+                  {formatDisplayName(participant)} {tr("- Joined")}
                 </motion.div>
               ))
             )}
@@ -542,7 +543,7 @@ export default function WaitingRoom() {
               }}
               transition={{ duration: 0.2 }}
             >
-              ← Back
+              {tr("← Back")}
             </motion.button>
             <motion.button 
               style={styles.primaryButton}
@@ -553,7 +554,7 @@ export default function WaitingRoom() {
               }}
               transition={{ duration: 0.2 }}
             >
-              Go to Dashboard
+              {tr("Go to Dashboard")}
             </motion.button>
           </div>
         </motion.div>
@@ -566,10 +567,10 @@ export default function WaitingRoom() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            <h3 style={styles.sectionTitle}>👥 Participants</h3>
+            <h3 style={styles.sectionTitle}>{tr("👥 Participants")}</h3>
             <div style={styles.participantsList}>
               {(batch?.users || []).length === 0 ? (
-                <div style={styles.noMessages}>No participants listed</div>
+                <div style={styles.noMessages}>{tr("No participants listed")}</div>
               ) : (
                 (batch?.users || []).map(u => (
                   <motion.div 
@@ -595,7 +596,7 @@ export default function WaitingRoom() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3, delay: 0.2 }}
           >
-            <h3 style={styles.sectionTitle}>📋 Instructions</h3>
+            <h3 style={styles.sectionTitle}>{tr("📋 Instructions")}</h3>
             <p style={styles.instructionsText}>
               Wait here until admin starts this batch. When admin starts, you will be redirected to the first puzzle automatically.
               Stay connected and ready to begin!

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 import DetailedRaceStatsModal from './DetailedRaceStatsModal';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Human-readable labels for the arena tournament formats.
 const TOURNAMENT_TYPE_LABELS = {
@@ -10,7 +11,7 @@ const TOURNAMENT_TYPE_LABELS = {
   bullet_blitz_marathon: 'Bullet · Blitz Marathon',
   team_battle: 'Team Battle',
 };
-const formatTypeLabel = (t) => TOURNAMENT_TYPE_LABELS[t] || 'Standard';
+const formatTypeLabel = (t) => TOURNAMENT_TYPE_LABELS[t] || tr('Standard');
 
 // Tiny inline sparkline for the puzzle stat cards. Renders a smooth-ish area
 // line of `data` (array of numbers) — progress over the selected window's
@@ -420,12 +421,12 @@ const styles = {
 // ── Monthly Focus badge helper ────────────────────────────────────────────────
 function getMFBadge(completedDays, perfectDays) {
   if (!completedDays || completedDays === 0) return null;
-  if (completedDays >= 7 && perfectDays >= 5) return { emoji: '🏆', name: 'Champion' };
-  if (perfectDays >= 5) return { emoji: '👑', name: 'Perfect' };
-  if (completedDays >= 7) return { emoji: '🎯', name: 'Achiever' };
-  if (completedDays >= 5) return { emoji: '🔥', name: 'Dedicated' };
-  if (completedDays >= 3) return { emoji: '⭐', name: 'Active' };
-  return { emoji: '🌱', name: 'Beginner' };
+  if (completedDays >= 7 && perfectDays >= 5) return { emoji: '🏆', name: tr('Champion') };
+  if (perfectDays >= 5) return { emoji: '👑', name: tr('Perfect') };
+  if (completedDays >= 7) return { emoji: '🎯', name: tr('Achiever') };
+  if (completedDays >= 5) return { emoji: '🔥', name: tr('Dedicated') };
+  if (completedDays >= 3) return { emoji: '⭐', name: tr('Active') };
+  return { emoji: '🌱', name: tr('Beginner') };
 }
 
 const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSummary = null, publicMonthlyFocus = null, publicPuzzleStatsRange = null, viewedDisplayName = null, section = 'all' }) => {
@@ -617,10 +618,10 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
     return (
       <div style={{ padding: 'clamp(16px,4vw,24px)', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         {/* Header */}
-        <h3 style={{ ...styles.columnTitle, marginBottom: 14 }}>🧩 Today's Daily Puzzles</h3>
+        <h3 style={{ ...styles.columnTitle, marginBottom: 14 }}>{tr("🧩 Today's Daily Puzzles")}</h3>
         <div style={{ fontSize: 'clamp(12px, 2.5vw, 13px)', color: 'var(--obsidian-text-muted, var(--color-text-muted))', textAlign: 'center', marginBottom: 16, lineHeight: 1.5 }}>
-          {totalPuzzlesDp >= 5 ? "🎉 You've finished your daily batch of 5 puzzles!"
-            : totalPuzzlesDp > 0 ? `📈 Progress: ${totalPuzzlesDp}/5 puzzles completed`
+          {totalPuzzlesDp >= 5 ? tr("🎉 You've finished your daily batch of 5 puzzles!")
+            : totalPuzzlesDp > 0 ? tr("📈 Progress: {totalPuzzlesDp}/5 puzzles completed", { totalPuzzlesDp: totalPuzzlesDp })
             : '🚀 Start your daily puzzles!'}
         </div>
         {/* Two halves with a divider */}
@@ -637,7 +638,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                 {dailyStats.correct}
               </div>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--color-success)' }}>Correct</span>
+            <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--color-success)' }}>{tr("Correct")}</span>
           </div>
 
           {/* Divider */}
@@ -655,7 +656,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                 {dailyStats.wrong}
               </div>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--color-danger)' }}>Wrong</span>
+            <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--color-danger)' }}>{tr("Wrong")}</span>
           </div>
         </div>
       </div>
@@ -669,7 +670,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
         <div style={styles.topSection}>
           {/* Left Column: Highest Points — practice tab only (not puzzlestats) */}
           {showRacePoints && <div style={styles.column}>
-            <h3 style={styles.columnTitle}>🏆 Highest Race Points</h3>
+            <h3 style={styles.columnTitle}>{tr("🏆 Highest Race Points")}</h3>
             <div
               style={styles.highestPointCard}
               onClick={() => openDetailedStats('timedRace')}
@@ -688,11 +689,11 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <div style={styles.highestPointIcon}>🏃‍♂️</div>
                   <div>
-                    <div style={styles.highestPointLabel}>Individual Race</div>
+                    <div style={styles.highestPointLabel}>{tr("Individual Race")}</div>
                     <div style={styles.highestPointValue}>{highestPoints.timedRace}</div>
                   </div>
                 </div>
-                <div style={styles.detailsHint}>Click for details →</div>
+                <div style={styles.detailsHint}>{tr("Click for details →")}</div>
               </div>
             </div>
             <div
@@ -713,11 +714,11 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <div style={styles.highestPointIcon}>🏟️</div>
                   <div>
-                    <div style={styles.highestPointLabel}>Arena Race</div>
+                    <div style={styles.highestPointLabel}>{tr("Arena Race")}</div>
                     <div style={styles.highestPointValue}>{highestPoints.arenaRace}</div>
                   </div>
                 </div>
-                <div style={styles.detailsHint}>Click for details →</div>
+                <div style={styles.detailsHint}>{tr("Click for details →")}</div>
               </div>
             </div>
             <div
@@ -738,18 +739,18 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <div style={styles.highestPointIcon}>👥</div>
                   <div>
-                    <div style={styles.highestPointLabel}>Team Race</div>
+                    <div style={styles.highestPointLabel}>{tr("Team Race")}</div>
                     <div style={styles.highestPointValue}>{highestPoints.teamRace}</div>
                   </div>
                 </div>
-                <div style={styles.detailsHint}>Click for details →</div>
+                <div style={styles.detailsHint}>{tr("Click for details →")}</div>
               </div>
             </div>
           </div>}
 
           {/* Right Column: Puzzle Rating (overview) or Daily Puzzle standalone */}
           {(showOverview || showDailyPuzzle) && <div style={styles.column}>
-            {showDailyPuzzle && <h3 style={styles.columnTitle}>🧩 Today's Daily Puzzles</h3>}
+            {showDailyPuzzle && <h3 style={styles.columnTitle}>{tr("🧩 Today's Daily Puzzles")}</h3>}
 
             {/* Daily Puzzle Progress with Circles */}
             {showDailyPuzzle && <div style={styles.dailyPuzzleCard}>
@@ -757,7 +758,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                 {totalPuzzles >= 5 
                   ? "🎉 You've finished your daily batch of 5 puzzles!"
                   : totalPuzzles > 0
-                  ? `📈 Progress: ${totalPuzzles}/5 puzzles completed`
+                  ? tr("📈 Progress: {totalPuzzles}/5 puzzles completed", { totalPuzzles: totalPuzzles })
                   : "🚀 Start your daily puzzles!"}
               </div>
               
@@ -789,7 +790,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                     </div>
                   </div>
                   <div style={{ ...styles.circleLabel, color: 'var(--color-success)' }}>
-                    Correct
+                    {tr("Correct")}
                   </div>
                 </div>
 
@@ -820,7 +821,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                     </div>
                   </div>
                   <div style={{ ...styles.circleLabel, color: 'var(--color-danger)' }}>
-                    Wrong
+                    {tr("Wrong")}
                   </div>
                 </div>
               </div>
@@ -832,15 +833,15 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
 
         {/* ── Arena Tournament Summary — overview tab only ── */}
         {showOverview && <div style={styles.fullWidthSection}>
-          <h3 style={styles.columnTitle}>🏟️ Arena Tournament Summary</h3>
+          <h3 style={styles.columnTitle}>{tr("🏟️ Arena Tournament Summary")}</h3>
           <div style={styles.ratingCard}>
             <div style={styles.ratingGrid}>
               <div style={styles.ratingItem}>
-                <div style={styles.ratingLabel}>Tournaments Played</div>
+                <div style={styles.ratingLabel}>{tr("Tournaments Played")}</div>
                 <div style={styles.ratingValue}>{arenaSummary.totalTournaments}</div>
               </div>
               <div style={styles.ratingItem}>
-                <div style={styles.ratingLabel}>Last Finish</div>
+                <div style={styles.ratingLabel}>{tr("Last Finish")}</div>
                 {arenaSummary.lastFinish ? (
                   <>
                     <div style={styles.ratingValue}>#{arenaSummary.lastFinish.rank}</div>
@@ -853,9 +854,9 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                 )}
               </div>
               <div style={styles.ratingItem}>
-                <div style={styles.ratingLabel}>Carry Bonus</div>
+                <div style={styles.ratingLabel}>{tr("Carry Bonus")}</div>
                 <div style={styles.ratingValue}>
-                  {arenaSummary.arenaCarryPoints > 0 ? `+${arenaSummary.arenaCarryPoints}` : 'None'}
+                  {arenaSummary.arenaCarryPoints > 0 ? `+${arenaSummary.arenaCarryPoints}` : tr('None')}
                 </div>
               </div>
               <div style={{ ...styles.ratingItem, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px' }}>
@@ -878,7 +879,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                     boxShadow: '0 6px 18px var(--color-accent-a30)',
                   }}
                 >
-                  🏟️ arena Dashboard →
+                  {tr("🏟️ arena Dashboard →")}
                 </Link>
               </div>
             </div>

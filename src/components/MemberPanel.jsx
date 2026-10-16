@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
 import UpgradeCard from './UpgradeCard';
+import { t as tr } from '../i18n/LanguageContext';
 
 const cyan = 'var(--color-accent)';
 const green = 'var(--color-success)';
@@ -39,8 +40,8 @@ export default function MemberPanel() {
 
   const submit = async () => {
     setError('');
-    if (!rating) return setError('Please tap a star rating first.');
-    if (!text.trim()) return setError('Please write a short testimonial.');
+    if (!rating) return setError(tr('Please tap a star rating first.'));
+    if (!text.trim()) return setError(tr('Please write a short testimonial.'));
     setSubmitting(true);
     try {
       const r = await api.post('/api/testimonials', { rating, text: text.trim() });
@@ -58,7 +59,7 @@ export default function MemberPanel() {
   const Star = ({ i }) => {
     const filled = (hover || rating) >= i;
     return (
-      <button type="button" aria-label={`${i} star${i > 1 ? 's' : ''}`}
+      <button type="button" aria-label={tr("{i} star{v1}", { i: i, v1: i > 1 ? 's' : '' })}
         onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(0)}
         onClick={() => setRating(i)}
         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, lineHeight: 1,
@@ -77,23 +78,23 @@ export default function MemberPanel() {
       {/* ── Testimonial ─────────────────────────────── */}
       <section style={cardStyle}>
         <h2 style={{ margin: 0, fontSize: 18, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          💬 Share your experience
+          {tr("💬 Share your experience")}
         </h2>
         <p style={{ color: 'var(--color-text-faint)', fontSize: 14, margin: '6px 0 18px' }}>
-          Enjoying Chess Nexus? Leave a rating and a few words — it helps us and other players.
+          {tr("Enjoying Chess Nexus? Leave a rating and a few words — it helps us and other players.")}
         </p>
 
         {loaded && existing && !justSent && (
           <div style={{ background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)',
                         borderRadius: 'var(--radius-md)', padding: '12px 14px', marginBottom: 16, fontSize: 13.5, color: 'var(--color-success)' }}>
-            You already shared a {existing.rating}★ testimonial — thank you! You can send an updated one below anytime.
+            {tr("You already shared a")} {existing.rating}{tr("★ testimonial — thank you! You can send an updated one below anytime.")}
           </div>
         )}
 
         {justSent && (
           <div style={{ background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)',
                         borderRadius: 'var(--radius-md)', padding: '14px 16px', marginBottom: 16, color: 'var(--color-success)', fontSize: 14 }}>
-            ✅ Thank you! Your testimonial was submitted.
+            {tr("✅ Thank you! Your testimonial was submitted.")}
           </div>
         )}
 
@@ -101,7 +102,7 @@ export default function MemberPanel() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 12 }}>
           {[1, 2, 3, 4, 5].map(i => <Star key={i} i={i} />)}
           <span style={{ marginLeft: 8, color: 'var(--color-text-muted)', fontSize: 13 }}>
-            {rating ? `${rating} / 5` : 'Tap to rate'}
+            {rating ? `${rating} / 5` : tr('Tap to rate')}
           </span>
         </div>
 
@@ -110,7 +111,7 @@ export default function MemberPanel() {
           onChange={e => setText(e.target.value)}
           maxLength={600}
           rows={4}
-          placeholder="What do you like about Chess Nexus? What's helped you improve?"
+          placeholder={tr("What do you like about Chess Nexus? What's helped you improve?")}
           style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-md)',
                    border: '1px solid var(--color-white-a13)', background: 'var(--color-black-a35)',
                    color: 'var(--color-text)', fontSize: 14, fontFamily: 'inherit', outline: 'none', resize: 'vertical' }}
@@ -126,7 +127,7 @@ export default function MemberPanel() {
           color: '#04211d', border: 'none', borderRadius: 'var(--radius-md)', padding: '11px 22px',
           fontSize: 14, fontWeight: 700, cursor: submitting ? 'default' : 'pointer',
         }}>
-          {submitting ? 'Submitting…' : justSent ? 'Submit another' : '🚀 Submit testimonial'}
+          {submitting ? tr('Submitting…') : justSent ? tr('Submit another') : tr('🚀 Submit testimonial')}
         </button>
       </section>
 

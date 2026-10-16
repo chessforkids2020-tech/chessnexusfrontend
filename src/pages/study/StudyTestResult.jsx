@@ -4,6 +4,7 @@ import { Chess } from 'chess.js';
 import Chessboard from '../../components/Chessboard';
 import api from '../../api';
 import useResponsiveBoardSize from '../../hooks/useResponsiveBoardSize';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const StudyTestResult = () => {
   const { resultId } = useParams();
@@ -31,7 +32,7 @@ const StudyTestResult = () => {
       setResult(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to load test results');
+      setError(tr('Failed to load test results'));
       setLoading(false);
     }
   };
@@ -372,7 +373,7 @@ const StudyTestResult = () => {
     return (
       <div style={styles.page}>
         <div style={styles.container}>
-          <div style={styles.loading}>Loading results...</div>
+          <div style={styles.loading}>{tr("Loading results...")}</div>
         </div>
       </div>
     );
@@ -399,9 +400,9 @@ const StudyTestResult = () => {
     <div style={styles.page}>
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.title}>Test Results</h1>
+          <h1 style={styles.title}>{tr("Test Results")}</h1>
           <p style={styles.subtitle}>
-            Study: {result.studyTitle || 'Unknown Study'}
+            Study: {result.studyTitle || tr('Unknown Study')}
           </p>
         </div>
 
@@ -409,27 +410,27 @@ const StudyTestResult = () => {
           <div style={{ ...styles.gradeCircle, background: gradeInfo.color }}>
             {gradeInfo.grade}
           </div>
-          <div style={styles.percentageText}>{accuracy}% Accuracy</div>
+          <div style={styles.percentageText}>{accuracy}{tr("% Accuracy")}</div>
           <p style={{ color: 'var(--color-text-muted)', margin: 0 }}>
-            You solved {puzzlesSolved} out of {puzzlesAttempted} attempted
+            {tr("You solved")} {puzzlesSolved} {tr("out of")} {puzzlesAttempted} {tr("attempted")}
           </p>
         </div>
 
         <div style={styles.statsGrid}>
           <div style={styles.statCard}>
-            <div style={styles.statLabel}>Score</div>
+            <div style={styles.statLabel}>{tr("Score")}</div>
             <div style={styles.statValue}>{result.totalPoints || result.score || 0}</div>
           </div>
           <div style={styles.statCard}>
-            <div style={styles.statLabel}>Puzzles Attempted</div>
+            <div style={styles.statLabel}>{tr("Puzzles Attempted")}</div>
             <div style={styles.statValue}>{puzzlesAttempted}</div>
           </div>
           <div style={styles.statCard}>
-            <div style={styles.statLabel}>Total Time</div>
+            <div style={styles.statLabel}>{tr("Total Time")}</div>
             <div style={styles.statValue}>{formatTime(result.totalTime || 0)}</div>
           </div>
           <div style={styles.statCard}>
-            <div style={styles.statLabel}>Avg Time/Puzzle</div>
+            <div style={styles.statLabel}>{tr("Avg Time/Puzzle")}</div>
             <div style={styles.statValue}>
               {puzzlesAttempted > 0 ? formatTime(Math.floor((result.totalTime || 0) / puzzlesAttempted)) : '0:00'}
             </div>
@@ -437,12 +438,12 @@ const StudyTestResult = () => {
         </div>
 
         <div style={styles.detailsSection}>
-          <h2 style={styles.sectionTitle}>Review - Puzzles You Attempted</h2>
+          <h2 style={styles.sectionTitle}>{tr("Review - Puzzles You Attempted")}</h2>
           
           {/* Correct Puzzles Section */}
           {result.correctPuzzles && result.correctPuzzles.length > 0 && (
             <div style={{marginBottom: '25px'}}>
-              <h3 style={{...styles.sectionTitle, fontSize: '18px', color: 'var(--color-success)'}}>✓ Correct Puzzles ({result.correctPuzzles.length})</h3>
+              <h3 style={{...styles.sectionTitle, fontSize: '18px', color: 'var(--color-success)'}}>{tr("✓ Correct Puzzles (")}{result.correctPuzzles.length})</h3>
               <div style={styles.attemptsList}>
                 {result.correctPuzzles.map((puzzle, index) => (
                   <div
@@ -453,9 +454,9 @@ const StudyTestResult = () => {
                     }}
                   >
                     <div style={styles.attemptHeader}>
-                      <span>Puzzle #{puzzle.puzzleNumber}</span>
+                      <span>{tr("Puzzle #")}{puzzle.puzzleNumber}</span>
                       <span style={{ color: 'var(--color-success)' }}>
-                        ✓ Correct
+                        {tr("✓ Correct")}
                       </span>
                     </div>
                     <button
@@ -470,7 +471,7 @@ const StudyTestResult = () => {
                         e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
                       }}
                     >
-                      🎯 Click to View Position & Solution
+                      {tr("🎯 Click to View Position & Solution")}
                     </button>
                   </div>
                 ))}
@@ -483,15 +484,15 @@ const StudyTestResult = () => {
             result.correctPuzzles && result.correctPuzzles.length > 0 ? null : (
               <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-success)' }}>
                 <div style={{ fontSize: '48px', marginBottom: '10px' }}>🎉</div>
-                <div style={{ fontSize: '18px', fontWeight: '600' }}>Perfect Score!</div>
+                <div style={{ fontSize: '18px', fontWeight: '600' }}>{tr("Perfect Score!")}</div>
                 <div style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginTop: '8px' }}>
-                  You didn't make any mistakes. Excellent work!
+                  {tr("You didn't make any mistakes. Excellent work!")}
                 </div>
               </div>
             )
           ) : (
             <div>
-              <h3 style={{...styles.sectionTitle, fontSize: '18px', color: 'var(--color-danger)'}}>✗ Wrong Puzzles ({result.wrongPuzzles.length})</h3>
+              <h3 style={{...styles.sectionTitle, fontSize: '18px', color: 'var(--color-danger)'}}>{tr("✗ Wrong Puzzles (")}{result.wrongPuzzles.length})</h3>
               <div style={styles.attemptsList}>
                 {result.wrongPuzzles.map((puzzle, index) => (
                   <div
@@ -502,14 +503,14 @@ const StudyTestResult = () => {
                     }}
                   >
                     <div style={styles.attemptHeader}>
-                      <span>Puzzle #{puzzle.puzzleNumber}</span>
+                      <span>{tr("Puzzle #")}{puzzle.puzzleNumber}</span>
                       <span style={{ color: 'var(--color-danger)' }}>
-                        ✗ Incorrect
+                        {tr("✗ Incorrect")}
                       </span>
                     </div>
                     <div style={styles.attemptMoves}>
-                      <div><strong style={{color: 'var(--color-danger)'}}>Your move:</strong> {puzzle.wrongMove}</div>
-                      <div><strong style={{color: 'var(--color-success)'}}>Expected move:</strong> {puzzle.expectedMove}</div>
+                      <div><strong style={{color: 'var(--color-danger)'}}>{tr("Your move:")}</strong> {puzzle.wrongMove}</div>
+                      <div><strong style={{color: 'var(--color-success)'}}>{tr("Expected move:")}</strong> {puzzle.expectedMove}</div>
                     </div>
                     <button
                       style={styles.viewButton}
@@ -523,7 +524,7 @@ const StudyTestResult = () => {
                         e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
                       }}
                     >
-                      🎯 Click to View Position & Solution
+                      {tr("🎯 Click to View Position & Solution")}
                     </button>
                   </div>
                 ))}
@@ -545,7 +546,7 @@ const StudyTestResult = () => {
               e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
             }}
           >
-            Back to Studies
+            {tr("Back to Studies")}
           </button>
           <button
             style={{ ...styles.button, ...styles.secondaryButton }}
@@ -561,7 +562,7 @@ const StudyTestResult = () => {
               e.currentTarget.style.borderColor = 'var(--color-white-a10)';
             }}
           >
-            Home
+            {tr("Home")}
           </button>
         </div>
       </div>
@@ -571,7 +572,7 @@ const StudyTestResult = () => {
         <div style={styles.modal} onClick={handleCloseModal}>
           <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div style={styles.modalHeader}>
-              <h3 style={styles.modalTitle}>Puzzle #{expandedPuzzle.puzzleNumber} - Review</h3>
+              <h3 style={styles.modalTitle}>{tr("Puzzle #")}{expandedPuzzle.puzzleNumber} {tr("- Review")}</h3>
               <button
                 style={styles.closeButton}
                 onClick={handleCloseModal}
@@ -608,7 +609,7 @@ const StudyTestResult = () => {
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                ⟲ Reset
+                {tr("⟲ Reset")}
               </button>
               <button
                 style={styles.moveButton}
@@ -625,7 +626,7 @@ const StudyTestResult = () => {
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                ← Previous
+                {tr("← Previous")}
               </button>
               <button
                 style={styles.moveButton}
@@ -642,22 +643,22 @@ const StudyTestResult = () => {
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                Next →
+                {tr("Next →")}
               </button>
             </div>
 
             <div style={styles.moveInfo}>
               <div style={{ marginBottom: '10px', fontSize: '14px', fontWeight: '600', color: 'var(--color-text)' }}>
-                Move {moveIndex} / {expandedPuzzle.solutionUCI.trim().split(' ').length}
+                {tr("Move")} {moveIndex} / {expandedPuzzle.solutionUCI.trim().split(' ').length}
               </div>
               <div style={{ marginBottom: '8px' }}>
-                <strong style={{color: 'var(--color-danger)'}}>Your move:</strong> {expandedPuzzle.wrongMove}
+                <strong style={{color: 'var(--color-danger)'}}>{tr("Your move:")}</strong> {expandedPuzzle.wrongMove}
               </div>
               <div style={{ marginBottom: '8px' }}>
-                <strong style={{color: 'var(--color-success)'}}>Expected move:</strong> {expandedPuzzle.expectedMove}
+                <strong style={{color: 'var(--color-success)'}}>{tr("Expected move:")}</strong> {expandedPuzzle.expectedMove}
               </div>
               <div>
-                <strong style={{color: 'var(--color-text)'}}>Full solution:</strong> {expandedPuzzle.solutionUCI}
+                <strong style={{color: 'var(--color-text)'}}>{tr("Full solution:")}</strong> {expandedPuzzle.solutionUCI}
               </div>
             </div>
           </div>

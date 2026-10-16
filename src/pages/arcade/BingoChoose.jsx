@@ -13,6 +13,7 @@ import {
 } from "./arcadeTheme";
 import { useAuth } from "../../contexts/AuthContext";
 import Sidebar from "../../components/Sidebar";
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function BingoChoose() {
   const navigate = useNavigate();
@@ -56,11 +57,11 @@ export default function BingoChoose() {
     socket.on('connect', () => { console.log('[BingoChoose] socket connected via', socket.io.engine.transport.name, socket.id); });
     socket.on("connect_error", (err) => {
       console.error("[BingoChoose] socket connect_error:", err);
-      setError(`Connection error: ${err?.message || String(err)}. Retrying...`);
+      setError(tr("Connection error: {v0}. Retrying...", { v0: err?.message || String(err) }));
     });
     socket.on("connect_timeout", () => {
       console.error("[BingoChoose] socket connect_timeout");
-      setError("Connection timed out. Please refresh.");
+      setError(tr("Connection timed out. Please refresh."));
     });
 
     socket.on("room_created", ({ roomCode, playerNum, boardSize: bs }) => {
@@ -102,7 +103,7 @@ export default function BingoChoose() {
       });
     });
 
-    socket.on("opponent_disconnected", () => { setError("Opponent disconnected."); setScreen("pick"); setRoomInfo(null); });
+    socket.on("opponent_disconnected", () => { setError(tr("Opponent disconnected.")); setScreen("pick"); setRoomInfo(null); });
 
     return () => socket.disconnect();
   }, []);
@@ -112,7 +113,7 @@ export default function BingoChoose() {
     console.log("[BingoChoose] handleStart", { mode, boardSize, username, userId });
     const sock = socketRef.current;
     if (!sock?.connected) {
-      setError("Connecting to server...");
+      setError(tr("Connecting to server..."));
       if (sock) {
         sock.once('connect', () => {
           setError("");
@@ -221,7 +222,7 @@ export default function BingoChoose() {
               gap: 12
             }}>
               <span style={{ fontSize: "1.2em", color: "var(--color-text)" }}>🎯</span>
-              Chess Bingo
+              {tr("Chess Bingo")}
             </h1>
 
             <p style={{
@@ -259,7 +260,7 @@ export default function BingoChoose() {
                   margin: "0 0 20px",
                   letterSpacing: "-0.01em"
                 }}>
-                  Choose Your Bingo Card Size
+                  {tr("Choose Your Bingo Card Size")}
                 </h3>
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
@@ -444,7 +445,7 @@ export default function BingoChoose() {
                     e.currentTarget.style.color = "var(--color-text-muted)";
                   }}
                 >
-                  ← Back to Game Selection
+                  {tr("← Back to Game Selection")}
                 </button>
               </div>
             </>
@@ -498,7 +499,7 @@ export default function BingoChoose() {
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent"
               }}>
-                Finding Opponent...
+                {tr("Finding Opponent...")}
               </h2>
 
               <p style={{
@@ -506,7 +507,7 @@ export default function BingoChoose() {
                 fontSize: 15,
                 margin: "0 0 4px"
               }}>
-                🎯 Chess Bingo • {boardSize}×{boardSize}
+                {tr("🎯 Chess Bingo •")} {boardSize}×{boardSize}
               </p>
 
               <p style={{
@@ -514,7 +515,7 @@ export default function BingoChoose() {
                 fontSize: 13,
                 marginBottom: 32
               }}>
-                Matching with someone on the same board size
+                {tr("Matching with someone on the same board size")}
               </p>
 
               <button
@@ -540,7 +541,7 @@ export default function BingoChoose() {
                   e.currentTarget.style.borderColor = "var(--color-white-a10)";
                 }}
               >
-                Cancel Search
+                {tr("Cancel Search")}
               </button>
 
               <style>{`
@@ -588,10 +589,10 @@ export default function BingoChoose() {
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent"
                 }}>
-                  Room {roomInfo.roomCode}
+                  {tr("Room")} {roomInfo.roomCode}
                 </h2>
                 <p style={{ color: "var(--color-text-muted)", fontSize: 15 }}>
-                  🎯 Chess Bingo • {roomInfo.boardSize}×{roomInfo.boardSize}
+                  {tr("🎯 Chess Bingo •")} {roomInfo.boardSize}×{roomInfo.boardSize}
                 </p>
               </div>
 
@@ -612,7 +613,7 @@ export default function BingoChoose() {
                     textTransform: "uppercase",
                     letterSpacing: "1px"
                   }}>
-                    Share this code with your friend
+                    {tr("Share this code with your friend")}
                   </p>
                   <div style={{
                     fontSize: 42,
@@ -656,12 +657,12 @@ export default function BingoChoose() {
                     {copied ? (
                       <>
                         <span>✓</span>
-                        <span>Copied!</span>
+                        <span>{tr("Copied!")}</span>
                       </>
                     ) : (
                       <>
                         <span>📋</span>
-                        <span>Copy Room Code</span>
+                        <span>{tr("Copy Room Code")}</span>
                       </>
                     )}
                   </button>
@@ -716,7 +717,7 @@ export default function BingoChoose() {
                         fontSize: 16,
                         marginBottom: 4
                       }}>
-                        {p ? <PlayerName displayName={p.displayName} username={p.username} /> : "Waiting for player..."}
+                        {p ? <PlayerName displayName={p.displayName} username={p.username} /> : tr("Waiting for player...")}
                       </div>
 
                       {/* Player tag */}
@@ -725,7 +726,7 @@ export default function BingoChoose() {
                         fontSize: 12,
                         marginBottom: 8
                       }}>
-                        {isMe ? "You" : `Player ${num}`}
+                        {isMe ? tr("You") : tr("Player {num}", { num: num })}
                       </div>
 
                       {/* Ready status */}
@@ -741,7 +742,7 @@ export default function BingoChoose() {
                           fontWeight: 600,
                           color: "var(--color-text)"
                         }}>
-                          ✓ READY
+                          {tr("✓ READY")}
                         </div>
                       )}
 
@@ -797,7 +798,7 @@ export default function BingoChoose() {
                       }}
                     >
                       <span>✅</span>
-                      <span>I'm Ready!</span>
+                      <span>{tr("I'm Ready!")}</span>
                     </button>
                   ) : (
                     <div style={{ marginBottom: 12 }}>
@@ -807,7 +808,7 @@ export default function BingoChoose() {
                         fontSize: 16,
                         marginBottom: 8
                       }}>
-                        ✅ You're ready!
+                        {tr("✅ You're ready!")}
                       </div>
                       <div style={{
                         width: "100%",
@@ -827,12 +828,12 @@ export default function BingoChoose() {
                     </div>
                   )}
                   <p style={{ color: "var(--color-text-faint)", fontSize: 13 }}>
-                    {readyCount}/2 players ready
+                    {readyCount}{tr("/2 players ready")}
                   </p>
                 </div>
               ) : (
                 <div style={{ textAlign: "center", color: "var(--color-text-muted)", fontSize: 15 }}>
-                  <div style={{ marginBottom: 16 }}>⏳ Waiting for opponent to join...</div>
+                  <div style={{ marginBottom: 16 }}>{tr("⏳ Waiting for opponent to join...")}</div>
                   <div style={{
                     width: 40,
                     height: 40,
@@ -865,7 +866,7 @@ export default function BingoChoose() {
                     e.currentTarget.style.color = "var(--color-text-faint)";
                   }}
                 >
-                  ← Leave Room
+                  {tr("← Leave Room")}
                 </button>
               </div>
 

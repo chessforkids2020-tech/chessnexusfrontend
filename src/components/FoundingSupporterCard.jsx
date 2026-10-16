@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
+import { t as tr } from '../i18n/LanguageContext';
 
 const FOUNDING_LIMIT = 100; // keep in sync with BuyMeACoffee.jsx
 
@@ -51,18 +52,18 @@ export default function FoundingSupporterCard({ compact = false, style = {} }) {
 
   return (
     <div style={{ ...styles.card, ...(compact ? styles.compact : {}), ...style }}>
-      <button type="button" aria-label="Dismiss" onClick={dismiss} style={styles.x}>✕</button>
+      <button type="button" aria-label={tr("Dismiss")} onClick={dismiss} style={styles.x}>✕</button>
       <div style={styles.icon}>👑</div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={styles.title}>Become a Founding Supporter</div>
+        <div style={styles.title}>{tr("Become a Founding Supporter")}</div>
         <div style={styles.sub}>
           ChessNexus is brand new. Our first {FOUNDING_LIMIT} supporters get a{' '}
-          <strong style={{ color: 'var(--color-warning)' }}>permanent 👑 badge</strong> that never expires —{' '}
-          <strong style={{ color: 'var(--color-warning)' }}>{spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left</strong>.
+          <strong style={{ color: 'var(--color-warning)' }}>{tr("permanent 👑 badge")}</strong> {tr("that never expires —")}{' '}
+          <strong style={{ color: 'var(--color-warning)' }}>{spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} {tr("left")}</strong>.
         </div>
       </div>
       <button type="button" onClick={() => navigate('/nexus-supporter')} style={styles.btn}>
-        Claim
+        {tr("Claim")}
       </button>
     </div>
   );

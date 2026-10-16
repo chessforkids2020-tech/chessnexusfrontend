@@ -14,6 +14,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import api, { resolveApiAssetUrl } from '../api';
 import NewsletterRichText from '../components/NewsletterRichText';
+import { newsletterBodyForEditor } from '../utils/newsletterMedia';
 import './AdminNewsletter.css';
 
 const AUDIENCES = [
@@ -62,7 +63,10 @@ export default function AdminNewsletter() {
       setForm({
         title: p.title || '', summary: p.summary || '', topic: p.topic || 'News',
         audience: p.audience || 'all', coverImage: p.coverImage || '',
-        body: p.body || '', images: p.images || [], pinned: !!p.pinned,
+        // Stored image paths are relative; point them at the API host or the
+        // editor loads them from the app origin and they show broken in prod.
+        // Also restores each image's placement marker (see the helper).
+        body: newsletterBodyForEditor(p.body), images: p.images || [], pinned: !!p.pinned,
       });
       setEditing(id);
     } catch (e) {

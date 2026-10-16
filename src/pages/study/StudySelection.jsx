@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../api';
 import { motion } from 'framer-motion';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -43,7 +44,7 @@ const StudySelection = () => {
         const response = await api.get(`/api/study/all`);
         setStudies(response.data);
       } catch (err) {
-        setError('Failed to load studies');
+        setError(tr('Failed to load studies'));
       } finally {
         setLoading(false);
       }
@@ -290,7 +291,7 @@ const StudySelection = () => {
         <div style={styles.background}></div>
         <div style={styles.gridPattern}></div>
         <div style={styles.container}>
-          <div style={styles.loading}>Loading studies...</div>
+          <div style={styles.loading}>{tr("Loading studies...")}</div>
         </div>
       </div>
     );
@@ -334,14 +335,14 @@ const StudySelection = () => {
               e.currentTarget.style.transform = 'translateY(-50%)';
             }}
           >
-            <span>←</span> Back to Study Types
+            <span>←</span> {tr("Back to Study Types")}
           </motion.button>
 
           <div style={styles.titleContainer}>
             <div style={styles.titleGlow}></div>
             <h1 style={styles.mainTitle}>{studyTypeNames[studyType]}</h1>
             <p style={styles.subtitle}>
-              Master chess concepts — tactics, opening principles, endgame patterns, strategic ideas, and positional play.
+              {tr("Master chess concepts — tactics, opening principles, endgame patterns, strategic ideas, and positional play.")}
             </p>
           </div>
         </div>
@@ -421,7 +422,7 @@ const StudySelection = () => {
                 >
                   <div className="button-shimmer" style={styles.buttonShimmer}></div>
                   <span>📚</span>
-                  Start Learning
+                  {tr("Start Learning")}
                 </Link>
               </div>
             </motion.div>

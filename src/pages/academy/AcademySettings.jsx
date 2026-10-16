@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api, { resolveApiAssetUrl } from '../../api';
 import './AcademyDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function AcademySettings() {
   const [s, setS] = useState(null);
@@ -25,7 +26,7 @@ export default function AcademySettings() {
       setS(r.data); setName(r.data.name || ''); setUses(r.data.usesCoachingTools !== false);
       setActivityCreators(r.data.academyActivityCreators || 'head');
       setLogoUrl(r.data.branding?.logoUrl || '');
-    }).catch(e => setErr(e.response?.data?.message || 'Could not load settings.'));
+    }).catch(e => setErr(e.response?.data?.message || tr('Could not load settings.')));
   }, []);
 
   const uploadLogo = async (e) => {
@@ -41,7 +42,7 @@ export default function AcademySettings() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setLogoUrl(res.data?.logoUrl || '');
-      setMsg('✅ Logo updated.');
+      setMsg(tr('✅ Logo updated.'));
     } catch (e2) {
       setErr(e2.response?.data?.message || 'Could not upload the logo.');
     } finally {
@@ -50,12 +51,12 @@ export default function AcademySettings() {
   };
 
   const removeLogo = async () => {
-    if (!window.confirm('Remove the academy logo?')) return;
+    if (!window.confirm(tr('Remove the academy logo?'))) return;
     setUploading(true); setErr(''); setMsg('');
     try {
       await api.delete('/api/academy/logo');
       setLogoUrl('');
-      setMsg('Logo removed.');
+      setMsg(tr('Logo removed.'));
     } catch (e2) {
       setErr(e2.response?.data?.message || 'Could not remove the logo.');
     } finally {
@@ -67,7 +68,7 @@ export default function AcademySettings() {
     setSaving(true); setErr(''); setMsg('');
     try {
       await api.post('/api/academy/settings', { name, usesCoachingTools, academyActivityCreators: activityCreators });
-      setMsg('✅ Settings saved.');
+      setMsg(tr('✅ Settings saved.'));
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not save.');
     } finally {
@@ -75,54 +76,54 @@ export default function AcademySettings() {
     }
   };
 
-  if (!s) return <div className="acad-wrap"><div className="acad-empty">Loading…</div></div>;
+  if (!s) return <div className="acad-wrap"><div className="acad-empty">{tr("Loading…")}</div></div>;
   const joinLink = `${window.location.origin}/join-academy/${s.academyCode}`;
 
   return (
     <div className="acad-wrap" style={{ maxWidth: 640 }}>
-      <h1 style={{ color: 'var(--color-text)', marginBottom: 18 }}>⚙️ Academy settings</h1>
+      <h1 style={{ color: 'var(--color-text)', marginBottom: 18 }}>{tr("⚙️ Academy settings")}</h1>
       {msg && <div className="acad-msg">{msg}</div>}
       {err && <div className="acad-error">⚠️ {err}</div>}
 
       {/* Current plan + coach capacity */}
       <div className="acad-plan-status">
         <div className="acad-plan-status-head">
-          <span>📦 Current plan</span>
-          <Link to="/academy/billing" className="acad-plan-status-link">Manage / change →</Link>
+          <span>{tr("📦 Current plan")}</span>
+          <Link to="/academy/billing" className="acad-plan-status-link">{tr("Manage / change →")}</Link>
         </div>
         {s.plan && s.planStatus === 'active' ? (
           <>
             <div className="acad-plan-status-name">{s.planName}</div>
             <div className="acad-plan-status-grid">
-              <div><strong>{s.coachCount}</strong><span>Coaches joined</span></div>
+              <div><strong>{s.coachCount}</strong><span>{tr("Coaches joined")}</span></div>
               {/* -1 means UNLIMITED — the server sends it because JSON cannot
                   carry Infinity. Rendered raw it read as "-1 coaches". */}
-              <div><strong>{s.maxCoaches === -1 ? '∞' : (s.maxCoaches ?? '—')}</strong><span>Plan allows</span></div>
-              <div><strong>{s.coachesRemaining === -1 ? '∞' : (s.coachesRemaining ?? '—')}</strong><span>Seats left</span></div>
-              <div><strong>{s.studentsPerCoach ?? '—'}</strong><span>Students / coach</span></div>
+              <div><strong>{s.maxCoaches === -1 ? '∞' : (s.maxCoaches ?? '—')}</strong><span>{tr("Plan allows")}</span></div>
+              <div><strong>{s.coachesRemaining === -1 ? '∞' : (s.coachesRemaining ?? '—')}</strong><span>{tr("Seats left")}</span></div>
+              <div><strong>{s.studentsPerCoach ?? '—'}</strong><span>{tr("Students / coach")}</span></div>
             </div>
             {s.coachesRemaining === 0 && (
               <div className="acad-plan-status-warn">
-                You've filled all coach seats. Upgrade to a larger plan to add more coaches.
+                {tr("You've filled all coach seats. Upgrade to a larger plan to add more coaches.")}
               </div>
             )}
             {s.currentPeriodEnd && (
-              <div className="acad-plan-status-renew">Renews / expires {new Date(s.currentPeriodEnd).toLocaleDateString()}</div>
+              <div className="acad-plan-status-renew">{tr("Renews / expires")} {new Date(s.currentPeriodEnd).toLocaleDateString()}</div>
             )}
           </>
         ) : (
           <div className="acad-plan-status-none">
-            <div>No academy plan yet. Your academy pays for its coaches — <strong>buy a plan before adding coaches</strong>.</div>
-            <Link to="/academy/billing" className="btn-primary" style={{ marginTop: 10, display: 'inline-block' }}>Choose a plan</Link>
+            <div>{tr("No academy plan yet. Your academy pays for its coaches —")} <strong>{tr("buy a plan before adding coaches")}</strong>.</div>
+            <Link to="/academy/billing" className="btn-primary" style={{ marginTop: 10, display: 'inline-block' }}>{tr("Choose a plan")}</Link>
             <div className="acad-muted" style={{ marginTop: 8 }}>
-              {s.coachCount} coach{s.coachCount === 1 ? '' : 'es'} in your academy so far.
+              {s.coachCount} {tr("coach")}{s.coachCount === 1 ? '' : 'es'} {tr("in your academy so far.")}
             </div>
           </div>
         )}
       </div>
 
       <div className="acad-set-field">
-        <label>Academy name</label>
+        <label>{tr("Academy name")}</label>
         <input value={name} onChange={e => setName(e.target.value)} maxLength={120} />
       </div>
 
@@ -130,16 +131,16 @@ export default function AcademySettings() {
           activity card so a student can tell an academy event from their own
           coach's, and watermarks the student's My Coach page. */}
       <div className="acad-set-field">
-        <label>Academy logo</label>
+        <label>{tr("Academy logo")}</label>
         <div className="acad-logo-row">
           <div className="acad-logo-preview">
             {logoUrl
-              ? <img src={resolveApiAssetUrl(logoUrl)} alt="Academy logo" />
+              ? <img src={resolveApiAssetUrl(logoUrl)} alt={tr("Academy logo")} />
               : <span className="acad-logo-empty">🏛️</span>}
           </div>
           <div className="acad-logo-actions">
             <label className="acad-logo-btn">
-              {uploading ? 'Uploading…' : (logoUrl ? 'Replace logo' : 'Upload logo')}
+              {uploading ? tr('Uploading…') : (logoUrl ? tr('Replace logo') : tr('Upload logo'))}
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
@@ -150,7 +151,7 @@ export default function AcademySettings() {
             </label>
             {logoUrl && (
               <button type="button" className="acad-logo-remove" onClick={removeLogo} disabled={uploading}>
-                Remove
+                {tr("Remove")}
               </button>
             )}
             <p className="acad-set-hint">
@@ -162,20 +163,20 @@ export default function AcademySettings() {
       </div>
 
       <div className="acad-set-field">
-        <label>Join link</label>
+        <label>{tr("Join link")}</label>
         <div className="acad-joinlink">
           <div className="acad-joinlink-url">{joinLink}</div>
           <button onClick={() => { navigator.clipboard?.writeText(joinLink).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }); }}>
-            {copied ? '✓ Copied' : 'Copy'}
+            {copied ? tr('✓ Copied') : tr('Copy')}
           </button>
         </div>
       </div>
 
       <div className="acad-set-field">
-        <label>Do you also teach?</label>
+        <label>{tr("Do you also teach?")}</label>
         <label className="acad-toggle">
           <input type="checkbox" checked={usesCoachingTools} onChange={e => setUses(e.target.checked)} />
-          <span>Show me the coaching tools (I coach too). Turn off to see only the academy.</span>
+          <span>{tr("Show me the coaching tools (I coach too). Turn off to see only the academy.")}</span>
         </label>
       </div>
 
@@ -184,7 +185,7 @@ export default function AcademySettings() {
           academy, which is why the default is head-only: five coaches each able
           to summon the whole academy is how you get clashing events. */}
       <div className="acad-set-field">
-        <label>Who can run academy-wide activities?</label>
+        <label>{tr("Who can run academy-wide activities?")}</label>
         <label className="acad-toggle">
           <input
             type="radio"
@@ -192,7 +193,7 @@ export default function AcademySettings() {
             checked={activityCreators === 'head'}
             onChange={() => setActivityCreators('head')}
           />
-          <span><b>Only me (head)</b> — I set up races and tournaments for every student in the academy.</span>
+          <span><b>{tr("Only me (head)")}</b> {tr("— I set up races and tournaments for every student in the academy.")}</span>
         </label>
         <label className="acad-toggle">
           <input
@@ -201,10 +202,10 @@ export default function AcademySettings() {
             checked={activityCreators === 'any'}
             onChange={() => setActivityCreators('any')}
           />
-          <span><b>Any coach in the academy</b> — any of my coaches can run an activity for all academy students.</span>
+          <span><b>{tr("Any coach in the academy")}</b> {tr("— any of my coaches can run an activity for all academy students.")}</span>
         </label>
         <p className="acad-set-hint">
-          Either way, every coach can still run activities for their own students.
+          {tr("Either way, every coach can still run activities for their own students.")}
         </p>
       </div>
 

@@ -21,11 +21,12 @@ import stockfish from "../services/stockfishService";
 // Difficulty levels for playing the endgame out vs Stockfish. Lower skill = more
 // human-like blunders; higher depth/time = stronger, more accurate defense.
 const LEVELS = {
-  easy:   { label: "Easy",   skill: 3,  depth: 6,  moveTime: 300 },
-  medium: { label: "Medium", skill: 9,  depth: 10, moveTime: 600 },
-  hard:   { label: "Hard",   skill: 18, depth: 16, moveTime: 1000 },
+  easy:   { label: tr("Easy"),   skill: 3,  depth: 6,  moveTime: 300 },
+  medium: { label: tr("Medium"), skill: 9,  depth: 10, moveTime: 600 },
+  hard:   { label: tr("Hard"),   skill: 18, depth: 16, moveTime: 1000 },
 };
 import { buildTreeFromGame, applyMove, fenAt, lastMoveAt, firstNode, nextNode, prevNode, lastNode, pathToNode } from "./masterGames/moveTree";
+import { t as tr } from '../i18n/LanguageContext';
 
 const FAMILY_ICON = {
   pawn: "♙", knight: "♘", bishop: "♗", bishop_knight: "♗♘",
@@ -35,7 +36,7 @@ const FAMILY_LABEL = {
   pawn: "Pawn", knight: "Knight", bishop: "Bishop", bishop_knight: "Bishop + Knight",
   rook: "Rook", queen: "Queen", queen_rook: "Queen + Rook", other_mixed: "Other / mixed",
 };
-const GOAL_LABEL = { white_win: "White to win", black_win: "Black to win", draw: "Hold the draw" };
+const GOAL_LABEL = { white_win: tr("White to win"), black_win: tr("Black to win"), draw: tr("Hold the draw") };
 const PREMIUM_ACCENT = "#f5c451"; // gold — clearly different from the flat browse cards
 
 const S = {
@@ -252,9 +253,9 @@ function StudyView({ pick, onPlay }) {
         {/* Stockfish + Play buttons at the top of the right column (clear of ✕). */}
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 12, paddingRight: 40 }}>
           <button style={{ ...S.analyzeBtn, ...(engineOn ? { background: "var(--color-accent-a30)" } : {}) }} onClick={() => setEngineOn(v => !v)}>
-            🐟 Stockfish {engineOn ? "on" : "off"}
+            {tr("🐟 Stockfish")} {engineOn ? "on" : "off"}
           </button>
-          <button style={S.playSwitchBtn} onClick={onPlay}>▶ Play vs Stockfish</button>
+          <button style={S.playSwitchBtn} onClick={onPlay}>{tr("▶ Play vs Stockfish")}</button>
         </div>
 
         <div style={{ marginBottom: 10 }}>
@@ -262,9 +263,9 @@ function StudyView({ pick, onPlay }) {
           {pick.idea ? <span style={{ marginLeft: 8, color: "var(--color-text-muted)", fontSize: 13 }}>{pick.idea}</span> : null}
         </div>
         <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginBottom: 8 }}>
-          Study the perfect line{goalWin ? " that converts the win" : " that holds the draw"}, or
-          <strong style={{ color: "var(--color-text)" }}> play your own moves on the board</strong> to explore variations.
-          Turn on Stockfish, or hit <strong style={{ color: PREMIUM_ACCENT }}>Play vs Stockfish</strong> to try it out.
+          {tr("Study the perfect line")}{goalWin ? tr(" that converts the win") : tr(" that holds the draw")}{tr(", or")}
+          <strong style={{ color: "var(--color-text)" }}> {tr("play your own moves on the board")}</strong> {tr("to explore variations.")}
+          Turn on Stockfish, or hit <strong style={{ color: PREMIUM_ACCENT }}>{tr("Play vs Stockfish")}</strong> to try it out.
         </div>
 
         {engineOn && (
@@ -275,11 +276,11 @@ function StudyView({ pick, onPlay }) {
 
         <div style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 700, marginBottom: 6 }}>Moves &amp; variations</div>
         <div style={S.moveWrap}>
-          <span style={S.startChip(currentId === null)} onClick={goStart}>Start</span>
+          <span style={S.startChip(currentId === null)} onClick={goStart}>{tr("Start")}</span>
           {loadingLine ? (
-            <span style={{ color: "var(--color-text-muted)", fontSize: 13, marginLeft: 6 }}>Loading the perfect line…</span>
+            <span style={{ color: "var(--color-text-muted)", fontSize: 13, marginLeft: 6 }}>{tr("Loading the perfect line…")}</span>
           ) : !hasMoves ? (
-            <span style={{ color: "var(--color-text-muted)", fontSize: 13, marginLeft: 6 }}>Play a move on the board to start a line.</span>
+            <span style={{ color: "var(--color-text-muted)", fontSize: 13, marginLeft: 6 }}>{tr("Play a move on the board to start a line.")}</span>
           ) : (
             <StudyVariation
               tree={tree} nodeId={firstNode(tree)} ply={1} startColor={startColor}
@@ -396,7 +397,7 @@ function PlayView({ pick, onResult, onBack }) {
     }
     // Draws: stalemate / insufficient / repetition / 50-move.
     if (game.isStalemate() || game.isInsufficientMaterial() || game.isThreefoldRepetition() || game.isDraw()) {
-      if (!wantWin) return finish(slipped ? "slip" : "mastered", slipped ? "Drawn — held, but the eval slipped along the way." : "Draw held — perfect technique! 🛡️");
+      if (!wantWin) return finish(slipped ? "slip" : "mastered", slipped ? tr("Drawn — held, but the eval slipped along the way.") : tr("Draw held — perfect technique! 🛡️"));
       return finish("failed", "The game was drawn — the win slipped away.");
     }
     return false;
@@ -419,7 +420,7 @@ function PlayView({ pick, onResult, onBack }) {
       return r; // eval (trainer POV) after the reply — reused for slip detection
     } catch {
       setStatus("play");
-      setVerdict({ kind: "slip", text: "Engine unavailable — check your connection and retry." });
+      setVerdict({ kind: "slip", text: tr("Engine unavailable — check your connection and retry.") });
       return null;
     }
   }, [game, checkTerminal, engineMove]);
@@ -461,7 +462,7 @@ function PlayView({ pick, onResult, onBack }) {
   // Engine read of the position from the trainee's POV (positive = good for you).
   const evalText = (() => {
     if (!evalInfo) return "…";
-    if (evalInfo.mate != null) return `Mate in ${Math.abs(evalInfo.mate)}`;
+    if (evalInfo.mate != null) return tr("Mate in {v0}", { v0: Math.abs(evalInfo.mate) });
     if (evalInfo.cp == null) return "…";
     const p = (evalInfo.cp / 100).toFixed(1);
     return (evalInfo.cp > 0 ? "+" : "") + p;
@@ -490,15 +491,15 @@ function PlayView({ pick, onResult, onBack }) {
       <div style={{ flex: "1 1 260px", minWidth: 240 }}>
           {/* Back-to-study + play instruction (no title above the board now). */}
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10, paddingRight: 40 }}>
-            <button style={S.backBtn} onClick={onBack}>← Study</button>
+            <button style={S.backBtn} onClick={onBack}>{tr("← Study")}</button>
           </div>
           <div style={{ marginBottom: 8 }}>
             <span style={S.goalBadge(pick.goal)}>{GOAL_LABEL[pick.goal]}</span>
             {pick.idea ? <span style={{ marginLeft: 8, color: "var(--color-text-muted)", fontSize: 13 }}>{pick.idea}</span> : null}
           </div>
           <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginBottom: 8 }}>
-            You play <strong style={{ color: "var(--color-text)", textTransform: "capitalize" }}>{trainerSide}</strong>.
-            {wantWin ? " Convert the win against Stockfish." : " Hold the draw against Stockfish."}
+            {tr("You play")} <strong style={{ color: "var(--color-text)", textTransform: "capitalize" }}>{trainerSide}</strong>.
+            {wantWin ? tr(" Convert the win against Stockfish.") : tr(" Hold the draw against Stockfish.")}
           </div>
           {/* Difficulty selector — changes Stockfish's strength for the next reply. */}
           <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
@@ -520,18 +521,18 @@ function PlayView({ pick, onResult, onBack }) {
             ))}
           </div>
           <div style={{ padding: "10px 12px", borderRadius: 'var(--radius-md)', background: "var(--color-black-a35)", marginBottom: 10 }}>
-            <div style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 700 }}>Stockfish eval (your side)</div>
+            <div style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 700 }}>{tr("Stockfish eval (your side)")}</div>
             <div style={{ fontSize: 18, fontWeight: 900, color: evalColor }}>
               {status === "thinking" ? "Stockfish thinking…" : evalText}
             </div>
           </div>
           {/* Move notation — your moves + Stockfish's replies, in play order. */}
           <div style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 700, marginBottom: 6 }}>
-            Moves <span style={{ fontWeight: 500 }}>· you vs Stockfish</span>
+            {tr("Moves")} <span style={{ fontWeight: 500 }}>{tr("· you vs Stockfish")}</span>
           </div>
           <div style={{ ...S.moveWrap, marginBottom: 10 }}>
             {history.length === 0 ? (
-              <span style={{ color: "var(--color-text-muted)", fontSize: 13 }}>Make a move to begin.</span>
+              <span style={{ color: "var(--color-text-muted)", fontSize: 13 }}>{tr("Make a move to begin.")}</span>
             ) : (
               (() => {
                 // Pair into numbered rows using each move's actual color, so a
@@ -560,11 +561,11 @@ function PlayView({ pick, onResult, onBack }) {
           </div>
 
           {slipped && status === "play" && (
-            <div style={{ fontSize: 12, color: "var(--color-warning)", marginBottom: 8 }}>⚠️ Technique slipped — mastery won't be awarded this attempt.</div>
+            <div style={{ fontSize: 12, color: "var(--color-warning)", marginBottom: 8 }}>{tr("⚠️ Technique slipped — mastery won't be awarded this attempt.")}</div>
           )}
           {verdict && <div style={S.verdict(verdict.kind)}>{verdict.text}</div>}
           {status === "done" && (
-            <button style={{ ...S.playBtn, marginTop: 12 }} onClick={onBack}>← Back to study</button>
+            <button style={{ ...S.playBtn, marginTop: 12 }} onClick={onBack}>{tr("← Back to study")}</button>
           )}
       </div>
     </div>
@@ -624,7 +625,7 @@ export default function EndgameTrainer({ emptyFallback = null }) {
       await load();
     } catch (e) {
       const d = e.response?.data;
-      setError(d?.message === "Not enough XP." ? `Not enough XP — needs ${d.xpPrice}, you have ${d.walletXp}.` : (d?.message || "Could not unlock."));
+      setError(d?.message === "Not enough XP." ? tr("Not enough XP — needs {xpPrice}, you have {walletXp}.", { xpPrice: d.xpPrice, walletXp: d.walletXp }) : (d?.message || "Could not unlock."));
     }
   };
 
@@ -647,10 +648,10 @@ export default function EndgameTrainer({ emptyFallback = null }) {
       <div style={S.band}>
         <div style={S.cardTop} />
         <div style={S.bandHead}>
-          <button style={S.backBtn} onClick={() => setFamily(null)}>← Endgame Mastery</button>
-          <h2 style={{ ...S.bandTitle, marginLeft: 6 }}>{FAMILY_ICON[family]} {FAMILY_LABEL[family]} endgames</h2>
+          <button style={S.backBtn} onClick={() => setFamily(null)}>{tr("← Endgame Mastery")}</button>
+          <h2 style={{ ...S.bandTitle, marginLeft: 6 }}>{FAMILY_ICON[family]} {FAMILY_LABEL[family]} {tr("endgames")}</h2>
         </div>
-        <p style={S.bandSub}>Study the perfect technique for each — then play it out vs Stockfish at Easy, Medium or Hard. Master = convert without the eval ever slipping.</p>
+        <p style={S.bandSub}>{tr("Study the perfect technique for each — then play it out vs Stockfish at Easy, Medium or Hard. Master = convert without the eval ever slipping.")}</p>
         {error && <div style={{ color: "var(--color-danger)", marginBottom: 10, fontSize: 13 }}>{error}</div>}
         <div style={{ marginBottom: 6 }}>
           {picks.map((p) => {
@@ -672,9 +673,9 @@ export default function EndgameTrainer({ emptyFallback = null }) {
                     style={{ ...S.lockBtn, opacity: data.walletXp < p.xpPrice ? 0.55 : 1 }}
                     disabled={data.walletXp < p.xpPrice}
                     onClick={() => unlock(p)}
-                    title={data.walletXp < p.xpPrice ? "Not enough XP" : "Unlock with XP"}
+                    title={data.walletXp < p.xpPrice ? tr("Not enough XP") : tr("Unlock with XP")}
                   >
-                    🔓 Unlock ({p.xpPrice} XP)
+                    {tr("🔓 Unlock (")}{p.xpPrice} {tr("XP)")}
                   </button>
                 ) : (
                   <button style={S.playBtn} onClick={() => setPlaying(p)}>{mastered ? "Review" : "Study ▶"}</button>
@@ -693,20 +694,20 @@ export default function EndgameTrainer({ emptyFallback = null }) {
     <div style={S.band}>
       <div style={S.cardTop} />
       <div style={S.bandHead}>
-        <span style={S.bandRibbon}>⭐ PREMIUM</span>
-        <h2 style={S.bandTitle}>Endgame Mastery — Study the Best Positions</h2>
+        <span style={S.bandRibbon}>{tr("⭐ PREMIUM")}</span>
+        <h2 style={S.bandTitle}>{tr("Endgame Mastery — Study the Best Positions")}</h2>
       </div>
-      <p style={S.bandSub}>Hand-picked positions worth knowing. Study the perfect line, explore with Stockfish, then play it out vs perfect defense.</p>
+      <p style={S.bandSub}>{tr("Hand-picked positions worth knowing. Study the perfect line, explore with Stockfish, then play it out vs perfect defense.")}</p>
       {data.coach && !data.coach.subscribed && data.coach.free && (
         <div style={{
           margin: "0 0 12px", padding: "9px 13px", borderRadius: 'var(--radius-md)',
           background: "rgba(250,204,21,0.10)", border: "1px solid rgba(250,204,21,0.35)",
           color: "#fde9b8", fontSize: 13, lineHeight: 1.5,
         }}>
-          🎁 <strong>Coach free trial</strong> — premium endgames are free for you for
-          {" "}<strong>{data.coach.daysLeft} more day{data.coach.daysLeft === 1 ? "" : "s"}</strong>.
-          After that you can still open them by spending XP, or{" "}
-          <a href="/coach/subscription" style={{ color: "var(--color-warning)", fontWeight: 700 }}>subscribe</a>{" "}
+          🎁 <strong>{tr("Coach free trial")}</strong> {tr("— premium endgames are free for you for")}
+          {" "}<strong>{data.coach.daysLeft} {tr("more day")}{data.coach.daysLeft === 1 ? "" : "s"}</strong>.
+          {tr("After that you can still open them by spending XP, or")}{" "}
+          <a href="/coach/subscription" style={{ color: "var(--color-warning)", fontWeight: 700 }}>{tr("subscribe")}</a>{" "}
           to keep them free forever.
         </div>
       )}
@@ -724,9 +725,9 @@ export default function EndgameTrainer({ emptyFallback = null }) {
             >
               <div style={S.cardGlyph}>{FAMILY_ICON[fam]}</div>
               <div style={S.cardIcon}>{FAMILY_ICON[fam]}</div>
-              <div style={S.cardLabel}>{FAMILY_LABEL[fam]} endgames</div>
-              <div style={S.cardCount}>{picks.length}<span style={S.cardSub}>to master</span></div>
-              <div style={S.cardHint}>{done > 0 ? `✅ ${done} mastered · Train →` : "Train →"}</div>
+              <div style={S.cardLabel}>{FAMILY_LABEL[fam]} {tr("endgames")}</div>
+              <div style={S.cardCount}>{picks.length}<span style={S.cardSub}>{tr("to master")}</span></div>
+              <div style={S.cardHint}>{done > 0 ? tr("✅ {done} mastered · Train →", { done: done }) : "Train →"}</div>
             </div>
           );
         })}

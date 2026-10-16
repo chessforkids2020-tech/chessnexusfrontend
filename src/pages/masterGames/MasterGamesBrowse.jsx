@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import GameAnalysisModal from '../../components/masterGames/GameAnalysisModal';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ── Master Games — browse / search results ────────────────────────────────────
 // Reached from the home page's "Explore games" Search. Reads the initial filter
@@ -119,13 +120,13 @@ export default function MasterGamesBrowse() {
   return (
     <div style={st.wrap}>
       <div style={st.inner}>
-        <button style={st.back} onClick={() => navigate('/master-games')}>‹ Master Games</button>
-        <h1 style={st.h1}>Browse games</h1>
+        <button style={st.back} onClick={() => navigate('/master-games')}>{tr("‹ Master Games")}</button>
+        <h1 style={st.h1}>{tr("Browse games")}</h1>
 
         {/* ── Filters ── */}
         <div style={st.filters}>
           <div style={{ position: 'relative' }}>
-            <input style={st.input} placeholder="Player…" value={playerInput}
+            <input style={st.input} placeholder={tr("Player…")} value={playerInput}
               onChange={e => setPlayerInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') commitPlayer(playerInput.trim()); }} />
             {playerSuggest.length > 0 && (
@@ -138,24 +139,24 @@ export default function MasterGamesBrowse() {
           </div>
 
           <select style={st.select} value={family} onChange={e => { setFamily(e.target.value); setOpening(''); }}>
-            <option value="">All openings</option>
+            <option value="">{tr("All openings")}</option>
             {filters.families.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
 
           {family && (
             <select style={st.select} value={opening} onChange={e => setOpening(e.target.value)} disabled={!variations.length}>
-              <option value="">All {family} variations</option>
+              <option value="">{tr("All")} {family} {tr("variations")}</option>
               {variations.map(v => <option key={v} value={v}>{v}</option>)}
             </select>
           )}
 
           <select style={st.select} value={year} onChange={e => setYear(e.target.value)}>
-            <option value="">All years</option>
+            <option value="">{tr("All years")}</option>
             {filters.years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
 
           <div style={{ position: 'relative' }}>
-            <input style={st.input} placeholder="Tournament…" value={tournament || tournamentInput}
+            <input style={st.input} placeholder={tr("Tournament…")} value={tournament || tournamentInput}
               onChange={e => { setTournament(''); setTournamentInput(e.target.value); }}
               onKeyDown={e => { if (e.key === 'Enter' && tournamentInput.trim()) commitTournament(tournamentInput.trim()); }} />
             {tournamentSuggest.length > 0 && (
@@ -167,18 +168,18 @@ export default function MasterGamesBrowse() {
             )}
           </div>
 
-          {hasAnyFilter && <button style={st.clearBtn} onClick={clearAll}>Clear</button>}
+          {hasAnyFilter && <button style={st.clearBtn} onClick={clearAll}>{tr("Clear")}</button>}
         </div>
 
         {/* ── Games list ── */}
-        <div style={st.listMeta}>{loading ? 'Loading…' : `${total.toLocaleString()} game${total === 1 ? '' : 's'}`}</div>
+        <div style={st.listMeta}>{loading ? 'Loading…' : tr("{v0} game{v1}", { v0: total.toLocaleString(), v1: total === 1 ? '' : 's' })}</div>
         <div style={st.table}>
           <div style={{ ...st.row, ...st.headRow }}>
-            <span style={st.cPlayers}>Players</span>
-            <span style={st.cResult}>Result</span>
-            <span style={st.cOpening}>Opening</span>
-            <span style={st.cEvent}>Event</span>
-            <span style={st.cYear}>Year</span>
+            <span style={st.cPlayers}>{tr("Players")}</span>
+            <span style={st.cResult}>{tr("Result")}</span>
+            <span style={st.cOpening}>{tr("Opening")}</span>
+            <span style={st.cEvent}>{tr("Event")}</span>
+            <span style={st.cYear}>{tr("Year")}</span>
           </div>
           {games.map(g => (
             <div key={g._id} style={st.row} onClick={() => setOpenGameId(g._id)}
@@ -195,15 +196,15 @@ export default function MasterGamesBrowse() {
             </div>
           ))}
           {!loading && games.length === 0 && (
-            <div style={st.empty}>No games found. {hasAnyFilter ? 'Try clearing filters.' : ''}</div>
+            <div style={st.empty}>{tr("No games found.")} {hasAnyFilter ? 'Try clearing filters.' : ''}</div>
           )}
         </div>
 
         {totalPages > 1 && (
           <div style={st.pager}>
-            <button style={st.pageBtn} disabled={page <= 1} onClick={() => setPage(p => p - 1)}>‹ Prev</button>
-            <span style={st.pageInfo}>Page {page} of {totalPages}</span>
-            <button style={st.pageBtn} disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next ›</button>
+            <button style={st.pageBtn} disabled={page <= 1} onClick={() => setPage(p => p - 1)}>{tr("‹ Prev")}</button>
+            <span style={st.pageInfo}>{tr("Page")} {page} {tr("of")} {totalPages}</span>
+            <button style={st.pageBtn} disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>{tr("Next ›")}</button>
           </div>
         )}
 

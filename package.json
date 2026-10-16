@@ -9,6 +9,7 @@
     "build:spa": "vite build",
     "lint": "eslint .",
     "check:colors": "node scripts/check-colors.mjs",
+    "i18n:missing": "node scripts/i18n-missing.mjs",
     "preview": "vite preview",
     "test": "playwright test",
     "test:ui": "playwright test --ui",

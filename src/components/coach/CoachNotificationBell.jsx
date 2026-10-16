@@ -12,6 +12,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import socket from '../../socket';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function CoachNotificationBell() {
   const navigate = useNavigate();
@@ -104,7 +105,7 @@ export default function CoachNotificationBell() {
       <button
         className="btn-ghost"
         onClick={toggle}
-        title={totalCount > 0 ? `${totalCount} item${totalCount === 1 ? '' : 's'} need your attention` : 'No new requests'}
+        title={totalCount > 0 ? tr("{totalCount} item{v1} need your attention", { totalCount: totalCount, v1: totalCount === 1 ? '' : 's' }) : 'No new requests'}
         style={{ position: 'relative' }}
       >
         🔔
@@ -133,7 +134,7 @@ export default function CoachNotificationBell() {
           {studentReqs.length > 0 && (
             <div style={{ marginBottom: 12 }}>
               <div style={{ color: '#6ee7b7', fontWeight: 700, fontSize: 14, marginBottom: 8 }}>
-                🙋 Student requests
+                {tr("🙋 Student requests")}
               </div>
               {studentReqs.slice(0, 5).map(r => (
                 <div key={r._id} style={{
@@ -141,19 +142,19 @@ export default function CoachNotificationBell() {
                   gap: 8, padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.06)',
                 }}>
                   <span style={{ color: '#e2e8f0', fontSize: 13, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {r.studentId?.displayName || r.studentId?.username || r.studentName || 'Student'}
+                    {r.studentId?.displayName || r.studentId?.username || r.studentName || tr('Student')}
                   </span>
                   <span style={{ display: 'flex', gap: 6, flex: 'none' }}>
                     <button onClick={() => answer(r._id, 'approve')} style={{
                       background: 'rgba(16,185,129,0.18)', border: '1px solid rgba(16,185,129,0.45)',
                       color: '#6ee7b7', borderRadius: 'var(--radius-md)', padding: '3px 10px', fontSize: 12,
                       fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
-                    }}>Accept</button>
+                    }}>{tr("Accept")}</button>
                     <button onClick={() => answer(r._id, 'decline')} style={{
                       background: 'transparent', border: '1px solid rgba(255,255,255,0.18)',
                       color: '#94a3b8', borderRadius: 'var(--radius-md)', padding: '3px 10px', fontSize: 12,
                       fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-                    }}>Decline</button>
+                    }}>{tr("Decline")}</button>
                   </span>
                 </div>
               ))}
@@ -161,12 +162,12 @@ export default function CoachNotificationBell() {
           )}
 
           <div style={{ color: '#e2e8f0', fontWeight: 700, fontSize: 14, marginBottom: 8 }}>
-            💰 Payment requests
+            {tr("💰 Payment requests")}
           </div>
 
           {latest.length === 0 ? (
             <div style={{ color: '#64748b', fontSize: 13, padding: '10px 2px' }}>
-              No pending requests.
+              {tr("No pending requests.")}
             </div>
           ) : (
             <div style={{ display: 'grid', gap: 8 }}>
@@ -175,7 +176,7 @@ export default function CoachNotificationBell() {
                   background: 'rgba(255,255,255,0.04)', borderRadius: 'var(--radius-md)', padding: '9px 11px',
                 }}>
                   <div style={{ color: '#fff', fontSize: 13.5, fontWeight: 600 }}>
-                    {r.studentName || 'Student'}
+                    {r.studentName || tr('Student')}
                   </div>
                   <div style={{ color: '#9ca3af', fontSize: 12.5, marginTop: 2 }}>
                     {cur(r.currency)}{r.amount}
@@ -201,7 +202,7 @@ export default function CoachNotificationBell() {
               background: 'rgba(6,182,212,0.10)',
               border: '1px solid rgba(6,182,212,0.35)',
             }}>
-              Review requests →
+              {tr("Review requests →")}
             </button>
           </div>
         </div>

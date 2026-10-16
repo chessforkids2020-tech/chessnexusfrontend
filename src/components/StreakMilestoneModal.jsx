@@ -8,6 +8,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactConfetti from 'react-confetti';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Five seconds of confetti. Uses react-confetti, which the dashboard already
 // depends on for badge popups — no reason to hand-roll a second canvas.
@@ -91,40 +92,40 @@ export default function StreakMilestoneModal({ streak, user, onClose, onDismiss,
   };
 
   return (
-    <div style={S.backdrop} role="dialog" aria-modal="true" aria-label="Practice streak reward">
+    <div style={S.backdrop} role="dialog" aria-modal="true" aria-label={tr("Practice streak reward")}>
       {phase === 'celebrating' && <Confetti onDone={() => setPhase('queued')} />}
 
       <div style={S.card}>
         <div style={S.flame} aria-hidden="true">🔥</div>
-        <h2 style={S.title}>{streak} days in a row</h2>
+        <h2 style={S.title}>{streak} {tr("days in a row")}</h2>
 
         {phase === 'offer' && (
           <>
             <p style={S.body}>
-              You have practiced {streak} days running. That earns you a full report on
+              {tr("You have practiced")} {streak} {tr("days running. That earns you a full report on")}
               how you have been playing — your games from Chess Nexus, Chess.com and
               Lichess, where your mistakes happen, and what to work on next.
             </p>
 
             {(missingLichess || missingChesscom) && (
               <div style={S.warn}>
-                <strong>{missingBoth ? 'Add your usernames first?' : 'One thing missing'}</strong>
+                <strong>{missingBoth ? tr('Add your usernames first?') : tr('One thing missing')}</strong>
                 <p style={S.warnBody}>
                   {missingBoth
                     ? 'We do not have your Chess.com or Lichess usernames, so this report can only cover games played here.'
-                    : `We do not have your ${missingLichess ? 'Lichess' : 'Chess.com'} username, so those games will not be included.`}
+                    : tr("We do not have your {v0} username, so those games will not be included.", { v0: missingLichess ? tr('Lichess') : tr('Chess.com') })}
                   {' '}
-                  <a href="/profile" style={S.link}>Add {missingBoth ? 'them' : 'it'} in your profile</a>
-                  {' '}— or carry on without.
+                  <a href="/profile" style={S.link}>{tr("Add")} {missingBoth ? 'them' : 'it'} {tr("in your profile")}</a>
+                  {' '}{tr("— or carry on without.")}
                 </p>
               </div>
             )}
 
             {cost && !cost.free && (
               <div style={{ ...S.cost, ...(cost.affordable ? {} : S.costShort) }}>
-                <span>Costs <b>{cost.price} XP</b></span>
+                <span>{tr("Costs")} <b>{cost.price} {tr("XP")}</b></span>
                 <span style={S.costBal}>
-                  you have {cost.balance}
+                  {tr("you have")} {cost.balance}
                   {!cost.affordable && ' — solve a few more puzzles'}
                 </span>
               </div>
@@ -135,8 +136,8 @@ export default function StreakMilestoneModal({ streak, user, onClose, onDismiss,
               onClick={generate}
               disabled={busy || (cost ? !cost.affordable : false)}
             >
-              {busy ? 'Starting…'
-                : cost && !cost.free ? `Generate my report · ${cost.price} XP`
+              {busy ? tr('Starting…')
+                : cost && !cost.free ? tr("Generate my report · {price} XP", { price: cost.price })
                 : 'Generate my report'}
             </button>
             {/* "Maybe later" is a real decision ONLY if they could have said yes.
@@ -149,7 +150,7 @@ export default function StreakMilestoneModal({ streak, user, onClose, onDismiss,
               style={S.ghost}
               onClick={() => { if (cost ? cost.affordable : true) onDismiss?.(); onClose(); }}
             >
-              {cost && !cost.affordable ? 'I will come back for this' : 'Maybe later'}
+              {cost && !cost.affordable ? tr('I will come back for this') : tr('Maybe later')}
             </button>
           </>
         )}
@@ -161,11 +162,11 @@ export default function StreakMilestoneModal({ streak, user, onClose, onDismiss,
               we will send you a notification the moment it is ready.
             </p>
             <p style={S.bodyQuiet}>
-              You can close this. The report will be waiting on your dashboard under
-              <b> Weekly report</b> when it is done.
+              {tr("You can close this. The report will be waiting on your dashboard under")}
+              <b> {tr("Weekly report")}</b> {tr("when it is done.")}
             </p>
             {phase === 'queued' && (
-              <button type="button" style={S.primary} onClick={onClose}>Got it</button>
+              <button type="button" style={S.primary} onClick={onClose}>{tr("Got it")}</button>
             )}
           </>
         )}
@@ -173,8 +174,8 @@ export default function StreakMilestoneModal({ streak, user, onClose, onDismiss,
         {phase === 'error' && (
           <>
             <p style={{ ...S.body, color: 'var(--color-danger)' }}>{err}</p>
-            <button type="button" style={S.primary} onClick={() => setPhase('offer')}>Try again</button>
-            <button type="button" style={S.ghost} onClick={onClose}>Close</button>
+            <button type="button" style={S.primary} onClick={() => setPhase('offer')}>{tr("Try again")}</button>
+            <button type="button" style={S.ghost} onClick={onClose}>{tr("Close")}</button>
           </>
         )}
       </div>

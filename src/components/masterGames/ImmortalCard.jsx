@@ -1,5 +1,6 @@
 import React from 'react';
 import Chessboard from '../Chessboard';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ── Immortal-game card ────────────────────────────────────────────────────────
 // A clickable card with a small static board thumbnail + the game's headers,
@@ -41,7 +42,7 @@ export default function ImmortalCard({ game, onOpen, size = 128 }) {
         <div style={st.event}>{game.event || '—'}{game.year ? `, ${game.year}` : ''}</div>
         {game.opening && <div style={st.opening}>{game.opening}</div>}
       </div>
-      <span style={st.star} title="Immortal game">★</span>
+      <span style={st.star} title={tr("Immortal game")}>★</span>
     </button>
   );
 }

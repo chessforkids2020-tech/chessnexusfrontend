@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function ArenaTournament() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function ArenaTournament() {
       setTournaments(response.data.tournaments);
       setLoading(false);
     } catch (err) {
-      setError('Failed to load tournaments');
+      setError(tr('Failed to load tournaments'));
       setLoading(false);
     }
   };
@@ -108,9 +109,9 @@ export default function ArenaTournament() {
           {/* Crown Status */}
           {(() => {
             const crownMap = {
-              gold:     { emoji: '👑', label: 'Gold Crown',     sub: 'Opponents earn +4 pts for beating you', color: 'var(--color-warning)', bg: 'var(--color-warning-a12)',  border: 'var(--color-warning-a30)' },
-              platinum: { emoji: '👑', label: 'Platinum Crown', sub: 'Opponents earn +4 pts for beating you', color: 'var(--color-text)', bg: 'rgba(226,232,240,0.1)',  border: 'rgba(226,232,240,0.3)' },
-              gem:      { emoji: '💎', label: 'Gem Crown',      sub: 'Opponents earn +4 pts for beating you', color: 'var(--color-accent-2)', bg: 'var(--color-accent-2-a15)',  border: 'rgba(96,165,250,0.4)' },
+              gold:     { emoji: '👑', label: tr('Gold Crown'),     sub: tr('Opponents earn +4 pts for beating you'), color: 'var(--color-warning)', bg: 'var(--color-warning-a12)',  border: 'var(--color-warning-a30)' },
+              platinum: { emoji: '👑', label: tr('Platinum Crown'), sub: tr('Opponents earn +4 pts for beating you'), color: 'var(--color-text)', bg: 'rgba(226,232,240,0.1)',  border: 'rgba(226,232,240,0.3)' },
+              gem:      { emoji: '💎', label: tr('Gem Crown'),      sub: tr('Opponents earn +4 pts for beating you'), color: 'var(--color-accent-2)', bg: 'var(--color-accent-2-a15)',  border: 'rgba(96,165,250,0.4)' },
             };
             const c = user?.arenaCrownTier && crownMap[user.arenaCrownTier];
             const badgeBase = {
@@ -122,7 +123,7 @@ export default function ArenaTournament() {
             return c ? (
               <span title={`${c.label} — ${c.sub}`} style={{ ...badgeBase, background: c.bg, border: `1px solid ${c.border}`, filter: `drop-shadow(0 0 8px ${c.color})` }}>{c.emoji}</span>
             ) : (
-              <span title="No Crown Yet — Win a tournament to earn one" style={{ ...badgeBase, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', opacity: 0.45 }}>👑</span>
+              <span title={tr("No Crown Yet — Win a tournament to earn one")} style={{ ...badgeBase, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', opacity: 0.45 }}>👑</span>
             );
           })()}
 
@@ -147,7 +148,7 @@ export default function ArenaTournament() {
               );
             }
             const tipNo = progress > 0
-              ? `No Carry Bonus (${progress}/3) — ${3 - progress} more qualifying tournament${3 - progress !== 1 ? 's' : ''} needed (play ≥3 games each)`
+              ? tr("No Carry Bonus ({progress}/3) — {v1} more qualifying tournament{v2} needed (play ≥3 games each)", { progress: progress, v1: 3 - progress, v2: 3 - progress !== 1 ? 's' : '' })
               : 'No Carry Bonus — Play ≥3 games in 3 separate tournaments to earn +2 pts';
             return (
               <span title={tipNo} style={{ ...badgeBase, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', opacity: progress > 0 ? 0.7 : 0.45 }}>
@@ -166,7 +167,7 @@ export default function ArenaTournament() {
             marginBottom: '10px',
             color: 'white'
           }}>
-            🏟️ Arena Tournament
+            {tr("🏟️ Arena Tournament")}
           </h1>
           <p style={{
             fontSize: '18px',
@@ -174,7 +175,7 @@ export default function ArenaTournament() {
             marginBottom: '30px',
             fontStyle: 'italic'
           }}>
-            Compete in exciting arena tournaments! Join live battles and climb the rankings.
+            {tr("Compete in exciting arena tournaments! Join live battles and climb the rankings.")}
           </p>
 
           <div style={{
@@ -211,7 +212,7 @@ export default function ArenaTournament() {
                 e.target.style.boxShadow = 'none';
               }}
             >
-              ➕ Create Tournament
+              {tr("➕ Create Tournament")}
             </button>
 
             <button
@@ -242,7 +243,7 @@ export default function ArenaTournament() {
                 e.target.style.boxShadow = 'none';
               }}
             >
-              🔗 Join Tournament
+              {tr("🔗 Join Tournament")}
             </button>
           </div>
         </div>
@@ -267,7 +268,7 @@ export default function ArenaTournament() {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
           }}>
-            Available Tournaments
+            {tr("Available Tournaments")}
           </h2>
 
           {loading ? (
@@ -283,8 +284,8 @@ export default function ArenaTournament() {
               WebkitBackdropFilter: 'blur(10px)'
             }}>
               <div style={{ fontSize: '56px', marginBottom: '20px', color: 'var(--color-accent)' }}>⏳</div>
-              <div style={{ fontSize: '18px', fontWeight: '600' }}>Loading tournaments...</div>
-              <div style={{ fontSize: '15px', marginTop: '12px', color: 'var(--color-text-muted)' }}>Fetching the latest arena battles</div>
+              <div style={{ fontSize: '18px', fontWeight: '600' }}>{tr("Loading tournaments...")}</div>
+              <div style={{ fontSize: '15px', marginTop: '12px', color: 'var(--color-text-muted)' }}>{tr("Fetching the latest arena battles")}</div>
             </div>
           ) : error ? (
             <div style={{
@@ -297,7 +298,7 @@ export default function ArenaTournament() {
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)'
             }}>
-              <div style={{ fontSize: '20px', fontWeight: '600', marginBottom: '12px' }}>⚠️ Error</div>
+              <div style={{ fontSize: '20px', fontWeight: '600', marginBottom: '12px' }}>{tr("⚠️ Error")}</div>
               {error}
             </div>
           ) : tournaments.length === 0 ? (
@@ -313,10 +314,10 @@ export default function ArenaTournament() {
             }}>
               <div style={{ fontSize: '48px', marginBottom: '20px' }}>🏟️</div>
               <div style={{ fontSize: '18px', marginBottom: '12px', color: 'var(--color-text)' }}>
-                No active tournaments at the moment
+                {tr("No active tournaments at the moment")}
               </div>
               <div style={{ fontSize: '14px' }}>
-                Create a new tournament to get started!
+                {tr("Create a new tournament to get started!")}
               </div>
             </div>
           ) : (
@@ -379,20 +380,20 @@ export default function ArenaTournament() {
                       </h3>
                       {/* Tournament type badge */}
                       {tournament.tournamentType === 'team_battle' && (
-                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)', marginBottom: '6px' }}>⚔️ Team Battle</span>
+                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)', marginBottom: '6px' }}>{tr("⚔️ Team Battle")}</span>
                       )}
                       {tournament.tournamentType === 'chess960' && (
-                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)', marginBottom: '6px' }}>🎲 Chess960</span>
+                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)', marginBottom: '6px' }}>{tr("🎲 Chess960")}</span>
                       )}
                       {tournament.tournamentType === 'bullet_blitz_marathon' && (
-                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)', marginBottom: '6px' }}>⚡ Marathon</span>
+                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)', marginBottom: '6px' }}>{tr("⚡ Marathon")}</span>
                       )}
                       <div style={{
                         fontSize: '14px',
                         color: 'var(--color-text-muted)',
                         marginBottom: '8px'
                       }}>
-                        Hosted by <strong style={{ color: 'var(--color-accent)' }}>{tournament.creatorDisplayName || tournament.creatorUsername}</strong>
+                        {tr("Hosted by")} <strong style={{ color: 'var(--color-accent)' }}>{tournament.creatorDisplayName || tournament.creatorUsername}</strong>
                       </div>
                     </div>
 
@@ -418,7 +419,7 @@ export default function ArenaTournament() {
                   }}>
                     <div>
                       <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '6px' }}>
-                        Time Control
+                        {tr("Time Control")}
                       </div>
                       <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-accent)' }}>
                         {tournament.tournamentType === 'bullet_blitz_marathon'
@@ -429,17 +430,17 @@ export default function ArenaTournament() {
 
                     <div>
                       <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '6px' }}>
-                        Duration
+                        {tr("Duration")}
                       </div>
                       <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-success)' }}>
                         {tournament.tournamentDuration.hours > 0 && `${tournament.tournamentDuration.hours}h `}
-                        {tournament.tournamentDuration.minutes}min
+                        {tournament.tournamentDuration.minutes}{tr("min")}
                       </div>
                     </div>
 
                     <div>
                       <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '6px' }}>
-                        Participants
+                        {tr("Participants")}
                       </div>
                       <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-accent-2)' }}>
                         {tournament.participantCount}
@@ -448,7 +449,7 @@ export default function ArenaTournament() {
 
                     <div>
                       <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '6px' }}>
-                        Starts
+                        {tr("Starts")}
                       </div>
                       <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-text)' }}>
                         {formatDate(tournament.scheduledStartTime)}
@@ -478,7 +479,7 @@ export default function ArenaTournament() {
                     alignItems: 'center',
                     gap: '8px'
                   }}>
-                    Click to {tournament.status === 'active' ? 'join live' : 'view details'}
+                    {tr("Click to")} {tournament.status === 'active' ? 'join live' : 'view details'}
                     <span style={{ fontSize: '18px' }}>→</span>
                   </div>
                 </div>
@@ -509,10 +510,10 @@ export default function ArenaTournament() {
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'
             }}>
-              🏁 Recent Tournaments
+              {tr("🏁 Recent Tournaments")}
             </h2>
             <p style={{ color: 'var(--color-text-faint)', fontSize: '14px', marginBottom: '24px', marginTop: 0 }}>
-              Tournaments that ended in the last 48 hours
+              {tr("Tournaments that ended in the last 48 hours")}
             </p>
 
             <div style={{ display: 'grid', gap: '16px' }}>
@@ -558,7 +559,7 @@ export default function ArenaTournament() {
                     border: '1px solid var(--color-accent-2-a30)',
                     flexShrink: 0
                   }}>
-                    ✅ Finished
+                    {tr("✅ Finished")}
                   </div>
 
                   {/* Name + creator */}
@@ -567,24 +568,24 @@ export default function ArenaTournament() {
                       {tournament.name}
                     </div>
                     {tournament.tournamentType === 'team_battle' && (
-                      <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 'var(--radius-2xl)', fontSize: '10px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)', marginBottom: '3px' }}>⚔️ Team Battle</span>
+                      <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 'var(--radius-2xl)', fontSize: '10px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)', marginBottom: '3px' }}>{tr("⚔️ Team Battle")}</span>
                     )}
                     {tournament.tournamentType === 'chess960' && (
-                      <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 'var(--radius-2xl)', fontSize: '10px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)', marginBottom: '3px' }}>🎲 Chess960</span>
+                      <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 'var(--radius-2xl)', fontSize: '10px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)', marginBottom: '3px' }}>{tr("🎲 Chess960")}</span>
                     )}
                     <div style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>
-                      by <span style={{ color: 'var(--color-accent)' }}>{tournament.creatorDisplayName || tournament.creatorUsername}</span>
+                      {tr("by")} <span style={{ color: 'var(--color-accent)' }}>{tournament.creatorDisplayName || tournament.creatorUsername}</span>
                     </div>
                   </div>
 
                   {/* Stats row */}
                   <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', flexShrink: 0 }}>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '2px' }}>Players</div>
+                      <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '2px' }}>{tr("Players")}</div>
                       <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--color-accent-2)' }}>{tournament.participantCount}</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '2px' }}>Time</div>
+                      <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '2px' }}>{tr("Time")}</div>
                       <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--color-accent)' }}>
                         {tournament.tournamentType === 'bullet_blitz_marathon'
                           ? '2+1→3+2'
@@ -592,15 +593,15 @@ export default function ArenaTournament() {
                       </div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '2px' }}>Duration</div>
+                      <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '2px' }}>{tr("Duration")}</div>
                       <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--color-success)' }}>
                         {(tournament.tournamentDuration?.hours || 0) > 0 && `${tournament.tournamentDuration.hours}h `}
-                        {tournament.tournamentDuration?.minutes || 0}min
+                        {tournament.tournamentDuration?.minutes || 0}{tr("min")}
                       </div>
                     </div>
                     {tournament.endTime && (
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '2px' }}>Ended</div>
+                        <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '2px' }}>{tr("Ended")}</div>
                         <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text-muted)' }}>
                           {formatDate(tournament.endTime)}
                         </div>
@@ -647,7 +648,7 @@ export default function ArenaTournament() {
             e.target.style.transform = 'translateY(0)';
           }}
         >
-          ← Back to Dashboard
+          {tr("← Back to Dashboard")}
         </button>
       </div>
 

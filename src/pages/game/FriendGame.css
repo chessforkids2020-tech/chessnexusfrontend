@@ -466,7 +466,43 @@ button.fg-move-san.active { background: var(--color-accent-a30); color: var(--co
   .fg-left { padding: 12px; }
   .fg-moves-list { height: auto; max-height: 200px; border-radius: var(--radius-md); }
   .fg-icon-btn { padding: 12px 0; }
+
+  /* ── After the game (phone) ──────────────────────────────────────────────
+     [ opponent | you ]  one small row above the board
+     board
+     ⏮ ◀ Stockfish ▶ ⏭   right under the board
+     Stockfish lines     (when on)
+     analysis · 🏠 Home · ↻ Play again
+     The room switches to a wrapping row so the two name strips can share a
+     line; everything else still takes a full row. */
+  .fg-room-inner.is-over { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+  /* The right card is display:contents here, so its strips, nav and moves are
+     flex items too even though they are not direct children. */
+  .fg-room-inner.is-over > *,
+  .is-over .fg-nav, .is-over .fg-engine-m, .is-over .fg-moves-list { flex: 1 1 100%; min-width: 0; }
+  /* min-width:0 lets a long name truncate instead of pushing its strip onto
+     its own line. */
+  .is-over .fg-pbar-opp { order: 1; flex: 1 1 0; min-width: 0; margin-right: 3px; }
+  .is-over .fg-pbar-me  { order: 1; flex: 1 1 0; min-width: 0; margin-left: 3px; }
+  .is-over .fg-player-id { min-width: 0; }
+  .is-over .fg-center   { order: 2; }
+  .is-over .fg-nav      { order: 3; }
+  .is-over .fg-engine-m { order: 4; }
+  .is-over .fg-left     { order: 5; }
+  .is-over .fg-moves-list { order: 6; }
+  .is-over .fg-pbar { padding: 4px 8px; gap: 6px; }
+  .is-over .fg-pname { font-size: 12px; }
+  .is-over .fg-clock { font-size: 13px; font-weight: 700; color: var(--color-text-muted); }
+  .is-over .fg-avatar { width: 22px; height: 22px; }
+  /* Resign / draw are over; Home lives at the bottom of the panel now. */
+  .is-over .fg-icon-actions { display: none; }
 }
+/* Phone-only pieces (rendered only on phones by FriendGame.jsx). */
+.fg-nav-sf { flex: 1.6; font-size: 13px; font-weight: 800; }
+.fg-nav-sf.on { background: var(--color-accent-a20); color: var(--color-accent); }
+.fg-engine-m { margin: 0 10px; box-sizing: border-box; }
+.fg-post-final { display: flex; gap: 8px; }
+.fg-post-final .fg-post-btn { flex: 1; }
 
 @media (max-width: 480px) {
   .fg-pname { font-size: 14px; }

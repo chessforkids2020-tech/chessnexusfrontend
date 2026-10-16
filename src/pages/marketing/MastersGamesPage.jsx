@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/masters-chess-games";
 
@@ -29,7 +30,7 @@ export default function MastersGamesPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
@@ -46,7 +47,7 @@ export default function MastersGamesPage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "Masters Chess Games — Play Through Grandmaster Games Free",
+        title: tr("Masters Chess Games — Play Through Grandmaster Games Free"),
         description:
           "Play through famous masters and grandmaster chess games move by move on Chess Nexus. Guess the master's move, study immortal games and learn from World Champions — 100% free, no ads.",
         keywords:
@@ -57,13 +58,13 @@ export default function MastersGamesPage() {
       hero={{
         icon: "👑",
         h1: "Masters Chess Games — Free, No Ads",
-        sub: "Step into the games of the greatest players in history. Replay famous grandmaster and World Champion games move by move, try to guess the master's move before it's revealed, and absorb the ideas that win at the highest level — all free in your browser.",
-        primary: { label: "Browse Masters Games", to: "/master-games" },
-        secondary: { label: "Browse all features", to: "/features" },
+        sub: tr("Step into the games of the greatest players in history. Replay famous grandmaster and World Champion games move by move, try to guess the master's move before it's revealed, and absorb the ideas that win at the highest level — all free in your browser."),
+        primary: { label: tr("Browse Masters Games"), to: "/master-games" },
+        secondary: { label: tr("Browse all features"), to: "/features" },
       }}
     >
       <section className="mkt-section">
-        <h2>Learn the way the masters learned</h2>
+        <h2>{tr("Learn the way the masters learned")}</h2>
         <p className="mkt-section-lead">
           For over a century, the advice given to every improving player has been
           the same: study the games of the masters. Chess Nexus makes that advice
@@ -87,7 +88,7 @@ export default function MastersGamesPage() {
       <div className="mkt-callout">
         <div className="mkt-callout-icon">🎯</div>
         <div>
-          <h2>Guess the move — active study, not passive watching</h2>
+          <h2>{tr("Guess the move — active study, not passive watching")}</h2>
           <p>
             Reading through a game is good; predicting it is far better. In the
             guess-the-move mode you pause at each turn and try to find the move
@@ -100,7 +101,7 @@ export default function MastersGamesPage() {
       </div>
 
       <section className="mkt-section">
-        <h2>From immortal classics to modern super-GM battles</h2>
+        <h2>{tr("From immortal classics to modern super-GM battles")}</h2>
         <p className="mkt-section-lead">
           The collection spans the whole history of the game. Relive the romantic
           attacking masterpieces — the immortal and evergreen games where a
@@ -113,16 +114,16 @@ export default function MastersGamesPage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <Link to="/master-games/browse" className="mkt-btn mkt-btn-primary">
-            Browse the game library
+            {tr("Browse the game library")}
           </Link>
           <Link to="/master-games/players" className="mkt-btn mkt-btn-ghost">
-            Explore by player
+            {tr("Explore by player")}
           </Link>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

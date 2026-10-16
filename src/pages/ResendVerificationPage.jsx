@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import api from "../api";
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function ResendVerificationPage() {
   const location = useLocation();
@@ -32,19 +33,19 @@ export default function ResendVerificationPage() {
       <div style={s.bg} />
       <div style={s.card}>
         <div style={s.logo}>♟️</div>
-        <h1 style={s.title}>Chess Nexus</h1>
+        <h1 style={s.title}>{tr("Chess Nexus")}</h1>
 
         {!sent ? (
           <>
-            <h2 style={s.heading}>Resend Verification Email</h2>
+            <h2 style={s.heading}>{tr("Resend Verification Email")}</h2>
             <p style={s.sub}>
-              Enter the email address you signed up with and we'll send you a fresh verification link.
+              {tr("Enter the email address you signed up with and we'll send you a fresh verification link.")}
             </p>
             <form onSubmit={handleSubmit} style={s.form}>
               {error && <div style={s.error}>{error}</div>}
               <input
                 type="email"
-                placeholder="your@email.com"
+                placeholder={tr("your@email.com")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={s.input}
@@ -52,23 +53,23 @@ export default function ResendVerificationPage() {
                 autoFocus
               />
               <button type="submit" style={s.btn} disabled={loading}>
-                {loading ? "Sending…" : "Send Verification Email"}
+                {loading ? tr("Sending…") : tr("Send Verification Email")}
               </button>
             </form>
             <p style={{ ...s.sub, marginTop: 20 }}>
-              Already verified?{" "}
-              <Link to="/login" style={s.link}>Log in</Link>
+              {tr("Already verified?")}{" "}
+              <Link to="/login" style={s.link}>{tr("Log in")}</Link>
             </p>
           </>
         ) : (
           <>
             <div style={{ fontSize: 56, marginBottom: 12 }}>📬</div>
-            <h2 style={{ ...s.heading, color: "#4ade80" }}>Email Sent!</h2>
+            <h2 style={{ ...s.heading, color: "#4ade80" }}>{tr("Email Sent!")}</h2>
             <p style={s.sub}>
               If an account exists for that email, a fresh verification link has been sent.
               Check your inbox (and spam folder).
             </p>
-            <Link to="/login" style={s.btn}>Go to Login →</Link>
+            <Link to="/login" style={s.btn}>{tr("Go to Login →")}</Link>
           </>
         )}
       </div>

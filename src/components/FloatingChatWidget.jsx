@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Chat from '../pages/Chat';
 import './FloatingChatWidget.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function FloatingChatWidget() {
   const { user, unreadCount } = useAuth();
@@ -25,16 +26,16 @@ export default function FloatingChatWidget() {
         <div className="fcw-panel">
           {/* Panel header with title + expand + close */}
           <div className="fcw-panel-header">
-            <span className="fcw-panel-title">💬 Messages</span>
+            <span className="fcw-panel-title">{tr("💬 Messages")}</span>
             <div className="fcw-panel-actions">
               <button
                 className="fcw-action-btn"
-                title="Open full chat"
+                title={tr("Open full chat")}
                 onClick={() => { setOpen(false); navigate('/social/chat'); }}
               >⛶</button>
               <button
                 className="fcw-action-btn"
-                title="Close"
+                title={tr("Close")}
                 onClick={() => setOpen(false)}
               >✕</button>
             </div>
@@ -47,8 +48,8 @@ export default function FloatingChatWidget() {
       <button
         className="fcw-bubble"
         onClick={() => setOpen(v => !v)}
-        title={open ? 'Close chat' : 'Open chat'}
-        aria-label="Toggle chat"
+        title={open ? tr('Close chat') : tr('Open chat')}
+        aria-label={tr("Toggle chat")}
       >
         <span style={{ fontSize: open ? 18 : 24 }}>{open ? '✕' : '💬'}</span>
         {!open && unreadCount > 0 && (

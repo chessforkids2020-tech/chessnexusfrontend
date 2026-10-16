@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Recursive ToC entry, rendered like a real book's table of contents.
 // A node with pages is a clickable readable leaf; a node with only children
@@ -22,7 +23,7 @@ function TocNode({ node, depth, bookId, locked, navigate }) {
         }}
       >
         <span>{node.title}</span>
-        {locked && <span title="Supporters & coaches only">🔒</span>}
+        {locked && <span title={tr("Supporters & coaches only")}>🔒</span>}
         {clickable && <span style={{ color: 'var(--color-success)', fontSize: 13 }}>›</span>}
       </div>
       {(node.children || []).map(child => (
@@ -44,7 +45,7 @@ const BookContents = () => {
     try {
       const res = await api.get(`/api/books/${id}/toc`);
       setData(res.data);
-    } catch { setError('Book not found'); }
+    } catch { setError(tr('Book not found')); }
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,7 +60,7 @@ const BookContents = () => {
       await load();             // refresh: chapters now unlocked, wallet reduced
     } catch (e) {
       const d = e?.response?.data;
-      if (d?.shortfall) setUnlockErr(`Not enough XP — you need ${d.shortfall} more.`);
+      if (d?.shortfall) setUnlockErr(tr("Not enough XP — you need {shortfall} more.", { shortfall: d.shortfall }));
       else setUnlockErr(d?.message || 'Could not unlock this book.');
     } finally {
       setUnlocking(false);
@@ -67,7 +68,7 @@ const BookContents = () => {
   };
 
   if (error) return <div style={styles.container}><div style={styles.error}>{error}</div></div>;
-  if (!data) return <div style={styles.container}>Loading…</div>;
+  if (!data) return <div style={styles.container}>{tr("Loading…")}</div>;
 
   const anyLocked = data.toc.some(c => c.locked);
   const xpPrice = data.xpPrice || 0;
@@ -79,16 +80,16 @@ const BookContents = () => {
 
   return (
     <div style={styles.container}>
-      <button style={styles.backButton} onClick={() => navigate('/study/books')}>← All books</button>
+      <button style={styles.backButton} onClick={() => navigate('/study/books')}>{tr("← All books")}</button>
       <h1 style={styles.title}>
         {data.title}
-        {data.freeForAll && <span style={styles.freeBadge}>FREE</span>}
-        {data.unlocked && <span style={styles.unlockedBadge}>👛 Unlocked</span>}
+        {data.freeForAll && <span style={styles.freeBadge}>{tr("FREE")}</span>}
+        {data.unlocked && <span style={styles.unlockedBadge}>{tr("👛 Unlocked")}</span>}
       </h1>
       {data.author && <div style={styles.author}>by {data.author}</div>}
 
       <div style={styles.toc}>
-        <h2 style={styles.tocHeading}>Contents</h2>
+        <h2 style={styles.tocHeading}>{tr("Contents")}</h2>
         {data.toc.map(ch => (
           <TocNode key={ch._id} node={ch} depth={0} bookId={id} locked={ch.locked} navigate={navigate} />
         ))}
@@ -99,11 +100,11 @@ const BookContents = () => {
           {canBuyWithXp ? (
             <>
               <div style={{ flex: '1 1 240px' }}>
-                🔒 Unlock all chapters of this book.
+                {tr("🔒 Unlock all chapters of this book.")}
                 <div style={{ marginTop: 6, fontSize: 13, color: 'var(--color-text-muted)' }}>
-                  Spend <strong style={{ color: 'var(--color-accent-2)' }}>{xpPrice} XP</strong> from your wallet
-                  {' '}(you have <strong style={{ color: canAfford ? 'var(--color-success)' : 'var(--color-danger)' }}>{walletXp} XP</strong>)
-                  {' '}— or get it free as a supporter, coach, or elite member.
+                  {tr("Spend")} <strong style={{ color: 'var(--color-accent-2)' }}>{xpPrice} {tr("XP")}</strong> {tr("from your wallet")}
+                  {' '}{tr("(you have")} <strong style={{ color: canAfford ? 'var(--color-success)' : 'var(--color-danger)' }}>{walletXp} {tr("XP")}</strong>)
+                  {' '}{tr("— or get it free as a supporter, coach, or elite member.")}
                 </div>
                 {unlockErr && <div style={{ marginTop: 6, fontSize: 13, color: 'var(--color-danger)' }}>{unlockErr}</div>}
               </div>
@@ -112,14 +113,14 @@ const BookContents = () => {
                 disabled={!canAfford || unlocking}
                 onClick={handleUnlock}
               >
-                {unlocking ? 'Unlocking…' : (canAfford ? `👛 Unlock for ${xpPrice} XP` : `Need ${xpPrice - walletXp} more XP`)}
+                {unlocking ? tr('Unlocking…') : (canAfford ? tr("👛 Unlock for {xpPrice} XP", { xpPrice: xpPrice }) : tr("Need {v0} more XP", { v0: xpPrice - walletXp }))}
               </button>
-              <button style={styles.supportBtn} onClick={() => navigate('/nexus-supporter')}>♞ Become a supporter</button>
+              <button style={styles.supportBtn} onClick={() => navigate('/nexus-supporter')}>{tr("♞ Become a supporter")}</button>
             </>
           ) : (
             <>
-              🔒 Some chapters are unlocked for <strong>supporters</strong>, <strong>verified coaches</strong>, and <strong>elite</strong> members.
-              <button style={styles.supportBtn} onClick={() => navigate('/nexus-supporter')}>♞ Become a supporter</button>
+              {tr("🔒 Some chapters are unlocked for")} <strong>{tr("supporters")}</strong>, <strong>{tr("verified coaches")}</strong>{tr(", and")} <strong>{tr("elite")}</strong> {tr("members.")}
+              <button style={styles.supportBtn} onClick={() => navigate('/nexus-supporter')}>{tr("♞ Become a supporter")}</button>
             </>
           )}
         </div>

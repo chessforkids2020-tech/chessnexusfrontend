@@ -6,14 +6,15 @@ import { analyzeGame } from '../components/masterGames/analyzeGame';
 // Reuse the arena games CSS — all .atg-* classes live there
 import './arenatournament/ArenaTournamentLeaderboard.css';
 import './UserGamesPage.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 // Move-classification display (matches the Master Games analysis scheme).
 const CLASS_META = {
-  blunder:    { symbol: '??', color: 'var(--color-danger)', label: 'Blunder' },
-  mistake:    { symbol: '?',  color: 'var(--color-warning)', label: 'Mistake' },
-  inaccuracy: { symbol: '?!', color: 'var(--color-warning)', label: 'Inaccuracy' },
+  blunder:    { symbol: '??', color: 'var(--color-danger)', label: tr('Blunder') },
+  mistake:    { symbol: '?',  color: 'var(--color-warning)', label: tr('Mistake') },
+  inaccuracy: { symbol: '?!', color: 'var(--color-warning)', label: tr('Inaccuracy') },
 };
 
 const formatResult = (result) => {
@@ -82,7 +83,7 @@ export default function UserGamesPage() {
         setInfo({ displayName: data.displayName, totalCount: data.totalCount, lastPlayedAt: data.lastPlayedAt });
         setGames(data.games || []);
       })
-      .catch(() => setError('Failed to load games.'))
+      .catch(() => setError(tr('Failed to load games.')))
       .finally(() => setLoading(false));
   }, [displayName]);
 
@@ -128,7 +129,7 @@ export default function UserGamesPage() {
   const runAnalysis = async () => {
     if (!selectedGame || analyzing) return;
     const moves = selectedGame.moves || [];
-    if (moves.length === 0) { setAnalyzeError('No moves to analyze.'); return; }
+    if (moves.length === 0) { setAnalyzeError(tr('No moves to analyze.')); return; }
     setAnalyzing(true);
     setAnalyzeError('');
     setAnalyzeProgress(0);
@@ -144,7 +145,7 @@ export default function UserGamesPage() {
       setClassByPly(map);
     } catch (err) {
       console.error('Game analysis failed:', err);
-      setAnalyzeError('Analysis failed. Try again.');
+      setAnalyzeError(tr('Analysis failed. Try again.'));
     } finally {
       setAnalyzing(false);
     }
@@ -256,7 +257,7 @@ export default function UserGamesPage() {
     return (
       <div className="atg-loading">
         <div className="atg-loading-orb" />
-        <div className="atg-loading-text">Loading Games…</div>
+        <div className="atg-loading-text">{tr("Loading Games…")}</div>
       </div>
     );
   }
@@ -265,9 +266,9 @@ export default function UserGamesPage() {
       <div className="atg-error-screen">
         <div className="atg-error-card">
           <div className="atg-error-icon">⚠</div>
-          <h2>Could not load games</h2>
+          <h2>{tr("Could not load games")}</h2>
           <p>{error}</p>
-          <button className="atg-error-back" onClick={() => navigate(-1)}>← Back</button>
+          <button className="atg-error-back" onClick={() => navigate(-1)}>{tr("← Back")}</button>
         </div>
       </div>
     );
@@ -292,17 +293,17 @@ export default function UserGamesPage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="15 18 9 12 15 6" />
           </svg>
-          Profile
+          {tr("Profile")}
         </button>
 
         <div className="atg-topbar-title">
           <span className="atg-topbar-name">{info?.displayName || displayName}</span>
           <span className="atg-topbar-sep">·</span>
-          <span className="atg-topbar-sub">Games</span>
+          <span className="atg-topbar-sub">{tr("Games")}</span>
         </div>
 
         <div className="atg-topbar-meta upg-meta">
-          <span className="upg-meta-total">{info?.totalCount ?? 0} total games</span>
+          <span className="upg-meta-total">{info?.totalCount ?? 0} {tr("total games")}</span>
           {lastPlayed && <span className="upg-meta-last">Last played: {lastPlayed}</span>}
         </div>
       </header>
@@ -316,7 +317,7 @@ export default function UserGamesPage() {
               <svg className="atg-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
-              <input type="text" className="atg-search-input" placeholder="Search by opponent name…"
+              <input type="text" className="atg-search-input" placeholder={tr("Search by opponent name…")}
                 value={search} onChange={e => setSearch(e.target.value)} />
               {search && (
                 <button type="button" className="atg-search-clear" onClick={() => setSearch('')}>
@@ -328,7 +329,7 @@ export default function UserGamesPage() {
             </div>
             {search.trim() && (
               <span className="atg-search-results-count">
-                {filtered.length} {filtered.length === 1 ? 'game' : 'games'} found
+                {filtered.length} {filtered.length === 1 ? 'game' : 'games'} {tr("found")}
               </span>
             )}
           </div>
@@ -336,7 +337,7 @@ export default function UserGamesPage() {
           {filtered.length === 0 ? (
             <div className="atg-empty">
               <div className="atg-empty-icon">♟</div>
-              <p>{search.trim() ? `No games found for "${search}"` : 'No finished games yet.'}</p>
+              <p>{search.trim() ? tr("No games found for \"{search}\"", { search: search }) : tr('No finished games yet.')}</p>
             </div>
           ) : (
             <div className="atg-games-grid">
@@ -357,7 +358,7 @@ export default function UserGamesPage() {
                     <span>{game.blackPlayerDisplayName || game.blackPlayerUsername}</span>
                   </div>
                   <div className="atg-card-meta">
-                    <span>{game.moves?.length ?? 0} moves</span>
+                    <span>{game.moves?.length ?? 0} {tr("moves")}</span>
                     <span>{game.finishedAt ? new Date(game.finishedAt).toLocaleDateString() : '—'}</span>
                   </div>
                 </button>
@@ -384,7 +385,7 @@ export default function UserGamesPage() {
                       <span className="atg-modal-color-dot atg-dot-white" />
                       {selectedGame.whitePlayerDisplayName || selectedGame.whitePlayerUsername}
                     </span>
-                    <span className="atg-modal-vs">vs</span>
+                    <span className="atg-modal-vs">{tr("vs")}</span>
                     <span className="atg-modal-player atg-modal-player--black">
                       <span className="atg-modal-color-dot atg-dot-black" />
                       {selectedGame.blackPlayerDisplayName || selectedGame.blackPlayerUsername}
@@ -403,12 +404,12 @@ export default function UserGamesPage() {
                 <div className="upg-analyze-bar">
                   {!classByPly && !analyzing && (
                     <button type="button" className="upg-analyze-btn" onClick={runAnalysis}>
-                      ⚙ Analyze game
+                      {tr("⚙ Analyze game")}
                     </button>
                   )}
                   {analyzing && (
                     <div className="upg-analyze-progress">
-                      <span>Analyzing… {analyzeProgress}%</span>
+                      <span>{tr("Analyzing…")} {analyzeProgress}%</span>
                       <div className="upg-analyze-track"><div className="upg-analyze-fill" style={{ width: `${analyzeProgress}%` }} /></div>
                     </div>
                   )}
@@ -419,9 +420,9 @@ export default function UserGamesPage() {
                     }
                     return (
                       <div className="upg-analyze-tally">
-                        <span style={{ color: CLASS_META.blunder.color }}>?? {b} blunder{b === 1 ? '' : 's'}</span>
-                        <span style={{ color: CLASS_META.mistake.color }}>? {m} mistake{m === 1 ? '' : 's'}</span>
-                        <span style={{ color: CLASS_META.inaccuracy.color }}>?! {i} inaccurac{i === 1 ? 'y' : 'ies'}</span>
+                        <span style={{ color: CLASS_META.blunder.color }}>?? {b} {tr("blunder")}{b === 1 ? '' : 's'}</span>
+                        <span style={{ color: CLASS_META.mistake.color }}>? {m} {tr("mistake")}{m === 1 ? '' : 's'}</span>
+                        <span style={{ color: CLASS_META.inaccuracy.color }}>?! {i} {tr("inaccurac")}{i === 1 ? 'y' : 'ies'}</span>
                       </div>
                     );
                   })()}
@@ -434,7 +435,7 @@ export default function UserGamesPage() {
                 <div className="atg-notation-panel">
                   <div className="atg-notation-scroll">
                     {!rootId || !nodes[rootId]?.childIds.length ? (
-                      <div className="atg-notation-empty">No moves recorded</div>
+                      <div className="atg-notation-empty">{tr("No moves recorded")}</div>
                     ) : (
                       <div className="atg-analysis-moves">
                         {renderMoves(nodes[rootId]?.childIds[0])}
@@ -443,15 +444,15 @@ export default function UserGamesPage() {
                   </div>
                 </div>
                 <div className="atg-controls">
-                  <button type="button" className="atg-ctrl-btn" onClick={navStart} title="Start">⏮</button>
-                  <button type="button" className="atg-ctrl-btn" onClick={navPrev} title="Previous">◀</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navStart} title={tr("Start")}>⏮</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navPrev} title={tr("Previous")}>◀</button>
                   <div className="atg-ctrl-counter">
                     <span className="atg-ctrl-cur">{currentNode?.ply ?? 0}</span>
                     <span className="atg-ctrl-sep">/</span>
                     <span className="atg-ctrl-tot">{selectedGame.moves?.length ?? 0}</span>
                   </div>
-                  <button type="button" className="atg-ctrl-btn" onClick={navNext} title="Next">▶</button>
-                  <button type="button" className="atg-ctrl-btn" onClick={navEnd} title="End">⏭</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navNext} title={tr("Next")}>▶</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navEnd} title={tr("End")}>⏭</button>
                 </div>
               </div>
             </div>

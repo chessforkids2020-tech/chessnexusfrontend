@@ -26,6 +26,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../api';
 import UserAvatar from '../UserAvatar';
 import './ClassLeaderboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Medal for the podium; plain number after that.
 function rankLabel(rank) {
@@ -45,10 +46,10 @@ function rankLabel(rank) {
 // strip uses only `icon` and `label`. One definition rather than two, so the
 // habits can never be named differently in the two places they appear.
 const PARTS = [
-  { key: 'practice',    icon: '🔥', label: 'Practice',    weight: 35, unit: 'days',     hint: 'Days practised' },
-  { key: 'assignments', icon: '📝', label: 'Homework',    weight: 30, unit: 'done',     hint: 'Assignments finished' },
-  { key: 'tournaments', icon: '🏆', label: 'Events',      weight: 20, unit: 'played',   hint: 'Tournaments and races entered' },
-  { key: 'attendance',  icon: '📅', label: 'Class',       weight: 15, unit: 'attended', hint: 'Classes attended' },
+  { key: 'practice',    icon: '🔥', label: tr('Practice'),    weight: 35, unit: 'days',     hint: tr('Days practised') },
+  { key: 'assignments', icon: '📝', label: tr('Homework'),    weight: 30, unit: 'done',     hint: tr('Assignments finished') },
+  { key: 'tournaments', icon: '🏆', label: tr('Events'),      weight: 20, unit: 'played',   hint: tr('Tournaments and races entered') },
+  { key: 'attendance',  icon: '📅', label: 'Class',       weight: 15, unit: 'attended', hint: tr('Classes attended') },
 ];
 
 // A number that counts up to its value on mount. Watching a score climb is the
@@ -114,21 +115,21 @@ function CoachHero({ summary, topName, period = 'month' }) {
       <div className="clb-chero-stats">
         <div className="clb-stat">
           <span className="clb-stat-num">{summary.students}</span>
-          <span className="clb-stat-lab">Students</span>
+          <span className="clb-stat-lab">{tr("Students")}</span>
         </div>
         <div className="clb-stat is-good">
           <span className="clb-stat-num">{summary.active}</span>
-          <span className="clb-stat-lab">Active {windowWord}</span>
+          <span className="clb-stat-lab">{tr("Active")} {windowWord}</span>
         </div>
         {/* The number a coach acts on. Styled as a warning only when non-zero —
             a class with nobody stalled should look clean, not red. */}
         <div className={`clb-stat ${summary.inactive > 0 ? 'is-warn' : ''}`}>
           <span className="clb-stat-num">{summary.inactive}</span>
-          <span className="clb-stat-lab">Not started</span>
+          <span className="clb-stat-lab">{tr("Not started")}</span>
         </div>
         <div className="clb-stat">
           <span className="clb-stat-num">{avg}</span>
-          <span className="clb-stat-lab">Average score</span>
+          <span className="clb-stat-lab">{tr("Average score")}</span>
         </div>
       </div>
 
@@ -156,7 +157,7 @@ function CoachHero({ summary, topName, period = 'month' }) {
           ? 'No active students yet.'
           : summary.inactive > 0
             ? <>{pct}% of your class is active. <strong>{summary.inactive}</strong> {summary.inactive === 1 ? 'student has' : 'students have'} not started {windowWord}.</>
-            : <>Every student is active {windowWord}. {topName ? <>Leading: <strong>{topName}</strong>.</> : null}</>}
+            : <>Every student is active {windowWord}. {topName ? <>{tr("Leading:")} <strong>{topName}</strong>.</> : null}</>}
       </p>
     </div>
   );
@@ -178,7 +179,7 @@ function StarRating({ stars = 0, size = '' }) {
   return (
     <span className={`clb-stars ${size ? `clb-stars-${size}` : ''}`}
           role="img"
-          aria-label={`${filled} of 5 stars earned`}>
+          aria-label={tr("{filled} of 5 stars earned", { filled: filled })}>
       {STAR_TIERS.map((tier, i) => (
         <span
           key={i}
@@ -197,7 +198,7 @@ function StarMark({ stars = 0 }) {
   if (!stars) return null;
   const tier = STAR_TIERS[Math.min(stars, 5) - 1];
   return (
-    <span className={`clb-starmark clb-star-${tier}`} title={`${stars} of 5 stars`}>
+    <span className={`clb-starmark clb-star-${tier}`} title={tr("{stars} of 5 stars", { stars: stars })}>
       ★<span className="clb-starmark-n">{stars}</span>
     </span>
   );
@@ -240,7 +241,7 @@ function RankBoard({ title, icon, rows, unit, empty, note, renderMeta, modalTitl
         </span>
         {hasMore && (
           <button className="clb-rb-more" onClick={() => setOpen(true)}>
-            More <span aria-hidden="true">›</span>
+            {tr("More")} <span aria-hidden="true">›</span>
           </button>
         )}
       </div>
@@ -257,8 +258,8 @@ function RankBoard({ title, icon, rows, unit, empty, note, renderMeta, modalTitl
             <div className="clb-modal-head">
               {/* The card title says "Top 5"; the dialog is showing ten, so it
                   must not repeat a number that is now wrong. */}
-              <h4 className="clb-rb-title">{icon} {modalTitle || title} — top {list.length}</h4>
-              <button className="clb-modal-x" onClick={() => setOpen(false)} aria-label="Close">×</button>
+              <h4 className="clb-rb-title">{icon} {modalTitle || title} {tr("— top")} {list.length}</h4>
+              <button className="clb-modal-x" onClick={() => setOpen(false)} aria-label={tr("Close")}>×</button>
             </div>
             <ol className="clb-rb-list">{list.map(r => <Row key={r.id} r={r} />)}</ol>
           </div>
@@ -282,7 +283,7 @@ function OverallRail({ rows, total, scopeLabel, onPick }) {
       <div className="clb-rb-head clb-rail-head">
         <span className="clb-rb-icon" aria-hidden="true">👥</span>
         <span className="clb-rb-headtext">
-          <h4 className="clb-rb-title">Overall Students</h4>
+          <h4 className="clb-rb-title">{tr("Overall Students")}</h4>
           <p className="clb-rb-note">{scopeLabel}</p>
         </span>
         <span className="clb-rail-count">{total}</span>
@@ -304,7 +305,7 @@ function OverallRail({ rows, total, scopeLabel, onPick }) {
                 className="clb-rail-hit"
                 onClick={() => onPick && onPick(r.id)}
                 disabled={!onPick}
-                aria-label={`${r.name} — ${r.score} points, see habit breakdown`}
+                aria-label={tr("{name} — {score} points, see habit breakdown", { name: r.name, score: r.score })}
               >
                 <span className="clb-rb-rank">{rankLabel(r.rank)}</span>
                 <Avatar row={r} size={28} />
@@ -377,7 +378,7 @@ function Podium({ rows }) {
               </span>
             </div>
             <div className="clb-tr-name">{r.name}<StarMark stars={r.stars} />{r.isMe && <em className="clb-you"> you</em>}</div>
-            <div className="clb-tr-score">{r.score}<small> pts</small></div>
+            <div className="clb-tr-score">{r.score}<small> {tr("pts")}</small></div>
           </div>
         );
       })}
@@ -400,7 +401,7 @@ function NextBadge({ badge }) {
       <span className="clb-nextup-icon" aria-hidden="true">{badge.icon}</span>
       <div className="clb-nextup-body">
         <div className="clb-nextup-top">
-          <span className="clb-nextup-lead">Closest badge</span>
+          <span className="clb-nextup-lead">{tr("Closest badge")}</span>
           <strong className="clb-nextup-label">{badge.label}</strong>
         </div>
         {typeof badge.remaining === 'number' ? (
@@ -409,7 +410,7 @@ function NextBadge({ badge }) {
               <span className="clb-nextup-fill" style={{ width: `${pct}%` }} />
             </div>
             <div className="clb-nextup-foot">
-              <strong>{badge.remaining} to go</strong>
+              <strong>{badge.remaining} {tr("to go")}</strong>
               <span> · {badge.have}/{badge.need} — {badge.hint}</span>
             </div>
           </>
@@ -446,13 +447,13 @@ function ComponentBreakdown({ row, onClose }) {
 
   return (
     <div className="clb-modal" role="dialog" aria-modal="true"
-         aria-label={`${row.name} — habit breakdown`} onClick={onClose}>
+         aria-label={tr("{name} — habit breakdown", { name: row.name })} onClick={onClose}>
       <div className="clb-modal-card" onClick={e => e.stopPropagation()}>
         <div className="clb-modal-head">
           <h4 className="clb-rb-title">
-            {row.name} — {row.score} pts <small className="clb-bd-rank">#{row.rank}</small>
+            {row.name} — {row.score} {tr("pts")} <small className="clb-bd-rank">#{row.rank}</small>
           </h4>
-          <button className="clb-modal-x" onClick={onClose} aria-label="Close">×</button>
+          <button className="clb-modal-x" onClick={onClose} aria-label={tr("Close")}>×</button>
         </div>
 
         <ul className="clb-bd-list">
@@ -461,7 +462,7 @@ function ComponentBreakdown({ row, onClose }) {
               <span className="clb-bd-icon" aria-hidden="true">{p.icon}</span>
               <span className="clb-bd-label">
                 {p.label}
-                <small className="clb-bd-weight">{p.weight}% of score</small>
+                <small className="clb-bd-weight">{p.weight}{tr("% of score")}</small>
               </span>
               <span className="clb-bd-bar">
                 <span className="clb-bd-fill" style={{ width: `${p.pct}%` }} />
@@ -476,7 +477,7 @@ function ComponentBreakdown({ row, onClose }) {
         {/* One sentence of advice beats four bars the reader has to interpret. */}
         {weakest && weakest.pct < 100 && (
           <p className="clb-bd-tip">
-            Biggest gain right now: <strong>{weakest.label.toLowerCase()}</strong> — {weakest.hint.toLowerCase()}.
+            {tr("Biggest gain right now:")} <strong>{weakest.label.toLowerCase()}</strong> — {weakest.hint.toLowerCase()}.
           </p>
         )}
       </div>
@@ -501,27 +502,27 @@ function MyStanding({ me, total, rows, onExplain }) {
       <div className="clb-standing-head">
         <span className="clb-standing-name">{me.name}</span>
         <span className="clb-standing-rank">
-          Rank <strong>{me.rank}</strong> <span className="clb-standing-of">of {total}</span>
+          {tr("Rank")} <strong>{me.rank}</strong> <span className="clb-standing-of">{tr("of")} {total}</span>
         </span>
       </div>
 
       <div className="clb-standing-grid">
         <div className="clb-fact">
           <span className="clb-fact-num">{pts}</span>
-          <span className="clb-fact-lab">Total points</span>
+          <span className="clb-fact-lab">{tr("Total points")}</span>
         </div>
 
         <div className="clb-fact is-climb">
           <span className="clb-fact-num">{above ? `+${gapUp}` : '—'}</span>
           <span className="clb-fact-lab">
-            {above ? <>to pass <strong>{above.name}</strong> (#{above.rank})</> : 'You are top of the class'}
+            {above ? <>{tr("to pass")} <strong>{above.name}</strong> (#{above.rank})</> : tr('You are top of the class')}
           </span>
           {/* The gap says HOW MUCH; this says WHERE from. Without it the only
               conclusion a child can draw from "+7" is "try harder", which is
               not an instruction. */}
           {onExplain && (
             <button type="button" className="clb-fact-link" onClick={onExplain}>
-              Where do I gain points? ›
+              {tr("Where do I gain points? ›")}
             </button>
           )}
         </div>
@@ -534,7 +535,7 @@ function MyStanding({ me, total, rows, onExplain }) {
           <span className="clb-fact-lab">
             {(me.stars || 0) >= 5
               ? 'All five stars earned'
-              : <>Stars earned — <strong>one per month</strong> for a full month of work</>}
+              : <>{tr("Stars earned —")} <strong>{tr("one per month")}</strong> {tr("for a full month of work")}</>}
           </span>
         </div>
       </div>
@@ -580,7 +581,7 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
       : `/api/coach/leaderboard/my/${coachId}?period=${period}`;
     api.get(url)
       .then(res => { if (!cancelled) setData(res.data); })
-      .catch(() => { if (!cancelled) setError('Could not load the leaderboard.'); })
+      .catch(() => { if (!cancelled) setError(tr('Could not load the leaderboard.')); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [coachId, period, isCoach]);
@@ -618,13 +619,13 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
         <div>
           {/* The coach page's own <h1> already says "Leaderboard", so repeating
               it here just stacked two near-identical titles. */}
-          {!isCoach && <h3 className="clb-title">🏆 Class Leaderboard</h3>}
+          {!isCoach && <h3 className="clb-title">{tr("🏆 Class Leaderboard")}</h3>}
           <p className="clb-sub">
             {/* The API says what the board is actually scoped to. For an admin
                 coach that is the student's BATCH, not the whole academy, so
                 labelling it "X's class" there would be a lie. */}
-            {isCoach ? 'Your class' : (data.scope || (coachName ? `${coachName}'s class` : 'Your class'))} · {data.overall?.totalStudents || 0} active
-            {' '}student{(data.overall?.totalStudents || 0) === 1 ? '' : 's'}
+            {isCoach ? tr('Your class') : (data.scope || (coachName ? tr("{coachName}'s class", { coachName: coachName }) : tr('Your class')))} · {data.overall?.totalStudents || 0} active
+            {' '}{tr("student")}{(data.overall?.totalStudents || 0) === 1 ? '' : 's'}
           </p>
         </div>
 
@@ -636,7 +637,7 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
               Note the targets differ per window (services/coachLeaderboard.js
               TARGETS), so week scores are not a slice of the month — they are
               scored against a smaller bar, which is the intended behaviour. */}
-          <div className="clb-period" role="group" aria-label="Time window">
+          <div className="clb-period" role="group" aria-label={tr("Time window")}>
             {[['week', 'Week'], ['month', 'Month']].map(([key, label]) => (
               <button
                 key={key}
@@ -698,7 +699,7 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
         <OverallRail
           rows={rows}
           total={data.overall?.totalStudents || rows.length}
-          scopeLabel={isCoach ? 'Your class' : (data.scope || 'Your class')}
+          scopeLabel={isCoach ? tr('Your class') : (data.scope || tr('Your class'))}
           onPick={setBreakdownId}
         />
 
@@ -711,22 +712,22 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
             </h4>
             <div className="clb-two">
               <RankBoard
-                title="Top 5 Students" icon="🏅" modalTitle="Most Engaged" tone="gold"
+                title={tr("Top 5 Students")} icon="🏅" modalTitle="Most Engaged" tone="gold"
                 rows={pm.engagement} unit="pts"
                 note="Most engaged overall last month"
                 empty="Last month has no results yet."
               />
               <RankBoard
-                title="Star Students" icon="🌟" tone="star"
+                title={tr("Star Students")} icon="🌟" tone="star"
                 rows={pm.stars} unit="pts"
                 note="Attendance + all homework + joined class activities"
                 empty="No star students last month yet."
                 renderMeta={r => (
                   <>
-                    {r.perfectAttendance && <span className="clb-tag is-good">100% classes</span>}
-                    {r.allAssignments && <span className="clb-tag">All homework</span>}
+                    {r.perfectAttendance && <span className="clb-tag is-good">{tr("100% classes")}</span>}
+                    {r.allAssignments && <span className="clb-tag">{tr("All homework")}</span>}
                     {!r.perfectAttendance && !r.allAssignments && (
-                      <span className="clb-tag is-dim">{r.classes} classes · {r.assignmentsDone}/{r.assignmentsSet} homework</span>
+                      <span className="clb-tag is-dim">{r.classes} {tr("classes ·")} {r.assignmentsDone}/{r.assignmentsSet} {tr("homework")}</span>
                     )}
                   </>
                 )}
@@ -736,24 +737,24 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
 
           <div className="clb-two">
             <RankBoard
-              title="Classroom Activities" icon="🏫" tone="class"
+              title={tr("Classroom Activities")} icon="🏫" tone="class"
               rows={boards.classroom} unit="joined"
               note="Races, tournaments and live classes your coach ran"
-              empty={`No class activities yet ${windowWord}.`}
+              empty={tr("No class activities yet {windowWord}.", { windowWord: windowWord })}
             />
             <RankBoard
-              title="Tournaments" icon="🏆" tone="cup"
+              title={tr("Tournaments")} icon="🏆" tone="cup"
               rows={boards.tournaments} unit="played"
               note="Tournaments, races and team races entered"
-              empty={`No tournaments yet ${windowWord}.`}
+              empty={tr("No tournaments yet {windowWord}.", { windowWord: windowWord })}
             />
           </div>
 
           <RankBoard
-            title="Assignments" icon="📝" tone="work"
+            title={tr("Assignments")} icon="📝" tone="work"
             rows={boards.assignments} unit="done"
             note="Most homework finished — accuracy breaks ties"
-            empty={`No finished assignments yet ${windowWord}.`}
+            empty={tr("No finished assignments yet {windowWord}.", { windowWord: windowWord })}
             renderMeta={r => <span className="clb-tag is-dim">{r.accuracy}% accuracy</span>}
           />
 
@@ -762,18 +763,18 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
       {!isCoach && (
       <div className="clb-block">
         <h4 className="clb-block-title">
-          Your badges
+          {tr("Your badges")}
           <span className="clb-badge-count">{badges.earned.length}/{badges.earned.length + badges.locked.length}</span>
         </h4>
         <p className="clb-sub clb-sub-tight">
-          Earned from your last {period === 'week' ? 7 : 30} days. Badges are yours alone — everyone can earn every one.
+          {tr("Earned from your last")} {period === 'week' ? 7 : 30} {tr("days. Badges are yours alone — everyone can earn every one.")}
         </p>
         <div className="clb-badges">
           {badges.earned.map(b => (
             <span key={b.id} className="clb-badge is-earned" title={b.hint}>
               <span className="clb-badge-icon">{b.icon}</span>
               <span className="clb-badge-label">{b.label}</span>
-              <span className="clb-badge-got">Earned</span>
+              <span className="clb-badge-got">{tr("Earned")}</span>
             </span>
           ))}
           {/* Locked badges stay visible WITH their requirement and how far along

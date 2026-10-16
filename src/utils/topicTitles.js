@@ -1,3 +1,5 @@
+import { t as tr } from '../i18n/LanguageContext';
+
 // Map of topic IDs to human-readable display titles
 // Must match the id field in the Topic collection
 export const TOPIC_TITLES = {
@@ -23,5 +25,5 @@ export const TOPIC_TITLES = {
 /** Returns the human-readable title for a topic ID, or the ID itself as fallback */
 export function getTopicTitle(topicId) {
   if (!topicId) return '';
-  return TOPIC_TITLES[topicId] || topicId;
+  return TOPIC_TITLES[topicId] ? tr(TOPIC_TITLES[topicId]) : topicId;
 }

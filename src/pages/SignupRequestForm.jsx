@@ -5,6 +5,7 @@ import { validateUsername, USERNAME_HINT } from '../utils/usernameRules';
 import { trackEvent } from '../lib/analytics';
 import { useNavigate, useLocation } from "react-router-dom";
 import "./SignupRequestForm.css";
+import { t as tr } from '../i18n/LanguageContext';
 
 const countries = [
   "United States", "Canada", "United Kingdom", "India", "Australia",
@@ -121,14 +122,14 @@ function SignupRequestForm() {
       <div className="signup-request-page">
         <div className="signup-success">
           <div className="success-icon">✓</div>
-          <h1>Account Created Successfully!</h1>
+          <h1>{tr("Account Created Successfully!")}</h1>
           <p>
-            Welcome to <strong>Chess Nexus</strong>,{' '}
+            {tr("Welcome to")} <strong>{tr("Chess Nexus")}</strong>,{' '}
             <strong style={{ color: 'var(--color-accent-2)' }}>{formData.username}</strong>!
             Your account is ready — you can log in now.
           </p>
           <button className="btn-primary" style={{ marginTop: 24 }} onClick={() => nav("/login")}>
-            Login Now
+            {tr("Login Now")}
           </button>
         </div>
       </div>
@@ -140,26 +141,26 @@ function SignupRequestForm() {
       <div className="signup-form-container">
         <div className="form-header">
           <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-            <img src="/logo.png" alt="Chess Nexus" style={{ height: 34, width: 'auto', objectFit: 'contain' }} />
-            <span>Join Chess Nexus</span>
+            <img src="/logo.png" alt={tr("Chess Nexus")} style={{ height: 34, width: 'auto', objectFit: 'contain' }} />
+            <span>{tr("Join Chess Nexus")}</span>
           </h1>
-          <p>Request an account to start your chess journey!</p>
+          <p>{tr("Request an account to start your chess journey!")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="signup-form">
           <div className="form-section">
-            <h3>Personal Information</h3>
+            <h3>{tr("Personal Information")}</h3>
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="username">Username *</label>
+                <label htmlFor="username">{tr("Username *")}</label>
                 <input
                   type="text"
                   id="username"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="Choose a unique username"
+                  placeholder={tr("Choose a unique username")}
                   className={errors.username ? "error" : ""}
                 />
                 {errors.username && <span className="error-msg">{errors.username}</span>}
@@ -167,14 +168,14 @@ function SignupRequestForm() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="displayName">Display Name *</label>
+                <label htmlFor="displayName">{tr("Display Name *")}</label>
                 <input
                   type="text"
                   id="displayName"
                   name="displayName"
                   value={formData.displayName}
                   onChange={handleChange}
-                  placeholder="Name shown to others"
+                  placeholder={tr("Name shown to others")}
                   className={errors.displayName ? "error" : ""}
                 />
                 {errors.displayName && <span className="error-msg">{errors.displayName}</span>}
@@ -182,14 +183,14 @@ function SignupRequestForm() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email *</label>
+              <label htmlFor="email">{tr("Email *")}</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="your@email.com"
+                placeholder={tr("your@email.com")}
                 className={errors.email ? "error" : ""}
               />
               {errors.email && <span className="error-msg">{errors.email}</span>}
@@ -197,29 +198,29 @@ function SignupRequestForm() {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="password">Password *</label>
+                <label htmlFor="password">{tr("Password *")}</label>
                 <input
                   type="password"
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Create a strong password"
+                  placeholder={tr("Create a strong password")}
                   className={errors.password ? "error" : ""}
                 />
                 {errors.password && <span className="error-msg">{errors.password}</span>}
-                <small>Minimum 8 characters</small>
+                <small>{tr("Minimum 8 characters")}</small>
               </div>
 
               <div className="form-group">
-                <label htmlFor="confirmPassword">Confirm Password *</label>
+                <label htmlFor="confirmPassword">{tr("Confirm Password *")}</label>
                 <input
                   type="password"
                   id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Re-enter password"
+                  placeholder={tr("Re-enter password")}
                   className={errors.confirmPassword ? "error" : ""}
                 />
                 {errors.confirmPassword && <span className="error-msg">{errors.confirmPassword}</span>}
@@ -228,7 +229,7 @@ function SignupRequestForm() {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="country">Country *</label>
+                <label htmlFor="country">{tr("Country *")}</label>
                 <select
                   id="country"
                   name="country"
@@ -236,7 +237,7 @@ function SignupRequestForm() {
                   onChange={handleChange}
                   className={errors.country ? "error" : ""}
                 >
-                  <option value="">Select a country</option>
+                  <option value="">{tr("Select a country")}</option>
                   {countries.map((country) => (
                     <option key={country} value={country}>{country}</option>
                   ))}
@@ -259,10 +260,10 @@ function SignupRequestForm() {
 
           <div className="form-actions">
             <button type="button" className="btn-secondary" onClick={() => nav("/")}>
-              Cancel
+              {tr("Cancel")}
             </button>
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? "Signing up..." : "Sign Up"}
+              {loading ? tr("Signing up...") : tr("Sign Up")}
             </button>
           </div>
         </form>

@@ -6,6 +6,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import './StudyMovesCard.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // "N." before a White move; "N…" before a Black move when forced (line start,
 // or straight after a sideline).
@@ -17,7 +18,7 @@ const numberOf = (nodes, node) => {
 export default function StudyMovesCard({
   tree, currentId, accentColor, onSelect, onComment,
   onFirst, onPrev, onNext, onLast,
-  headExtra, footExtra, emptyText,
+  headExtra, footExtra, emptyText, compact = false,
 }) {
   const { nodes, rootId } = tree;
   const listRef = useRef(null);
@@ -35,7 +36,7 @@ export default function StudyMovesCard({
       data-on={node.id === currentId ? '1' : undefined}
       onClick={() => onSelect(node.id)}
       onDoubleClick={onComment ? () => onComment(node.id) : undefined}
-      title={onComment ? 'Double-click to comment' : undefined}
+      title={onComment ? tr('Double-click to comment') : undefined}
     >
       {node.san}
     </button>
@@ -122,9 +123,9 @@ export default function StudyMovesCard({
   const atEnd = !nodes[currentId]?.children.length;
 
   return (
-    <div className="sm-moves" style={{ '--sm-accent': accentColor }}>
+    <div className={`sm-moves${compact ? ' sm-compact' : ''}`} style={{ '--sm-accent': accentColor }}>
       <div className="sm-moves-head">
-        <span className="sm-moves-title">Moves</span>
+        <span className="sm-moves-title">{tr("Moves")}</span>
         {headExtra}
       </div>
       <div className="sm-moves-list" ref={listRef}>
@@ -132,10 +133,10 @@ export default function StudyMovesCard({
       </div>
       <div className="sm-moves-foot">
         <span className="sm-moves-nav">
-          <button className="sm-nav-btn" onClick={onFirst} disabled={atStart} title="Start">⏮</button>
-          <button className="sm-nav-btn" onClick={onPrev} disabled={atStart} title="Previous move">◀</button>
-          <button className="sm-nav-btn" onClick={onNext} disabled={atEnd} title="Next move">▶</button>
-          <button className="sm-nav-btn" onClick={onLast} disabled={atEnd} title="End of line">⏭</button>
+          <button className="sm-nav-btn" onClick={onFirst} disabled={atStart} title={tr("Start")}>⏮</button>
+          <button className="sm-nav-btn" onClick={onPrev} disabled={atStart} title={tr("Previous move")}>◀</button>
+          <button className="sm-nav-btn" onClick={onNext} disabled={atEnd} title={tr("Next move")}>▶</button>
+          <button className="sm-nav-btn" onClick={onLast} disabled={atEnd} title={tr("End of line")}>⏭</button>
         </span>
         {footExtra}
       </div>

@@ -9,6 +9,7 @@ import api from '../../api';
 import ExpiryReminder from '../../components/ExpiryReminder';
 import './AcademyDashboard.css';
 import { useChartTheme } from '../../lib/chartTheme';
+import { t as tr } from '../../i18n/LanguageContext';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend);
 
@@ -19,9 +20,9 @@ const CHART_OPTS = {
 };
 
 const PERIODS = [
-  { key: 'week', label: 'This week' },
-  { key: 'month', label: 'This month' },
-  { key: '3mo', label: 'Last 3 months' },
+  { key: 'week', label: tr('This week') },
+  { key: 'month', label: tr('This month') },
+  { key: '3mo', label: tr('Last 3 months') },
 ];
 
 // Shorten bucket labels for the x-axis.
@@ -34,7 +35,7 @@ function shortLabel(label, grain) {
     return new Date(y, m - 1, 1).toLocaleString(undefined, { month: 'short' });
   }
   const [, m, d] = label.split('-');
-  return grain === 'week' ? `wk ${Number(d)}/${Number(m)}` : `${Number(d)}/${Number(m)}`;
+  return grain === 'week' ? tr("wk {v0}/{v1}", { v0: Number(d), v1: Number(m) }) : `${Number(d)}/${Number(m)}`;
 }
 
 export default function AcademyDashboard() {
@@ -67,10 +68,10 @@ export default function AcademyDashboard() {
   useEffect(() => { load(); }, []); // eslint-disable-line
 
   const releaseCoach = async (coachId, name) => {
-    if (!window.confirm(`Release ${name} as an individual coach? They'll revert to the free plan (keeping their students) and leave your academy.`)) return;
+    if (!window.confirm(tr("Release {name} as an individual coach? They'll revert to the free plan (keeping their students) and leave your academy.", { name: name }))) return;
     try {
       await api.delete(`/api/academy/members/${coachId}`);
-      setMsg(`${name} released as an individual coach.`);
+      setMsg(tr("{name} released as an individual coach.", { name: name }));
       setLeaveReqs(rs => rs.filter(r => r.coachId !== coachId));
       load();
     } catch (e) {
@@ -80,7 +81,7 @@ export default function AcademyDashboard() {
 
   const changePeriod = (p) => { setPeriod(p); load(p); };
 
-  if (loading && !data) return <div className="acad-wrap"><div className="acad-empty">Loading overview…</div></div>;
+  if (loading && !data) return <div className="acad-wrap"><div className="acad-empty">{tr("Loading overview…")}</div></div>;
   if (err && !data) return <div className="acad-wrap"><div className="acad-error">⚠️ {err}</div></div>;
   if (!data) return null;
 
@@ -88,16 +89,16 @@ export default function AcademyDashboard() {
   const grain = graphs?.grain || 'day';
   const labels = (graphs?.students || []).map(p => shortLabel(p.label, grain));
   const col = (arr) => (arr || []).map(p => p.count);
-  const barData = { labels, datasets: [{ label: 'Students joined', data: col(graphs?.students), backgroundColor: 'rgba(6,182,212,0.6)', borderRadius: 'var(--radius-sm)' }] };
-  const lineData = { labels, datasets: [{ label: 'Classes', data: col(graphs?.classes), borderColor: chartColors.success, backgroundColor: chartColors.successFill, fill: true, tension: 0.3 }] };
-  const activityData = { labels, datasets: [{ label: 'Activities', data: col(graphs?.activities), backgroundColor: 'rgba(167,139,250,0.6)', borderRadius: 'var(--radius-sm)' }] };
+  const barData = { labels, datasets: [{ label: tr('Students joined'), data: col(graphs?.students), backgroundColor: 'rgba(6,182,212,0.6)', borderRadius: 'var(--radius-sm)' }] };
+  const lineData = { labels, datasets: [{ label: tr('Classes'), data: col(graphs?.classes), borderColor: chartColors.success, backgroundColor: chartColors.successFill, fill: true, tension: 0.3 }] };
+  const activityData = { labels, datasets: [{ label: tr('Activities'), data: col(graphs?.activities), backgroundColor: 'rgba(167,139,250,0.6)', borderRadius: 'var(--radius-sm)' }] };
   const fee = graphs?.feeRequests || {};
   const feeData = {
     labels,
     datasets: [
-      { label: 'Pending', data: col(fee.pending), backgroundColor: 'rgba(245,158,11,0.7)', stack: 'f' },
-      { label: 'Paid', data: col(fee.approved), backgroundColor: 'rgba(16,185,129,0.7)', stack: 'f' },
-      { label: 'Rejected', data: col(fee.rejected), backgroundColor: 'rgba(239,68,68,0.6)', stack: 'f' },
+      { label: tr('Pending'), data: col(fee.pending), backgroundColor: 'rgba(245,158,11,0.7)', stack: 'f' },
+      { label: tr('Paid'), data: col(fee.approved), backgroundColor: 'rgba(16,185,129,0.7)', stack: 'f' },
+      { label: tr('Rejected'), data: col(fee.rejected), backgroundColor: 'rgba(239,68,68,0.6)', stack: 'f' },
     ],
   };
   const stackedOpts = { ...CHART_OPTS, plugins: { legend: { display: true, position: 'bottom', labels: { color: 'var(--color-text-muted)', boxWidth: 12, font: { size: 11 } } } }, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } } };
@@ -108,7 +109,7 @@ export default function AcademyDashboard() {
       <div className="acad-head">
         <div>
           <h1>🏛️ {academy.name}</h1>
-          <div className="acad-code">Academy code: <strong>{academy.academyCode}</strong></div>
+          <div className="acad-code">{tr("Academy code:")} <strong>{academy.academyCode}</strong></div>
         </div>
         <div className="acad-period-toggle">
           {PERIODS.map(p => (
@@ -134,8 +135,8 @@ export default function AcademyDashboard() {
       {data.isOwner && data.pendingRequests > 0 && (
         <div className="acad-req" style={{ borderColor: 'var(--color-accent-a30)', background: 'var(--color-accent-a08)' }}>
           <div className="acad-req-row">
-            <span>🔔 <strong>{data.pendingRequests}</strong> coach{data.pendingRequests === 1 ? '' : 'es'} requesting to join your academy</span>
-            <Link to="/academy/coaches" className="acad-req-approve" style={{ textDecoration: 'none' }}>Review →</Link>
+            <span>🔔 <strong>{data.pendingRequests}</strong> {tr("coach")}{data.pendingRequests === 1 ? '' : 'es'} {tr("requesting to join your academy")}</span>
+            <Link to="/academy/coaches" className="acad-req-approve" style={{ textDecoration: 'none' }}>{tr("Review →")}</Link>
           </div>
         </div>
       )}
@@ -143,12 +144,12 @@ export default function AcademyDashboard() {
       {/* Coaches who asked to leave (become individual) — review + release */}
       {data.isOwner && leaveReqs.length > 0 && (
         <div className="acad-req">
-          <h3>🔔 {leaveReqs.length} coach{leaveReqs.length === 1 ? '' : 'es'} asked to become individual</h3>
+          <h3>🔔 {leaveReqs.length} {tr("coach")}{leaveReqs.length === 1 ? '' : 'es'} {tr("asked to become individual")}</h3>
           {leaveReqs.map(r => (
             <div key={r.id} className="acad-req-row">
-              <span>{r.name} — wants to leave your academy</span>
+              <span>{r.name} {tr("— wants to leave your academy")}</span>
               <div className="acad-req-btns">
-                <button className="acad-req-approve" onClick={() => releaseCoach(r.coachId, r.name)}>Release</button>
+                <button className="acad-req-approve" onClick={() => releaseCoach(r.coachId, r.name)}>{tr("Release")}</button>
               </div>
             </div>
           ))}
@@ -157,28 +158,28 @@ export default function AcademyDashboard() {
 
       {/* KPI cards */}
       <div className="acad-kpis">
-        <div className="acad-kpi"><div className="acad-kpi-v">{kpis.totalCoaches}</div><div className="acad-kpi-l">Coaches</div></div>
-        <div className="acad-kpi"><div className="acad-kpi-v">{kpis.totalStudents}</div><div className="acad-kpi-l">Students</div></div>
-        <div className="acad-kpi"><div className="acad-kpi-v">{kpis.studentsJoinedInPeriod}</div><div className="acad-kpi-l">Joined {periodLabel}</div></div>
-        <div className="acad-kpi"><div className="acad-kpi-v">{kpis.classesInPeriod}</div><div className="acad-kpi-l">Classes {periodLabel}</div></div>
+        <div className="acad-kpi"><div className="acad-kpi-v">{kpis.totalCoaches}</div><div className="acad-kpi-l">{tr("Coaches")}</div></div>
+        <div className="acad-kpi"><div className="acad-kpi-v">{kpis.totalStudents}</div><div className="acad-kpi-l">{tr("Students")}</div></div>
+        <div className="acad-kpi"><div className="acad-kpi-v">{kpis.studentsJoinedInPeriod}</div><div className="acad-kpi-l">{tr("Joined")} {periodLabel}</div></div>
+        <div className="acad-kpi"><div className="acad-kpi-v">{kpis.classesInPeriod}</div><div className="acad-kpi-l">{tr("Classes")} {periodLabel}</div></div>
       </div>
 
       {/* Graphs */}
       <div className="acad-charts">
         <div className="acad-chart-card">
-          <h3>Students joined ({periodLabel})</h3>
+          <h3>{tr("Students joined (")}{periodLabel})</h3>
           <div className="acad-chart"><Bar data={barData} options={CHART_OPTS} /></div>
         </div>
         <div className="acad-chart-card">
-          <h3>Classes taken ({periodLabel})</h3>
+          <h3>{tr("Classes taken (")}{periodLabel})</h3>
           <div className="acad-chart"><Line data={lineData} options={CHART_OPTS} /></div>
         </div>
         <div className="acad-chart-card">
-          <h3>Coach activities ({periodLabel})</h3>
+          <h3>{tr("Coach activities (")}{periodLabel})</h3>
           <div className="acad-chart"><Bar data={activityData} options={CHART_OPTS} /></div>
         </div>
         <div className="acad-chart-card">
-          <h3>Fee requests by status ({periodLabel})</h3>
+          <h3>{tr("Fee requests by status (")}{periodLabel})</h3>
           <div className="acad-chart"><Bar data={feeData} options={stackedOpts} /></div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './HomeSidebar.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function HomeSidebar() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -50,7 +51,7 @@ export default function HomeSidebar() {
         <button 
           className="home-sidebar-toggle"
           onClick={() => setIsExpanded(!isExpanded)}
-          aria-label="Toggle menu"
+          aria-label={tr("Toggle menu")}
         >
           <span className="hamburger-line"></span>
           <span className="hamburger-line"></span>
@@ -61,7 +62,7 @@ export default function HomeSidebar() {
       {/* Sidebar */}
       <div className={`home-sidebar ${isExpanded ? 'expanded' : ''} ${isMobile ? 'mobile' : ''}`}>
         <div className="home-sidebar-header">
-          <h2 className="home-sidebar-title">Chess Nexus</h2>
+          <h2 className="home-sidebar-title">{tr("Chess Nexus")}</h2>
         </div>
 
         <nav className="home-sidebar-nav">
@@ -69,61 +70,61 @@ export default function HomeSidebar() {
             className={`home-sidebar-link ${location.pathname === '/' ? 'active' : ''}`}
             onClick={() => handleNavigate('/')}
           >
-            🏠 Home
+            {tr("🏠 Home")}
           </button>
 
           <button 
             className="home-sidebar-link"
             onClick={() => scrollToSection('features')}
           >
-            🎯 Features
+            {tr("🎯 Features")}
           </button>
 
           <button 
             className="home-sidebar-link"
             onClick={() => scrollToSection('about')}
           >
-            ℹ️ About
+            {tr("ℹ️ About")}
           </button>
 
           <button 
             className="home-sidebar-link"
             onClick={() => handleNavigate('/contest-rules')}
           >
-            📋 Rules
+            {tr("📋 Rules")}
           </button>
 
           <button 
             className="home-sidebar-link"
             onClick={() => handleNavigate('/contact')}
           >
-            📞 Contact
+            {tr("📞 Contact")}
           </button>
 
           <button 
             className="home-sidebar-link"
             onClick={() => handleNavigate('/event')}
           >
-            🎫 Events
+            {tr("🎫 Events")}
           </button>
 
           <button 
             className="home-sidebar-link login-link"
             onClick={() => handleNavigate('/login')}
           >
-            🔐 Login
+            {tr("🔐 Login")}
           </button>
 
           <button 
             className="home-sidebar-link signup-link"
             onClick={() => handleNavigate('/signup-request')}
           >
-            📝 Sign Up
+            {tr("📝 Sign Up")}
           </button>
         </nav>
 
         <div className="home-sidebar-footer">
-          <p>Improve your chess skills!</p>
+          <p>{tr("Improve your chess skills!")}</p>
         </div>
       </div>
 

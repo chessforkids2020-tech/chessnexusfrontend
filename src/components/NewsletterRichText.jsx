@@ -34,7 +34,7 @@ const ReactQuill = lazy(() => import('react-quill'));
 
 const FORMATS = [
   'header', 'bold', 'italic', 'underline',
-  'list', 'bullet', 'blockquote', 'link', 'image',
+  'list', 'bullet', 'blockquote', 'link', 'image', 'alt',
 ];
 
 export default function NewsletterRichText({ value, onChange, placeholder, onUpload }) {

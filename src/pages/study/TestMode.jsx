@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import Chessboard from '../../components/Chessboard';
 import { Chess } from 'chess.js';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -113,7 +114,7 @@ const TestMode = () => {
 
       // Handle wrong move - skip to next puzzle
       if (response.data.wrongMove) {
-        setMessage('✗ Wrong move! Moving to next puzzle...');
+        setMessage(tr('✗ Wrong move! Moving to next puzzle...'));
         setWaitingForStockfish(false);
         
         if (response.data.completed) {
@@ -184,7 +185,7 @@ const TestMode = () => {
       setPuzzleNumber(response.data.currentPuzzle?.puzzleNumber ?? (response.data.puzzleIndex ? response.data.puzzleIndex + 1 : puzzleNumber + 1));
       loadPuzzle(response.data.currentPuzzle);
     } catch (err) {
-      setMessage('Error loading next puzzle');
+      setMessage(tr('Error loading next puzzle'));
     }
   };
 
@@ -196,7 +197,7 @@ const TestMode = () => {
 
       navigate(`/study/test/result/${response.data.resultId}`);
     } catch (err) {
-      setError('Failed to finish test');
+      setError(tr('Failed to finish test'));
     }
   };
 
@@ -377,7 +378,7 @@ const TestMode = () => {
     return (
       <div style={styles.page}>
         <div style={styles.container}>
-          <div style={styles.loading}>Starting test with Stockfish...</div>
+          <div style={styles.loading}>{tr("Starting test with Stockfish...")}</div>
         </div>
       </div>
     );
@@ -415,7 +416,7 @@ const TestMode = () => {
               e.currentTarget.style.borderColor = 'var(--color-white-a10)';
             }}
           >
-            Back to Selection
+            {tr("Back to Selection")}
           </button>
         </div>
       </div>
@@ -435,11 +436,11 @@ const TestMode = () => {
             {/* Info Section */}
             <div style={styles.infoSection}>
               <div style={styles.puzzleCount}>
-                Puzzle {puzzleNumber}
+                {tr("Puzzle")} {puzzleNumber}
               </div>
               
               <div style={styles.toMove}>
-                {getCurrentTurn()} to Move
+                {getCurrentTurn()} {tr("to Move")}
               </div>
             </div>
 
@@ -462,7 +463,7 @@ const TestMode = () => {
                   e.currentTarget.style.borderColor = 'var(--color-white-a10)';
                 }}
               >
-                Skip Puzzle
+                {tr("Skip Puzzle")}
               </button>
 
               <button
@@ -479,7 +480,7 @@ const TestMode = () => {
                   e.currentTarget.style.borderColor = 'var(--color-white-a10)';
                 }}
               >
-                Back to Studies
+                {tr("Back to Studies")}
               </button>
             </div>
           </div>

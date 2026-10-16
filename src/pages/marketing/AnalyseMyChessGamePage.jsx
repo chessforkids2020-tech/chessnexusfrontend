@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/analyse-my-chess-game";
 
@@ -25,7 +26,7 @@ export default function AnalyseMyChessGamePage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
   const webPageSchema = {
@@ -41,7 +42,7 @@ export default function AnalyseMyChessGamePage() {
     <FeaturePageLayout
       excludeSlug={CANONICAL}
       seo={{
-        title: "Analyse My Chess Game — Free Game Review",
+        title: tr("Analyse My Chess Game — Free Game Review"),
         description:
           "Analyse your chess games free on Chess Nexus. Get a CAPS accuracy score, blunder detection, piece heatmaps, time-pressure analysis and session badges — no ads.",
         keywords:
@@ -52,67 +53,67 @@ export default function AnalyseMyChessGamePage() {
       hero={{
         icon: "🔬",
         h1: "Analyse My Chess Game",
-        sub: "Turn every game into a lesson. Get an instant, move-by-move review with an accuracy score, blunder detection, a piece heatmap, time-pressure insights and badges — free, no ads.",
-        primary: { label: "Analyse a Game", to: "/game-analysis" },
-        secondary: { label: "Browse all features", to: "/features" },
+        sub: tr("Turn every game into a lesson. Get an instant, move-by-move review with an accuracy score, blunder detection, a piece heatmap, time-pressure insights and badges — free, no ads."),
+        primary: { label: tr("Analyse a Game"), to: "/game-analysis" },
+        secondary: { label: tr("Browse all features"), to: "/features" },
       }}
     >
       <section className="mkt-section">
         <div className="mkt-split mkt-split-reverse">
           <div className="mkt-split-media">
-            <img src="/features/analysis.png" alt="Analyse My Chess Game — free game review" loading="lazy" width="220" height="220" />
+            <img src="/features/analysis.png" alt={tr("Analyse My Chess Game — free game review")} loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
-            <h2>What your game review shows</h2>
+            <h2>{tr("What your game review shows")}</h2>
             <p>
-              Five clear views of your play, so you know exactly what to work on next.
+              {tr("Five clear views of your play, so you know exactly what to work on next.")}
             </p>
             <ul className="mkt-featurelist">
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🎯</span>
                 <span className="mkt-feat-tx">
-                  <strong>CAPS accuracy score</strong>
-                  <span>Measures your average centipawn loss per move and grades the game with clear, colour-coded bands.</span>
+                  <strong>{tr("CAPS accuracy score")}</strong>
+                  <span>{tr("Measures your average centipawn loss per move and grades the game with clear, colour-coded bands.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🚨</span>
                 <span className="mkt-feat-tx">
-                  <strong>Blunder detection</strong>
-                  <span>Every blunder, mistake and inaccuracy flagged move by move — with the better move shown — so you stop repeating them.</span>
+                  <strong>{tr("Blunder detection")}</strong>
+                  <span>{tr("Every blunder, mistake and inaccuracy flagged move by move — with the better move shown — so you stop repeating them.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🔥</span>
                 <span className="mkt-feat-tx">
-                  <strong>Piece heatmap</strong>
-                  <span>Reveals which pieces — pawn, knight, bishop, rook or queen — cost you the most points.</span>
+                  <strong>{tr("Piece heatmap")}</strong>
+                  <span>{tr("Reveals which pieces — pawn, knight, bishop, rook or queen — cost you the most points.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">⏱️</span>
                 <span className="mkt-feat-tx">
-                  <strong>Time-pressure breakdown</strong>
-                  <span>Compares your accuracy at normal speed versus when the clock is low — so you know if you fall apart under pressure.</span>
+                  <strong>{tr("Time-pressure breakdown")}</strong>
+                  <span>{tr("Compares your accuracy at normal speed versus when the clock is low — so you know if you fall apart under pressure.")}</span>
                 </span>
               </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">🏅</span>
                 <span className="mkt-feat-tx">
-                  <strong>Session badges</strong>
-                  <span>Earn Blunder Buster, Endgame Apprentice, Opening Scholar, Precision Master and more — progress tracking that's genuinely fun.</span>
+                  <strong>{tr("Session badges")}</strong>
+                  <span>{tr("Earn Blunder Buster, Endgame Apprentice, Opening Scholar, Precision Master and more — progress tracking that's genuinely fun.")}</span>
                 </span>
               </li>
             </ul>
             <Link to="/game-analysis" className="mkt-card-cta">
-              Score a game →
+              {tr("Score a game →")}
             </Link>
           </div>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Why review your games</h2>
+        <h2>{tr("Why review your games")}</h2>
         <p className="mkt-section-lead">
           The fastest way to improve is to learn from your own games. Instead of
           guessing where things went wrong, Chess Nexus pinpoints your blunders,
@@ -121,16 +122,16 @@ export default function AnalyseMyChessGamePage() {
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
           <Link to="/game-analysis" className="mkt-btn mkt-btn-primary">
-            Review a game now
+            {tr("Review a game now")}
           </Link>
           <Link to="/play" className="mkt-btn mkt-btn-ghost">
-            Play a game first
+            {tr("Play a game first")}
           </Link>
         </div>
       </section>
 
       <section className="mkt-section">
-        <h2>Frequently asked questions</h2>
+        <h2>{tr("Frequently asked questions")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div className="mkt-faq-item" key={q}>

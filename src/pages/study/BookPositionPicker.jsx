@@ -4,6 +4,7 @@ import PieceSelector from '../../components/PositionEditor/PieceSelector';
 import EditableBoard from '../../components/PositionEditor/EditableBoard';
 import FenBar from '../../components/PositionEditor/FenBar';
 import SetupControls from '../../components/PositionEditor/SetupControls';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const EMPTY_FEN = '8/8/8/8/8/8/8/8 w - - 0 1';
@@ -55,11 +56,11 @@ export default function BookPositionPicker({ value, onChange }) {
         <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
           <button type="button" onClick={() => pushFen(EMPTY_FEN)}
             style={{ padding: '8px 14px', background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', color: 'var(--color-danger)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-            🗑 Clear board
+            {tr("🗑 Clear board")}
           </button>
           <button type="button" onClick={() => pushFen(START_FEN)}
             style={{ padding: '8px 14px', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-md)', color: '#0f9d63', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-            ↩ Start position
+            {tr("↩ Start position")}
           </button>
         </div>
         <div style={{ marginTop: 12 }}>

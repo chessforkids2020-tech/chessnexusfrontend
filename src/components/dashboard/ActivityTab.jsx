@@ -7,6 +7,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../api';
 import './DashGames.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Arena games are split by speed; friend and Stockfish games get one row each.
 const GAME_ROWS = [
@@ -14,15 +15,15 @@ const GAME_ROWS = [
   { id: 'blitz', icon: '⚡', label: (k) => `${plural(k, 'blitz game', 'blitz games')}` },
   { id: 'rapid', icon: '🐇', label: (k) => `${plural(k, 'rapid game', 'rapid games')}` },
   { id: 'classical', icon: '🐢', label: (k) => `${plural(k, 'classical game', 'classical games')}` },
-  { id: 'friend', icon: '🤝', label: (k) => `${plural(k, 'game', 'games')} vs friends` },
-  { id: 'stockfish', icon: '🤖', label: (k) => `${plural(k, 'game', 'games')} vs Stockfish` },
+  { id: 'friend', icon: '🤝', label: (k) => tr("{v0} vs friends", { v0: plural(k, 'game', 'games') }) },
+  { id: 'stockfish', icon: '🤖', label: (k) => tr("{v0} vs Stockfish", { v0: plural(k, 'game', 'games') }) },
 ];
 const RATINGS = [
-  { id: 'puzzle', icon: '🧩', label: 'Puzzle' },
-  { id: 'bullet', icon: '🚀', label: 'Bullet' },
-  { id: 'blitz', icon: '⚡', label: 'Blitz' },
-  { id: 'rapid', icon: '🐇', label: 'Rapid' },
-  { id: 'classical', icon: '🐢', label: 'Classical' },
+  { id: 'puzzle', icon: '🧩', label: tr('Puzzle') },
+  { id: 'bullet', icon: '🚀', label: tr('Bullet') },
+  { id: 'blitz', icon: '⚡', label: tr('Blitz') },
+  { id: 'rapid', icon: '🐇', label: tr('Rapid') },
+  { id: 'classical', icon: '🐢', label: tr('Classical') },
 ];
 
 const n = (v) => (v || 0).toLocaleString();
@@ -145,7 +146,7 @@ export default function ActivityTab({ who }) {
         setFeed(d.feed || []);
         setOlder({ before: d.nextBefore, hasOlder: !!d.hasOlder, from: d.from });
       })
-      .catch(() => { if (alive) setError('Could not load activity.'); });
+      .catch(() => { if (alive) setError(tr('Could not load activity.')); });
     return () => { alive = false; };
   }, [who]);
 
@@ -169,35 +170,35 @@ export default function ActivityTab({ who }) {
   };
 
   if (error) return <div className="dg-empty">{error}</div>;
-  if (!data) return <div className="dg-loading">Loading activity…</div>;
+  if (!data) return <div className="dg-loading">{tr("Loading activity…")}</div>;
 
   return (
     <div className="da-wrap">
       {data.ratings && (
-        <div className="da-ratings" aria-label="Current ratings">
+        <div className="da-ratings" aria-label={tr("Current ratings")}>
           {RATINGS.map(r => (
             <div key={r.id} className="da-rating-chip">
               <span className="da-rating-chip-label">{r.icon} {r.label}</span>
-              <span className="da-rating-chip-val">{n(data.ratings[r.id])}</span>
+              <span className="da-rating-chip-val">{data.ratings[r.id] || 0}</span>
             </div>
           ))}
         </div>
       )}
       {feed.length === 0 ? (
         <div className="dg-empty">
-          {older?.hasOlder ? `No activity in the last ${data.feedDays || 30} days.` : 'No activity yet.'}
+          {older?.hasOlder ? tr("No activity in the last {v0} days.", { v0: data.feedDays || 30 }) : tr('No activity yet.')}
         </div>
       ) : (
         <div className="da-table-wrap">
           <table className="da-table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Activity</th>
-                <th className="da-t-num"><span className="da-h-long">✓ Correct / Won</span><span className="da-h-short">✓</span></th>
-                <th className="da-t-num"><span className="da-h-long">½ Draw</span><span className="da-h-short">½</span></th>
-                <th className="da-t-num"><span className="da-h-long">✗ Wrong / Lost</span><span className="da-h-short">✗</span></th>
-                <th className="da-t-num">Rating</th>
+                <th>{tr("Date")}</th>
+                <th>{tr("Activity")}</th>
+                <th className="da-t-num"><span className="da-h-long">{tr("✓ Correct / Won")}</span><span className="da-h-short">✓</span></th>
+                <th className="da-t-num"><span className="da-h-long">{tr("½ Draw")}</span><span className="da-h-short">½</span></th>
+                <th className="da-t-num"><span className="da-h-long">{tr("✗ Wrong / Lost")}</span><span className="da-h-short">✗</span></th>
+                <th className="da-t-num">{tr("Rating")}</th>
               </tr>
             </thead>
             {feed.map(d => <FeedDay key={d.date} day={d} />)}
@@ -206,7 +207,7 @@ export default function ActivityTab({ who }) {
       )}
       {older?.hasOlder && (
         <button type="button" className="dg-more" onClick={loadOlder} disabled={loadingOlder}>
-          {loadingOlder ? 'Loading…' : 'Show older activity'}
+          {loadingOlder ? tr('Loading…') : tr('Show older activity')}
         </button>
       )}
     </div>

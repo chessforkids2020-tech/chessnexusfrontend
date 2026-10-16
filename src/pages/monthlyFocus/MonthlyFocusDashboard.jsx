@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Confetti from 'react-confetti';
 import canvasConfetti from 'canvas-confetti';
 import './MonthlyFocusDashboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // MonthlyFocusAwards moved to MonthlyFocusList.jsx
 
@@ -270,12 +271,12 @@ export default function MonthlyFocusDashboard() {
     } catch (_) {}
 
     const BADGE_DEFS = [
-      { key: 'champion',  icon: '🏆', name: 'Champion',  desc: 'All 7 days completed + 5 perfect scores!', color: 'var(--color-warning)', check: () => perfectDays >= 5 && completedDays >= 7 },
-      { key: 'perfect',   icon: '👑', name: 'Perfect',   desc: 'Perfect score on 5 or more days!',          color: 'var(--color-accent-2)', check: () => perfectDays >= 5 },
-      { key: 'achiever',  icon: '🎯', name: 'Achiever',  desc: 'All 7 days completed — full week warrior!', color: 'var(--color-accent)', check: () => completedDays >= 7 },
-      { key: 'dedicated', icon: '🔥', name: 'Dedicated', desc: '5 days done — you\'re on fire!',            color: '#f97316', check: () => completedDays >= 5 },
-      { key: 'active',    icon: '⭐', name: 'Active',    desc: '3 days completed — showing up daily!',     color: 'var(--color-accent-2)', check: () => completedDays >= 3 },
-      { key: 'beginner',  icon: '🌱', name: 'Beginner',  desc: 'You started your focus journey!',           color: 'var(--color-success)', check: () => completedDays >= 1 },
+      { key: 'champion',  icon: '🏆', name: tr('Champion'),  desc: tr('All 7 days completed + 5 perfect scores!'), color: 'var(--color-warning)', check: () => perfectDays >= 5 && completedDays >= 7 },
+      { key: 'perfect',   icon: '👑', name: tr('Perfect'),   desc: tr('Perfect score on 5 or more days!'),          color: 'var(--color-accent-2)', check: () => perfectDays >= 5 },
+      { key: 'achiever',  icon: '🎯', name: tr('Achiever'),  desc: tr('All 7 days completed — full week warrior!'), color: 'var(--color-accent)', check: () => completedDays >= 7 },
+      { key: 'dedicated', icon: '🔥', name: tr('Dedicated'), desc: tr('5 days done — you\'re on fire!'),            color: '#f97316', check: () => completedDays >= 5 },
+      { key: 'active',    icon: '⭐', name: tr('Active'),    desc: tr('3 days completed — showing up daily!'),     color: 'var(--color-accent-2)', check: () => completedDays >= 3 },
+      { key: 'beginner',  icon: '🌱', name: tr('Beginner'),  desc: tr('You started your focus journey!'),           color: 'var(--color-success)', check: () => completedDays >= 1 },
     ];
 
     for (const badge of BADGE_DEFS) {
@@ -299,7 +300,7 @@ export default function MonthlyFocusDashboard() {
   // Helper function to format countdown
   const formatCountdown = (endTime) => {
     const remaining = new Date(endTime) - new Date();
-    if (remaining <= 0) return { text: 'Ended', expired: true };
+    if (remaining <= 0) return { text: tr('Ended'), expired: true };
     
     const hours = Math.floor(remaining / (1000 * 60 * 60));
     const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
@@ -353,21 +354,21 @@ export default function MonthlyFocusDashboard() {
   const todayCompleted = todayDay ? getDayStatus(todayDay.dayNumber) === 'completed' : false;
 
   const getCurrentBadge = () => {
-    if (perfectCount >= 5 && completedCount >= 7) return { icon: '🏆', name: 'Champion',  cls: 'champion'  };
-    if (perfectCount >= 5)  return { icon: '👑', name: 'Perfect',   cls: 'perfect'   };
-    if (completedCount >= 7) return { icon: '🎯', name: 'Achiever',  cls: 'achiever'  };
-    if (completedCount >= 5) return { icon: '🔥', name: 'Dedicated', cls: 'dedicated' };
-    if (completedCount >= 3) return { icon: '⭐', name: 'Active',    cls: 'active'    };
-    if (completedCount >= 1) return { icon: '🌱', name: 'Beginner',  cls: 'beginner'  };
+    if (perfectCount >= 5 && completedCount >= 7) return { icon: '🏆', name: tr('Champion'),  cls: 'champion'  };
+    if (perfectCount >= 5)  return { icon: '👑', name: tr('Perfect'),   cls: 'perfect'   };
+    if (completedCount >= 7) return { icon: '🎯', name: tr('Achiever'),  cls: 'achiever'  };
+    if (completedCount >= 5) return { icon: '🔥', name: tr('Dedicated'), cls: 'dedicated' };
+    if (completedCount >= 3) return { icon: '⭐', name: tr('Active'),    cls: 'active'    };
+    if (completedCount >= 1) return { icon: '🌱', name: tr('Beginner'),  cls: 'beginner'  };
     return null;
   };
 
   const getNextBadge = () => {
     if (completedCount === 0) return null;
-    if (completedCount < 3)  return { icon: '⭐', name: 'Active',    need: 3 - completedCount, field: 'days'         };
-    if (completedCount < 5)  return { icon: '🔥', name: 'Dedicated', need: 5 - completedCount, field: 'days'         };
-    if (completedCount < 7)  return { icon: '🎯', name: 'Achiever',  need: 7 - completedCount, field: 'days'         };
-    if (perfectCount < 5)    return { icon: '👑', name: 'Perfect',   need: 5 - perfectCount,   field: 'perfect days' };
+    if (completedCount < 3)  return { icon: '⭐', name: tr('Active'),    need: 3 - completedCount, field: 'days'         };
+    if (completedCount < 5)  return { icon: '🔥', name: tr('Dedicated'), need: 5 - completedCount, field: 'days'         };
+    if (completedCount < 7)  return { icon: '🎯', name: tr('Achiever'),  need: 7 - completedCount, field: 'days'         };
+    if (perfectCount < 5)    return { icon: '👑', name: tr('Perfect'),   need: 5 - perfectCount,   field: tr('perfect days') };
     return null;
   };
 
@@ -375,7 +376,7 @@ export default function MonthlyFocusDashboard() {
     return (
       <div className="focus-dashboard loading">
         <div className="spinner"></div>
-        <p style={{ color: 'var(--color-text-muted)', fontSize: '1.1em', marginTop: '20px' }}>Loading Monthly Focus...</p>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '1.1em', marginTop: '20px' }}>{tr("Loading Monthly Focus...")}</p>
       </div>
     );
   }
@@ -383,9 +384,9 @@ export default function MonthlyFocusDashboard() {
   if (error) {
     return (
       <div className="focus-dashboard error">
-        <h2>⚠️ Error</h2>
+        <h2>{tr("⚠️ Error")}</h2>
         <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
+        <button onClick={() => window.location.reload()}>{tr("Retry")}</button>
       </div>
     );
   }
@@ -399,13 +400,13 @@ export default function MonthlyFocusDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="nf-coming-soon-badge">⏳ Coming Soon</div>
-          <h2 className="nf-title">🎯 No Active Challenge Right Now</h2>
+          <div className="nf-coming-soon-badge">{tr("⏳ Coming Soon")}</div>
+          <h2 className="nf-title">{tr("🎯 No Active Challenge Right Now")}</h2>
           <p className="nf-desc">
-            The next Monthly Focus challenge is on its way!<br />
-            Check out what's waiting for you below — and come back ready to compete.
+            {tr("The next Monthly Focus challenge is on its way!")}<br />
+            {tr("Check out what's waiting for you below — and come back ready to compete.")}
           </p>
-          <Link to="/dashboard" className="btn-secondary nf-back-btn">← Back to Dashboard</Link>
+          <Link to="/dashboard" className="btn-secondary nf-back-btn">{tr("← Back to Dashboard")}</Link>
         </motion.div>
         <MonthlyFocusAwards animate={true} />
       </div>
@@ -480,7 +481,7 @@ export default function MonthlyFocusDashboard() {
                 </motion.div>
 
                 <div style={{ fontSize: '12px', fontWeight: '700', letterSpacing: '0.15em', textTransform: 'uppercase', color: badgePopup.color, marginBottom: '8px' }}>
-                  Badge Unlocked!
+                  {tr("Badge Unlocked!")}
                 </div>
 
                 <h2 style={{ margin: '0 0 10px', fontSize: '28px', fontWeight: '800', color: 'var(--color-text)' }}>
@@ -515,7 +516,7 @@ export default function MonthlyFocusDashboard() {
                     letterSpacing: '0.03em'
                   }}
                 >
-                  🎉 Awesome!
+                  {tr("🎉 Awesome!")}
                 </motion.button>
               </motion.div>
             </motion.div>
@@ -531,7 +532,7 @@ export default function MonthlyFocusDashboard() {
           exit={{ opacity: 0, y: 20 }}
           className="xp-animation"
         >
-          +{earnedXp} XP ✨
+          +{earnedXp} {tr("XP ✨")}
         </motion.div>
       )}
 
@@ -543,9 +544,9 @@ export default function MonthlyFocusDashboard() {
           className="milestone-alert"
         >
           <div className="alert-content">
-            <span>🎉 Milestone Reached! +75 XP Bonus Available!</span>
+            <span>{tr("🎉 Milestone Reached! +75 XP Bonus Available!")}</span>
             <button onClick={claimMilestoneReward} className="claim-btn">
-              Claim Reward
+              {tr("Claim Reward")}
             </button>
           </div>
         </motion.div>
@@ -568,7 +569,7 @@ export default function MonthlyFocusDashboard() {
             borderRadius: 'var(--radius-2xl)', transition: 'color 0.2s'
           }}
         >
-          ← All Challenges
+          {tr("← All Challenges")}
         </Link>
       </div>
 
@@ -591,10 +592,10 @@ export default function MonthlyFocusDashboard() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <h3>🧠 Skill Score</h3>
+            <h3>{tr("🧠 Skill Score")}</h3>
             <div className="xp-display">
               <span className="xp-amount">{userProgress?.skillScore || 0}</span>
-              <span className="xp-label">Rating</span>
+              <span className="xp-label">{tr("Rating")}</span>
             </div>
           </motion.div>
           
@@ -604,10 +605,10 @@ export default function MonthlyFocusDashboard() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <h3>🏅 Focus XP</h3>
+            <h3>{tr("🏅 Focus XP")}</h3>
             <div className="xp-display">
               <span className="xp-amount">{userProgress?.totalXp || 0}</span>
-              <span className="xp-label">XP</span>
+              <span className="xp-label">{"XP"}</span>
             </div>
           </motion.div>
           
@@ -617,10 +618,10 @@ export default function MonthlyFocusDashboard() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <h3>🏆 Focus Rank</h3>
+            <h3>{tr("🏆 Focus Rank")}</h3>
             <div className="rank-display">
               <span className="rank-position">#{userRank || '-'}</span>
-              <span className="rank-total">of {focusLeaderboard.length}</span>
+              <span className="rank-total">{tr("of")} {focusLeaderboard.length}</span>
             </div>
           </motion.div>
         </div>
@@ -645,16 +646,16 @@ export default function MonthlyFocusDashboard() {
           </motion.div>
           <div>
             <div className="streak-num">{streakCurrent}</div>
-            <div className="streak-label">Day Streak</div>
+            <div className="streak-label">{tr("Day Streak")}</div>
           </div>
           <div className="streak-divider" />
           <div>
             <div className="streak-num streak-num-best">{streakLongest}</div>
-            <div className="streak-label">Best Ever</div>
+            <div className="streak-label">{tr("Best Ever")}</div>
           </div>
         </div>
         <div className="streak-middle">
-          <div className="streak-week-label">THIS WEEK</div>
+          <div className="streak-week-label">{tr("THIS WEEK")}</div>
           <div className="streak-dots">
             {[1,2,3,4,5,6,7].map(d => (
               <div key={d} className={`sdot ${d <= streakCurrent ? 'sdot-on' : 'sdot-off'}`}>
@@ -670,14 +671,14 @@ export default function MonthlyFocusDashboard() {
               animate={{ opacity: [0.75, 1, 0.75] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              ⚠️ Complete today to keep your {streakCurrent}-day streak!
+              {tr("⚠️ Complete today to keep your")} {streakCurrent}{tr("-day streak!")}
             </motion.div>
           )}
           {streakCurrent === 0 && (
-            <div className="streak-start-msg">🚀 Start your streak — complete today's task!</div>
+            <div className="streak-start-msg">{tr("🚀 Start your streak — complete today's task!")}</div>
           )}
           {streakCurrent > 0 && (!todayDay || todayCompleted) && (
-            <div className="streak-safe-msg">🔥 Your streak is safe today!</div>
+            <div className="streak-safe-msg">{tr("🔥 Your streak is safe today!")}</div>
           )}
         </div>
       </motion.div>
@@ -691,7 +692,7 @@ export default function MonthlyFocusDashboard() {
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           <div className="tm-left">
-            <div className="tm-eyebrow">📅 TODAY’S MISSION  ·  Day {todayDay.dayNumber}</div>
+            <div className="tm-eyebrow">{tr("📅 TODAY’S MISSION  ·  Day")} {todayDay.dayNumber}</div>
             <h2 className="tm-title">{todayDay.title}</h2>
             <div className="tm-pills">
               <span className={`tm-pill tm-pill-type-${todayDay.taskType}`}>
@@ -699,26 +700,26 @@ export default function MonthlyFocusDashboard() {
                 {todayDay.taskType === 'find_mistakes' && '🔍 Find Mistakes'}
                 {todayDay.taskType === 'tactics_identification' && '🎯 Tactics ID'}
               </span>
-              <span className="tm-pill tm-pill-xp">+{todayDay.xpReward} XP</span>
-              {streakCurrent > 0 && <span className="tm-pill tm-pill-streak">🔥 ×1.2 Streak</span>}
+              <span className="tm-pill tm-pill-xp">+{todayDay.xpReward} {tr("XP")}</span>
+              {streakCurrent > 0 && <span className="tm-pill tm-pill-streak">{tr("🔥 ×1.2 Streak")}</span>}
             </div>
           </div>
           <div className="tm-right">
             {todayCompleted ? (
               <div className="tm-completed-state">
                 <div className="tm-check-circle">✅</div>
-                <div className="tm-check-text">Completed!</div>
+                <div className="tm-check-text">{tr("Completed!")}</div>
               </div>
             ) : (
               <>
                 {todayDay.endTime && (
                   <div className="tm-timer">
-                    <div className="tm-timer-label">CLOSES IN</div>
+                    <div className="tm-timer-label">{tr("CLOSES IN")}</div>
                     <div className="tm-timer-val">{formatCountdown(todayDay.endTime).text}</div>
                   </div>
                 )}
                 <Link to={`/monthly-focus/task/${todayDay.dayNumber}?focusId=${currentFocus._id}`} className="tm-start-btn">
-                  ▶ Start Now
+                  {tr("▶ Start Now")}
                 </Link>
               </>
             )}
@@ -733,8 +734,8 @@ export default function MonthlyFocusDashboard() {
         >
           <span style={{ fontSize: '2em' }}>🔒</span>
           <div>
-            <div className="tm-eyebrow">TODAY’S MISSION</div>
-            <p style={{ margin: 0, color: 'var(--color-text-muted)' }}>Admin hasn’t opened today’s task yet — check back soon!</p>
+            <div className="tm-eyebrow">{tr("TODAY’S MISSION")}</div>
+            <p style={{ margin: 0, color: 'var(--color-text-muted)' }}>{tr("Admin hasn’t opened today’s task yet — check back soon!")}</p>
           </div>
         </motion.div>
       )}
@@ -746,7 +747,7 @@ export default function MonthlyFocusDashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
       >
-        <h2>📅 Daily Tasks</h2>
+        <h2>{tr("📅 Daily Tasks")}</h2>
         <div className="tasks-container">
           {currentFocus.days?.length > 0 ? currentFocus.days.map((day, index) => {
             const status = getDayStatus(day.dayNumber);
@@ -764,7 +765,7 @@ export default function MonthlyFocusDashboard() {
                 whileTap={{ scale: (status === 'available' && running) ? 0.98 : 1 }}
               >
                 <div className="task-header">
-                  <span className="day-number">Day {day.dayNumber}</span>
+                  <span className="day-number">{tr("Day")} {day.dayNumber}</span>
                   <span className="task-status-icon">
                     {status === 'completed' ? '✅' : running ? '🔴' : day.isStarted ? '⏹️' : '🔒'}
                   </span>
@@ -773,7 +774,7 @@ export default function MonthlyFocusDashboard() {
                 {/* Countdown Timer - show only for running days */}
                 {running && countdown && (
                   <div className="countdown-timer">
-                    <div>TIME REMAINING</div>
+                    <div>{tr("TIME REMAINING")}</div>
                     <div>{countdown.text}</div>
                   </div>
                 )}
@@ -791,7 +792,7 @@ export default function MonthlyFocusDashboard() {
                     fontWeight: '600',
                     border: '1px solid var(--color-warning-a30)'
                   }}>
-                    ⏳ Waiting for Admin to Start
+                    {tr("⏳ Waiting for Admin to Start")}
                   </div>
                 )}
                 
@@ -808,7 +809,7 @@ export default function MonthlyFocusDashboard() {
                     fontWeight: '600',
                     border: '1px solid var(--color-warning-a30)'
                   }}>
-                    ⏱️ Time's Up - Complete for 5 XP
+                    {tr("⏱️ Time's Up - Complete for 5 XP")}
                   </div>
                 )}
                 
@@ -834,7 +835,7 @@ export default function MonthlyFocusDashboard() {
                 
                 <div className="task-footer">
                   <span className="xp-reward">
-                    +{(day.isStarted && !running && status !== 'completed') ? 5 : day.xpReward} XP
+                    +{(day.isStarted && !running && status !== 'completed') ? 5 : day.xpReward} {tr("XP")}
                     {day.timerEnabled && <span className="timer-badge">⏱️</span>}
                   </span>
                   {status === 'available' && running && (
@@ -842,12 +843,12 @@ export default function MonthlyFocusDashboard() {
                       to={`/monthly-focus/task/${day.dayNumber}?focusId=${currentFocus._id}`}
                       className="start-task-btn"
                     >
-                      Start Now!
+                      {tr("Start Now!")}
                     </Link>
                   )}
                   {status === 'available' && !running && !day.isStarted && (
                     <span className="waiting-badge">
-                      Coming Soon
+                      {tr("Coming Soon")}
                     </span>
                   )}
                   {status === 'available' && day.isStarted && !running && (
@@ -855,11 +856,11 @@ export default function MonthlyFocusDashboard() {
                       to={`/monthly-focus/task/${day.dayNumber}?focusId=${currentFocus._id}`}
                       className="late-task-btn"
                     >
-                      Do for 5 XP
+                      {tr("Do for 5 XP")}
                     </Link>
                   )}
                   {status === 'completed' && (
-                    <span className="completed-badge">✓ Done</span>
+                    <span className="completed-badge">{tr("✓ Done")}</span>
                   )}
                 </div>
               </motion.div>
@@ -874,7 +875,7 @@ export default function MonthlyFocusDashboard() {
               borderRadius: 'var(--radius-xl)',
               border: '1px solid var(--color-white-a04)'
             }}>
-              <p style={{ fontSize: '1.1em', margin: 0 }}>No days created yet. Check back soon!</p>
+              <p style={{ fontSize: '1.1em', margin: 0 }}>{tr("No days created yet. Check back soon!")}</p>
             </div>
           )}
         </div>
@@ -888,7 +889,7 @@ export default function MonthlyFocusDashboard() {
         transition={{ duration: 0.6, delay: 0.5 }}
       >
         <div className="bs-header">
-          <h2>🎖️ Achievement Badges</h2>
+          <h2>{tr("🎖️ Achievement Badges")}</h2>
           {getCurrentBadge() && (
             <div className={`bs-current-pill bs-pill-${getCurrentBadge().cls}`}>
               {getCurrentBadge().icon} {getCurrentBadge().name}
@@ -897,12 +898,12 @@ export default function MonthlyFocusDashboard() {
         </div>
         <div className="bs-grid">
           {[
-            { icon: '🌱', name: 'Beginner',  req: '1+ days',            unlocked: completedCount >= 1,                              cls: 'beginner'  },
-            { icon: '⭐', name: 'Active',    req: '3+ days',            unlocked: completedCount >= 3,                              cls: 'active'    },
-            { icon: '🔥', name: 'Dedicated', req: '5+ days',            unlocked: completedCount >= 5,                              cls: 'dedicated' },
-            { icon: '🎯', name: 'Achiever',  req: 'All 7 days',         unlocked: completedCount >= 7,                              cls: 'achiever'  },
-            { icon: '👑', name: 'Perfect',   req: '5 perfect days',     unlocked: perfectCount >= 5,                                cls: 'perfect'   },
-            { icon: '🏆', name: 'Champion',  req: '7 days + 5 perfect', unlocked: perfectCount >= 5 && completedCount >= 7,         cls: 'champion'  },
+            { icon: '🌱', name: tr('Beginner'),  req: tr('1+ days'),            unlocked: completedCount >= 1,                              cls: 'beginner'  },
+            { icon: '⭐', name: tr('Active'),    req: tr('3+ days'),            unlocked: completedCount >= 3,                              cls: 'active'    },
+            { icon: '🔥', name: tr('Dedicated'), req: tr('5+ days'),            unlocked: completedCount >= 5,                              cls: 'dedicated' },
+            { icon: '🎯', name: tr('Achiever'),  req: tr('All 7 days'),         unlocked: completedCount >= 7,                              cls: 'achiever'  },
+            { icon: '👑', name: tr('Perfect'),   req: tr('5 perfect days'),     unlocked: perfectCount >= 5,                                cls: 'perfect'   },
+            { icon: '🏆', name: tr('Champion'),  req: tr('7 days + 5 perfect'), unlocked: perfectCount >= 5 && completedCount >= 7,         cls: 'champion'  },
           ].map(badge => (
             <motion.div
               key={badge.name}
@@ -913,13 +914,13 @@ export default function MonthlyFocusDashboard() {
               <div className={`bs-icon ${badge.unlocked ? '' : 'bs-icon-gray'}`}>{badge.icon}</div>
               <div className="bs-name">{badge.name}</div>
               <div className="bs-req">{badge.req}</div>
-              {badge.unlocked && <div className="bs-earned">✓ Earned</div>}
+              {badge.unlocked && <div className="bs-earned">{tr("✓ Earned")}</div>}
             </motion.div>
           ))}
         </div>
         {getNextBadge() && (
           <div className="bs-next-hint">
-            🎯 {getNextBadge().need} more {getNextBadge().field} to unlock {getNextBadge().icon} <strong>{getNextBadge().name}</strong>
+            🎯 {getNextBadge().need} {tr("more")} {getNextBadge().field} {tr("to unlock")} {getNextBadge().icon} <strong>{getNextBadge().name}</strong>
           </div>
         )}
       </motion.div>
@@ -933,8 +934,8 @@ export default function MonthlyFocusDashboard() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
         >
-          <h2>📊 Your Performance</h2>
-          <p className="pg-sub">Score accuracy per completed day</p>
+          <h2>{tr("📊 Your Performance")}</h2>
+          <p className="pg-sub">{tr("Score accuracy per completed day")}</p>
           <div className="pg-bars">
             {[1,2,3,4,5,6,7].map(day => {
               const dp = dayProgressArr.find(d => d.dayNumber === day);
@@ -957,7 +958,7 @@ export default function MonthlyFocusDashboard() {
             })}
           </div>
           {completedCount === 0 && (
-            <p className="pg-empty">Complete your first task to see your performance chart!</p>
+            <p className="pg-empty">{tr("Complete your first task to see your performance chart!")}</p>
           )}
         </motion.div>
 
@@ -968,8 +969,8 @@ export default function MonthlyFocusDashboard() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
         >
-          <h2>🏆 Top Performers</h2>
-          <p className="af-sub">This month's leading students</p>
+          <h2>{tr("🏆 Top Performers")}</h2>
+          <p className="af-sub">{tr("This month's leading students")}</p>
           <div className="af-list">
             {focusLeaderboard.length > 0 ? focusLeaderboard.slice(0, 8).map((u, i) => (
               <div key={u.userId} className={`af-item af-static${i < 3 ? ' af-top3' : ''}`}>
@@ -978,14 +979,14 @@ export default function MonthlyFocusDashboard() {
                 </span>
                 <span className="af-text">
                   <strong>{u.displayName || u.username}</strong>
-                  <span className="af-days">{u.completedDays} day{u.completedDays !== 1 ? 's' : ''}</span>
+                  <span className="af-days">{u.completedDays} {tr("day")}{u.completedDays !== 1 ? 's' : ''}</span>
                 </span>
-                <span className="af-xp">{u.focusXp || u.totalScore || 0} XP</span>
+                <span className="af-xp">{u.focusXp || u.totalScore || 0} {tr("XP")}</span>
               </div>
             )) : (
               <div className="af-empty">
                 <span className="af-pulse" />
-                No entries yet — be the first!
+                {tr("No entries yet — be the first!")}
               </div>
             )}
           </div>
@@ -994,7 +995,7 @@ export default function MonthlyFocusDashboard() {
           {activityFeed.length > 0 && (
             <div className="af-live-strip">
               <span className="af-live-dot" />
-              <span className="af-live-label">Live:</span>
+              <span className="af-live-label">{tr("Live:")}</span>
               <AnimatePresence mode="wait">
                 <motion.span
                   key={activityFeed[0].id}
@@ -1020,10 +1021,10 @@ export default function MonthlyFocusDashboard() {
         transition={{ duration: 0.6, delay: 0.6 }}
       >
         <Link to="/dashboard" className="btn-secondary">
-          ← Back to Dashboard
+          {tr("← Back to Dashboard")}
         </Link>
         <Link to="/monthly-focus/leaderboard" className="btn-primary">
-          View Leaderboard →
+          {tr("View Leaderboard →")}
         </Link>
       </motion.div>
 

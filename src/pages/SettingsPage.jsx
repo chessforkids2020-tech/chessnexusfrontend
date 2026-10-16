@@ -10,6 +10,8 @@ import AvatarStudio from '../components/AvatarStudio';
 import ProfilePanel from '../components/ProfilePanel';
 import MemberPanel from '../components/MemberPanel';
 import ChessboardDevicePanel from '../components/ChessboardDevicePanel';
+import { useT, useLanguage, LANGUAGES } from '../i18n/LanguageContext';
+import './SettingsPage.css';
 
 // Mini 4-square swatch to preview each board theme
 function BoardSwatch({ light, dark, size = 44 }) {
@@ -74,6 +76,7 @@ function PieceSwatch({ pathFn, light, dark, size = 56 }) {
 
 // Shared card button
 function OptionCard({ isActive, onClick, defaultBadge, children }) {
+  const t = useT();
   return (
     <button
       onClick={onClick}
@@ -82,7 +85,9 @@ function OptionCard({ isActive, onClick, defaultBadge, children }) {
         flexDirection: 'column',
         alignItems: 'center',
         gap: 10,
-        padding: '14px 10px',
+        // 6px sides (was 10): at 3-per-row on a 360px phone the card is 77px, and
+        // 10px padding left 53px for the 56px board swatch.
+        padding: '14px 6px',
         background: isActive ? 'var(--color-accent-a15)' : 'var(--color-white-a04)',
         border: isActive ? '2px solid var(--color-accent)' : '2px solid var(--color-border)',
         borderRadius: 'var(--radius-lg)',
@@ -112,7 +117,7 @@ function OptionCard({ isActive, onClick, defaultBadge, children }) {
           fontSize: 9, fontWeight: 600,
           padding: '1px 5px', borderRadius: 'var(--radius-sm)',
           letterSpacing: '0.5px', textTransform: 'uppercase',
-        }}>DEFAULT</span>
+        }}>{t('DEFAULT')}</span>
       )}
       {children}
       {isActive && (
@@ -156,6 +161,7 @@ function Choice({ active, onClick, title, sub }) {
 }
 
 function GamesPanel() {
+  const t = useT();
   const { moveSpeed, autoQueen, setGamePref } = useGamePrefs();
   const [i, setI] = useState(0);
   useEffect(() => {
@@ -170,13 +176,13 @@ function GamesPanel() {
   return (
     <>
       <section style={card}>
-        <h2 style={h2}>🏃 Piece movement</h2>
-        <p style={p}>How fast pieces glide to their square. Applies to games, puzzles and studies (races always stay fast).</p>
+        <h2 style={h2}>{t('🏃 Piece movement')}</h2>
+        <p style={p}>{t('How fast pieces glide to their square. Applies to games, puzzles and studies (races always stay fast).')}</p>
         <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10, flex: '1 1 300px' }}>
-            <Choice active={moveSpeed === 'slow'} onClick={() => setGamePref('moveSpeed', 'slow')} title="Slow" sub={`Easy to follow · ${MOVE_SPEEDS.slow}ms`} />
-            <Choice active={moveSpeed === 'normal'} onClick={() => setGamePref('moveSpeed', 'normal')} title="Normal (default)" sub={`Smooth · ${MOVE_SPEEDS.normal}ms`} />
-            <Choice active={moveSpeed === 'fast'} onClick={() => setGamePref('moveSpeed', 'fast')} title="Fast" sub={`Snappy · ${MOVE_SPEEDS.fast}ms`} />
+            <Choice active={moveSpeed === 'slow'} onClick={() => setGamePref('moveSpeed', 'slow')} title={t('Slow')} sub={t('Easy to follow · {ms}ms', { ms: MOVE_SPEEDS.slow })} />
+            <Choice active={moveSpeed === 'normal'} onClick={() => setGamePref('moveSpeed', 'normal')} title={t('Normal (default)')} sub={t('Smooth · {ms}ms', { ms: MOVE_SPEEDS.normal })} />
+            <Choice active={moveSpeed === 'fast'} onClick={() => setGamePref('moveSpeed', 'fast')} title={t('Fast')} sub={t('Snappy · {ms}ms', { ms: MOVE_SPEEDS.fast })} />
           </div>
           <div style={{ flex: 'none' }}>
             <Chessboard
@@ -187,24 +193,51 @@ function GamesPanel() {
               showCoordinates={false}
               mute
             />
-            <div style={{ fontSize: 11, color: 'var(--color-text-faint)', textAlign: 'center', marginTop: 6 }}>Preview</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-faint)', textAlign: 'center', marginTop: 6 }}>{t('Preview')}</div>
           </div>
         </div>
       </section>
 
       <section style={card}>
-        <h2 style={h2}>♛ Pawn promotion</h2>
-        <p style={p}>In games only (vs friends, vs computer, arena tournaments). Puzzles always ask, since the right piece is part of the answer.</p>
+        <h2 style={h2}>{t('♛ Pawn promotion')}</h2>
+        <p style={p}>{t('In games only (vs friends, vs computer, arena tournaments). Puzzles always ask, since the right piece is part of the answer.')}</p>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <Choice active={!autoQueen} onClick={() => setGamePref('autoQueen', false)} title="Ask every time (default)" sub="Pick queen, rook, bishop or knight" />
-          <Choice active={autoQueen} onClick={() => setGamePref('autoQueen', true)} title="Always queen" sub="Promotes instantly, no popup" />
+          <Choice active={!autoQueen} onClick={() => setGamePref('autoQueen', false)} title={t('Ask every time (default)')} sub={t('Pick queen, rook, bishop or knight')} />
+          <Choice active={autoQueen} onClick={() => setGamePref('autoQueen', true)} title={t('Always queen')} sub={t('Promotes instantly, no popup')} />
         </div>
       </section>
     </>
   );
 }
 
+// Settings → Language. English / Spanish; saved per account (see i18n/LanguageContext).
+function LanguagePanel() {
+  const t = useT();
+  const { lang, setLanguage } = useLanguage();
+  const card = { background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)', padding: '24px', marginBottom: 20 };
+  return (
+    <section style={card} data-testid="language-panel">
+      <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>{t('🌐 Language')}</h2>
+      <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 16 }}>
+        {t('Choose the language for menus, buttons and pages. Names, chat messages and text written by coaches stay as they were written.')}
+      </p>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        {LANGUAGES.map(l => (
+          <Choice
+            key={l.code}
+            active={lang === l.code}
+            onClick={() => setLanguage(l.code)}
+            title={l.native}
+            sub={l.code === 'en' ? t('English') : t('Spanish')}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function SettingsPage() {
+  const t = useT();
   const { theme: activeTheme, setThemeById } = useBoardTheme();
   const { pieceTheme: activePiece, setPieceThemeById } = usePieceTheme();
   // Theme state now lives in <AppThemePanel>, which also owns unlock status.
@@ -216,20 +249,19 @@ export default function SettingsPage() {
     searchParams.get('tab') || 'board'   // 'board' | 'pieces' | 'profile' | …
   );
 
-  const TAB_STYLE = (id) => ({
-    padding: '10px 24px',
-    borderRadius: 'var(--radius-md)',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: 14,
-    fontWeight: 600,
-    transition: 'all var(--dur-fast)',
-    background: activeTab === id ? 'var(--color-accent-a20)' : 'transparent',
-    color: activeTab === id ? 'var(--color-accent)' : 'var(--color-text-muted)',
-    borderBottom: activeTab === id
-      ? '2px solid var(--color-accent)'
-      : '2px solid transparent',
-  });
+  // App theme first: it changes the whole interface, where the board and piece
+  // settings each change one part of it.
+  const TABS = [
+    { id: 'app',        label: t('✨ App Theme') },
+    { id: 'board',      label: t('🎨 Board Theme') },
+    { id: 'pieces',     label: t('♞ Pieces') },
+    { id: 'games',      label: t('♟ Games') },
+    { id: 'avatar',     label: t('🖼️ Avatar') },
+    { id: 'profile',    label: t('👤 Profile') },
+    { id: 'member',     label: t('💬 Member') },
+    { id: 'chessboard', label: t('♟ Chessboard') },
+    { id: 'language',   label: t('🌐 Language') },
+  ];
 
   return (
     <div style={{
@@ -244,47 +276,30 @@ export default function SettingsPage() {
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         {/* Header */}
         <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--color-accent)', marginBottom: 6, letterSpacing: '-0.3px' }}>
-          ⚙️ Settings
+          {t('⚙️ Settings')}
         </h1>
         <p style={{ color: 'var(--color-text-muted)', fontSize: 14, marginBottom: 28 }}>
-          Your preferences are saved per account and apply everywhere across the app.
+          {t('Your preferences are saved per account and apply everywhere across the app.')}
         </p>
 
         {/* Tabs */}
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 4,
-          marginBottom: 28,
-          borderBottom: '1px solid var(--color-border)',
-        }}>
-          {/* App theme first: it changes the whole interface, where the board and
-              piece settings each change one part of it. */}
-          <button style={TAB_STYLE('app')} onClick={() => setActiveTab('app')}>
-            ✨ App Theme
-          </button>
-          <button style={TAB_STYLE('board')} onClick={() => setActiveTab('board')}>
-            🎨 Board Theme
-          </button>
-          <button style={TAB_STYLE('pieces')} onClick={() => setActiveTab('pieces')}>
-            ♞ Pieces
-          </button>
-          <button style={TAB_STYLE('games')} onClick={() => setActiveTab('games')}>
-            ♟ Games
-          </button>
-          <button style={TAB_STYLE('avatar')} onClick={() => setActiveTab('avatar')}>
-            🖼️ Avatar
-          </button>
-          <button style={TAB_STYLE('profile')} onClick={() => setActiveTab('profile')}>
-            👤 Profile
-          </button>
-          <button style={TAB_STYLE('member')} onClick={() => setActiveTab('member')}>
-            💬 Member
-          </button>
-          <button style={TAB_STYLE('chessboard')} onClick={() => setActiveTab('chessboard')}>
-            ♟ Chessboard
-          </button>
+        <div className="settings-tabs" role="tablist">
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              className={`settings-tab${activeTab === tab.id ? ' settings-tab--active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+              data-testid={`tab-${tab.id}`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
+
+        {activeTab === 'language' && <LanguagePanel />}
 
         {/* ── Smart chessboard pairing (?tab=chessboard) ── */}
         {activeTab === 'chessboard' && <ChessboardDevicePanel />}
@@ -318,10 +333,10 @@ export default function SettingsPage() {
             padding: '28px 24px',
           }}>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>
-              🎨 Chessboard Theme
+              {t('🎨 Chessboard Theme')}
             </h2>
             <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 24 }}>
-              Choose how your board looks. The theme applies to every game, puzzle, and study.
+              {t('Choose how your board looks. The theme applies to every game, puzzle, and study.')}
             </p>
 
             {/* Your own colours first. It used to sit at the very bottom, below
@@ -331,7 +346,10 @@ export default function SettingsPage() {
 
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+              // A fixed 140px minimum fit only ONE card per row on a phone (~292px
+              // of room; two cards + gap need 296). Letting the minimum shrink to a
+              // third of the row gives 3 per row on phones; desktop still uses 140px.
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(140px, calc((100% - 32px) / 3)), 1fr))',
               gap: 16,
             }}>
               {BOARD_THEMES.map((t, i) => (
@@ -366,12 +384,12 @@ export default function SettingsPage() {
               borderRadius: 'var(--radius-md)',
               border: '1px solid var(--color-white-a07)',
             }}>
-              <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>Active theme:</span>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>{t('Active theme:')}</span>
               <BoardSwatch light={activeTheme.light} dark={activeTheme.dark} size={48} />
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--color-text)', fontSize: 14 }}>{activeTheme.name}</div>
                 <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2 }}>
-                  Light {activeTheme.light} · Dark {activeTheme.dark}
+                  {t('Light')} {activeTheme.light} · {t('Dark')} {activeTheme.dark}
                 </div>
               </div>
             </div>
@@ -388,10 +406,10 @@ export default function SettingsPage() {
             padding: '28px 24px',
           }}>
             <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>
-              ♞ Piece Style
+              {t('♞ Piece Style')}
             </h2>
             <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 24 }}>
-              Choose your piece design. Applies to every board across the app — games, puzzles, and studies.
+              {t('Choose your piece design. Applies to every board across the app — games, puzzles, and studies.')}
             </p>
 
             <div style={{
@@ -436,7 +454,7 @@ export default function SettingsPage() {
               borderRadius: 'var(--radius-md)',
               border: '1px solid var(--color-white-a07)',
             }}>
-              <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>Active pieces:</span>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>{t('Active pieces:')}</span>
               <PieceSwatch
                 pathFn={activePiece.pathFn}
                 light={activeTheme.light}
@@ -446,7 +464,7 @@ export default function SettingsPage() {
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--color-text)', fontSize: 14 }}>{activePiece.name}</div>
                 <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2 }}>
-                  {activePiece.isDefault ? 'Default MPChess pieces' : `Piece set: ${activePiece.id}`}
+                  {activePiece.isDefault ? t('Default MPChess pieces') : t('Piece set: {id}', { id: activePiece.id })}
                 </div>
               </div>
             </div>

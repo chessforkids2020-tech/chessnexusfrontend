@@ -4,19 +4,20 @@
 // "practice chess endgames online", "rook endgame practice".
 import { Link } from "react-router-dom";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import { t as tr } from '../../i18n/LanguageContext';
 
 const CANONICAL = "/chess-endgame-training";
 
 // The eight families the endgame browser groups positions into.
 const FAMILIES = [
-  { icon: "♙", t: "Pawn endgames", d: "Opposition, key squares, breakthroughs — the foundation everything else rests on." },
-  { icon: "♖", t: "Rook endgames", d: "The most common endgame in real games. Lucena, Philidor, and the practical positions that decide club games." },
-  { icon: "♗", t: "Bishop endgames", d: "Same-colour and opposite-colour bishops, and why the second is so often drawn." },
-  { icon: "♘", t: "Knight endgames", d: "Short-range piece, long-range problems — knight vs pawns technique." },
-  { icon: "♗♘", t: "Bishop + knight", d: "Including the mate that every improving player is told about and few can actually play." },
-  { icon: "♕", t: "Queen endgames", d: "Perpetual check, queen vs pawn on the seventh, and converting material." },
-  { icon: "♕♖", t: "Queen + rook", d: "Heavy-piece endings where king safety still decides the game." },
-  { icon: "♚", t: "Other / mixed", d: "Everything else that reaches an endgame with few pieces on the board." },
+  { icon: "♙", t: tr("Pawn endgames"), d: tr("Opposition, key squares, breakthroughs — the foundation everything else rests on.") },
+  { icon: "♖", t: tr("Rook endgames"), d: tr("The most common endgame in real games. Lucena, Philidor, and the practical positions that decide club games.") },
+  { icon: "♗", t: tr("Bishop endgames"), d: tr("Same-colour and opposite-colour bishops, and why the second is so often drawn.") },
+  { icon: "♘", t: tr("Knight endgames"), d: tr("Short-range piece, long-range problems — knight vs pawns technique.") },
+  { icon: "♗♘", t: tr("Bishop + knight"), d: tr("Including the mate that every improving player is told about and few can actually play.") },
+  { icon: "♕", t: tr("Queen endgames"), d: tr("Perpetual check, queen vs pawn on the seventh, and converting material.") },
+  { icon: "♕♖", t: tr("Queen + rook"), d: tr("Heavy-piece endings where king safety still decides the game.") },
+  { icon: "♚", t: tr("Other / mixed"), d: tr("Everything else that reaches an endgame with few pieces on the board.") },
 ];
 
 const FAQ = [
@@ -45,14 +46,14 @@ export default function EndgameTrainingPage() {
     mainEntity: FAQ.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": tr("Answer"), text: a },
     })),
   };
 
   return (
     <FeaturePageLayout
       seo={{
-        title: "Chess Endgame Training — Practice Real Endgames Online Free",
+        title: tr("Chess Endgame Training — Practice Real Endgames Online Free"),
         description:
           "Practise chess endgames taken from real master games, grouped into eight types — pawn, rook, bishop, knight, queen and more. Play positions out against Stockfish until you can convert them.",
         keywords:
@@ -64,14 +65,14 @@ export default function EndgameTrainingPage() {
         h1: "Chess endgame training",
         sub:
           "Endgames pulled from real master games, grouped by type — then play them out against the engine until you can actually convert them.",
-        primary: { to: "/study/endgames", label: "Browse endgames" },
-        secondary: { to: "/study/endgame-challenges", label: "Play a challenge" },
+        primary: { to: "/study/endgames", label: tr("Browse endgames") },
+        secondary: { to: "/study/endgame-challenges", label: tr("Play a challenge") },
       }}
       jsonLd={faqSchema}
       excludeSlug={CANONICAL}
     >
-      <section className="mkt-section" aria-label="Endgame types">
-        <h2>Every endgame type, from real games</h2>
+      <section className="mkt-section" aria-label={tr("Endgame types")}>
+        <h2>{tr("Every endgame type, from real games")}</h2>
         <p className="mkt-section-lead">
           Positions are extracted from a large master-game collection, so you drill
           endings that genuinely occur — not textbook curiosities.
@@ -89,32 +90,32 @@ export default function EndgameTrainingPage() {
         </ul>
       </section>
 
-      <section className="mkt-section" aria-label="Endgame challenges">
-        <h2>Knowing it isn't the same as converting it</h2>
+      <section className="mkt-section" aria-label={tr("Endgame challenges")}>
+        <h2>{tr("Knowing it isn't the same as converting it")}</h2>
         <p className="mkt-p">
           Most players can describe the Lucena position and still fail to win it at
-          the board. <strong>Endgame Challenges</strong> are curated positions you play
+          {tr("the board.")} <strong>{tr("Endgame Challenges")}</strong> {tr("are curated positions you play")}
           out against Stockfish — Easy, Medium or Hard. You keep the position until
           you convert the win or hold the draw yourself. That's the difference between
           having read about an endgame and being able to play it.
         </p>
         <div className="mkt-cta-row" style={{ justifyContent: "flex-start" }}>
-          <Link to="/study/endgame-challenges" className="mkt-btn mkt-btn-primary">Try a challenge</Link>
+          <Link to="/study/endgame-challenges" className="mkt-btn mkt-btn-primary">{tr("Try a challenge")}</Link>
         </div>
       </section>
 
-      <section className="mkt-section" aria-label="For coaches">
-        <h2>For coaches</h2>
+      <section className="mkt-section" aria-label={tr("For coaches")}>
+        <h2>{tr("For coaches")}</h2>
         <p className="mkt-p">
-          Load any endgame straight onto the shared board in the{" "}
-          <Link to="/live-chess-classroom">live classroom</Link>, add endgames as
-          lessons inside a <Link to="/chess-courses">course</Link>, or set one as an
+          {tr("Load any endgame straight onto the shared board in the")}{" "}
+          <Link to="/live-chess-classroom">{tr("live classroom")}</Link>{tr(", add endgames as")}
+          {tr("lessons inside a")} <Link to="/chess-courses">{tr("course")}</Link>{tr(", or set one as an")}
           assignment a student must play out against the engine.
         </p>
       </section>
 
-      <section className="mkt-section" aria-label="FAQ">
-        <h2>Endgame training FAQ</h2>
+      <section className="mkt-section" aria-label={"FAQ"}>
+        <h2>{tr("Endgame training FAQ")}</h2>
         <div className="mkt-faq">
           {FAQ.map(({ q, a }) => (
             <div key={q} className="mkt-faq-item">

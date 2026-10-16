@@ -4,6 +4,7 @@ import api, { resolveApiAssetUrl } from '../../api';
 import ImmortalCard from '../../components/masterGames/ImmortalCard';
 import GameAnalysisModal from '../../components/masterGames/GameAnalysisModal';
 import OpeningStudy from '../../components/masterGames/OpeningStudy';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // Featured photos live in the frontend public/ dir (served at /players/<file>),
 // so a root-relative path is resolved by the browser against the frontend origin.
@@ -101,8 +102,8 @@ export default function MasterGamesHome() {
   return (
     <div style={st.wrap}>
       <div style={st.inner}>
-        <h1 style={st.h1}>Master Games</h1>
-        <p style={st.sub}>Study the famous players. Pick a champion to browse their games, or explore the whole library by opening, year and tournament.</p>
+        <h1 style={st.h1}>{tr("Master Games")}</h1>
+        <p style={st.sub}>{tr("Study the famous players. Pick a champion to browse their games, or explore the whole library by opening, year and tournament.")}</p>
 
         {/* ── Premium: opening repertoire trainer entry banner ── */}
         <button
@@ -118,12 +119,12 @@ export default function MasterGamesHome() {
         >
           <span style={{ fontSize: 24 }}>⭐</span>
           <span style={{ flex: 1, minWidth: 200 }}>
-            <span style={{ display: 'block', fontWeight: 900, fontSize: 15 }}>Build your opening repertoire</span>
+            <span style={{ display: 'block', fontWeight: 900, fontSize: 15 }}>{tr("Build your opening repertoire")}</span>
             <span style={{ display: 'block', fontSize: 12.5, color: '#cdb989' }}>
-              Save your lines, get drilled with spaced repetition, and spot where you left your prep.
+              {tr("Save your lines, get drilled with spaced repetition, and spot where you left your prep.")}
             </span>
           </span>
-          <span style={{ fontWeight: 800, color: '#f5c451' }}>Open →</span>
+          <span style={{ fontWeight: 800, color: '#f5c451' }}>{tr("Open →")}</span>
         </button>
 
         {/* ── Opening study (interactive board + engine + opening explorer) ── */}
@@ -131,11 +132,11 @@ export default function MasterGamesHome() {
 
         {/* ── Featured players ── */}
         <div style={st.sectionHead}>
-          <h2 style={st.sectionTitle}>Featured players</h2>
-          <button style={st.viewAll} onClick={() => navigate('/master-games/players')}>View all ›</button>
+          <h2 style={st.sectionTitle}>{tr("Featured players")}</h2>
+          <button style={st.viewAll} onClick={() => navigate('/master-games/players')}>{tr("View all ›")}</button>
         </div>
         <div style={st.playerRow}>
-          {loading && featured.length === 0 && <div style={st.muted}>Loading…</div>}
+          {loading && featured.length === 0 && <div style={st.muted}>{tr("Loading…")}</div>}
           {featured.map(p => (
             <button key={p.name} style={st.playerCard} onClick={() => openPlayer(p.name)}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = C.accent; }}
@@ -144,18 +145,18 @@ export default function MasterGamesHome() {
               <div style={st.playerCardName}>
                 {p.title && <span style={st.title}>{p.title} </span>}{displayName(p.name)}
               </div>
-              <div style={st.playerCardCount}>{fmt(p.games)} games</div>
+              <div style={st.playerCardCount}>{fmt(p.games)} {tr("games")}</div>
             </button>
           ))}
         </div>
 
         {/* ── Explore games ── */}
         <div style={st.exploreBar}>
-          <div style={st.exploreTitle}>Explore games</div>
+          <div style={st.exploreTitle}>{tr("Explore games")}</div>
           <div style={st.exploreFilters}>
             {/* Player search */}
             <div style={{ position: 'relative' }}>
-              <input style={st.input} placeholder="Player…" value={playerInput}
+              <input style={st.input} placeholder={tr("Player…")} value={playerInput}
                 onChange={e => setPlayerInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') runSearch(); }} />
               {playerSuggest.length > 0 && (
@@ -170,19 +171,19 @@ export default function MasterGamesHome() {
 
             {/* Opening */}
             <select style={st.select} value={family} onChange={e => setFamily(e.target.value)}>
-              <option value="">All openings</option>
+              <option value="">{tr("All openings")}</option>
               {filters.families.map(f => <option key={f} value={f}>{f}</option>)}
             </select>
 
             {/* Year */}
             <select style={st.select} value={year} onChange={e => setYear(e.target.value)}>
-              <option value="">All years</option>
+              <option value="">{tr("All years")}</option>
               {filters.years.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
 
             {/* Tournament typeahead (thousands of them → searchable, not a giant select) */}
             <div style={{ position: 'relative' }}>
-              <input style={st.input} placeholder="Tournament…"
+              <input style={st.input} placeholder={tr("Tournament…")}
                 value={tournament || tournamentInput}
                 onChange={e => { setTournament(''); setTournamentInput(e.target.value); }}
                 onKeyDown={e => { if (e.key === 'Enter') runSearch(); }} />
@@ -196,7 +197,7 @@ export default function MasterGamesHome() {
               )}
             </div>
 
-            <button style={st.searchBtn} onClick={runSearch}>🔍 Search</button>
+            <button style={st.searchBtn} onClick={runSearch}>{tr("🔍 Search")}</button>
           </div>
         </div>
 
@@ -204,7 +205,7 @@ export default function MasterGamesHome() {
         {immortal.length > 0 && (
           <div style={st.immortalSection}>
             <div style={st.immortalHead}>
-              <h2 style={st.sectionTitle}>★ Immortal games</h2>
+              <h2 style={st.sectionTitle}>{tr("★ Immortal games")}</h2>
               <button style={st.seeAll} onClick={() => navigate('/master-games/immortal')}>
                 See all {immortalTotal > immortal.length ? `(${immortalTotal})` : ''} ›
               </button>
@@ -220,10 +221,10 @@ export default function MasterGamesHome() {
         {/* ── Stats strip ── */}
         {stats && (
           <div style={st.statsStrip}>
-            <Stat value={fmt(stats.players)} label="Top players" />
-            <Stat value={`${fmt(roundDown(stats.games, 1000))}+`} label="Games added" />
-            <Stat value={`${fmt(roundDown(stats.tournaments, 100))}+`} label="Tournaments" />
-            <Stat value={stats.yearSpan || 0} label="Years of games"
+            <Stat value={fmt(stats.players)} label={tr("Top players")} />
+            <Stat value={`${fmt(roundDown(stats.games, 1000))}+`} label={tr("Games added")} />
+            <Stat value={`${fmt(roundDown(stats.tournaments, 100))}+`} label={tr("Tournaments")} />
+            <Stat value={stats.yearSpan || 0} label={tr("Years of games")}
               sub={stats.minYear && stats.maxYear ? `${stats.minYear}–${stats.maxYear}` : ''} />
           </div>
         )}

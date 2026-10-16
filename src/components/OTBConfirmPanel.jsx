@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Chessboard from './Chessboard';
 import './OTBConfirmPanel.css';
+import { t as tr } from '../i18n/LanguageContext';
 
 // First N ambiguous moves in a cluster are shown WITH a chessboard
 const BOARD_LIMIT = 2;
@@ -88,8 +89,8 @@ export default function OTBConfirmPanel({ scanResult, onConfirm, onCancel, submi
         </div>
         <span className="otb-confirm-progress-label">
           {totalClusters === 1
-            ? `${shown.length} unclear move${shown.length !== 1 ? 's' : ''} — please correct below`
-            : `Issue group ${clusterIdx + 1} of ${totalClusters}`}
+            ? tr("{length} unclear move{v1} — please correct below", { length: shown.length, v1: shown.length !== 1 ? 's' : '' })
+            : tr("Issue group {v0} of {totalClusters}", { v0: clusterIdx + 1, totalClusters: totalClusters })}
         </span>
       </div>
 
@@ -100,7 +101,7 @@ export default function OTBConfirmPanel({ scanResult, onConfirm, onCancel, submi
             ⚠️ Move {m.moveNumber}{m.side === 'white' ? '.' : '...'}&nbsp;
             <span className="otb-confirm-side-badge">{m.side}</span>
             <span className="otb-confirm-scanned">
-              {' '}— scanned as <code>{m.rawText || m.suspectedSan || '?'}</code>
+              {' '}{tr("— scanned as")} <code>{m.rawText || m.suspectedSan || '?'}</code>
             </span>
           </div>
           <div className="otb-confirm-row-body">
@@ -116,12 +117,12 @@ export default function OTBConfirmPanel({ scanResult, onConfirm, onCancel, submi
             )}
             <div className="otb-confirm-controls">
               <label className="otb-confirm-label">
-                {m.fenBefore ? 'Correct move for this position:' : 'Correct move (position unknown):'}
+                {m.fenBefore ? tr('Correct move for this position:') : tr('Correct move (position unknown):')}
               </label>
               <input
                 className="otb-confirm-input"
                 type="text"
-                placeholder="e.g. Nf3, exd5, O-O, O-O-O"
+                placeholder={tr("e.g. Nf3, exd5, O-O, O-O-O")}
                 value={getValue(m)}
                 onChange={e => handleChange(m.index, e.target.value)}
                 autoComplete="off"
@@ -129,7 +130,7 @@ export default function OTBConfirmPanel({ scanResult, onConfirm, onCancel, submi
                 autoFocus={i === 0}
               />
               <div className="otb-confirm-hint">
-                Standard notation. Captures: Bxe5. Castling: O-O or O-O-O.
+                {tr("Standard notation. Captures: Bxe5. Castling: O-O or O-O-O.")}
               </div>
             </div>
           </div>
@@ -139,7 +140,7 @@ export default function OTBConfirmPanel({ scanResult, onConfirm, onCancel, submi
       {/* ── Upcoming moves — text-only quick fix ── */}
       {withoutBoard.length > 0 && (
         <div className="otb-confirm-quick-section">
-          <div className="otb-confirm-quick-label">Upcoming unclear moves — quick fix:</div>
+          <div className="otb-confirm-quick-label">{tr("Upcoming unclear moves — quick fix:")}</div>
           {withoutBoard.map(m => (
             <div key={m.index} className="otb-confirm-quick-row">
               <span className="otb-confirm-quick-num">
@@ -151,7 +152,7 @@ export default function OTBConfirmPanel({ scanResult, onConfirm, onCancel, submi
               <input
                 className="otb-confirm-quick-input"
                 type="text"
-                placeholder="correct move"
+                placeholder={tr("correct move")}
                 value={getValue(m)}
                 onChange={e => handleChange(m.index, e.target.value)}
                 autoComplete="off"

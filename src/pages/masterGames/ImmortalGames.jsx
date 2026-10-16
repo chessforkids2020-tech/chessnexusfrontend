@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import ImmortalCard from '../../components/masterGames/ImmortalCard';
 import GameAnalysisModal from '../../components/masterGames/GameAnalysisModal';
+import { t as tr } from '../../i18n/LanguageContext';
 
 // ── Immortal Games page ───────────────────────────────────────────────────────
 // The curated "immortal" collection as a grid of board-thumbnail cards, with
@@ -46,33 +47,33 @@ export default function ImmortalGames() {
   return (
     <div style={st.wrap}>
       <div style={st.inner}>
-        <button style={st.back} onClick={() => navigate('/master-games')}>‹ Master Games</button>
-        <h1 style={st.h1}>★ Immortal Games</h1>
-        <p style={st.sub}>A hand-picked collection of the most famous, brilliant games in chess history.</p>
+        <button style={st.back} onClick={() => navigate('/master-games')}>{tr("‹ Master Games")}</button>
+        <h1 style={st.h1}>{tr("★ Immortal Games")}</h1>
+        <p style={st.sub}>{tr("A hand-picked collection of the most famous, brilliant games in chess history.")}</p>
 
         {/* ── Filters ── */}
         <div style={st.filters}>
-          <input style={st.input} placeholder="Player…" value={player}
+          <input style={st.input} placeholder={tr("Player…")} value={player}
             onChange={e => setPlayer(e.target.value)} />
           <select style={st.select} value={year} onChange={e => setYear(e.target.value)}>
-            <option value="">All years</option>
+            <option value="">{tr("All years")}</option>
             {filterOpts.years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
           <select style={st.select} value={opening} onChange={e => setOpening(e.target.value)}>
-            <option value="">All openings</option>
+            <option value="">{tr("All openings")}</option>
             {filterOpts.openings.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
-          {hasFilter && <button style={st.clearBtn} onClick={clearAll}>Clear</button>}
+          {hasFilter && <button style={st.clearBtn} onClick={clearAll}>{tr("Clear")}</button>}
         </div>
 
-        <div style={st.listMeta}>{loading ? 'Loading…' : `${total} game${total === 1 ? '' : 's'}`}</div>
+        <div style={st.listMeta}>{loading ? 'Loading…' : tr("{total} game{v1}", { total: total, v1: total === 1 ? '' : 's' })}</div>
 
         {/* ── Cards ── */}
         <div style={st.grid}>
           {games.map(g => <ImmortalCard key={g._id} game={g} onOpen={setOpenGameId} />)}
         </div>
         {!loading && games.length === 0 && (
-          <div style={st.empty}>No immortal games match {hasFilter ? 'these filters.' : 'yet.'}</div>
+          <div style={st.empty}>{tr("No immortal games match")} {hasFilter ? 'these filters.' : 'yet.'}</div>
         )}
 
         {openGameId && <GameAnalysisModal gameId={openGameId} onClose={() => setOpenGameId(null)} />}

@@ -13,7 +13,7 @@ import ActivityTracker from "../components/ActivityTracker";
 import BestRacers from "../components/BestRacers";
 import AllGamesTab from "../components/dashboard/AllGamesTab";
 import ActivityTab from "../components/dashboard/ActivityTab";
-import GameInsightsPanel from "../components/GameInsightsPanel";
+import GuideHub from '../components/dashboard/GuideHub';
 import KnightBadge from "../components/KnightBadge";
 import FoundingBadge from "../components/FoundingBadge";
 import { useIsFoundingSupporter } from "../context/SupporterContext";
@@ -21,55 +21,56 @@ import UserAvatar from "../components/UserAvatar";
 import StreakMilestoneModal from "../components/StreakMilestoneModal";
 import StreakReminderModal from "../components/StreakReminderModal";
 import CoffeeCta from "../components/CoffeeCta";
+import { t as tr } from '../i18n/LanguageContext';
 
 // ─── Badge Tracks: Starter → Gold → Platinum ────────────────────────────────
 const TRACKS = [
   {
     id: 'puzzles', icon: '🧩', name: 'Daily Puzzles',
     badges: [
-      { id: 'puzzle_starter', tier: 'starter', emoji: '🧩', name: 'First Move',      threshold: 'Solve 1 puzzle' },
-      { id: 'puzzle_gold',    tier: 'gold',    emoji: '🥇', name: 'Puzzle Pro',       threshold: '25 puzzles (~5 days)' },
-      { id: 'puzzle_plat',    tier: 'plat',    emoji: '💎', name: 'Puzzle Legend',    threshold: '300 puzzles (~2 months)' },
+      { id: 'puzzle_starter', tier: 'starter', emoji: '🧩', name: tr('First Move'),      threshold: tr('Solve 1 puzzle') },
+      { id: 'puzzle_gold',    tier: 'gold',    emoji: '🥇', name: tr('Puzzle Pro'),       threshold: tr('25 puzzles (~5 days)') },
+      { id: 'puzzle_plat',    tier: 'plat',    emoji: '💎', name: tr('Puzzle Legend'),    threshold: tr('300 puzzles (~2 months)') },
     ],
   },
   {
     id: 'rating', icon: '⭐', name: 'Competition',
     badges: [
-      { id: 'rating_starter', tier: 'starter', emoji: '⭐', name: 'Rising',           threshold: 'Reach 1250 points' },
-      { id: 'rating_gold',    tier: 'gold',    emoji: '🥇', name: 'Sharp Mind',       threshold: 'Reach 1350 points' },
-      { id: 'rating_plat',    tier: 'plat',    emoji: '💎', name: 'Chess King',       threshold: 'Reach 1700 points' },
+      { id: 'rating_starter', tier: 'starter', emoji: '⭐', name: tr('Rising'),           threshold: tr('Reach 1250 points') },
+      { id: 'rating_gold',    tier: 'gold',    emoji: '🥇', name: tr('Sharp Mind'),       threshold: tr('Reach 1350 points') },
+      { id: 'rating_plat',    tier: 'plat',    emoji: '💎', name: tr('Chess King'),       threshold: tr('Reach 1700 points') },
     ],
   },
   {
     id: 'race', icon: '🏎️', name: 'Speed Race',
     badges: [
-      { id: 'race_starter',   tier: 'starter', emoji: '🏁', name: 'Racer',            threshold: 'Play any race' },
-      { id: 'race_gold',      tier: 'gold',    emoji: '🥇', name: 'Speed Demon',      threshold: 'Score 200+ in Individual Race' },
-      { id: 'race_plat',      tier: 'plat',    emoji: '💎', name: 'Arena Champion',   threshold: 'Score 400+ in Arena Race' },
+      { id: 'race_starter',   tier: 'starter', emoji: '🏁', name: tr('Racer'),            threshold: tr('Play any race') },
+      { id: 'race_gold',      tier: 'gold',    emoji: '🥇', name: tr('Speed Demon'),      threshold: tr('Score 200+ in Individual Race') },
+      { id: 'race_plat',      tier: 'plat',    emoji: '💎', name: tr('Arena Champion'),   threshold: tr('Score 400+ in Arena Race') },
     ],
   },
   {
     id: 'streak', icon: '🔥', name: 'Streak',
     badges: [
-      { id: 'streak_starter', tier: 'starter', emoji: '🔥', name: 'On Fire',       threshold: '2 perfect days in a row' },
-      { id: 'streak_gold',    tier: 'gold',    emoji: '🥇', name: 'Grinder',       threshold: '4 perfect days in a row' },
-      { id: 'streak_plat',    tier: 'plat',    emoji: '💎', name: 'Iron Will',     threshold: '7 perfect days in a row' },
+      { id: 'streak_starter', tier: 'starter', emoji: '🔥', name: tr('On Fire'),       threshold: tr('2 perfect days in a row') },
+      { id: 'streak_gold',    tier: 'gold',    emoji: '🥇', name: tr('Grinder'),       threshold: tr('4 perfect days in a row') },
+      { id: 'streak_plat',    tier: 'plat',    emoji: '💎', name: tr('Iron Will'),     threshold: tr('7 perfect days in a row') },
     ],
   },
   {
     id: 'focus', icon: '🎯', name: 'Monthly Focus',
     badges: [
-      { id: 'focus_starter',  tier: 'starter', emoji: '🎯', name: 'Focused',      threshold: 'Complete 5 Focus days' },
-      { id: 'focus_gold',     tier: 'gold',    emoji: '🥇', name: 'Consistent',   threshold: 'Complete 2 full Focus months (no absence)' },
-      { id: 'focus_plat',     tier: 'plat',    emoji: '💎', name: 'Dedicated',    threshold: 'Complete 4 full Focus months (no absence)' },
+      { id: 'focus_starter',  tier: 'starter', emoji: '🎯', name: tr('Focused'),      threshold: tr('Complete 5 Focus days') },
+      { id: 'focus_gold',     tier: 'gold',    emoji: '🥇', name: tr('Consistent'),   threshold: tr('Complete 2 full Focus months (no absence)') },
+      { id: 'focus_plat',     tier: 'plat',    emoji: '💎', name: tr('Dedicated'),    threshold: tr('Complete 4 full Focus months (no absence)') },
     ],
   },
   {
     id: 'tournament', icon: '🏆', name: 'Tournament',
     badges: [
-      { id: 'tournament_starter', tier: 'starter', emoji: '🏅', name: 'Competitor',  threshold: '3 games without losing' },
-      { id: 'tournament_gold',    tier: 'gold',    emoji: '🥇', name: 'Veteran',      threshold: '6 games without losing' },
-      { id: 'tournament_plat',    tier: 'plat',    emoji: '💎', name: 'Champion',     threshold: '10 games without losing' },
+      { id: 'tournament_starter', tier: 'starter', emoji: '🏅', name: tr('Competitor'),  threshold: tr('3 games without losing') },
+      { id: 'tournament_gold',    tier: 'gold',    emoji: '🥇', name: tr('Veteran'),      threshold: tr('6 games without losing') },
+      { id: 'tournament_plat',    tier: 'plat',    emoji: '💎', name: tr('Champion'),     threshold: tr('10 games without losing') },
     ],
   },
 ];
@@ -107,17 +108,17 @@ function BadgeUnlockPopup({ badgeInfo, onClose, remaining }) {
       />
       <div className="badge-popup-card" onClick={e => e.stopPropagation()}>
         <div className="badge-popup-sparkle">✨</div>
-        <div className="badge-popup-congrats">Congratulations!</div>
-        <div className="badge-popup-headline">You unlocked a new badge!</div>
+        <div className="badge-popup-congrats">{tr("Congratulations!")}</div>
+        <div className="badge-popup-headline">{tr("You unlocked a new badge!")}</div>
         <div className="badge-popup-emoji">{badgeInfo.emoji}</div>
         <div className="badge-popup-name">{badgeInfo.name}</div>
         <div className={`badge-popup-tier ${tierClass}`}>{tierLabel}</div>
         <div className="badge-popup-threshold">{badgeInfo.threshold}</div>
         {remaining > 0 && (
-          <div className="badge-popup-more">+{remaining} more badge{remaining > 1 ? 's' : ''} unlocked!</div>
+          <div className="badge-popup-more">+{remaining} {tr("more badge")}{remaining > 1 ? 's' : ''} {tr("unlocked!")}</div>
         )}
         <button className="badge-popup-btn" onClick={onClose}>
-          {remaining > 0 ? 'Next →' : 'Awesome! 🎉'}
+          {remaining > 0 ? tr('Next →') : tr('Awesome! 🎉')}
         </button>
       </div>
     </div>
@@ -132,7 +133,7 @@ function CoachBadge() {
     // mobile rules can shrink it — an inline font-size cannot be beaten by a
     // media query. Colours stay inline; nothing needs to override those.
     <span
-      title="Verified coach on Chess Nexus"
+      title={tr("Verified coach on Chess Nexus")}
       className="welcome-coach-badge"
       style={{
         display: 'inline-flex',
@@ -149,10 +150,10 @@ function CoachBadge() {
       }}
     >
       <span className="welcome-coach-badge-cap">🎓</span>
-      Coach
+      {tr("Coach")}
       <span
         aria-hidden
-        title="Verified"
+        title={tr("Verified")}
         className="welcome-coach-badge-tick"
         style={{
           display: 'inline-flex',
@@ -229,11 +230,11 @@ function BadgeWall({ badges, userId, isPublicView = false }) {
 
       <div className="badge-wall-section">
         <div className="badge-wall-header">
-          <h2 className="badge-wall-title">🏅 My Achievements</h2>
+          <h2 className="badge-wall-title">{tr("🏅 My Achievements")}</h2>
           <div className="badge-wall-header-actions">
             <span className="badge-wall-footer-count">{totalEarned}/{totalBadges}</span>
             <button className="badge-wall-toggle" onClick={() => setShowAll(s => !s)}>
-              {showAll ? 'Show Less' : 'Show All'}
+              {showAll ? tr('Show Less') : tr('Show All')}
             </button>
           </div>
         </div>
@@ -337,16 +338,16 @@ function WatchGamesCard({ displayName }) {
       <div className="watch-games-card">
         <div className="watch-games-icon">♟</div>
         <div className="watch-games-info">
-          <h3 className="watch-games-title">Watch My Games</h3>
+          <h3 className="watch-games-title">{tr("Watch My Games")}</h3>
           <div className="watch-games-stats">
-            <span className="watch-games-count">{gamesInfo.totalCount} games saved</span>
+            <span className="watch-games-count">{gamesInfo.totalCount} {tr("games saved")}</span>
             {lastPlayed && (
-              <span className="watch-games-last">Last played: {lastPlayed}</span>
+              <span className="watch-games-last">{tr("Last played:")} {lastPlayed}</span>
             )}
           </div>
         </div>
         <Link to={`/player/${encodeURIComponent(displayName)}/games`} style={{ textDecoration: 'none' }}>
-          <button className="watch-games-btn">▶ Watch</button>
+          <button className="watch-games-btn">{tr("▶ Watch")}</button>
         </Link>
       </div>
     </div>
@@ -361,13 +362,13 @@ function XpWallet({ wallet }) {
   const [showHelp, setShowHelp] = React.useState(false);
 
   const helpRows = [
-    { icon: '🧩', text: 'Every puzzle (daily, healthy mix, theme, rating, pieces)', xp: '+5 XP' },
-    { icon: '🎮', text: 'Every game (Tic-Tac-Toe, Bingo)', xp: '+2 XP' },
-    { icon: '🏁', text: 'Every race in the Race Hub (5–30 min races)', xp: '+5 XP' },
-    { icon: '🔍', text: 'Every game analysis you run', xp: '+3 XP' },
-    { icon: '⚔️', text: 'Every Arena Tournament game you play', xp: '+5 XP' },
-    { icon: '🤝', text: 'Inviting a friend who joins', xp: '+30 XP' },
-    { icon: '💜', text: 'Accepting a friend (both of you earn it)', xp: '+2 XP' },
+    { icon: '🧩', text: tr('Every puzzle (daily, healthy mix, theme, rating, pieces)'), xp: tr('+5 XP') },
+    { icon: '🎮', text: tr('Every game (Tic-Tac-Toe, Bingo)'), xp: tr('+2 XP') },
+    { icon: '🏁', text: tr('Every race in the Race Hub (5–30 min races)'), xp: tr('+5 XP') },
+    { icon: '🔍', text: tr('Every game analysis you run'), xp: tr('+3 XP') },
+    { icon: '⚔️', text: tr('Every Arena Tournament game you play'), xp: tr('+5 XP') },
+    { icon: '🤝', text: tr('Inviting a friend who joins'), xp: tr('+30 XP') },
+    { icon: '💜', text: tr('Accepting a friend (both of you earn it)'), xp: tr('+2 XP') },
   ];
 
   return (
@@ -381,11 +382,11 @@ function XpWallet({ wallet }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
           <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--obsidian-accent, #06b6d4)' }}>
-            XP Wallet
+            {tr("XP Wallet")}
           </span>
           <button
             type="button"
-            aria-label="How do I earn XP?"
+            aria-label={tr("How do I earn XP?")}
             onClick={() => setShowHelp(v => !v)}
             style={{
               width: 20, height: 20, flexShrink: 0,
@@ -402,7 +403,7 @@ function XpWallet({ wallet }) {
           <span style={{ fontSize: 40, fontWeight: 800, lineHeight: 1, color: 'var(--obsidian-text, #f8fafc)' }}>
             {total.toLocaleString()}
           </span>
-          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--obsidian-text-muted, var(--color-text-muted))' }}>XP</span>
+          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--obsidian-text-muted, var(--color-text-muted))' }}>{"XP"}</span>
         </div>
       </div>
 
@@ -424,7 +425,7 @@ function XpWallet({ wallet }) {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--obsidian-accent, #06b6d4)' }}>How you earn XP</span>
+              <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--obsidian-accent, #06b6d4)' }}>{tr("How you earn XP")}</span>
               <button type="button" onClick={() => setShowHelp(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 18, lineHeight: 1, padding: 2 }}>×</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
@@ -437,7 +438,7 @@ function XpWallet({ wallet }) {
               ))}
             </div>
             <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--color-border)', fontSize: 11, color: 'var(--color-text-faint)', lineHeight: 1.5 }}>
-              XP is separate from Monthly Focus XP — it tracks how active you are across the app.
+              {tr("XP is separate from Monthly Focus XP — it tracks how active you are across the app.")}
             </div>
           </div>
         </div>,
@@ -462,10 +463,10 @@ function StatsBar({ ratings }) {
   }, []);
 
   const ratingCats = [
-    { key: 'bullet',    label: 'Bullet',    icon: '⚡', color: 'var(--color-warning)' },
-    { key: 'blitz',     label: 'Blitz',     icon: '🔥', color: 'var(--color-danger)' },
-    { key: 'rapid',     label: 'Rapid',     icon: '🐇', color: 'var(--color-success)' },
-    { key: 'classical', label: 'Classical', icon: '🐢', color: 'var(--color-accent-2)' },
+    { key: 'bullet',    label: tr('Bullet'),    icon: '⚡', color: 'var(--color-warning)' },
+    { key: 'blitz',     label: tr('Blitz'),     icon: '🔥', color: 'var(--color-danger)' },
+    { key: 'rapid',     label: tr('Rapid'),     icon: '🐇', color: 'var(--color-success)' },
+    { key: 'classical', label: tr('Classical'), icon: '🐢', color: 'var(--color-accent-2)' },
   ];
 
   const divider = (
@@ -550,7 +551,7 @@ function StatsBar({ ratings }) {
           </span>
         </div>
         <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          Replay
+          {tr("Replay")}
         </span>
       </div>
 
@@ -591,8 +592,8 @@ function TodayStrip() {
     const r = streak?.repair;
     if (!r?.eligible || repairBusy) return;
     if (!window.confirm(
-      `Restore your streak for ${r.cost} XP?\n\n` +
-      `This buys back ${r.istDate}. You can restore at most ${r.maxPerBlock} days ` +
+      tr("Restore your streak for {cost} XP?\\n\\n", { cost: r.cost }) +
+      tr("This buys back {istDate}. You can restore at most {maxPerBlock} days ", { istDate: r.istDate, maxPerBlock: r.maxPerBlock }) +
       `out of every 5 — the other 3 have to be earned.`
     )) return;
 
@@ -715,12 +716,12 @@ function TodayStrip() {
         key="streak"
         className={`today-chip ${n > 0 ? 'today-chip--done' : ''}`}
         title={n > 0
-          ? `${streak.daysToNextReport} more day(s) until your next report`
+          ? tr("{daysToNextReport} more day(s) until your next report", { daysToNextReport: streak.daysToNextReport })
           : 'Practise today to start a streak'}
       >
         <span className="today-chip-emoji">&#128293;</span>
         <span className="today-chip-text">
-          <strong>{n}</strong>-day streak{n > 0 ? '' : ' — start one!'}
+          <strong>{n}</strong>{tr("-day streak")}{n > 0 ? '' : tr(' — start one!')}
         </span>
       </div>
     );
@@ -739,11 +740,11 @@ function TodayStrip() {
           className="today-chip today-chip--todo"
           disabled={repairBusy}
           onClick={onRepair}
-          title={`Buy back ${r.istDate} for ${r.cost} XP — ${left} of ${r.maxPerBlock} left in this 5-day block`}
+          title={tr("Buy back {istDate} for {cost} XP — {left} of {maxPerBlock} left in this 5-day block", { istDate: r.istDate, cost: r.cost, left: left, maxPerBlock: r.maxPerBlock })}
         >
           <span className="today-chip-emoji">&#129517;</span>
           <span className="today-chip-text">
-            {repairBusy ? 'Restoring…' : <>Missed yesterday — restore for <strong>{r.cost}</strong> XP</>}
+            {repairBusy ? tr('Restoring…') : <>{tr("Missed yesterday — restore for")} <strong>{r.cost}</strong> {"XP"}</>}
           </span>
         </button>
       );
@@ -766,7 +767,7 @@ function TodayStrip() {
     jobRunning ? (
       <span key="report" className="today-chip today-chip--todo">
         <span className="today-chip-emoji">&#128202;</span>
-        <span className="today-chip-text">Weekly report — being prepared…</span>
+        <span className="today-chip-text">{tr("Weekly report — being prepared…")}</span>
       </span>
     ) : reportDue ? (
       <button
@@ -780,14 +781,14 @@ function TodayStrip() {
       >
         <span className="today-chip-emoji">&#127873;</span>
         <span className="today-chip-text">
-          Unlock weekly report{reportPrice && !reportPrice.free ? ` · ${reportPrice.price} XP` : ''}
+          Unlock weekly report{reportPrice && !reportPrice.free ? tr(" · {price} XP", { price: reportPrice.price }) : ''}
         </span>
         <span className="today-chip-go">&rarr;</span>
       </button>
     ) : report ? (
       <Link key="report" to={`/streak-report/${report.id}`} className="today-chip today-chip--done">
         <span className="today-chip-emoji">&#128202;</span>
-        <span className="today-chip-text">Weekly report</span>
+        <span className="today-chip-text">{tr("Weekly report")}</span>
         <span className="today-chip-go">&rarr;</span>
       </Link>
     ) : (
@@ -799,7 +800,7 @@ function TodayStrip() {
         aria-expanded={showHow}
       >
         <span className="today-chip-emoji">&#128202;</span>
-        <span className="today-chip-text">Weekly report</span>
+        <span className="today-chip-text">{tr("Weekly report")}</span>
         <span className="today-chip-go">?</span>
       </button>
     )
@@ -810,7 +811,7 @@ function TodayStrip() {
   chips.push(
     <Link key="help" to="/help" className="today-chip today-chip--todo">
       <span className="today-chip-emoji">&#128161;</span>
-      <span className="today-chip-text">Help</span>
+      <span className="today-chip-text">{tr("Help")}</span>
       <span className="today-chip-go">&rarr;</span>
     </Link>
   );
@@ -822,7 +823,7 @@ function TodayStrip() {
     chips.push(
       <Link key="myclasses" to="/attendance" className="today-chip today-chip--todo">
         <span className="today-chip-emoji">&#127891;</span>
-        <span className="today-chip-text">My Classes</span>
+        <span className="today-chip-text">{tr("My Classes")}</span>
         <span className="today-chip-go">&rarr;</span>
       </Link>
     );
@@ -831,7 +832,7 @@ function TodayStrip() {
     chips.push(
       <Link key="mycoach" to="/my-coach" className="today-chip today-chip--todo">
         <span className="today-chip-emoji">&#127891;</span>
-        <span className="today-chip-text">My Coach</span>
+        <span className="today-chip-text">{tr("My Coach")}</span>
         <span className="today-chip-go">&rarr;</span>
       </Link>
     );
@@ -893,19 +894,19 @@ function StreakHowTo({ progress, onClose }) {
   // on an ordinary busy evening — and a reward nobody reaches is not a reward.
   const rows = [
     { key: 'puzzles',  icon: '\u{1F9E9}', label: 'puzzles', to: '/training/healthy-mix',
-      note: 'Healthy Mix, themes, pieces or rating — all count' },
-    { key: 'games',    icon: '⚔️', label: 'game — Chess Nexus, Chess.com or Lichess',
-      to: '/arenatournament', note: 'blitz, rapid or classical' },
-    { key: 'endgames', icon: '♟️', label: 'endgame against the computer', to: '/study/endgames' },
+      note: tr('Healthy Mix, themes, pieces or rating — all count') },
+    { key: 'games',    icon: '⚔️', label: tr('game — Chess Nexus, Chess.com or Lichess'),
+      to: '/arenatournament', note: tr('blitz, rapid or classical') },
+    { key: 'endgames', icon: '♟️', label: tr('endgame against the computer'), to: '/study/endgames' },
   ];
 
   return (
     <div className="streak-howto">
       <div className="streak-howto-head">
-        <strong>Practise 5 days to earn your report</strong>
-        <button type="button" className="streak-howto-x" onClick={onClose} aria-label="Close">&times;</button>
+        <strong>{tr("Practise 5 days to earn your report")}</strong>
+        <button type="button" className="streak-howto-x" onClick={onClose} aria-label={tr("Close")}>&times;</button>
       </div>
-      <p className="streak-howto-sub">Every day needs all three:</p>
+      <p className="streak-howto-sub">{tr("Every day needs all three:")}</p>
       <ul className="streak-howto-list">
         {rows.map(r => {
           const have = done[r.key] || 0;
@@ -924,15 +925,15 @@ function StreakHowTo({ progress, onClose }) {
         })}
       </ul>
       <p className="streak-howto-foot">
-        Games you play on Chess.com and Lichess are counted when your report is generated.
+        {tr("Games you play on Chess.com and Lichess are counted when your report is generated.")}
         {' '}Make sure your Chess.com and Lichess usernames are saved in{' '}
         {/* Settings → Profile: the fields live in ProfilePanel, which
             SettingsPage renders under its 'profile' tab. ?tab=profile opens it
             directly rather than landing on Board themes. */}
         <Link to="/settings?tab=profile" className="streak-howto-link">
-          Settings → Profile
+          {tr("Settings → Profile")}
         </Link>
-        , or those games cannot be included.
+        {tr(", or those games cannot be included.")}
       </p>
     </div>
   );
@@ -942,11 +943,11 @@ function StreakHowTo({ progress, onClose }) {
 // The dashboard's sections, switched from a dock pinned to the bottom of the
 // screen. The view lives in the URL (?view=) so refresh/back keep it.
 const DOCK_VIEWS = [
-  { id: 'home',     icon: '🏠', label: 'Home' },
-  { id: 'activity', icon: '📈', label: 'Activity' },
+  { id: 'home',     icon: '🏠', label: tr('Home') },
+  { id: 'activity', icon: '📈', label: tr('Activity') },
   { id: 'puzzles',  icon: '🧩', label: 'Stats' },
-  { id: 'guide',    icon: '🧭', label: 'Guide' },
-  { id: 'coach',    icon: '🎓', label: 'Coach' },
+  { id: 'guide',    icon: '🧭', label: tr('Guide') },
+  { id: 'coach',    icon: '🎓', label: tr('Coach') },
 ];
 
 function DashDock({ views, active, onChange }) {
@@ -958,7 +959,7 @@ function DashDock({ views, active, onChange }) {
   // Portalled to <body>: inside the page an ancestor's stacking context kept
   // the dock under the site footer no matter how high its own z-index was.
   return ReactDOM.createPortal(
-    <nav className="dash-dock" aria-label="Dashboard sections">
+    <nav className="dash-dock" aria-label={tr("Dashboard sections")}>
       {views.map(v => (
         <button
           key={v.id}
@@ -999,7 +1000,7 @@ function PuzzleTrendCard({ stats }) {
     const area = `${line} L${x(days - 1).toFixed(1)},${PAD_T + lineH} L${PAD_L},${PAD_T + lineH} Z`;
     chart = (
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block' }} role="img"
-        aria-label={`Puzzle rating over the last ${days} days, from ${r[0]} to ${r[days - 1]}`}>
+        aria-label={tr("Puzzle rating over the last {days} days, from {v1} to {v2}", { days: days, v1: r[0], v2: r[days - 1] })}>
         <defs>
           <linearGradient id="ptc-fill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.35" />
@@ -1021,20 +1022,20 @@ function PuzzleTrendCard({ stats }) {
 
   const trend = stats?.trend ?? 0;
   const facts = [
-    { label: 'Rating', value: stats?.rating ?? '—', extra: trend ? `${trend > 0 ? '+' : ''}${trend}` : null, extraColor: trend > 0 ? 'var(--color-success)' : 'var(--color-danger)' },
-    { label: 'Puzzles', value: stats?.attempts ?? 0 },
-    { label: 'Solved', value: stats?.solved ?? 0, color: 'var(--color-success)' },
-    { label: 'Accuracy', value: stats?.attempts ? `${stats.accuracy}%` : '—', color: 'var(--color-accent-2)' },
+    { label: tr('Rating'), value: stats?.rating ?? '—', extra: trend ? `${trend > 0 ? '+' : ''}${trend}` : null, extraColor: trend > 0 ? 'var(--color-success)' : 'var(--color-danger)' },
+    { label: tr('Puzzles'), value: stats?.attempts ?? 0 },
+    { label: tr('Solved'), value: stats?.solved ?? 0, color: 'var(--color-success)' },
+    { label: tr('Accuracy'), value: stats?.attempts ? `${stats.accuracy}%` : '—', color: 'var(--color-accent-2)' },
   ];
 
   return (
     <div className="dash-panel ptc">
       <div className="ptc-head">
         <div>
-          <div className="ptc-eyebrow">🧩 Puzzles · last 30 days</div>
-          <div className="ptc-title">Puzzle rating</div>
+          <div className="ptc-eyebrow">{tr("🧩 Puzzles · last 30 days")}</div>
+          <div className="ptc-title">{tr("Puzzle rating")}</div>
         </div>
-        <Link to="/puzzle-dashboard" className="ptc-link">Puzzle dashboard →</Link>
+        <Link to="/puzzle-dashboard" className="ptc-link">{tr("Puzzle dashboard →")}</Link>
       </div>
       <div className="ptc-facts">
         {facts.map(f => (
@@ -1046,7 +1047,7 @@ function PuzzleTrendCard({ stats }) {
           </div>
         ))}
       </div>
-      {chart || <div className="ptc-empty">Solve a few puzzles and your 30-day graph appears here.</div>}
+      {chart || <div className="ptc-empty">{tr("Solve a few puzzles and your 30-day graph appears here.")}</div>}
     </div>
   );
 }
@@ -1056,10 +1057,10 @@ function PuzzleTrendCard({ stats }) {
 // from /api/user/tournament-rating-history. Categories never played in the
 // window are left out.
 const TRT_CATS = [
-  { key: 'bullet',    label: 'Bullet',    color: 'var(--color-warning)' },
-  { key: 'blitz',     label: 'Blitz',     color: 'var(--color-accent)' },
-  { key: 'rapid',     label: 'Rapid',     color: 'var(--color-success)' },
-  { key: 'classical', label: 'Classical', color: '#a78bfa' },
+  { key: 'bullet',    label: tr('Bullet'),    color: 'var(--color-warning)' },
+  { key: 'blitz',     label: tr('Blitz'),     color: 'var(--color-accent)' },
+  { key: 'rapid',     label: tr('Rapid'),     color: 'var(--color-success)' },
+  { key: 'classical', label: tr('Classical'), color: '#a78bfa' },
 ];
 const TRT_RANGES = [{ id: 30, label: '30d' }, { id: 90, label: '90d' }, { id: 365, label: '1y' }];
 
@@ -1102,7 +1103,7 @@ function TournamentTrendCard({ arena }) {
           </g>
         ))}
         <text x={PAD_L} y={H - 4} fontSize="10.5" fill="var(--color-text-faint)">{fmt(start)}</text>
-        <text x={W - PAD_R} y={H - 4} textAnchor="end" fontSize="10.5" fill="var(--color-text-faint)">Today</text>
+        <text x={W - PAD_R} y={H - 4} textAnchor="end" fontSize="10.5" fill="var(--color-text-faint)">{tr("Today")}</text>
         {lines.map(l => {
           // Hold the latest rating flat to today, so every line ends at the right edge.
           const pts = [...l.pts, { t: now, r: l.pts[l.pts.length - 1].r }];
@@ -1125,25 +1126,25 @@ function TournamentTrendCard({ arena }) {
   }
 
   const facts = [
-    { label: 'Tournaments', value: arena?.totalTournaments ?? '—', color: 'var(--color-warning)' },
-    { label: 'Games', value: arena?.totalGamesPlayed ?? '—', color: 'var(--color-accent)' },
-    { label: 'Carry pts', value: arena?.arenaCarryPoints > 0 ? `+${arena.arenaCarryPoints}` : (arena ? 0 : '—'), color: 'var(--color-accent-2)' },
+    { label: tr('Tournaments'), value: arena?.totalTournaments ?? '—', color: 'var(--color-warning)' },
+    { label: tr('Games'), value: arena?.totalGamesPlayed ?? '—', color: 'var(--color-accent)' },
+    { label: tr('Carry pts'), value: arena?.arenaCarryPoints > 0 ? `+${arena.arenaCarryPoints}` : (arena ? 0 : '—'), color: 'var(--color-accent-2)' },
   ];
 
   return (
     <div className="dash-panel ptc">
       <div className="ptc-head">
         <div>
-          <div className="ptc-eyebrow">🏟️ Tournaments · last {TRT_RANGES.find(r => r.id === days)?.label}</div>
-          <div className="ptc-title">Tournament ratings</div>
+          <div className="ptc-eyebrow">{tr("🏟️ Tournaments · last")} {TRT_RANGES.find(r => r.id === days)?.label}</div>
+          <div className="ptc-title">{tr("Tournament ratings")}</div>
         </div>
         <div className="trt-tools">
-          <div className="trt-range" role="group" aria-label="Time range">
+          <div className="trt-range" role="group" aria-label={tr("Time range")}>
             {TRT_RANGES.map(r => (
               <button key={r.id} type="button" className={days === r.id ? 'on' : ''} aria-pressed={days === r.id} onClick={() => setDays(r.id)}>{r.label}</button>
             ))}
           </div>
-          <Link to="/arena-tournament-dashboard" className="ptc-link">Tournament dashboard →</Link>
+          <Link to="/arena-tournament-dashboard" className="ptc-link">{tr("Tournament dashboard →")}</Link>
         </div>
       </div>
       <div className="ptc-facts trt-facts">
@@ -1170,7 +1171,7 @@ function TournamentTrendCard({ arena }) {
       )}
       {chart || (
         <div className="ptc-empty">
-          {data ? <>No rated tournament games in this period. <Link to="/arenatournament">Join a tournament</Link> and your rating graph appears here.</> : 'Loading…'}
+          {data ? <>{tr("No rated tournament games in this period.")} <Link to="/arenatournament">{tr("Join a tournament")}</Link> {tr("and your rating graph appears here.")}</> : tr('Loading…')}
         </div>
       )}
     </div>
@@ -1243,12 +1244,12 @@ function getCountryFlag(country) {
 // ─── Monthly Focus Helpers ───────────────────────────────────────────────────
 function getMonthlyFocusBadge(completedDays, perfectDays) {
   if (!completedDays || completedDays === 0) return null;
-  if (completedDays >= 7 && perfectDays >= 5) return { emoji: '🏆', name: 'Champion' };
-  if (perfectDays >= 5) return { emoji: '👑', name: 'Perfect' };
-  if (completedDays >= 7) return { emoji: '🎯', name: 'Achiever' };
-  if (completedDays >= 5) return { emoji: '🔥', name: 'Dedicated' };
-  if (completedDays >= 3) return { emoji: '⭐', name: 'Active' };
-  return { emoji: '🌱', name: 'Beginner' };
+  if (completedDays >= 7 && perfectDays >= 5) return { emoji: '🏆', name: tr('Champion') };
+  if (perfectDays >= 5) return { emoji: '👑', name: tr('Perfect') };
+  if (completedDays >= 7) return { emoji: '🎯', name: tr('Achiever') };
+  if (completedDays >= 5) return { emoji: '🔥', name: tr('Dedicated') };
+  if (completedDays >= 3) return { emoji: '⭐', name: tr('Active') };
+  return { emoji: '🌱', name: tr('Beginner') };
 }
 
 function MFStatCard({ icon, label, value, accent }) {
@@ -1319,13 +1320,13 @@ function MonthlyFocusPanel({ publicData = null }) {
         <div className="mfp-header-left">
           <span className="mfp-header-icon">🎯</span>
           <div>
-            <h2 className="mfp-title">Monthly Focus Challenge</h2>
+            <h2 className="mfp-title">{tr("Monthly Focus Challenge")}</h2>
             <p className="mfp-month">{currentMonthLabel}</p>
           </div>
         </div>
-        <Link to="/monthly-focus" className="mfp-view-all">View All →</Link>
+        <Link to="/monthly-focus" className="mfp-view-all">{tr("View All →")}</Link>
       </div>
-      {!hasAnything && <p style={{ color: 'var(--color-text-faint)', fontSize: 13, margin: '8px 0 0' }}>No Monthly Focus challenge active this month.</p>}
+      {!hasAnything && <p style={{ color: 'var(--color-text-faint)', fontSize: 13, margin: '8px 0 0' }}>{tr("No Monthly Focus challenge active this month.")}</p>}
 
       {/* Official challenge horizontal stat cards */}
       {officialWithStats.map(focus => {
@@ -1333,14 +1334,14 @@ function MonthlyFocusPanel({ publicData = null }) {
         const badge = getMonthlyFocusBadge(s.completedDays, s.perfectDays);
         return (
           <div key={focus._id} className="mfp-official-block">
-            <div className="mfp-official-badge-label">🏛️ ChessNexus Official</div>
+            <div className="mfp-official-badge-label">{tr("🏛️ ChessNexus Official")}</div>
             <div className="mfp-official-focus-name">{focus.title}</div>
             <div className="mfp-stat-cards">
-              <MFStatCard icon="🏅" label="Rank"         value={s.rank ? `#${s.rank}` : '—'}       accent="var(--color-warning)" />
-              <MFStatCard icon="⚡" label="XP Earned"    value={s.focusXp ?? 0}                      accent="var(--color-accent)" />
-              <MFStatCard icon="🧠" label="Skill Score"  value={s.skillScore ?? 0}                   accent="var(--color-accent-2)" />
-              <MFStatCard icon="🎖️" label="Badge"        value={badge ? `${badge.emoji} ${badge.name}` : '—'} accent="var(--color-success)" />
-              <MFStatCard icon="✨" label="Perfect Days" value={s.perfectDays ?? 0}                  accent="#e879f9" />
+              <MFStatCard icon="🏅" label={tr("Rank")}         value={s.rank ? `#${s.rank}` : '—'}       accent="var(--color-warning)" />
+              <MFStatCard icon="⚡" label={tr("XP Earned")}    value={s.focusXp ?? 0}                      accent="var(--color-accent)" />
+              <MFStatCard icon="🧠" label={tr("Skill Score")}  value={s.skillScore ?? 0}                   accent="var(--color-accent-2)" />
+              <MFStatCard icon="🎖️" label={tr("Badge")}        value={badge ? `${badge.emoji} ${badge.name}` : '—'} accent="var(--color-success)" />
+              <MFStatCard icon="✨" label={tr("Perfect Days")} value={s.perfectDays ?? 0}                  accent="#e879f9" />
             </div>
           </div>
         );
@@ -1349,8 +1350,8 @@ function MonthlyFocusPanel({ publicData = null }) {
       {/* Invite to join if official challenge active but user hasn't played */}
       {officialWithStats.length === 0 && officialFocuses.length > 0 && (
         <div className="mfp-join-invite">
-          <span>🏛️ An official Monthly Focus challenge is active this month!</span>
-          <Link to="/monthly-focus" className="mfp-join-link">Join now →</Link>
+          <span>{tr("🏛️ An official Monthly Focus challenge is active this month!")}</span>
+          <Link to="/monthly-focus" className="mfp-join-link">{tr("Join now →")}</Link>
         </div>
       )}
 
@@ -1360,11 +1361,11 @@ function MonthlyFocusPanel({ publicData = null }) {
           <table className="mfp-table">
             <thead>
               <tr>
-                <th>Challenge</th>
-                <th>Rank</th>
-                <th>XP</th>
-                <th>Skill Score</th>
-                <th>Badge</th>
+                <th>{tr("Challenge")}</th>
+                <th>{tr("Rank")}</th>
+                <th>{"XP"}</th>
+                <th>{tr("Skill Score")}</th>
+                <th>{tr("Badge")}</th>
               </tr>
             </thead>
             <tbody>
@@ -1372,14 +1373,14 @@ function MonthlyFocusPanel({ publicData = null }) {
                 const s = data.statsMap[focus._id];
                 const off = isOfficial(focus);
                 const badge = getMonthlyFocusBadge(s.completedDays, s.perfectDays);
-                const creator = off ? 'ChessNexus' : (focus.createdBy?.displayName || focus.createdBy?.username || 'Elite');
+                const creator = off ? tr('ChessNexus') : (focus.createdBy?.displayName || focus.createdBy?.username || tr('Elite'));
                 return (
                   <tr key={focus._id} className={off ? 'mfp-row-official' : ''}>
                     <td>
                       <Link to={`/monthly-focus`} className="mfp-focus-name-link">
                         {off && <span className="mfp-official-dot">🏛️</span>}
                         <span>{focus.title}</span>
-                        <span className="mfp-creator-tag">by {creator}</span>
+                        <span className="mfp-creator-tag">{tr("by")} {creator}</span>
                       </Link>
                     </td>
                     <td className="mfp-td-rank">{s.rank ? `#${s.rank}` : '—'}</td>
@@ -1588,7 +1589,7 @@ export default function UserDashboard() {
           const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
           const res = await fetch(`${apiBase}/api/public/profile/${encodeURIComponent(routeDisplayName)}`);
           if (res.status === 404) {
-            setErr(`Player "${routeDisplayName}" not found.`);
+            setErr(tr("Player \"{routeDisplayName}\" not found.", { routeDisplayName: routeDisplayName }));
             setLoading(false);
             return;
           }
@@ -1683,10 +1684,10 @@ export default function UserDashboard() {
         }
 
         if (e.response?.status === 401) {
-          setErr('Session expired. Please log in again.');
+          setErr(tr('Session expired. Please log in again.'));
           setTimeout(() => navigate('/login'), 3000);
         } else if (e.code === 'NETWORK_ERROR' || !navigator.onLine) {
-          setErr('Network connection issue. Please check your internet and try again.');
+          setErr(tr('Network connection issue. Please check your internet and try again.'));
         } else {
           setErr(e?.response?.data?.message || e.message || 'Failed to load dashboard');
         }
@@ -1715,7 +1716,7 @@ export default function UserDashboard() {
 
   async function saveCountry(e) {
     e.preventDefault();
-    if (!editCountry.trim()) return setEditMsg({ type: 'err', text: 'Please select a country.' });
+    if (!editCountry.trim()) return setEditMsg({ type: 'err', text: tr('Please select a country.') });
     setEditSaving(true);
     setEditMsg(null);
     try {
@@ -1726,11 +1727,11 @@ export default function UserDashboard() {
         body: JSON.stringify({ country: editCountry.trim() }),
       });
       const data = await res.json();
-      if (!res.ok) return setEditMsg({ type: 'err', text: data.message || 'Failed to update country.' });
+      if (!res.ok) return setEditMsg({ type: 'err', text: data.message || tr('Failed to update country.') });
       setUser(prev => ({ ...prev, country: data.country }));
-      setEditMsg({ type: 'ok', text: 'Country updated!' });
+      setEditMsg({ type: 'ok', text: tr('Country updated!') });
     } catch {
-      setEditMsg({ type: 'err', text: 'Network error.' });
+      setEditMsg({ type: 'err', text: tr('Network error.') });
     } finally {
       setEditSaving(false);
     }
@@ -1738,9 +1739,9 @@ export default function UserDashboard() {
 
   async function savePassword(e) {
     e.preventDefault();
-    if (!editCurrentPw || !editNewPw || !editConfirmPw) return setEditMsg({ type: 'err', text: 'Fill all password fields.' });
-    if (editNewPw.length < 6) return setEditMsg({ type: 'err', text: 'New password must be at least 6 characters.' });
-    if (editNewPw !== editConfirmPw) return setEditMsg({ type: 'err', text: 'New passwords do not match.' });
+    if (!editCurrentPw || !editNewPw || !editConfirmPw) return setEditMsg({ type: 'err', text: tr('Fill all password fields.') });
+    if (editNewPw.length < 6) return setEditMsg({ type: 'err', text: tr('New password must be at least 6 characters.') });
+    if (editNewPw !== editConfirmPw) return setEditMsg({ type: 'err', text: tr('New passwords do not match.') });
     setEditSaving(true);
     setEditMsg(null);
     try {
@@ -1751,11 +1752,11 @@ export default function UserDashboard() {
         body: JSON.stringify({ currentPassword: editCurrentPw, newPassword: editNewPw }),
       });
       const data = await res.json();
-      if (!res.ok) return setEditMsg({ type: 'err', text: data.message || 'Failed to change password.' });
-      setEditMsg({ type: 'ok', text: 'Password changed!' });
+      if (!res.ok) return setEditMsg({ type: 'err', text: data.message || tr('Failed to change password.') });
+      setEditMsg({ type: 'ok', text: tr('Password changed!') });
       setEditCurrentPw(''); setEditNewPw(''); setEditConfirmPw('');
     } catch {
-      setEditMsg({ type: 'err', text: 'Network error.' });
+      setEditMsg({ type: 'err', text: tr('Network error.') });
     } finally {
       setEditSaving(false);
     }
@@ -1802,13 +1803,13 @@ export default function UserDashboard() {
             }}
           >
             <h2 style={{ margin: '0 0 20px', color: 'var(--obsidian-accent, #7dd3fc)', fontSize: '18px' }}>
-              ✏️ Edit Profile
+              {tr("✏️ Edit Profile")}
             </h2>
 
             {/* Country */}
             <form onSubmit={saveCountry} style={{ marginBottom: '24px' }}>
               <label style={{ display: 'block', color: 'var(--color-text-muted)', fontSize: '13px', marginBottom: '6px' }}>
-                Country
+                {tr("Country")}
               </label>
               <select
                 value={editCountry}
@@ -1819,7 +1820,7 @@ export default function UserDashboard() {
                   border: '1px solid var(--color-white-a13)', fontSize: '14px', marginBottom: '10px',
                 }}
               >
-                <option value="">— Select country —</option>
+                <option value="">{tr("— Select country —")}</option>
                 {COUNTRY_LIST.map(c => (
                   <option key={c} value={c}>{getCountryFlag(c)} {c}</option>
                 ))}
@@ -1833,7 +1834,7 @@ export default function UserDashboard() {
                   border: 'none', cursor: editSaving ? 'not-allowed' : 'pointer', opacity: editSaving ? 0.6 : 1,
                 }}
               >
-                Save Country
+                {tr("Save Country")}
               </button>
             </form>
 
@@ -1842,12 +1843,12 @@ export default function UserDashboard() {
             {/* Change Password */}
             <form onSubmit={savePassword}>
               <label style={{ display: 'block', color: 'var(--color-text-muted)', fontSize: '13px', marginBottom: '10px', fontWeight: '600' }}>
-                Change Password
+                {tr("Change Password")}
               </label>
               {[
-                { label: 'Current password', val: editCurrentPw, set: setEditCurrentPw },
-                { label: 'New password', val: editNewPw, set: setEditNewPw },
-                { label: 'Confirm new password', val: editConfirmPw, set: setEditConfirmPw },
+                { label: tr('Current password'), val: editCurrentPw, set: setEditCurrentPw },
+                { label: tr('New password'), val: editNewPw, set: setEditNewPw },
+                { label: tr('Confirm new password'), val: editConfirmPw, set: setEditConfirmPw },
               ].map(({ label, val, set }) => (
                 <div key={label} style={{ marginBottom: '10px' }}>
                   <label style={{ display: 'block', color: 'var(--color-text-muted)', fontSize: '12px', marginBottom: '4px' }}>{label}</label>
@@ -1873,7 +1874,7 @@ export default function UserDashboard() {
                   border: 'none', cursor: editSaving ? 'not-allowed' : 'pointer', opacity: editSaving ? 0.6 : 1,
                 }}
               >
-                Change Password
+                {tr("Change Password")}
               </button>
             </form>
 
@@ -1896,7 +1897,7 @@ export default function UserDashboard() {
                 border: '1px solid var(--color-white-a10)', fontSize: '13px', cursor: 'pointer',
               }}
             >
-              Close
+              {tr("Close")}
             </button>
           </div>
         </div>
@@ -1935,8 +1936,8 @@ export default function UserDashboard() {
                     the pill is stripped back to a bare 💎 beside the name, and a
                     media query cannot override an inline style. */}
                 {user.role === 'elite' && (
-                  <span className="welcome-elite" title="Elite">
-                    💎<span className="welcome-elite-text"> Elite</span>
+                  <span className="welcome-elite" title={tr("Elite")}>
+                    💎<span className="welcome-elite-text"> {tr("Elite")}</span>
                   </span>
                 )}
                 {/* Flag beside the NAME on phones only. It is rendered twice —
@@ -1981,13 +1982,13 @@ export default function UserDashboard() {
                       setProfileLinkCopied(true);
                       setTimeout(() => setProfileLinkCopied(false), 2500);
                     }}
-                    title={profileLinkCopied ? 'Profile link copied' : 'Copy a link to your public profile'}
-                    aria-label={profileLinkCopied ? 'Profile link copied' : 'Share profile'}
+                    title={profileLinkCopied ? tr('Profile link copied') : tr('Copy a link to your public profile')}
+                    aria-label={profileLinkCopied ? tr('Profile link copied') : tr('Share profile')}
                   >
                     {profileLinkCopied ? '✓' : '🔗'}
                   </button>
                   {user.memberSince && (
-                    <span className="welcome-meta-pill">📅 Joined {new Date(user.memberSince).getFullYear()}</span>
+                    <span className="welcome-meta-pill">{tr("📅 Joined")} {new Date(user.memberSince).getFullYear()}</span>
                   )}
                   {user.isCoach && user.coachVerified && <CoachBadge />}
                   {user.country && (
@@ -2024,14 +2025,14 @@ export default function UserDashboard() {
                   >
                     <img
                       src="/monthlyfocuschampion.png"
-                      alt="Monthly Focus Champion"
+                      alt={tr("Monthly Focus Champion")}
                       className="champion-trophy-img"
                     />
                     {showTrophyTooltip && (
                       <div className="champion-trophy-tooltip">
-                        <span className="champion-trophy-tooltip-title">🏆 Monthly Focus Champion</span>
+                        <span className="champion-trophy-tooltip-title">{tr("🏆 Monthly Focus Champion")}</span>
                         <span className="champion-trophy-tooltip-desc">
-                          Awarded for achieving 5 or more <strong>perfect days</strong> in the Monthly Focus Challenge.
+                          {tr("Awarded for achieving 5 or more")} <strong>{tr("perfect days")}</strong> {tr("in the Monthly Focus Challenge.")}
                           A perfect day means completing all required tasks without missing anything.
                         </span>
                       </div>
@@ -2045,9 +2046,9 @@ export default function UserDashboard() {
                     )}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0 3px' }}>
                       {[
-                        { key: 'first',  img: 'marathonfirst',  label: 'Marathon Champion · 1st Place', count: mt.first },
-                        { key: 'second', img: 'marathonsecond', label: 'Marathon Runner-up · 2nd Place', count: mt.second },
-                        { key: 'third',  img: 'marathonthird',  label: 'Marathon · 3rd Place', count: mt.third },
+                        { key: 'first',  img: 'marathonfirst',  label: tr('Marathon Champion · 1st Place'), count: mt.first },
+                        { key: 'second', img: 'marathonsecond', label: tr('Marathon Runner-up · 2nd Place'), count: mt.second },
+                        { key: 'third',  img: 'marathonthird',  label: tr('Marathon · 3rd Place'), count: mt.third },
                       ].filter(m => m.count > 0).map(m => (
                         <span
                           key={m.key}
@@ -2088,7 +2089,7 @@ export default function UserDashboard() {
                       >
                         <img
                           src="/arenadashboardcrowns/teambattle.png"
-                          alt="Team Battle Champion"
+                          alt={tr("Team Battle Champion")}
                           className="welcome-trophy-img"
                           style={{ objectFit: 'contain', display: 'block' }}
                         />
@@ -2111,11 +2112,11 @@ export default function UserDashboard() {
                   const tier = user.arenaCrownTier;
                   if (!tier || tier === 'none') return null;
                   const cs = {
-                    bronze:   { color: '#c08457', label: 'Bronze Crown' },
-                    silver:   { color: 'var(--color-text)', label: 'Silver Crown' },
-                    gold:     { color: 'var(--color-warning)', label: 'Gold Crown' },
-                    platinum: { color: 'var(--color-text)', label: 'Platinum Crown' },
-                    gem:      { color: 'var(--color-accent-2)', label: 'Gem Crown' },
+                    bronze:   { color: '#c08457', label: tr('Bronze Crown') },
+                    silver:   { color: 'var(--color-text)', label: tr('Silver Crown') },
+                    gold:     { color: 'var(--color-warning)', label: tr('Gold Crown') },
+                    platinum: { color: 'var(--color-text)', label: tr('Platinum Crown') },
+                    gem:      { color: 'var(--color-accent-2)', label: tr('Gem Crown') },
                   }[tier];
                   if (!cs) return null;
                   return (
@@ -2172,12 +2173,12 @@ export default function UserDashboard() {
                 {user && <XpWallet wallet={user.xpWallet} />}
 
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--obsidian-accent, #06b6d4)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
-                  🏆 Highest Race Points
+                  {tr("🏆 Highest Race Points")}
                 </div>
                 {[
-                  { icon: '🏃‍♂️', label: 'Individual Race', value: user?.highestTimedRaceScore || 0, type: 'timedRace' },
-                  { icon: '🏟️',   label: 'Arena Race',      value: user?.highestArenaRaceScore || 0, type: 'arenaRace' },
-                  { icon: '👥',   label: 'Team Race',       value: user?.highestTeamRaceScore || 0,  type: 'teamRace' },
+                  { icon: '🏃‍♂️', label: tr('Individual Race'), value: user?.highestTimedRaceScore || 0, type: 'timedRace' },
+                  { icon: '🏟️',   label: tr('Arena Race'),      value: user?.highestArenaRaceScore || 0, type: 'arenaRace' },
+                  { icon: '👥',   label: tr('Team Race'),       value: user?.highestTeamRaceScore || 0,  type: 'teamRace' },
                 ].map(r => (
                   <div
                     key={r.label}
@@ -2283,9 +2284,9 @@ export default function UserDashboard() {
                 };
 
                 const arenaStats = [
-                  { icon: '🏆', label: 'Tournaments', value: arena?.totalTournaments ?? '—', accent: 'var(--color-warning)', glow: 'var(--color-white-a04)' },
-                  { icon: '⚔️',  label: 'Games',       value: arena?.totalGamesPlayed ?? '—',  accent: 'var(--color-accent)', glow: 'var(--color-white-a04)' },
-                  { icon: '⚡',  label: 'Carry Pts',   value: arena?.arenaCarryPoints > 0 ? `+${arena.arenaCarryPoints}` : (arena ? '0' : '—'), accent: 'var(--color-accent-2)', glow: 'var(--color-white-a04)' },
+                  { icon: '🏆', label: tr('Tournaments'), value: arena?.totalTournaments ?? '—', accent: 'var(--color-warning)', glow: 'var(--color-white-a04)' },
+                  { icon: '⚔️',  label: tr('Games'),       value: arena?.totalGamesPlayed ?? '—',  accent: 'var(--color-accent)', glow: 'var(--color-white-a04)' },
+                  { icon: '⚡',  label: tr('Carry Pts'),   value: arena?.arenaCarryPoints > 0 ? `+${arena.arenaCarryPoints}` : (arena ? '0' : '—'), accent: 'var(--color-accent-2)', glow: 'var(--color-white-a04)' },
                 ];
 
                 return (
@@ -2295,7 +2296,7 @@ export default function UserDashboard() {
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span style={{ fontSize: 15 }}>🧩</span>
-                          <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Puzzle Stats</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr("Puzzle Stats")}</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                           <div style={{ display: 'flex', background: 'var(--color-black-a35)', borderRadius: 'var(--radius-md)', padding: 2, gap: 2 }}>
@@ -2303,7 +2304,7 @@ export default function UserDashboard() {
                               <button key={r} onClick={() => setPuzzleCardRange(r)} style={{ border: 'none', cursor: 'pointer', padding: '2px 8px', borderRadius: 'var(--radius-sm)', fontSize: 10, fontWeight: 700, background: puzzleCardRange === r ? 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))' : 'transparent', color: puzzleCardRange === r ? '#04201f' : 'var(--color-text-faint)', transition: 'all 0.15s' }}>{r}</button>
                             ))}
                           </div>
-                          <Link to={viewedDN ? `/player/${encodeURIComponent(viewedDN)}/puzzle-dashboard` : '/puzzle-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
+                          <Link to={viewedDN ? `/player/${encodeURIComponent(viewedDN)}/puzzle-dashboard` : '/puzzle-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>{tr("Dashboard →")}</Link>
                         </div>
                       </div>
                       <div className="dash-ring-row" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -2315,16 +2316,16 @@ export default function UserDashboard() {
                           </svg>
                           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
                             <span style={{ fontSize: 36, fontWeight: 900, color: 'var(--color-text)', lineHeight: 1 }}>{solved}</span>
-                            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>solved</span>
+                            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{tr("solved")}</span>
                             <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-success)' }}>{pct}%</span>
                           </div>
                         </div>
                         {/* Stats rows */}
                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
                           {[
-                            { label: 'Puzzle Rating', value: rating, extra: trend > 0 ? `+${trend}` : trend < 0 ? `${trend}` : '—', extraColor: trend > 0 ? 'var(--color-success)' : trend < 0 ? 'var(--color-danger)' : 'rgba(203,213,225,0.3)', valueColor: 'var(--color-text)', spark: mkSpark(ps?.series?.rating, 'var(--color-text)') },
-                            { label: 'Accuracy',      value: accuracy != null ? `${accuracy}%` : '—', extra: null, valueColor: 'var(--color-accent-2)', spark: mkSpark(ps?.series?.accuracy, 'var(--color-accent-2)') },
-                            { label: 'Best Streak',   value: streak, extra: null, valueColor: 'var(--color-warning)', spark: mkSpark(ps?.series?.solved, 'var(--color-warning)') },
+                            { label: tr('Puzzle Rating'), value: rating, extra: trend > 0 ? `+${trend}` : trend < 0 ? `${trend}` : '—', extraColor: trend > 0 ? 'var(--color-success)' : trend < 0 ? 'var(--color-danger)' : 'rgba(203,213,225,0.3)', valueColor: 'var(--color-text)', spark: mkSpark(ps?.series?.rating, 'var(--color-text)') },
+                            { label: tr('Accuracy'),      value: accuracy != null ? `${accuracy}%` : '—', extra: null, valueColor: 'var(--color-accent-2)', spark: mkSpark(ps?.series?.accuracy, 'var(--color-accent-2)') },
+                            { label: tr('Best Streak'),   value: streak, extra: null, valueColor: 'var(--color-warning)', spark: mkSpark(ps?.series?.solved, 'var(--color-warning)') },
                           ].map((row, i) => (
                             <div key={i} className="dash-stat-row" style={{ display: 'grid', alignItems: 'center', gap: '0 8px' }}>
                               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{row.label}</span>
@@ -2347,9 +2348,9 @@ export default function UserDashboard() {
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span style={{ fontSize: 15 }}>🏟️</span>
-                          <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Tournament</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tr("Tournament")}</span>
                         </div>
-                        <Link to={isPublicView ? `/arena-tournament-dashboard/${encodeURIComponent(routeDisplayName)}` : '/arena-tournament-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
+                        <Link to={isPublicView ? `/arena-tournament-dashboard/${encodeURIComponent(routeDisplayName)}` : '/arena-tournament-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>{tr("Dashboard →")}</Link>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {arenaStats.map((s, i) => (
@@ -2372,7 +2373,7 @@ export default function UserDashboard() {
             {/* ── Guide: Nexus Guide (your training buddy) ── */}
             {isVisited('guide') && (
               <div className="dash-view" hidden={activeView !== 'guide'}>
-                {!isPublicView && isViewerLoggedIn && <GameInsightsPanel />}
+                {!isPublicView && isViewerLoggedIn && <GuideHub />}
               </div>
             )}
 
@@ -2384,7 +2385,7 @@ export default function UserDashboard() {
               <div className="dash-view">
                 {myCoaches && !coachTarget
                   ? <AskCoachPanel />
-                  : <div className="ptc-empty">Opening your coach page…</div>}
+                  : <div className="ptc-empty">{tr("Opening your coach page…")}</div>}
               </div>
             )}
 
@@ -2405,15 +2406,15 @@ export default function UserDashboard() {
         {loading && (
           <div className="loading-card">
             <div className="loading-icon">⏳</div>
-            Loading dashboard... Please wait.
-            <div className="loading-subtitle">If this takes too long, check your internet connection.</div>
+            {tr("Loading dashboard... Please wait.")}
+            <div className="loading-subtitle">{tr("If this takes too long, check your internet connection.")}</div>
           </div>
         )}
 
         {err && (
           <div className="error-card">
             <div className="error-message">{err}</div>
-            <button onClick={() => window.location.reload()} className="retry-button">🔁 Retry</button>
+            <button onClick={() => window.location.reload()} className="retry-button">{tr("🔁 Retry")}</button>
           </div>
         )}
 

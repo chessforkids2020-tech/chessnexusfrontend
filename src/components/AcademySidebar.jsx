@@ -5,14 +5,15 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 const NAV = [
-  { icon: '📊', label: 'Overview',   path: '/academy/overview' },
-  { icon: '👨‍🏫', label: 'Coaches',   path: '/academy/coaches' },
-  { icon: '🎯', label: 'Activities', path: '/academy/activities' },
-  { icon: '💳', label: 'Billing',    path: '/academy/billing' },
-  { icon: '🧾', label: 'Payments',   path: '/academy/payments' },
-  { icon: '⚙️', label: 'Settings',   path: '/academy/settings' },
+  { icon: '📊', label: tr('Overview'),   path: '/academy/overview' },
+  { icon: '👨‍🏫', label: tr('Coaches'),   path: '/academy/coaches' },
+  { icon: '🎯', label: tr('Activities'), path: '/academy/activities' },
+  { icon: '💳', label: tr('Billing'),    path: '/academy/billing' },
+  { icon: '🧾', label: tr('Payments'),   path: '/academy/payments' },
+  { icon: '⚙️', label: tr('Settings'),   path: '/academy/settings' },
 ];
 
 export default function AcademySidebar({ onNavigate }) {
@@ -35,9 +36,9 @@ export default function AcademySidebar({ onNavigate }) {
   return (
     <div style={styles.sidebar}>
       <div style={styles.content}>
-        <div style={styles.brand} onClick={() => go('/academy/overview')} title="ChessNexus Academy">
-          <span style={styles.brandText}>ChessNexus</span>
-          <span style={styles.brandSub}>Academy</span>
+        <div style={styles.brand} onClick={() => go('/academy/overview')} title={tr("ChessNexus Academy")}>
+          <span style={styles.brandText}>{tr("ChessNexus")}</span>
+          <span style={styles.brandSub}>{tr("Academy")}</span>
         </div>
 
         <div style={styles.separator} />
@@ -68,9 +69,9 @@ export default function AcademySidebar({ onNavigate }) {
               owner sees "Back to app" instead. */}
           <div style={styles.footerCard}>
             {usesCoachingTools ? (
-              <div style={styles.footerHalf} onClick={() => go('/coach/dashboard')}>🎓 Coach tools</div>
+              <div style={styles.footerHalf} onClick={() => go('/coach/dashboard')}>{tr("🎓 Coach tools")}</div>
             ) : (
-              <div style={styles.footerHalf} onClick={() => go('/dashboard')}>← Back to app</div>
+              <div style={styles.footerHalf} onClick={() => go('/dashboard')}>{tr("← Back to app")}</div>
             )}
           </div>
         </div>

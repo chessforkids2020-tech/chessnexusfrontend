@@ -26,6 +26,7 @@ import CoffeeCta from '../components/CoffeeCta';
 import AboutFeatureCTA from '../components/marketing/AboutFeatureCTA';
 import './GameAnalysis.css';
 import { useChartTheme } from '../lib/chartTheme';
+import { t as tr } from '../i18n/LanguageContext';
 
 ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Filler, Tooltip, Legend);
 
@@ -33,14 +34,14 @@ ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScal
 // Path data from Simple Icons (CC0). Rendered in each brand's colour.
 function ChessComLogo({ size = 22 }) {
   return (
-    <svg height={size} viewBox="0 0 24 24" role="img" aria-label="Chess.com" focusable="false">
+    <svg height={size} viewBox="0 0 24 24" role="img" aria-label={tr("Chess.com")} focusable="false">
       <path fill="#81B64C" d="M12 0a3.85 3.85 0 0 0-3.875 3.846A3.84 3.84 0 0 0 9.73 6.969l-2.79 1.85c0 .622.144 1.114.434 1.649H9.83c-.014.245-.014.549-.014.925 0 .025.003.048.006.071-.064 1.353-.507 3.472-3.62 5.842-.816.625-1.423 1.495-1.806 2.533a.33.33 0 0 0-.045.084 8.124 8.124 0 0 0-.39 2.516c0 .1.216 1.561 8.038 1.561s8.038-1.46 8.038-1.561c0-2.227-.824-4.048-2.24-5.133-4.034-3.08-3.586-5.74-3.644-6.838h2.458c.29-.535.434-1.027.434-1.649l-2.79-1.836a3.86 3.86 0 0 0 1.604-3.123A3.873 3.873 0 0 0 13.445.275c-.004-.002-.01.004-.015.004A3.76 3.76 0 0 0 12 0Z"/>
     </svg>
   );
 }
 function LichessLogo({ size = 22 }) {
   return (
-    <svg height={size} viewBox="0 0 24 24" role="img" aria-label="Lichess" focusable="false">
+    <svg height={size} viewBox="0 0 24 24" role="img" aria-label={tr("Lichess")} focusable="false">
       <path fill="currentColor" d="M10.457 6.161a.237.237 0 0 0-.296.165c-.8 2.785 2.819 5.579 5.214 7.428.653.504 1.216.939 1.591 1.292 1.745 1.642 2.564 2.851 2.733 3.178a.24.24 0 0 0 .275.122c.047-.013 4.726-1.3 3.934-4.574a.257.257 0 0 0-.023-.06L18.204 3.407 18.93.295a.24.24 0 0 0-.262-.293c-1.7.201-3.115.435-4.5 1.425-4.844-.323-8.718.9-11.213 3.539C.334 7.737-.246 11.515.085 14.128c.763 5.655 5.191 8.631 9.081 9.532.993.229 1.974.34 2.923.34 3.344 0 6.297-1.381 7.946-3.85a.24.24 0 0 0-.372-.3c-3.411 3.527-9.002 4.134-13.296 1.444-4.485-2.81-6.202-8.41-3.91-12.749C4.741 4.221 8.801 2.362 13.888 3.31c.056.01.115 0 .165-.029l.335-.197c.926-.546 1.961-1.157 2.873-1.279l-.694 1.993a.243.243 0 0 0 .02.202l6.082 10.192c-.193 2.028-1.706 2.506-2.226 2.611-.287-.645-.814-1.364-2.306-2.803-.422-.407-1.21-.941-2.124-1.56-2.364-1.601-5.937-4.02-5.391-5.984a.239.239 0 0 0-.165-.295z"/>
     </svg>
   );
@@ -56,15 +57,15 @@ function CapsCard({ capsScore }) {
       <div className="ga-caps-glow" style={{ background: color }} />
       <div className="ga-caps-icon">🧮</div>
       <div className="ga-caps-body">
-        <div className="ga-caps-title">How Good Were Your Moves?</div>
-        <div className="ga-caps-value" style={{ color }}>~{avgCpLoss} points lost per move</div>
+        <div className="ga-caps-title">{tr("How Good Were Your Moves?")}</div>
+        <div className="ga-caps-value" style={{ color }}>~{avgCpLoss} {tr("points lost per move")}</div>
         <div className="ga-caps-band">
           <span className="ga-caps-band-label" style={{ background: color + '22', color, border: `1px solid ${color}55` }}>
             {eloBand.display}
           </span>
-          <span className="ga-caps-band-range">{eloBand.label} rating equivalent</span>
+          <span className="ga-caps-band-range">{eloBand.label} {tr("rating equivalent")}</span>
         </div>
-        <div className="ga-caps-desc">Each move, the computer picks the best one. This shows how far your moves were from perfect — lower is better. 0 means flawless, 150+ means many moves were missed.</div>
+        <div className="ga-caps-desc">{tr("Each move, the computer picks the best one. This shows how far your moves were from perfect — lower is better. 0 means flawless, 150+ means many moves were missed.")}</div>
       </div>
     </div>
   );
@@ -72,17 +73,17 @@ function CapsCard({ capsScore }) {
 
 // ─── Session Badges ───────────────────────────────────────────────────────────
 const BADGE_META = {
-  blunderBuster:   { icon: '🛡️', label: 'Blunder Buster',    desc: 'At least one game with zero blunders' },
-  endgameApprentice: { icon: '👑', label: 'Endgame Apprentice', desc: 'Endgame accuracy above 80%' },
-  openingScholar:  { icon: '📖', label: 'Opening Scholar',    desc: '90%+ opening accuracy' },
-  precisionMaster: { icon: '🏆', label: 'Precision Master',   desc: '85%+ overall accuracy this session' }
+  blunderBuster:   { icon: '🛡️', label: tr('Blunder Buster'),    desc: tr('At least one game with zero blunders') },
+  endgameApprentice: { icon: '👑', label: tr('Endgame Apprentice'), desc: tr('Endgame accuracy above 80%') },
+  openingScholar:  { icon: '📖', label: tr('Opening Scholar'),    desc: tr('90%+ opening accuracy') },
+  precisionMaster: { icon: '🏆', label: tr('Precision Master'),   desc: tr('85%+ overall accuracy this session') }
 };
 
 function SessionBadges({ badges }) {
   if (!badges || badges.length === 0) return null;
   return (
     <div className="ga-badges-wrap">
-      <h3 className="ga-section-title">🏅 Badges Earned This Session</h3>
+      <h3 className="ga-section-title">{tr("🏅 Badges Earned This Session")}</h3>
       <div className="ga-badges-grid">
         {badges.map(b => {
           const meta = BADGE_META[b];
@@ -105,7 +106,7 @@ function PatternsSection({ patterns }) {
   if (!patterns || patterns.length === 0) return null;
   return (
     <div className="ga-patterns-wrap">
-      <h3 className="ga-section-title">🔬 Recurring Patterns Detected</h3>
+      <h3 className="ga-section-title">{tr("🔬 Recurring Patterns Detected")}</h3>
       <div className="ga-patterns-list">
         {patterns.map((p, i) => (
           <div key={i} className="ga-pattern-item">
@@ -127,7 +128,7 @@ function PieceHeatmap({ pieceHeatmap, worstPiece }) {
     <div className="ga-piece-heatmap-wrap">
       {worstPiece && (
         <div className="ga-piece-worst-badge">
-          Your most error-prone piece: <strong>{worstPiece.label}</strong> ({worstPiece.count} blunders/mistakes)
+          {tr("Your most error-prone piece:")} <strong>{worstPiece.label}</strong> ({worstPiece.count} {tr("blunders/mistakes)")}
         </div>
       )}
       <div className="ga-piece-bars">
@@ -158,11 +159,11 @@ function TimePressureCard({ timePressureStats }) {
     <div className="ga-time-pressure-card">
       <div className="ga-tp-icon">⏱️</div>
       <div className="ga-tp-body">
-        <div className="ga-tp-title">Time Pressure Analysis</div>
+        <div className="ga-tp-title">{tr("Time Pressure Analysis")}</div>
         <div className="ga-tp-stats">
           <div className="ga-tp-stat">
             <span className="ga-tp-stat-val" style={{ color: 'var(--color-success)' }}>{normalAccuracy ?? '—'}%</span>
-            <span className="ga-tp-stat-lbl">Normal speed ({normalMoves} moves)</span>
+            <span className="ga-tp-stat-lbl">{tr("Normal speed (")}{normalMoves} {tr("moves)")}</span>
           </div>
           <div className="ga-tp-divider" />
           <div className="ga-tp-stat">
@@ -174,11 +175,11 @@ function TimePressureCard({ timePressureStats }) {
         </div>
         {pressuredMoves > 0 && diff > 5 && (
           <div className="ga-tp-insight">
-            Your accuracy drops {diff}% when the clock is under a minute — time pressure is a significant factor.
+            {tr("Your accuracy drops")} {diff}{tr("% when the clock is under a minute — time pressure is a significant factor.")}
           </div>
         )}
         {pressuredMoves === 0 && (
-          <div className="ga-tp-insight">No time-pressure situations detected in these games.</div>
+          <div className="ga-tp-insight">{tr("No time-pressure situations detected in these games.")}</div>
         )}
       </div>
     </div>
@@ -193,18 +194,18 @@ export function PeerComparisonCard({ peerComparison }) {
   const blunderColor = blunderVsBenchmark <= 0 ? 'var(--color-success)' : blunderVsBenchmark <= 1 ? 'var(--color-warning)' : 'var(--color-danger)';
   return (
     <div className="ga-peer-card">
-      <div className="ga-peer-title">🎖️ You vs. Your Skill Band</div>
-      <div className="ga-peer-band-label">Estimated level: <strong>{playerBandDisplay}</strong></div>
+      <div className="ga-peer-title">{tr("🎖️ You vs. Your Skill Band")}</div>
+      <div className="ga-peer-band-label">{tr("Estimated level:")} <strong>{playerBandDisplay}</strong></div>
       <div className="ga-peer-stats-row">
         <div className="ga-peer-stat">
-          <span className="ga-peer-stat-label">Your move quality</span>
-          <span className="ga-peer-stat-val" style={{ color: cpColor }}>{avgCpLoss} cp/move</span>
-          <span className="ga-peer-stat-bench">Band avg: {benchmarkCpLoss} cp/move</span>
+          <span className="ga-peer-stat-label">{tr("Your move quality")}</span>
+          <span className="ga-peer-stat-val" style={{ color: cpColor }}>{avgCpLoss} {tr("cp/move")}</span>
+          <span className="ga-peer-stat-bench">{tr("Band avg:")} {benchmarkCpLoss} {tr("cp/move")}</span>
         </div>
         <div className="ga-peer-stat">
-          <span className="ga-peer-stat-label">Your blunder rate</span>
-          <span className="ga-peer-stat-val" style={{ color: blunderColor }}>{blundersPerGame}/game</span>
-          <span className="ga-peer-stat-bench">Band avg: {benchmarkBlundersPerGame}/game</span>
+          <span className="ga-peer-stat-label">{tr("Your blunder rate")}</span>
+          <span className="ga-peer-stat-val" style={{ color: blunderColor }}>{blundersPerGame}{tr("/game")}</span>
+          <span className="ga-peer-stat-bench">{tr("Band avg:")} {benchmarkBlundersPerGame}{tr("/game")}</span>
         </div>
       </div>
     </div>
@@ -234,7 +235,7 @@ function ProgressHistoryCharts({ history }) {
   const accuracyData = {
     labels,
     datasets: [{
-      label: 'Accuracy %',
+      label: tr('Accuracy %'),
       data: history.map(s => s.overallAccuracy),
       borderColor: chartColors.accent,
       backgroundColor: chartColors.accentFill,
@@ -248,7 +249,7 @@ function ProgressHistoryCharts({ history }) {
   const blunderData = {
     labels,
     datasets: [{
-      label: 'Blunders/game',
+      label: tr('Blunders/game'),
       data: history.map(s => s.blundersPerGame),
       backgroundColor: 'rgba(239,68,68,0.6)',
       borderColor: chartColors.danger,
@@ -260,7 +261,7 @@ function ProgressHistoryCharts({ history }) {
   const capsData = history.some(s => s.capsAvgCpLoss != null) ? {
     labels,
     datasets: [{
-      label: 'Avg cp loss',
+      label: tr('Avg cp loss'),
       data: history.map(s => s.capsAvgCpLoss),
       borderColor: chartColors.warning,
       backgroundColor: chartColors.warning,
@@ -299,23 +300,23 @@ function ProgressHistoryCharts({ history }) {
 
   return (
     <div className="ga-history-section">
-      <h3 className="ga-section-title">📈 Your Progress Over Time</h3>
+      <h3 className="ga-section-title">{tr("📈 Your Progress Over Time")}</h3>
       <div className="ga-history-meta-row">
         <div className="ga-history-meta-card">
-          <span className="ga-history-meta-label">Trend (last 5 sessions)</span>
+          <span className="ga-history-meta-label">{tr("Trend (last 5 sessions)")}</span>
           <span className="ga-history-meta-val" style={{ color: velocityColor }}>{velocity}</span>
         </div>
         {accDiff !== null && (
           <div className="ga-history-meta-card">
-            <span className="ga-history-meta-label">vs. last session</span>
+            <span className="ga-history-meta-label">{tr("vs. last session")}</span>
             <span className="ga-history-meta-val" style={{ color: accDiff >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
-              {accDiff >= 0 ? '+' : ''}{accDiff}% accuracy
+              {accDiff >= 0 ? '+' : ''}{accDiff}{tr("% accuracy")}
             </span>
           </div>
         )}
         {blunderDiff !== null && (
           <div className="ga-history-meta-card">
-            <span className="ga-history-meta-label">Blunders/game change</span>
+            <span className="ga-history-meta-label">{tr("Blunders/game change")}</span>
             <span className="ga-history-meta-val" style={{ color: blunderDiff <= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
               {blunderDiff >= 0 ? '+' : ''}{blunderDiff}
             </span>
@@ -324,16 +325,16 @@ function ProgressHistoryCharts({ history }) {
       </div>
       <div className="ga-history-charts">
         <div className="ga-trend-chart">
-          <h4 className="ga-trend-title">Accuracy Per Session</h4>
+          <h4 className="ga-trend-title">{tr("Accuracy Per Session")}</h4>
           <Line data={accuracyData} options={chartOpts('Accuracy', '%')} />
         </div>
         <div className="ga-trend-chart">
-          <h4 className="ga-trend-title">Blunders/Game Per Session</h4>
+          <h4 className="ga-trend-title">{tr("Blunders/Game Per Session")}</h4>
           <Bar data={blunderData} options={chartOpts('Blunders', '/game')} />
         </div>
         {capsData && (
           <div className="ga-trend-chart">
-            <h4 className="ga-trend-title">Move Quality (cp loss) — lower is better</h4>
+            <h4 className="ga-trend-title">{tr("Move Quality (cp loss) — lower is better")}</h4>
             <Line data={capsData} options={chartOpts('cp loss', ' cp', true)} />
           </div>
         )}
@@ -350,10 +351,10 @@ export function EndgameStats({ endgameStats }) {
       <table className="ga-openings-table">
         <thead>
           <tr>
-            <th>Endgame Type</th>
-            <th>Played</th>
+            <th>{tr("Endgame Type")}</th>
+            <th>{tr("Played")}</th>
             <th>W / D / L</th>
-            <th>Win Rate</th>
+            <th>{tr("Win Rate")}</th>
           </tr>
         </thead>
         <tbody>
@@ -386,12 +387,12 @@ export function EndgameStats({ endgameStats }) {
 
 
 function phaseLabel(accuracy, blunders = 0, mistakes = 0) {
-  if (accuracy === null || accuracy === undefined) return { label: 'No Data', color: 'var(--color-text-faint)' };
+  if (accuracy === null || accuracy === undefined) return { label: tr('No Data'), color: 'var(--color-text-faint)' };
   const tiers = [
-    { label: 'Weak',       color: 'var(--color-danger)' },
-    { label: 'Needs Work', color: 'var(--color-warning)' },
-    { label: 'Good',       color: 'var(--color-accent)' },
-    { label: 'Strong',     color: 'var(--color-success)' },
+    { label: tr('Weak'),       color: 'var(--color-danger)' },
+    { label: tr('Needs Work'), color: 'var(--color-warning)' },
+    { label: tr('Good'),       color: 'var(--color-accent)' },
+    { label: tr('Strong'),     color: 'var(--color-success)' },
   ];
   // Accuracy-based tier (0–3)
   const accTier = accuracy >= 80 ? 3 : accuracy >= 60 ? 2 : accuracy >= 45 ? 1 : 0;
@@ -444,9 +445,9 @@ export function PhaseCard({ phase, data, icon }) {
         {label}
       </div>
       <div className="ga-phase-stats">
-        <span className="ga-stat-chip blunder">🔴 {data.blunders ?? 0} blunders</span>
-        <span className="ga-stat-chip mistake">🟠 {data.mistakes ?? 0} mistakes</span>
-        <span className="ga-stat-chip inaccuracy">🟡 {data.inaccuracies ?? 0} inaccuracies</span>
+        <span className="ga-stat-chip blunder">🔴 {data.blunders ?? 0} {tr("blunders")}</span>
+        <span className="ga-stat-chip mistake">🟠 {data.mistakes ?? 0} {tr("mistakes")}</span>
+        <span className="ga-stat-chip inaccuracy">🟡 {data.inaccuracies ?? 0} {tr("inaccuracies")}</span>
       </div>
     </div>
   );
@@ -456,17 +457,17 @@ function TacticsBar({ tacticsStats }) {
   if (!tacticsStats) return null;
   const { missedCheckmate = 0, hangingPiece = 0, fork = 0, positional = 0 } = tacticsStats;
   const total = missedCheckmate + hangingPiece + fork + positional;
-  if (total === 0) return <p className="ga-no-data">No tactics missed — great play! 🎉</p>;
+  if (total === 0) return <p className="ga-no-data">{tr("No tactics missed — great play! 🎉")}</p>;
 
   const TACTICS = [
-    { key: 'missedCheckmate', label: 'Missed Checkmate', icon: '♔', color: 'var(--color-danger)', bg: 'var(--color-danger-a12)',   glowBg: 'var(--color-danger)', count: missedCheckmate,
-      desc: "You had checkmate available but didn't play it." },
-    { key: 'hangingPiece',    label: 'Hanging Piece',    icon: '🪝', color: 'var(--color-warning)', bg: 'var(--color-warning-a12)', glowBg: 'var(--color-warning)', count: hangingPiece,
-      desc: "Opponent's piece was free to capture but you missed it." },
-    { key: 'fork',            label: 'Missed Fork',      icon: '⚔️', color: 'var(--color-accent-2)', bg: 'var(--color-accent-2-a15)', glowBg: 'var(--color-accent-2)', count: fork,
-      desc: 'You could have attacked two pieces at once.' },
-    { key: 'positional',      label: 'Other Blunder',    icon: '❓', color: 'var(--color-text-muted)', bg: 'rgba(107,114,128,0.14)', glowBg: 'var(--color-text-faint)', count: positional,
-      desc: 'A bad move that gave away your advantage.' },
+    { key: 'missedCheckmate', label: tr('Missed Checkmate'), icon: '♔', color: 'var(--color-danger)', bg: 'var(--color-danger-a12)',   glowBg: 'var(--color-danger)', count: missedCheckmate,
+      desc: tr("You had checkmate available but didn't play it.") },
+    { key: 'hangingPiece',    label: tr('Hanging Piece'),    icon: '🪝', color: 'var(--color-warning)', bg: 'var(--color-warning-a12)', glowBg: 'var(--color-warning)', count: hangingPiece,
+      desc: tr("Opponent's piece was free to capture but you missed it.") },
+    { key: 'fork',            label: tr('Missed Fork'),      icon: '⚔️', color: 'var(--color-accent-2)', bg: 'var(--color-accent-2-a15)', glowBg: 'var(--color-accent-2)', count: fork,
+      desc: tr('You could have attacked two pieces at once.') },
+    { key: 'positional',      label: tr('Other Blunder'),    icon: '❓', color: 'var(--color-text-muted)', bg: 'rgba(107,114,128,0.14)', glowBg: 'var(--color-text-faint)', count: positional,
+      desc: tr('A bad move that gave away your advantage.') },
   ];
 
   const max = Math.max(...TACTICS.map(t => t.count), 1);
@@ -509,9 +510,9 @@ function HeatmapBar({ blunderHeatmap }) {
   return (
     <div className="ga-heatmap-v2">
       <div className="ga-hm-legend">
-        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: 'var(--color-danger)' }} />Blunders</div>
-        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: 'var(--color-warning)' }} />Mistakes</div>
-        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: 'var(--color-warning)' }} />Inaccuracies</div>
+        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: 'var(--color-danger)' }} />{tr("Blunders")}</div>
+        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: 'var(--color-warning)' }} />{tr("Mistakes")}</div>
+        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: 'var(--color-warning)' }} />{tr("Inaccuracies")}</div>
       </div>
       <div className="ga-hm-rows">
         {blunderHeatmap.map((b, i) => {
@@ -521,7 +522,7 @@ function HeatmapBar({ blunderHeatmap }) {
           const inaccW    = b.total > 0 ? Math.round((b.inaccuracies / b.total) * 100) : 0;
           return (
             <div key={i} className="ga-hm-row">
-              <span className="ga-hm-range">Moves {b.range}</span>
+              <span className="ga-hm-range">{tr("Moves")} {b.range}</span>
               <div className="ga-hm-track-bg">
                 <div className="ga-hm-track-fill" style={{ width: `${trackWidth}%` }}>
                   {blunderW > 0 && <div className="ga-hm-seg" style={{ width: `${blunderW}%`, background: 'var(--color-danger)' }} />}
@@ -545,11 +546,11 @@ function OpeningsTable({ openings }) {
       <table className="ga-openings-table">
         <thead>
           <tr>
-            <th>Opening</th>
-            <th>ECO</th>
-            <th>Played</th>
+            <th>{tr("Opening")}</th>
+            <th>{"ECO"}</th>
+            <th>{tr("Played")}</th>
             <th>W / D / L</th>
-            <th>Win Rate</th>
+            <th>{tr("Win Rate")}</th>
           </tr>
         </thead>
         <tbody>
@@ -594,9 +595,9 @@ function Recommendations({ result }) {
   const { opening, middlegame, endgame, tacticsStats } = result;
 
   const phases = [
-    { key: 'opening',    data: opening,    label: 'Opening',    icon: '♟' },
-    { key: 'middlegame', data: middlegame,  label: 'Middlegame', icon: '⚔' },
-    { key: 'endgame',    data: endgame,     label: 'Endgame',    icon: '👑' }
+    { key: 'opening',    data: opening,    label: tr('Opening'),    icon: '♟' },
+    { key: 'middlegame', data: middlegame,  label: tr('Middlegame'), icon: '⚔' },
+    { key: 'endgame',    data: endgame,     label: tr('Endgame'),    icon: '👑' }
   ].filter(p => p.data && p.data.accuracy !== null);
 
   if (phases.length === 0) return null;
@@ -611,14 +612,14 @@ function Recommendations({ result }) {
 
   return (
     <div className="ga-recommendations">
-      <h3 className="ga-section-title">💡 Personalised Recommendations</h3>
+      <h3 className="ga-section-title">{tr("💡 Personalised Recommendations")}</h3>
       <div className="ga-recs-grid">
         <div className="ga-rec-card">
           <div className="ga-rec-icon">🎯</div>
           <div className="ga-rec-body">
-            <div className="ga-rec-title">Focus Area: {weakest.label}</div>
+            <div className="ga-rec-title">{tr("Focus Area:")} {weakest.label}</div>
             <div className="ga-rec-desc">
-              Your {weakest.label.toLowerCase()} accuracy is {weakest.data.accuracy}% — the weakest phase. Focus your training here to improve fastest.
+              {tr("Your")} {weakest.label.toLowerCase()} {tr("accuracy is")} {weakest.data.accuracy}{tr("% — the weakest phase. Focus your training here to improve fastest.")}
             </div>
           </div>
         </div>
@@ -633,7 +634,7 @@ function Recommendations({ result }) {
                                  topTactic === 'fork'            ? 'Missed Forks'     : 'Other Blunders'}
               </div>
               <div className="ga-rec-desc">
-                Solve puzzles specifically targeting this pattern to stop losing points here.
+                {tr("Solve puzzles specifically targeting this pattern to stop losing points here.")}
               </div>
             </div>
           </div>
@@ -642,9 +643,9 @@ function Recommendations({ result }) {
         <div className="ga-rec-card">
           <div className="ga-rec-icon">🏁</div>
           <div className="ga-rec-body">
-            <div className="ga-rec-title">Daily Practice</div>
+            <div className="ga-rec-title">{tr("Daily Practice")}</div>
             <div className="ga-rec-desc">
-              Consistent daily puzzles are the fastest way to improve pattern recognition.
+              {tr("Consistent daily puzzles are the fastest way to improve pattern recognition.")}
             </div>
           </div>
         </div>
@@ -699,11 +700,11 @@ export function GameBreakdownTable({ games }) {
         <thead>
           <tr>
             <th>#</th>
-            <th>Opening</th>
-            <th>Result</th>
-            <th>Accuracy</th>
-            <th>Blunders</th>
-            <th>Key Themes</th>
+            <th>{tr("Opening")}</th>
+            <th>{tr("Result")}</th>
+            <th>{tr("Accuracy")}</th>
+            <th>{tr("Blunders")}</th>
+            <th>{tr("Key Themes")}</th>
           </tr>
         </thead>
         <tbody>
@@ -731,7 +732,7 @@ export function GameBreakdownTable({ games }) {
               </td>
               <td className="ga-game-themes">
                 {(!g.gameThemes || g.gameThemes.length === 0)
-                  ? <span className="ga-no-themes">Clean ✓</span>
+                  ? <span className="ga-no-themes">{tr("Clean ✓")}</span>
                   : g.gameThemes.slice(0, 2).map((t, ti) => (
                     <span
                       key={ti}
@@ -766,7 +767,7 @@ export function TrendCharts({ trends }) {
   const accuracyData = {
     labels,
     datasets: [{
-      label: 'Accuracy %',
+      label: tr('Accuracy %'),
       data: trends.accuracyPerGame,
       borderColor: chartColors.accent,
       backgroundColor: chartColors.accentFill,
@@ -780,7 +781,7 @@ export function TrendCharts({ trends }) {
     responsive: true,
     plugins: {
       legend: { labels: { color: 'var(--color-text-muted)', boxWidth: 12 } },
-      tooltip: { callbacks: { label: ctx => ` ${ctx.raw}% accuracy` } }
+      tooltip: { callbacks: { label: ctx => tr(" {raw}% accuracy", { raw: ctx.raw }) } }
     },
     scales: {
       x: { ticks: { color: 'var(--color-text-muted)' }, grid: { color: 'var(--color-white-a04)' } },
@@ -791,7 +792,7 @@ export function TrendCharts({ trends }) {
   const blundersData = {
     labels,
     datasets: [{
-      label: 'Blunders',
+      label: tr('Blunders'),
       data: trends.blundersPerGame,
       backgroundColor: 'rgba(239,68,68,0.65)',
       borderColor: chartColors.danger,
@@ -803,7 +804,7 @@ export function TrendCharts({ trends }) {
     responsive: true,
     plugins: {
       legend: { labels: { color: 'var(--color-text-muted)', boxWidth: 12 } },
-      tooltip: { callbacks: { label: ctx => ` ${ctx.raw} blunder${ctx.raw !== 1 ? 's' : ''}` } }
+      tooltip: { callbacks: { label: ctx => tr(" {raw} blunder{v1}", { raw: ctx.raw, v1: ctx.raw !== 1 ? 's' : '' }) } }
     },
     scales: {
       x: { ticks: { color: 'var(--color-text-muted)' }, grid: { color: 'var(--color-white-a04)' } },
@@ -814,11 +815,11 @@ export function TrendCharts({ trends }) {
   return (
     <div className="ga-trends-wrap">
       <div className="ga-trend-chart">
-        <h4 className="ga-trend-title">📈 Accuracy Trend</h4>
+        <h4 className="ga-trend-title">{tr("📈 Accuracy Trend")}</h4>
         <Line data={accuracyData} options={accuracyOptions} />
       </div>
       <div className="ga-trend-chart">
-        <h4 className="ga-trend-title">💥 Blunders Per Game</h4>
+        <h4 className="ga-trend-title">{tr("💥 Blunders Per Game")}</h4>
         <Bar data={blundersData} options={blundersOptions} />
       </div>
     </div>
@@ -840,10 +841,10 @@ function OpeningIntelligence({ openingIntelligence }) {
 
           {/* Top row: badge + win rate */}
           <div className="ga-oi-top-row">
-            <span className="ga-oi-badge ga-oi-badge-best">★ Best Opening</span>
+            <span className="ga-oi-badge ga-oi-badge-best">{tr("★ Best Opening")}</span>
             {bestOpening.winRate != null && (
               <span className="ga-oi-winrate-pill ga-oi-winrate-best">
-                {bestOpening.winRate}% win rate
+                {bestOpening.winRate}{tr("% win rate")}
               </span>
             )}
           </div>
@@ -865,25 +866,25 @@ function OpeningIntelligence({ openingIntelligence }) {
               {bestOpening.played != null && (
                 <div className="ga-oi-stat-pill">
                   <span className="ga-oi-stat-val">{bestOpening.played}</span>
-                  <span className="ga-oi-stat-lbl">played</span>
+                  <span className="ga-oi-stat-lbl">{tr("played")}</span>
                 </div>
               )}
               {bestOpening.wins != null && (
                 <div className="ga-oi-stat-pill">
                   <span className="ga-oi-stat-val ga-w">{bestOpening.wins}</span>
-                  <span className="ga-oi-stat-lbl">wins</span>
+                  <span className="ga-oi-stat-lbl">{tr("wins")}</span>
                 </div>
               )}
               {bestOpening.draws != null && (
                 <div className="ga-oi-stat-pill">
                   <span className="ga-oi-stat-val ga-d">{bestOpening.draws}</span>
-                  <span className="ga-oi-stat-lbl">draws</span>
+                  <span className="ga-oi-stat-lbl">{tr("draws")}</span>
                 </div>
               )}
               {bestOpening.losses != null && (
                 <div className="ga-oi-stat-pill">
                   <span className="ga-oi-stat-val ga-l">{bestOpening.losses}</span>
-                  <span className="ga-oi-stat-lbl">losses</span>
+                  <span className="ga-oi-stat-lbl">{tr("losses")}</span>
                 </div>
               )}
             </div>
@@ -891,7 +892,7 @@ function OpeningIntelligence({ openingIntelligence }) {
 
           {/* Advice */}
           <div className="ga-oi-advice">
-            Keep studying all variations — this suits your style.
+            {tr("Keep studying all variations — this suits your style.")}
           </div>
         </div>
       )}
@@ -901,10 +902,10 @@ function OpeningIntelligence({ openingIntelligence }) {
           <div className="ga-oi-glow ga-oi-glow-worst" />
 
           <div className="ga-oi-top-row">
-            <span className="ga-oi-badge ga-oi-badge-worst">⚠ Needs Work</span>
+            <span className="ga-oi-badge ga-oi-badge-worst">{tr("⚠ Needs Work")}</span>
             {worstOpening.winRate != null && (
               <span className="ga-oi-winrate-pill ga-oi-winrate-worst">
-                {worstOpening.winRate}% win rate
+                {worstOpening.winRate}{tr("% win rate")}
               </span>
             )}
           </div>
@@ -924,32 +925,32 @@ function OpeningIntelligence({ openingIntelligence }) {
               {worstOpening.played != null && (
                 <div className="ga-oi-stat-pill">
                   <span className="ga-oi-stat-val">{worstOpening.played}</span>
-                  <span className="ga-oi-stat-lbl">played</span>
+                  <span className="ga-oi-stat-lbl">{tr("played")}</span>
                 </div>
               )}
               {worstOpening.wins != null && (
                 <div className="ga-oi-stat-pill">
                   <span className="ga-oi-stat-val ga-w">{worstOpening.wins}</span>
-                  <span className="ga-oi-stat-lbl">wins</span>
+                  <span className="ga-oi-stat-lbl">{tr("wins")}</span>
                 </div>
               )}
               {worstOpening.draws != null && (
                 <div className="ga-oi-stat-pill">
                   <span className="ga-oi-stat-val ga-d">{worstOpening.draws}</span>
-                  <span className="ga-oi-stat-lbl">draws</span>
+                  <span className="ga-oi-stat-lbl">{tr("draws")}</span>
                 </div>
               )}
               {worstOpening.losses != null && (
                 <div className="ga-oi-stat-pill">
                   <span className="ga-oi-stat-val ga-l">{worstOpening.losses}</span>
-                  <span className="ga-oi-stat-lbl">losses</span>
+                  <span className="ga-oi-stat-lbl">{tr("losses")}</span>
                 </div>
               )}
             </div>
           )}
 
           <div className="ga-oi-advice">
-            Consider one of these instead:
+            {tr("Consider one of these instead:")}
           </div>
           {Array.isArray(worstOpening.suggestions) && worstOpening.suggestions.length > 0 && (
             <div className="ga-oi-suggestions">
@@ -987,7 +988,7 @@ function ChessNexusCoachCard_DISABLED({ result, history }) {
 
   // 2. Blunder Rate
   const bpg = result.blundersPerGame ?? 0;
-  const blunderRate  = bpg > 3 ? 'High 🔴' : bpg > 1 ? 'Medium 🟠' : 'Low 🟢';
+  const blunderRate  = bpg > 3 ? tr('High 🔴') : bpg > 1 ? tr('Medium 🟠') : tr('Low 🟢');
   const blunderColor = bpg > 3 ? 'var(--color-danger)' : bpg > 1 ? 'var(--color-warning)' : 'var(--color-success)';
 
   // 3. Best Opening
@@ -1030,8 +1031,8 @@ function ChessNexusCoachCard_DISABLED({ result, history }) {
       const diff = Math.round(result.overallAccuracy - prev.overallAccuracy);
       vsLastSession = {
         diff,
-        label: diff > 0 ? `+${diff}% vs last session 📈`
-             : diff < 0 ? `${diff}% vs last session 📉`
+        label: diff > 0 ? tr("+{diff}% vs last session 📈", { diff: diff })
+             : diff < 0 ? tr("{diff}% vs last session 📉", { diff: diff })
              : 'Same as last session →',
         color: diff > 0 ? 'var(--color-success)' : diff < 0 ? 'var(--color-danger)' : 'var(--color-text-muted)',
       };
@@ -1039,18 +1040,18 @@ function ChessNexusCoachCard_DISABLED({ result, history }) {
   }
 
   const insights = [
-    { icon: '🎯', label: 'Weak Area',       value: weakArea ?? '—',              color: null },
-    { icon: '💥', label: 'Blunder Rate',    value: blunderRate,                   color: blunderColor },
-    { icon: '♟️', label: 'Best Opening',    value: bestOpening ?? '—',            color: null },
-    { icon: '⚠️', label: 'Common Mistake', value: commonMistake ?? '—',          color: null },
-    { icon: '📈', label: 'Performance',     value: trend,                          color: trendColor },
+    { icon: '🎯', label: tr('Weak Area'),       value: weakArea ?? '—',              color: null },
+    { icon: '💥', label: tr('Blunder Rate'),    value: blunderRate,                   color: blunderColor },
+    { icon: '♟️', label: tr('Best Opening'),    value: bestOpening ?? '—',            color: null },
+    { icon: '⚠️', label: tr('Common Mistake'), value: commonMistake ?? '—',          color: null },
+    { icon: '📈', label: tr('Performance'),     value: trend,                          color: trendColor },
   ];
 
   return (
     <div className="ga-nexus-coach-card">
       <div className="ga-nexus-coach-header">
         <span className="ga-nexus-coach-logo">♞</span>
-        <span className="ga-nexus-coach-title">Chess Nexus Coach</span>
+        <span className="ga-nexus-coach-title">{tr("Chess Nexus Coach")}</span>
         {vsLastSession && (
           <span className="ga-nexus-coach-vs" style={{ color: vsLastSession.color }}>
             {vsLastSession.label}
@@ -1094,13 +1095,13 @@ function MoveListTable({ allMoves = [] }) {
   }
 
   if (pairs.length === 0) {
-    return <p className="ga-otb-no-moves">No moves were detected. Try re-uploading a clearer image.</p>;
+    return <p className="ga-otb-no-moves">{tr("No moves were detected. Try re-uploading a clearer image.")}</p>;
   }
 
   return (
     <div className="ga-otb-move-list">
       <div className="ga-otb-move-list-head">
-        <span>#</span><span>White</span><span>Black</span>
+        <span>#</span><span>{tr("White")}</span><span>{tr("Black")}</span>
       </div>
       {pairs.map(p => (
         <div
@@ -1145,18 +1146,18 @@ function OTBSection({
     return (
       <div className="ga-otb-section">
         <div className="ga-otb-side-row">
-          <span className="ga-otb-side-label">Which colour did you play?</span>
+          <span className="ga-otb-side-label">{tr("Which colour did you play?")}</span>
           <div className="ga-otb-side-toggle">
             <button
               type="button"
               className={`ga-otb-side-btn${playerSide === 'white' ? ' active' : ''}`}
               onClick={() => setPlayerSide('white')}
-            >♔ White</button>
+            >{tr("♔ White")}</button>
             <button
               type="button"
               className={`ga-otb-side-btn${playerSide === 'black' ? ' active' : ''}`}
               onClick={() => setPlayerSide('black')}
-            >♚ Black</button>
+            >{tr("♚ Black")}</button>
           </div>
         </div>
 
@@ -1169,22 +1170,22 @@ function OTBSection({
             style={{ display: 'none' }}
           />
           <div className="ga-otb-drop-icon">📷</div>
-          <div className="ga-otb-drop-title">Tap to upload scoresheet photos</div>
-          <div className="ga-otb-drop-sub">Up to 5 images (JPG, PNG, WEBP). Take a clear, well-lit photo for best results.</div>
+          <div className="ga-otb-drop-title">{tr("Tap to upload scoresheet photos")}</div>
+          <div className="ga-otb-drop-sub">{tr("Up to 5 images (JPG, PNG, WEBP). Take a clear, well-lit photo for best results.")}</div>
         </label>
 
         {files.length > 0 && (
           <div className="ga-otb-preview-grid">
             {files.map((f, i) => (
               <div key={i} className="ga-otb-preview">
-                <img src={URL.createObjectURL(f)} alt={`scoresheet ${i + 1}`} />
+                <img src={URL.createObjectURL(f)} alt={tr("scoresheet {v0}", { v0: i + 1 })} />
                 <button
                   type="button"
                   className="ga-otb-preview-remove"
                   onClick={() => removeFile(i)}
-                  aria-label="Remove"
+                  aria-label={tr("Remove")}
                 >×</button>
-                <span className="ga-otb-preview-name">Page {i + 1}</span>
+                <span className="ga-otb-preview-name">{tr("Page")} {i + 1}</span>
               </div>
             ))}
           </div>
@@ -1197,7 +1198,7 @@ function OTBSection({
             disabled={!files.length || scanning}
             onClick={onScan}
           >
-            {scanning ? 'Reading scoresheet…' : '📷 Scan Scoresheet'}
+            {scanning ? tr('Reading scoresheet…') : tr('📷 Scan Scoresheet')}
           </button>
         </div>
 
@@ -1211,10 +1212,10 @@ function OTBSection({
     <div className="ga-otb-section">
       <div className="ga-otb-review-header">
         <div className="ga-otb-review-title">
-          📋 {scanResult.totalMoves} moves detected
+          📋 {scanResult.totalMoves} {tr("moves detected")}
           {hasAmbiguous
             ? <span className="ga-otb-badge-warn"> · {scanResult.ambiguous.length} need correction</span>
-            : <span className="ga-otb-badge-ok"> · All moves recognised</span>
+            : <span className="ga-otb-badge-ok"> {tr("· All moves recognised")}</span>
           }
         </div>
         <p className="ga-otb-review-sub">
@@ -1228,7 +1229,7 @@ function OTBSection({
 
       {hasAmbiguous && (
         <div className="ga-otb-ambiguous-section">
-          <div className="ga-otb-ambiguous-title">⚠️ Moves that need correction</div>
+          <div className="ga-otb-ambiguous-title">{tr("⚠️ Moves that need correction")}</div>
           <OTBConfirmPanel
             scanResult={scanResult}
             onConfirm={onConfirmMoves}
@@ -1246,14 +1247,14 @@ function OTBSection({
             disabled={analyzing}
             onClick={onAnalyze}
           >
-            {analyzing ? 'Starting analysis…' : '✅ Analyse Game →'}
+            {analyzing ? tr('Starting analysis…') : tr('✅ Analyse Game →')}
           </button>
         </div>
       )}
 
       <div style={{ textAlign: 'center', marginTop: 8 }}>
         <button type="button" className="ga-otb-rescan-btn" onClick={onReset}>
-          🔄 Re-scan with different image
+          {tr("🔄 Re-scan with different image")}
         </button>
       </div>
 
@@ -1303,11 +1304,11 @@ function LoginPrompt({ feature }) {
     <div className="ga-login-prompt">
       <div className="ga-login-prompt-icon">�</div>
       <div className="ga-login-prompt-body">
-        <strong>{feature}</strong> is only available to logged-in users. Create a free account to use this feature.
+        <strong>{feature}</strong> {tr("is only available to logged-in users. Create a free account to use this feature.")}
       </div>
       <div className="ga-login-prompt-actions">
-        <a href="/login" className="ga-login-prompt-btn">Log in</a>
-        <a href="/signup-request" className="ga-login-prompt-btn ga-login-prompt-btn--outline">Sign up free</a>
+        <a href="/login" className="ga-login-prompt-btn">{tr("Log in")}</a>
+        <a href="/signup-request" className="ga-login-prompt-btn ga-login-prompt-btn--outline">{tr("Sign up free")}</a>
       </div>
     </div>
   );
@@ -1527,7 +1528,7 @@ export default function GameAnalysis() {
     e.preventDefault();
     if (platform === 'otb' || platform === 'quick') return; // these have their own analyze flow
     if (platform !== 'chessnexus' && !username.trim()) {
-      setError('Please enter your username.');
+      setError(tr('Please enter your username.'));
       return;
     }
 
@@ -1600,7 +1601,7 @@ export default function GameAnalysis() {
   async function handleOtbScan() {
     setOtbError(null);
     if (!otbFiles.length) {
-      setOtbError('Please upload at least one scoresheet image.');
+      setOtbError(tr('Please upload at least one scoresheet image.'));
       return;
     }
 
@@ -1657,10 +1658,10 @@ export default function GameAnalysis() {
       setOtbFiles([]);
       startPolling(id, true);
     } catch (err) {
-      const msg = err?.response?.data?.message || 'Failed to analyse OTB game.';
+      const msg = err?.response?.data?.message || tr('Failed to analyse OTB game.');
       const failedIndex = err?.response?.data?.failedIndex;
       setOtbError(typeof failedIndex === 'number'
-        ? `${msg} (Move #${failedIndex + 1})`
+        ? tr("{msg} (Move #{v1})", { msg: msg, v1: failedIndex + 1 })
         : msg);
     } finally {
       setOtbAnalyzing(false);
@@ -1690,7 +1691,7 @@ export default function GameAnalysis() {
       let ok = false;
       try { ok = !!start.move(san, { strict: false }); } catch { ok = false; }
       if (!ok) {
-        return `Move ${label} is not a legal move in that position — please check the game and fix that move.`;
+        return tr("Move {label} is not a legal move in that position — please check the game and fix that move.", { label: label });
       }
     }
     return null;
@@ -1716,7 +1717,7 @@ export default function GameAnalysis() {
       const sans = c.history();
       const clean = new Chess();
       sans.forEach(s => clean.move(s, { strict: false }));
-      setQuickGame({ pgn: clean.pgn(), playerSide: 'white', moveAnalysis: [], opening: 'Quick Analyze' });
+      setQuickGame({ pgn: clean.pgn(), playerSide: 'white', moveAnalysis: [], opening: tr('Quick Analyze') });
       return;
     }
 
@@ -1725,16 +1726,16 @@ export default function GameAnalysis() {
       let valid = true;
       try { new Chess(fen); } catch { valid = false; }
       if (!valid) {
-        setQuickError('That FEN is not valid. Check it and try again.');
+        setQuickError(tr('That FEN is not valid. Check it and try again.'));
         return;
       }
       const side = (fen.split(' ')[1] === 'b') ? 'black' : 'white';
       const headerPgn = `[SetUp "1"]\n[FEN "${fen}"]\n\n*`;
-      setQuickGame({ pgn: headerPgn, playerSide: side, moveAnalysis: [], opening: 'Quick Analyze' });
+      setQuickGame({ pgn: headerPgn, playerSide: side, moveAnalysis: [], opening: tr('Quick Analyze') });
       return;
     }
 
-    setQuickError('Paste a FEN or a PGN to analyse.');
+    setQuickError(tr('Paste a FEN or a PGN to analyse.'));
   }
 
   // Analyze the position currently set up in the board editor.
@@ -1746,12 +1747,12 @@ export default function GameAnalysis() {
     const wk = (board.match(/K/g) || []).length;
     const bk = (board.match(/k/g) || []).length;
     if (wk !== 1 || bk !== 1) {
-      setQuickError('Set up exactly one White king and one Black king before analysing.');
+      setQuickError(tr('Set up exactly one White king and one Black king before analysing.'));
       return;
     }
     const side = (fen.split(' ')[1] === 'b') ? 'black' : 'white';
     const headerPgn = `[SetUp "1"]\n[FEN "${fen}"]\n\n*`;
-    setQuickGame({ pgn: headerPgn, playerSide: side, moveAnalysis: [], opening: 'Quick Analyze' });
+    setQuickGame({ pgn: headerPgn, playerSide: side, moveAnalysis: [], opening: tr('Quick Analyze') });
   }
 
   // Quick Analyze → full server-side detailed report (reuses the PGN pipeline).
@@ -1759,7 +1760,7 @@ export default function GameAnalysis() {
     setQuickError(null);
     setPgnError(null);
     const pgn = quickPgn.trim();
-    if (!pgn) { setQuickError('Paste a PGN (with moves) to get a detailed report.'); return; }
+    if (!pgn) { setQuickError(tr('Paste a PGN (with moves) to get a detailed report.')); return; }
     // Catch an illegal move here so the user is told WHICH move is wrong
     // instead of the server's generic "could not read that PGN".
     const problem = describePgnProblem(pgn);
@@ -1807,7 +1808,7 @@ export default function GameAnalysis() {
       <div className="ga-header">
         <div className="ga-header-icon">🔍</div>
         <div style={{ flex: 1 }}>
-          <h1 className="ga-title">Analyze My Games</h1>
+          <h1 className="ga-title">{tr("Analyze My Games")}</h1>
           <p className="ga-subtitle">
             {platform === 'quick'
               ? 'Quick Analyze — paste a FEN or PGN. Study it instantly on a live Stockfish board, or run a full Detailed Report for a PGN.'
@@ -1829,15 +1830,15 @@ export default function GameAnalysis() {
           <div className="ga-last-analysis-banner">
             <span className="ga-last-analysis-icon">📊</span>
             <span>
-              Showing your last analysis for <strong>{lastAnalysis.chessPlatformUsername}</strong> on{' '}
+              {tr("Showing your last analysis for")} <strong>{lastAnalysis.chessPlatformUsername}</strong> {tr("on")}{' '}
               <strong>{
                 lastAnalysis.platform === 'chesscom' ? 'chess.com' :
                 lastAnalysis.platform === 'lichess' ? 'lichess' :
                 'ChessNexus Arena'
               }</strong>
-              {' '}· Analyzed on {new Date(lastAnalysis.analyzedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+              {' '}{tr("· Analyzed on")} {new Date(lastAnalysis.analyzedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
             </span>
-            <span className="ga-last-analysis-hint">Run a new analysis below to refresh.</span>
+            <span className="ga-last-analysis-hint">{tr("Run a new analysis below to refresh.")}</span>
           </div>
         )}
         <form onSubmit={handleAnalyze} className="ga-form">
@@ -1846,8 +1847,8 @@ export default function GameAnalysis() {
               type="button"
               className={`ga-platform-btn ga-platform-logo ${platform === 'chesscom' ? 'active' : ''}`}
               onClick={() => setPlatform('chesscom')}
-              title="Chess.com"
-              aria-label="Chess.com"
+              title={tr("Chess.com")}
+              aria-label={tr("Chess.com")}
             >
               <ChessComLogo />
             </button>
@@ -1855,8 +1856,8 @@ export default function GameAnalysis() {
               type="button"
               className={`ga-platform-btn ga-platform-logo ${platform === 'lichess' ? 'active' : ''}`}
               onClick={() => setPlatform('lichess')}
-              title="Lichess"
-              aria-label="Lichess"
+              title={tr("Lichess")}
+              aria-label={tr("Lichess")}
             >
               <LichessLogo />
             </button>
@@ -1865,21 +1866,21 @@ export default function GameAnalysis() {
               className={`ga-platform-btn ${platform === 'chessnexus' ? 'active' : ''}`}
               onClick={() => setPlatform('chessnexus')}
             >
-              ⚡ ChessNexus
+              {tr("⚡ ChessNexus")}
             </button>
             <button
               type="button"
               className={`ga-platform-btn ${platform === 'otb' ? 'active' : ''}`}
               onClick={() => setPlatform('otb')}
             >
-              📷 OTB Scoresheet
+              {tr("📷 OTB Scoresheet")}
             </button>
             <button
               type="button"
               className={`ga-platform-btn ${platform === 'quick' ? 'active' : ''}`}
               onClick={() => setPlatform('quick')}
             >
-              ⚡ Quick Analyze
+              {tr("⚡ Quick Analyze")}
             </button>
           </div>
 
@@ -1892,25 +1893,25 @@ export default function GameAnalysis() {
                   className={`ga-mode-btn${isOwnAccount ? ' active' : ''}`}
                   onClick={() => setIsOwnAccount(true)}
                 >
-                  👤 My Account
+                  {tr("👤 My Account")}
                 </button>
                 <button
                   type="button"
                   className={`ga-mode-btn scout${!isOwnAccount ? ' active' : ''}`}
                   onClick={() => setIsOwnAccount(false)}
                 >
-                  🔭 Check Another Player
+                  {tr("🔭 Check Another Player")}
                 </button>
               </div>
               {!isOwnAccount && (
-                <p className="ga-scout-hint">🔭 Scout mode: analyzes 50 games — results not saved to your profile.</p>
+                <p className="ga-scout-hint">{tr("🔭 Scout mode: analyzes 50 games — results not saved to your profile.")}</p>
               )}
             </>
           )}
 
           {/* Guest notice for chess.com / lichess */}
           {(!user || user.role === 'guest') && platform !== 'chessnexus' && platform !== 'otb' && platform !== 'quick' && (
-            <p className="ga-scout-hint">🔭 Analysing 50 games in scout mode. <a href="/login" style={{color:'var(--color-warning)'}}>Log in</a> to track your progress over time.</p>
+            <p className="ga-scout-hint">{tr("🔭 Analysing 50 games in scout mode.")} <a href="/login" style={{color:'var(--color-warning)'}}>{tr("Log in")}</a> {tr("to track your progress over time.")}</p>
           )}
 
           {/* Username input — hidden for ChessNexus (uses DB games automatically) and OTB */}
@@ -1939,10 +1940,10 @@ export default function GameAnalysis() {
               <>
                 <div className="ga-nexus-info">
                   <span className="ga-nexus-info-icon">🏆</span>
-                  <span>Your last 50 finished Arena Tournament games on ChessNexus will be analyzed automatically.</span>
+                  <span>{tr("Your last 50 finished Arena Tournament games on ChessNexus will be analyzed automatically.")}</span>
                 </div>
                 <div className="ga-nexus-tc">
-                  <span className="ga-nexus-tc-label">Time control:</span>
+                  <span className="ga-nexus-tc-label">{tr("Time control:")}</span>
                   {['all', 'bullet', 'blitz', 'rapid'].map((tc) => (
                     <button
                       key={tc}
@@ -1956,7 +1957,7 @@ export default function GameAnalysis() {
                   ))}
                 </div>
                 <p className="ga-scout-hint">
-                  💡 Bullet blunders are mostly time-scrambles — pick Rapid or Blitz to focus on mistakes worth learning from.
+                  {tr("💡 Bullet blunders are mostly time-scrambles — pick Rapid or Blitz to focus on mistakes worth learning from.")}
                 </p>
               </>
             ) : (
@@ -1965,15 +1966,15 @@ export default function GameAnalysis() {
           ) : platform === 'quick' ? (
             <div className="ga-pgn-section">
               <p className="ga-pgn-side-label" style={{ margin: '0 0 2px' }}>
-                ⚡ Paste a FEN or a PGN. <strong>Quick Analyze</strong> opens a live
+                {tr("⚡ Paste a FEN or a PGN.")} <strong>{tr("Quick Analyze")}</strong> {tr("opens a live")}
                 Stockfish board (depth 18, 4 lines, nothing saved). For a PGN you
-                can also run a full <strong>Detailed Report</strong>.
+                {tr("can also run a full")} <strong>{tr("Detailed Report")}</strong>.
               </p>
               <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
                 <input
                   className="ga-username-input"
                   type="text"
-                  placeholder="FEN — e.g. r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3"
+                  placeholder={tr("FEN — e.g. r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3")}
                   value={quickFen}
                   onChange={e => setQuickFen(e.target.value)}
                   spellCheck={false}
@@ -1988,7 +1989,7 @@ export default function GameAnalysis() {
                     color: '#c084fc', fontSize: 13, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
                   }}
                 >
-                  {showEditor ? '✕ Close editor' : '✏️ Board editor'}
+                  {showEditor ? tr('✕ Close editor') : tr('✏️ Board editor')}
                 </button>
               </div>
 
@@ -2017,7 +2018,7 @@ export default function GameAnalysis() {
                     </div>
                     <div className="ga-input-row ga-analyze-row" style={{ marginTop: 12 }}>
                       <button type="button" className="ga-analyze-btn" onClick={handleEditorAnalyze}>
-                        ⚡ Quick Analyze this position →
+                        {tr("⚡ Quick Analyze this position →")}
                       </button>
                     </div>
                   </div>
@@ -2027,14 +2028,14 @@ export default function GameAnalysis() {
                     <SideToMoveControl chess={editorChess} onFenChange={setEditorFromFen} />
                     <EnPassantControl chess={editorChess} onFenChange={setEditorFromFen} />
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      <button type="button" className="ga-editor-mini" onClick={() => setEditorFromFen('8/8/8/8/8/8/8/8 w - - 0 1')}>🗑️ Clear</button>
-                      <button type="button" className="ga-editor-mini" onClick={() => setEditorFromFen(START_FEN)}>⟳ Start</button>
+                      <button type="button" className="ga-editor-mini" onClick={() => setEditorFromFen('8/8/8/8/8/8/8/8 w - - 0 1')}>{tr("🗑️ Clear")}</button>
+                      <button type="button" className="ga-editor-mini" onClick={() => setEditorFromFen(START_FEN)}>{tr("⟳ Start")}</button>
                     </div>
                   </div>
                 </div>
               )}
 
-              <div style={{ textAlign: 'center', color: 'var(--color-text-faint)', fontSize: 12, margin: '4px 0' }}>— or —</div>
+              <div style={{ textAlign: 'center', color: 'var(--color-text-faint)', fontSize: 12, margin: '4px 0' }}>{tr("— or —")}</div>
               <textarea
                 className="ga-pgn-textarea"
                 placeholder={'Paste a PGN here…\n1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 …'}
@@ -2044,18 +2045,18 @@ export default function GameAnalysis() {
                 spellCheck={false}
               />
               <div className="ga-otb-side-row" style={{ marginTop: 12, marginBottom: 0 }}>
-                <span className="ga-otb-side-label">Which colour did you play?</span>
+                <span className="ga-otb-side-label">{tr("Which colour did you play?")}</span>
                 <div className="ga-otb-side-toggle">
                   <button
                     type="button"
                     className={`ga-otb-side-btn${quickSide === 'white' ? ' active' : ''}`}
                     onClick={() => setQuickSide('white')}
-                  >♔ White</button>
+                  >{tr("♔ White")}</button>
                   <button
                     type="button"
                     className={`ga-otb-side-btn${quickSide === 'black' ? ' active' : ''}`}
                     onClick={() => setQuickSide('black')}
-                  >♚ Black</button>
+                  >{tr("♚ Black")}</button>
                 </div>
               </div>
               <div className="ga-input-row ga-analyze-row" style={{ marginTop: 14, gap: 10, flexWrap: 'wrap' }}>
@@ -2065,17 +2066,17 @@ export default function GameAnalysis() {
                   disabled={!quickFen.trim() && !quickPgn.trim()}
                   onClick={handleQuickAnalyze}
                 >
-                  ⚡ Quick Analyze →
+                  {tr("⚡ Quick Analyze →")}
                 </button>
                 <button
                   type="button"
                   className="ga-analyze-btn"
                   style={{ background: 'var(--color-accent-a15)', color: 'var(--color-accent)', border: '1px solid var(--color-accent-a40)' }}
                   disabled={pgnAnalyzing || loading || !quickPgn.trim()}
-                  title={!quickPgn.trim() ? 'Paste a PGN to get a detailed report' : undefined}
+                  title={!quickPgn.trim() ? tr('Paste a PGN to get a detailed report') : undefined}
                   onClick={handleQuickDetailed}
                 >
-                  {pgnAnalyzing ? 'Starting…' : '📊 Detailed Report →'}
+                  {pgnAnalyzing ? tr('Starting…') : tr('📊 Detailed Report →')}
                 </button>
               </div>
               {quickError && <div className="ga-error">{quickError}</div>}
@@ -2087,8 +2088,8 @@ export default function GameAnalysis() {
                 className="ga-username-input"
                 type="text"
                 placeholder={isOwnAccount
-                  ? `Your ${platform === 'chesscom' ? 'chess.com' : 'lichess'} username`
-                  : `Any ${platform === 'chesscom' ? 'chess.com' : 'lichess'} username`}
+                  ? tr("Your {v0} username", { v0: platform === 'chesscom' ? 'chess.com' : 'lichess' })
+                  : tr("Any {v0} username", { v0: platform === 'chesscom' ? 'chess.com' : 'lichess' })}
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 maxLength={50}
@@ -2105,7 +2106,7 @@ export default function GameAnalysis() {
                 className="ga-analyze-btn"
                 disabled={loading || (platform !== 'chessnexus' && !username.trim())}
               >
-                {loading ? 'Analyzing…' : 'Analyze'}
+                {loading ? tr('Analyzing…') : tr('Analyze')}
               </button>
             </div>
           )}
@@ -2123,9 +2124,9 @@ export default function GameAnalysis() {
           <div className="ga-bg-banner-content">
             <span className="ga-bg-banner-icon">🔄</span>
             <div>
-              <div className="ga-bg-banner-title">Analysis running in the background</div>
+              <div className="ga-bg-banner-title">{tr("Analysis running in the background")}</div>
               <div className="ga-bg-banner-sub">
-                {progress?.stage || 'Analysing your games with Stockfish…'}
+                {progress?.stage || tr('Analysing your games with Stockfish…')}
                 {progress && ` (${progress.current}/${progress.total})`}
               </div>
             </div>
@@ -2143,7 +2144,7 @@ export default function GameAnalysis() {
       {loading && !runningInBackground && (
         <div className="ga-progress-card">
           <div className="ga-progress-stage">
-            {progress?.stage || 'Starting analysis…'}
+            {progress?.stage || tr('Starting analysis…')}
           </div>
           <div className="ga-progress-bar-bg">
             <div
@@ -2153,13 +2154,13 @@ export default function GameAnalysis() {
           </div>
           <div className="ga-progress-text">
             {progress
-              ? `Game ${progress.current} of ${progress.total} — Chess Nexus analysis in progress`
+              ? tr("Game {current} of {total} — Chess Nexus analysis in progress", { current: progress.current, total: progress.total })
               : 'Fetching games…'}
           </div>
           <div className="ga-progress-note">
             {isOwnAccount
-              ? <span>👋 Analysing up to 50 games takes 10–15 minutes. <strong>You can freely browse other pages</strong> — the analysis keeps running in the background. Come back here anytime to see your results.</span>
-              : <span>🔭 Scout mode analyses 50 games. <strong>You can freely browse other pages</strong> — come back anytime to see the results.</span>}
+              ? <span>{tr("👋 Analysing up to 50 games takes 10–15 minutes.")} <strong>{tr("You can freely browse other pages")}</strong> {tr("— the analysis keeps running in the background. Come back here anytime to see your results.")}</span>
+              : <span>{tr("🔭 Scout mode analyses 50 games.")} <strong>{tr("You can freely browse other pages")}</strong> {tr("— come back anytime to see the results.")}</span>}
           </div>
         </div>
       )}
@@ -2171,7 +2172,7 @@ export default function GameAnalysis() {
           {/* Playstyle */}
           {result.playstyle && (
             <>
-              <h3 className="ga-section-title">🧠 Your Playing Style</h3>
+              <h3 className="ga-section-title">{tr("🧠 Your Playing Style")}</h3>
               <PlaystyleCard playstyle={result.playstyle} />
             </>
           )}
@@ -2179,11 +2180,11 @@ export default function GameAnalysis() {
           {/* Summary row */}
           <div className="ga-summary-row">
             <div className="ga-summary-card">
-              <div className="ga-summary-label">Games Analyzed</div>
+              <div className="ga-summary-label">{tr("Games Analyzed")}</div>
               <div className="ga-summary-value">{result.gamesAnalyzed}</div>
             </div>
             <div className="ga-summary-card">
-              <div className="ga-summary-label">Record</div>
+              <div className="ga-summary-label">{tr("Record")}</div>
               <div className="ga-summary-value wdl">
                 <span className="ga-w">{result.wins}W</span>
                 &nbsp;/&nbsp;
@@ -2193,24 +2194,24 @@ export default function GameAnalysis() {
               </div>
             </div>
             <div className="ga-summary-card">
-              <div className="ga-summary-label">Overall Accuracy</div>
+              <div className="ga-summary-label">{tr("Overall Accuracy")}</div>
               <div className="ga-summary-value">
                 {result.overallAccuracy != null ? `${result.overallAccuracy}%` : '—'}
               </div>
             </div>
             {result.conversionStats && result.conversionStats.hadWinningPosition > 0 && (
               <div className="ga-summary-card">
-                <div className="ga-summary-label">Converted Wins</div>
+                <div className="ga-summary-label">{tr("Converted Wins")}</div>
                 <div className="ga-summary-value">
                   {result.conversionStats.converted}/{result.conversionStats.hadWinningPosition}
                 </div>
-                <div className="ga-conversion-note">winning positions</div>
+                <div className="ga-conversion-note">{tr("winning positions")}</div>
               </div>
             )}
           </div>
 
           {/* Phase cards */}
-          <h3 className="ga-section-title">📊 Game Phase Accuracy</h3>
+          <h3 className="ga-section-title">{tr("📊 Game Phase Accuracy")}</h3>
           <div className="ga-phase-cards">
             <PhaseCard phase="Opening"    data={result.opening}    icon="♟" />
             <PhaseCard phase="Middlegame" data={result.middlegame} icon="⚔" />
@@ -2236,15 +2237,15 @@ export default function GameAnalysis() {
 
           {result.pieceHeatmap && (
             <div className="ga-piece-heatmap-section">
-              <h3 className="ga-section-title">♟ Piece-Level Mistake Map</h3>
-              <p className="ga-section-desc">Which pieces do you blunder with most?</p>
+              <h3 className="ga-section-title">{tr("♟ Piece-Level Mistake Map")}</h3>
+              <p className="ga-section-desc">{tr("Which pieces do you blunder with most?")}</p>
               <PieceHeatmap pieceHeatmap={result.pieceHeatmap} worstPiece={result.worstPiece} />
             </div>
           )}
 
           {result.endgameStats && result.endgameStats.length > 0 && (
             <div className="ga-endgame-section">
-              <h3 className="ga-section-title">👑 Endgame Type Performance</h3>
+              <h3 className="ga-section-title">{tr("👑 Endgame Type Performance")}</h3>
               <EndgameStats endgameStats={result.endgameStats} />
             </div>
           )}
@@ -2256,8 +2257,8 @@ export default function GameAnalysis() {
           {/* Per-Game Breakdown */}
           {result.games && result.games.length > 0 && (
             <>
-              <h3 className="ga-section-title">📋 Per-Game Breakdown</h3>
-              <p className="ga-section-desc">Click a game to see full move-by-move Chess Nexus analysis.</p>
+              <h3 className="ga-section-title">{tr("📋 Per-Game Breakdown")}</h3>
+              <p className="ga-section-desc">{tr("Click a game to see full move-by-move Chess Nexus analysis.")}</p>
               {/* The replay is placed INSIDE the button grid, immediately after
                   the row holding the selected game — not after all 50 buttons.
                   With 50 games on a phone the board was ~14 rows below the tap,
@@ -2274,7 +2275,7 @@ export default function GameAnalysis() {
                     className={`ga-game-btn${selectedGameIndex === i ? ' active' : ''}`}
                     onClick={() => setSelectedGameIndex(i)}
                   >
-                    Game {g.gameNumber}
+                    {tr("Game")} {g.gameNumber}
                   </button>
                 ))}
                 {selectedGameIndex !== null && result.games[selectedGameIndex] && (
@@ -2302,14 +2303,14 @@ export default function GameAnalysis() {
           {/* Trend Charts */}
           {result.trends && result.trends.accuracyPerGame && result.trends.accuracyPerGame.length > 0 && (
             <>
-              <h3 className="ga-section-title">📉 Performance Trends</h3>
-              <p className="ga-section-desc">Are you improving across these games?</p>
+              <h3 className="ga-section-title">{tr("📉 Performance Trends")}</h3>
+              <p className="ga-section-desc">{tr("Are you improving across these games?")}</p>
               <TrendCharts trends={result.trends} />
             </>
           )}
 
           {/* Tactics */}
-          <h3 className="ga-section-title">🎯 Tactics Missed</h3>
+          <h3 className="ga-section-title">{tr("🎯 Tactics Missed")}</h3>
           <TacticsBar tacticsStats={result.tacticsStats} />
 
           {/* Recommendations */}
@@ -2320,9 +2321,9 @@ export default function GameAnalysis() {
               arena games). Same component as the dashboard, mounted here too. */}
           {platform === 'chessnexus' && (
             <>
-              <h3 className="ga-section-title">🎓 Turn Your Mistakes Into Practice</h3>
+              <h3 className="ga-section-title">{tr("🎓 Turn Your Mistakes Into Practice")}</h3>
               <p className="ga-section-desc">
-                Solve the exact moments you slipped up — then re-check to see yourself improve.
+                {tr("Solve the exact moments you slipped up — then re-check to see yourself improve.")}
               </p>
               <GameInsightsPanel />
             </>
@@ -2330,13 +2331,13 @@ export default function GameAnalysis() {
 
           {/* Re-analyze note */}
           <p className="ga-cache-note">
-            Results are cached for 24 hours. Click Analyze again after 24 hours to refresh.
+            {tr("Results are cached for 24 hours. Click Analyze again after 24 hours to refresh.")}
           </p>
         </div>
       )}
 
       <AboutFeatureCTA
-        links={[{ label: "About Game Analysis", to: "/analyse-my-chess-game" }]}
+        links={[{ label: tr("About Game Analysis"), to: "/analyse-my-chess-game" }]}
       />
     </div>
   );

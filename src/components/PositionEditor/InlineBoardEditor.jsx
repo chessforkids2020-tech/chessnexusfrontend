@@ -3,6 +3,7 @@ import { Chess } from 'chess.js';
 import EditableBoard from './EditableBoard';
 import SetupControls from './SetupControls';
 import { PIECE_SVG_MAP } from './PieceSelector';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const WHITE_PIECES = ['K', 'Q', 'R', 'B', 'N', 'P'];
 const BLACK_PIECES = ['k', 'q', 'r', 'b', 'n', 'p'];
@@ -35,7 +36,7 @@ function validatePosition(chess) {
     if (bk !== 1) return 'Black must have exactly 1 king';
     return null;
   } catch (e) {
-    return e.message || 'Invalid position';
+    return e.message || tr('Invalid position');
   }
 }
 
@@ -162,20 +163,20 @@ export default function InlineBoardEditor({ initialFen, onApply, onCancel }) {
             fontWeight: 600,
           }}
         >
-          🗑 Eraser Mode
+          {tr("🗑 Eraser Mode")}
         </button>
       </div>
 
       {/* MIDDLE: Setup panel, directly to the right of the board */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: '0 0 auto', minWidth: 190 }}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button type="button" onClick={flipBoard} title="Flip the board" style={{ padding: '7px 14px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 8, color: '#e6e8ee', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 }}>⇅ Flip</button>
-          <button type="button" onClick={handleClear} style={{ padding: '7px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, color: '#f87171', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 }}>🗑 Clear</button>
-          <button type="button" onClick={handleReset} style={{ padding: '7px 14px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, color: '#34d399', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 }}>♟ Start Pos</button>
+          <button type="button" onClick={flipBoard} title={tr("Flip the board")} style={{ padding: '7px 14px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 8, color: '#e6e8ee', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 }}>{tr("⇅ Flip")}</button>
+          <button type="button" onClick={handleClear} style={{ padding: '7px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, color: '#f87171', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 }}>{tr("🗑 Clear")}</button>
+          <button type="button" onClick={handleReset} style={{ padding: '7px 14px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, color: '#34d399', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 }}>{tr("♟ Start Pos")}</button>
         </div>
 
         <div style={cardStyle}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#a5b4fc', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Setup</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#a5b4fc', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>{tr("Setup")}</div>
           <SetupControls chess={chess} onFenChange={handleFenChange} />
         </div>
       </div>
@@ -183,7 +184,7 @@ export default function InlineBoardEditor({ initialFen, onApply, onCancel }) {
       {/* RIGHT: FEN, validation, then actions below */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: '1 1 220px', minWidth: 220 }}>
         <div style={cardStyle}>
-          <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 6, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>FEN</div>
+          <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 6, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>{"FEN"}</div>
           <input
             value={chess.fen()}
             onChange={e => handleFenChange(e.target.value)}
@@ -205,14 +206,14 @@ export default function InlineBoardEditor({ initialFen, onApply, onCancel }) {
             disabled={!!validationError}
             style={{ flex: 2, padding: '10px 8px', background: validationError ? 'rgba(255,255,255,0.04)' : 'rgba(16,185,129,0.15)', border: `1px solid rgba(16,185,129,${validationError ? 0.1 : 0.4})`, borderRadius: 10, color: validationError ? '#4b5563' : '#34d399', cursor: validationError ? 'not-allowed' : 'pointer', fontSize: 13, fontWeight: 700 }}
           >
-            ✓ Use this position
+            {tr("✓ Use this position")}
           </button>
           <button
             type="button"
             onClick={onCancel}
             style={{ flex: 1, padding: '10px 8px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, color: '#94a3b8', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
           >
-            Cancel
+            {tr("Cancel")}
           </button>
         </div>
       </div>

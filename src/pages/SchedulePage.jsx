@@ -3,6 +3,7 @@ import SEO from '../components/SEO';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import CoffeeCta from '../components/CoffeeCta';
+import { t as tr } from '../i18n/LanguageContext';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -151,7 +152,7 @@ function ActivityCard({ item, compact }) {
       {live && (
         <div style={{ position: 'absolute', top: 8, right: 10, display: 'flex', alignItems: 'center', gap: 4 }}>
           <span style={{ width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
-          <span style={{ color: 'var(--color-success)', fontSize: 11, fontWeight: 700 }}>LIVE</span>
+          <span style={{ color: 'var(--color-success)', fontSize: 11, fontWeight: 700 }}>{tr("LIVE")}</span>
         </div>
       )}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
@@ -159,7 +160,7 @@ function ActivityCard({ item, compact }) {
         <span style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: compact ? 13 : 15 }}>{item.title}</span>
       </div>
       <div style={{ color: 'var(--color-text-muted)', fontSize: 12, marginBottom: 4 }}>
-        {formatLocalTimeFromIst(item)} · {item.durationMinutes} min
+        {formatLocalTimeFromIst(item)} · {item.durationMinutes} {tr("min")}
       </div>
       {!compact && item.description && (
         <div style={{ color: 'var(--color-text-muted)', fontSize: 12, marginBottom: 6 }}>{item.description}</div>
@@ -173,13 +174,13 @@ function ActivityCard({ item, compact }) {
           fontSize: 11,
           fontWeight: 600,
         }}>
-          {ACTIVITY_LABELS[item.activityType] || 'Activity'}
+          {ACTIVITY_LABELS[item.activityType] || tr('Activity')}
         </span>
         {!live && (
-          <span style={{ color: 'var(--color-text-faint)', fontSize: 11 }}>in {formatCountdown(ms)}</span>
+          <span style={{ color: 'var(--color-text-faint)', fontSize: 11 }}>{tr("in")} {formatCountdown(ms)}</span>
         )}
         {item.link && (
-          <span style={{ color: item.color || 'var(--color-accent)', fontSize: 12, fontWeight: 600 }}>Join →</span>
+          <span style={{ color: item.color || 'var(--color-accent)', fontSize: 12, fontWeight: 600 }}>{tr("Join →")}</span>
         )}
       </div>
     </div>
@@ -236,7 +237,7 @@ function MonthCalendar({ byDateMap }) {
         <button
           onClick={goToday}
           style={{ background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a30)', color: 'var(--color-accent)', borderRadius: 'var(--radius-2xl)', padding: '6px 16px', cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'Poppins,sans-serif' }}
-        >Today</button>
+        >{tr("Today")}</button>
       </div>
 
       {/* Scrollable wrapper — scroll only on small screens; full-width on large screens */}
@@ -295,7 +296,7 @@ function MonthCalendar({ byDateMap }) {
                     {dayActivities.slice(0, 3).map(item => (
                       <div
                         key={item._id}
-                        title={`${item.title} · ${formatLocalTimeFromIst(item)} · ${item.durationMinutes}min`}
+                        title={tr("{title} · {v1} · {durationMinutes}min", { title: item.title, v1: formatLocalTimeFromIst(item), durationMinutes: item.durationMinutes })}
                         style={{
                           background: `${item.color || 'var(--color-accent)'}20`,
                           borderLeft: `3px solid ${item.color || 'var(--color-accent)'}`,
@@ -310,7 +311,7 @@ function MonthCalendar({ byDateMap }) {
                       </div>
                     ))}
                     {dayActivities.length > 3 && (
-                      <div style={{ fontSize: 9, color: 'var(--color-text-faint)', paddingLeft: 4, fontWeight: 600 }}>+{dayActivities.length - 3} more</div>
+                      <div style={{ fontSize: 9, color: 'var(--color-text-faint)', paddingLeft: 4, fontWeight: 600 }}>+{dayActivities.length - 3} {tr("more")}</div>
                     )}
                   </div>
                 </>
@@ -377,7 +378,7 @@ function MonthCalendar({ byDateMap }) {
             {/* Top shimmer line */}
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, var(--color-accent), var(--color-accent-2), var(--color-accent))', backgroundSize: '200% 100%' }} />
             {byDateMap[selectedDateStr]?.length === 0 || !byDateMap[selectedDateStr] ? (
-              <div style={{ color: 'var(--color-text-faint)', fontSize: 14, textAlign: 'center', padding: '30px 0' }}>No activities scheduled on this day.</div>
+              <div style={{ color: 'var(--color-text-faint)', fontSize: 14, textAlign: 'center', padding: '30px 0' }}>{tr("No activities scheduled on this day.")}</div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {(byDateMap[selectedDateStr] || []).map(item => <ActivityCard key={item._id} item={item} />)}
@@ -443,7 +444,7 @@ function TodayTimetable({ byDateMap, items, tick }) {
             <span style={{ color: 'var(--color-accent)' }}>{MONTH_NAMES[now.getMonth()]} {now.getDate()}</span>
           </span>
           <span style={{ marginLeft: 12, background: 'var(--color-accent-a15)', color: 'var(--color-accent)', borderRadius: 'var(--radius-2xl)', padding: '3px 12px', fontSize: 13, fontWeight: 700 }}>
-            {todayItems.length} activit{todayItems.length === 1 ? 'y' : 'ies'} today
+            {todayItems.length} {tr("activit")}{todayItems.length === 1 ? 'y' : 'ies'} {tr("today")}
           </span>
         </div>
       </div>
@@ -462,16 +463,16 @@ function TodayTimetable({ byDateMap, items, tick }) {
               {ACTIVITY_ICONS[nextUpItem.activityType] || '📌'}
             </div>
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: nextUpItem.color || 'var(--color-accent)', letterSpacing: 1, marginBottom: 2 }}>NEXT UP</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: nextUpItem.color || 'var(--color-accent)', letterSpacing: 1, marginBottom: 2 }}>{tr("NEXT UP")}</div>
               <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--color-text)' }}>{nextUpItem.title}</div>
-              <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 2 }}>{fmtIstTime(nextUpItem)} · {nextUpItem.durationMinutes} min</div>
+              <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 2 }}>{fmtIstTime(nextUpItem)} · {nextUpItem.durationMinutes} {tr("min")}</div>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 28, fontWeight: 900, color: nextUpItem.color || 'var(--color-accent)', lineHeight: 1 }}>{formatCountdown(nextUpMs)}</div>
-            <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2 }}>until start</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2 }}>{tr("until start")}</div>
             {nextUpItem.link && (
-              <button onClick={() => navigate(nextUpItem.link)} style={{ marginTop: 8, background: nextUpItem.color || 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 'var(--radius-2xl)', padding: '6px 16px', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'Poppins,sans-serif' }}>Join →</button>
+              <button onClick={() => navigate(nextUpItem.link)} style={{ marginTop: 8, background: nextUpItem.color || 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 'var(--radius-2xl)', padding: '6px 16px', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'Poppins,sans-serif' }}>{tr("Join →")}</button>
             )}
           </div>
         </div>
@@ -479,7 +480,7 @@ function TodayTimetable({ byDateMap, items, tick }) {
 
       {/* Timetable rows */}
       {todayItems.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-text-faint)' }}>No activities scheduled for today.</div>
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-text-faint)' }}>{tr("No activities scheduled for today.")}</div>
       ) : (
         <div style={{ position: 'relative' }}>
           {/* vertical timeline line */}
@@ -542,24 +543,24 @@ function TodayTimetable({ byDateMap, items, tick }) {
                     {isLive && (
                       <span style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 'var(--radius-2xl)', padding: '2px 10px', fontSize: 11, fontWeight: 700, color: 'var(--color-success)', whiteSpace: 'nowrap' }}>
                         <span style={{ width: 6, height: 6, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
-                        LIVE
+                        {tr("LIVE")}
                       </span>
                     )}
                     {!isLive && !isEnded && (
                       <span style={{ background: `${col}22`, color: col, borderRadius: 'var(--radius-2xl)', padding: '2px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}>
-                        starts in {formatCountdown(status.ms)}
+                        {tr("starts in")} {formatCountdown(status.ms)}
                       </span>
                     )}
                     {isEnded && (
-                      <span style={{ color: 'var(--color-text-faint)', fontSize: 11, fontWeight: 600 }}>Ended</span>
+                      <span style={{ color: 'var(--color-text-faint)', fontSize: 11, fontWeight: 600 }}>{tr("Ended")}</span>
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 6, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{fmtIstTime(item)}</span>
                     <span style={{ width: 3, height: 3, borderRadius: 'var(--radius-circle)', background: 'var(--color-surface-2)', display: 'inline-block' }} />
-                    <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{item.durationMinutes} min</span>
+                    <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{item.durationMinutes} {tr("min")}</span>
                     <span style={{ background: `${col}22`, color: col, borderRadius: 'var(--radius-2xl)', padding: '1px 8px', fontSize: 11, fontWeight: 600 }}>
-                      {ACTIVITY_LABELS[item.activityType] || 'Activity'}
+                      {ACTIVITY_LABELS[item.activityType] || tr('Activity')}
                     </span>
                   </div>
                   {item.description && (
@@ -591,7 +592,7 @@ export default function SchedulePage() {
     fetch(`${API_URL}/api/schedule`)
       .then(r => r.json())
       .then(data => { setItems(Array.isArray(data) ? data : []); setLoading(false); })
-      .catch(() => { setError('Could not load schedule.'); setLoading(false); });
+      .catch(() => { setError(tr('Could not load schedule.')); setLoading(false); });
   }, [API_URL]);
 
   // Refresh countdowns every 30 seconds
@@ -650,8 +651,8 @@ export default function SchedulePage() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'Poppins, sans-serif', position: 'relative', overflow: 'hidden' }}>
       <SEO
-        title="Chess Event Schedule — Upcoming Races & Tournaments"
-        description="View the upcoming chess arena races, puzzle tournaments, team races, and monthly focus events on Chess Nexus. Never miss a live chess competition."
+        title={tr("Chess Event Schedule — Upcoming Races & Tournaments")}
+        description={tr("View the upcoming chess arena races, puzzle tournaments, team races, and monthly focus events on Chess Nexus. Never miss a live chess competition.")}
         keywords="chess schedule, chess tournaments, chess arena race schedule, upcoming chess events, chess nexus schedule"
         canonical="/schedule"
       />
@@ -684,7 +685,7 @@ export default function SchedulePage() {
           onClick={() => navigate('/')}
           style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text)', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif' }}
         >
-          <img src="/logo.png" alt="Chess Nexus" style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
+          <img src="/logo.png" alt={tr("Chess Nexus")} style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
         </button>
 
         {/* Right: buy-us-a-coffee + auth action */}
@@ -696,7 +697,7 @@ export default function SchedulePage() {
               onClick={() => navigate('/dashboard')}
               style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 'var(--radius-2xl)', padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
             >
-              Dashboard →
+              {tr("Dashboard →")}
             </button>
           ) : (
             <button
@@ -704,7 +705,7 @@ export default function SchedulePage() {
               onClick={() => navigate('/login')}
               style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 'var(--radius-2xl)', padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
             >
-              Login
+              {tr("Login")}
             </button>
           )}
         </div>
@@ -713,9 +714,9 @@ export default function SchedulePage() {
       {/* Header */}
       <div style={{ position: 'relative', zIndex: 1, padding: '40px 20px 30px', textAlign: 'center', borderBottom: '1px solid var(--color-white-a07)' }}>
         <div style={{ fontSize: 40, marginBottom: 8 }}>📅</div>
-        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Activity Schedule</h1>
+        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{tr("Activity Schedule")}</h1>
         <p style={{ color: 'var(--color-text-muted)', marginTop: 8, fontSize: 14 }}>
-          All times shown in your local timezone ({Intl.DateTimeFormat().resolvedOptions().timeZone})
+          {tr("All times shown in your local timezone (")}{Intl.DateTimeFormat().resolvedOptions().timeZone})
         </p>
 
         {/* Live now banner */}
@@ -723,7 +724,7 @@ export default function SchedulePage() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 'var(--radius-2xl)', padding: '6px 16px', marginTop: 16 }}>
             <span style={{ width: 10, height: 10, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', animation: 'schedPulse 1.4s infinite', display: 'inline-block' }} />
             <span style={{ color: 'var(--color-success)', fontWeight: 700, fontSize: 13 }}>
-              {liveItems.map(i => i.title).join(', ')} — happening now!
+              {liveItems.map(i => i.title).join(', ')} {tr("— happening now!")}
             </span>
           </div>
         )}
@@ -738,14 +739,14 @@ export default function SchedulePage() {
       </div>
 
       <div style={{ maxWidth: viewMode === 'monthly' ? '100%' : 1100, margin: '0 auto', padding: viewMode === 'monthly' ? '24px 20px' : '24px 16px', position: 'relative', zIndex: 1 }}>
-        {loading && <div style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: 40 }}>Loading schedule…</div>}
+        {loading && <div style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: 40 }}>{tr("Loading schedule…")}</div>}
         {error && <div style={{ textAlign: 'center', color: 'var(--color-danger)', padding: 40 }}>{error}</div>}
 
         {!loading && !error && items.length === 0 && (
           <div style={{ textAlign: 'center', padding: 60 }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>�</div>
-            <div style={{ color: 'var(--color-text-muted)', fontSize: 16 }}>Loading schedule activities…</div>
-            <div style={{ color: 'var(--color-text-faint)', fontSize: 13, marginTop: 8 }}>Check back soon!</div>
+            <div style={{ color: 'var(--color-text-muted)', fontSize: 16 }}>{tr("Loading schedule activities…")}</div>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: 13, marginTop: 8 }}>{tr("Check back soon!")}</div>
           </div>
         )}
 
@@ -792,7 +793,7 @@ export default function SchedulePage() {
                 );
               })}
               {activeDay !== null && (
-                <button className="sched-day-btn" style={{ background: 'transparent', color: 'var(--color-text-faint)', border: '1px solid var(--color-white-a10)' }} onClick={() => setActiveDay(null)}>All</button>
+                <button className="sched-day-btn" style={{ background: 'transparent', color: 'var(--color-text-faint)', border: '1px solid var(--color-white-a10)' }} onClick={() => setActiveDay(null)}>{"All"}</button>
               )}
             </div>
 
@@ -821,7 +822,7 @@ export default function SchedulePage() {
                     <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ fontWeight: 700, fontSize: 13, color: isToday ? 'var(--color-accent)' : 'var(--color-text)' }}>{DAY_SHORT[date.getDay()]}</span>
                       <span style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>{date.getMonth()+1}/{date.getDate()}</span>
-                      {isToday && <span style={{ fontSize: 10, background: '#06b6d422', color: 'var(--color-accent)', borderRadius: 'var(--radius-md)', padding: '1px 6px', fontWeight: 700 }}>TODAY</span>}
+                      {isToday && <span style={{ fontSize: 10, background: '#06b6d422', color: 'var(--color-accent)', borderRadius: 'var(--radius-md)', padding: '1px 6px', fontWeight: 700 }}>{tr("TODAY")}</span>}
                     </div>
                     {dayItems.length === 0 ? (
                       <div style={{ color: 'var(--color-text-faint)', fontSize: 12, textAlign: 'center', paddingTop: 16 }}>—</div>
@@ -837,16 +838,16 @@ export default function SchedulePage() {
             {/* Guest CTA — only shown to logged-out users */}
             {!user && (
             <div style={{ marginTop: 32, textAlign: 'center', background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', padding: '24px 16px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 8px 32px var(--color-black-a50)' }}>
-              <div style={{ marginBottom: 12 }}><img src="/logo.png" alt="Chess Nexus" style={{ height: 48, width: 'auto', objectFit: 'contain' }} /></div>
-              <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 16 }}>Ready to participate?</div>
+              <div style={{ marginBottom: 12 }}><img src="/logo.png" alt={tr("Chess Nexus")} style={{ height: 48, width: 'auto', objectFit: 'contain' }} /></div>
+              <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 16 }}>{tr("Ready to participate?")}</div>
               <div style={{ color: 'var(--color-text-muted)', fontSize: 13, marginTop: 4, marginBottom: 16 }}>
-                Login to join activities, track your progress, and compete with others.
+                {tr("Login to join activities, track your progress, and compete with others.")}
               </div>
               <button
                 style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 'var(--radius-2xl)', padding: '10px 28px', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
                 onClick={() => window.location.href = '/login'}
               >
-                Login to Join
+                {tr("Login to Join")}
               </button>
             </div>
             )}

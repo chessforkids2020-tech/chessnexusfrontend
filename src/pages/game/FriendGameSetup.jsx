@@ -4,6 +4,7 @@ import { TIME_CONTROL_PRESETS } from './friendIdentity';
 import { useAuth } from '../../contexts/AuthContext';
 import { GUEST_VOICE_MSG } from '../../components/FriendVoiceBar';
 import './FriendGame.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 /**
  * "Play with a Friend" — Join / Create modal.
@@ -57,7 +58,7 @@ export default function FriendGameSetup({ onClose }) {
 
   const handleJoin = () => {
     const code = joinCode.toUpperCase().trim().replace(/.*\/friend\//, '');
-    if (!code) { setError('Enter a code or paste an invite link.'); return; }
+    if (!code) { setError(tr('Enter a code or paste an invite link.')); return; }
     // Validation happens on the room page's own join; just navigate.
     navigate(`/friend/${code}`);
   };
@@ -65,29 +66,29 @@ export default function FriendGameSetup({ onClose }) {
   return (
     <div className="fg-overlay" onClick={onClose}>
       <div className="fg-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="fg-close" onClick={onClose} aria-label="Close">✕</button>
+        <button className="fg-close" onClick={onClose} aria-label={tr("Close")}>✕</button>
 
         {tab === 'home' && (
           <div className="fg-home">
             <div className="fg-head">
               <span className="fg-head-ring" aria-hidden="true">🤝</span>
-              <h2 className="fg-title">Play with a Friend</h2>
+              <h2 className="fg-title">{tr("Play with a Friend")}</h2>
               <div className="fg-divider" aria-hidden="true"><span>♛</span></div>
-              <p className="fg-sub">Create a private game and share the code — even as a guest.</p>
+              <p className="fg-sub">{tr("Create a private game and share the code — even as a guest.")}</p>
             </div>
             <div className="fg-home-actions">
               <button className="fg-choice" onClick={() => setTab('create')}>
                 <span className="fg-choice-glow" aria-hidden="true" />
                 <span className="fg-choice-ring" aria-hidden="true">➕</span>
-                <span className="fg-choice-title">Create a game</span>
-                <span className="fg-choice-blurb">Pick a time control and get a code to share.</span>
+                <span className="fg-choice-title">{tr("Create a game")}</span>
+                <span className="fg-choice-blurb">{tr("Pick a time control and get a code to share.")}</span>
                 <span className="fg-choice-cta" aria-hidden="true">→</span>
               </button>
               <button className="fg-choice" onClick={() => setTab('join')}>
                 <span className="fg-choice-glow" aria-hidden="true" />
                 <span className="fg-choice-ring" aria-hidden="true">🔗</span>
-                <span className="fg-choice-title">Join with a code</span>
-                <span className="fg-choice-blurb">Paste the code or link your friend sent you.</span>
+                <span className="fg-choice-title">{tr("Join with a code")}</span>
+                <span className="fg-choice-blurb">{tr("Paste the code or link your friend sent you.")}</span>
                 <span className="fg-choice-cta" aria-hidden="true">→</span>
               </button>
             </div>
@@ -97,13 +98,13 @@ export default function FriendGameSetup({ onClose }) {
         {tab === 'create' && (
           <div className="fg-create-view">
             <div className="fg-head">
-              <h2 className="fg-title">Create a game</h2>
+              <h2 className="fg-title">{tr("Create a game")}</h2>
               <div className="fg-divider" aria-hidden="true"><span>♛</span></div>
             </div>
             <div className="fg-create-grid">
               {/* LEFT: time controls */}
               <div className="fg-col">
-                <h3 className="fg-col-title">⏱️ Time control</h3>
+                <h3 className="fg-col-title">{tr("⏱️ Time control")}</h3>
                 <div className="fg-tc-grid">
                   {TIME_CONTROL_PRESETS.map((p) => (
                     <button
@@ -118,46 +119,46 @@ export default function FriendGameSetup({ onClose }) {
                     className={`fg-tc ${custom ? 'active' : ''}`}
                     onClick={() => setCustom(true)}
                   >
-                    Custom
+                    {tr("Custom")}
                   </button>
                 </div>
                 {custom && (
                   <div className="fg-custom">
                     <label>
-                      Minutes (1–180)
+                      {tr("Minutes (1–180)")}
                       <input type="number" min="1" max="180" value={customBase}
                         onChange={(e) => setCustomBase(e.target.value)} />
                     </label>
                     <label>
-                      Increment (sec)
+                      {tr("Increment (sec)")}
                       <input type="number" min="0" max="60" value={customInc}
                         onChange={(e) => setCustomInc(e.target.value)} />
                     </label>
                   </div>
                 )}
                 <p className="fg-tc-note">
-                  {resolvedTc.base} min + {resolvedTc.increment}s / move
+                  {resolvedTc.base} {tr("min +")} {resolvedTc.increment}{tr("s / move")}
                 </p>
               </div>
 
               {/* RIGHT: variant + options */}
               <div className="fg-col">
-                <h3 className="fg-col-title">♜ Variant</h3>
+                <h3 className="fg-col-title">{tr("♜ Variant")}</h3>
                 <div className="fg-variant">
                   <button className={`fg-var ${variant === 'standard' ? 'active' : ''}`}
                     onClick={() => setVariant('standard')}>
-                    Standard
+                    {tr("Standard")}
                   </button>
                   <button className={`fg-var ${variant === 'chess960' ? 'active' : ''}`}
                     onClick={() => setVariant('chess960')}>
-                    Chess960
+                    {tr("Chess960")}
                   </button>
                 </div>
                 {variant === 'chess960' && (
-                  <p className="fg-tc-note">A random starting position is generated for both players.</p>
+                  <p className="fg-tc-note">{tr("A random starting position is generated for both players.")}</p>
                 )}
 
-                <h3 className="fg-col-title" style={{ marginTop: 18 }}>⚡ Mode</h3>
+                <h3 className="fg-col-title" style={{ marginTop: 18 }}>{tr("⚡ Mode")}</h3>
                 <div className="fg-variant">
                   <button
                     className={`fg-var ${isRated && variant === 'standard' ? 'active' : ''}`}
@@ -165,13 +166,13 @@ export default function FriendGameSetup({ onClose }) {
                     disabled={variant === 'chess960'}
                     title={variant === 'chess960' ? 'Chess960 games are always casual' : 'Win/loss changes your rating'}
                   >
-                    Rated
+                    {tr("Rated")}
                   </button>
                   <button
                     className={`fg-var ${!isRated || variant === 'chess960' ? 'active' : ''}`}
                     onClick={() => setIsRated(false)}
                   >
-                    Unrated
+                    {tr("Unrated")}
                   </button>
                 </div>
                 <p className="fg-tc-note">
@@ -182,17 +183,17 @@ export default function FriendGameSetup({ onClose }) {
                         : 'Unrated: just for fun — no rating change.')}
                 </p>
 
-                <h3 className="fg-col-title" style={{ marginTop: 18 }}>Options</h3>
+                <h3 className="fg-col-title" style={{ marginTop: 18 }}>{tr("Options")}</h3>
                 <label className="fg-check">
                   <input type="checkbox" checked={chatEnabled}
                     onChange={(e) => setChatEnabled(e.target.checked)} />
-                  Enable chat
+                  {tr("Enable chat")}
                 </label>
                 {isGuest ? (
                   <>
                     <label className="fg-check fg-disabled" title={GUEST_VOICE_MSG}>
                       <input type="checkbox" disabled />
-                      Voice call
+                      {tr("Voice call")}
                     </label>
                     <p className="fg-tc-note">🎙️ {GUEST_VOICE_MSG}</p>
                   </>
@@ -200,7 +201,7 @@ export default function FriendGameSetup({ onClose }) {
                   <label className="fg-check">
                     <input type="checkbox" checked={voiceEnabled}
                       onChange={(e) => setVoiceEnabled(e.target.checked)} />
-                    Voice call
+                    {tr("Voice call")}
                   </label>
                 )}
               </div>
@@ -208,9 +209,9 @@ export default function FriendGameSetup({ onClose }) {
 
             {error && <p className="fg-error">{error}</p>}
             <div className="fg-create-footer">
-              <button className="fg-secondary" onClick={() => setTab('home')}>← Back</button>
+              <button className="fg-secondary" onClick={() => setTab('home')}>{tr("← Back")}</button>
               <button className="fg-primary" onClick={handleCreate} disabled={busy}>
-                {busy ? 'Creating…' : 'Create & get code →'}
+                {busy ? tr('Creating…') : tr('Create & get code →')}
               </button>
             </div>
           </div>
@@ -220,9 +221,9 @@ export default function FriendGameSetup({ onClose }) {
           <div className="fg-join-view">
             <div className="fg-head">
               <span className="fg-head-ring" aria-hidden="true">🔗</span>
-              <h2 className="fg-title">Join a game</h2>
+              <h2 className="fg-title">{tr("Join a game")}</h2>
               <div className="fg-divider" aria-hidden="true"><span>♛</span></div>
-              <p className="fg-sub">Paste the code (or invite link) your friend sent you.</p>
+              <p className="fg-sub">{tr("Paste the code (or invite link) your friend sent you.")}</p>
             </div>
             <input
               className="fg-code-input"
@@ -235,8 +236,8 @@ export default function FriendGameSetup({ onClose }) {
             {error && <p className="fg-error">{error}</p>}
             {isGuest && <p className="fg-tc-note">🎙️ {GUEST_VOICE_MSG}</p>}
             <div className="fg-create-footer">
-              <button className="fg-secondary" onClick={() => setTab('home')}>← Back</button>
-              <button className="fg-primary" onClick={handleJoin}>Join →</button>
+              <button className="fg-secondary" onClick={() => setTab('home')}>{tr("← Back")}</button>
+              <button className="fg-primary" onClick={handleJoin}>{tr("Join →")}</button>
             </div>
           </div>
         )}

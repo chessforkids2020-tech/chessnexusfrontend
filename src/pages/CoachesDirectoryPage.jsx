@@ -14,8 +14,9 @@ import api, { resolveApiAssetUrl } from '../api';
 import SEO from '../components/SEO';
 import { htmlToText } from '../utils/htmlToText';
 import './CoachesDirectoryPage.css';
+import { t as tr } from '../i18n/LanguageContext';
 
-const LEVEL_LABEL = { beginner: 'Beginners', intermediate: 'Intermediate', advanced: 'Advanced' };
+const LEVEL_LABEL = { beginner: tr('Beginners'), intermediate: tr('Intermediate'), advanced: tr('Advanced') };
 
 function initials(name) {
   return String(name || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
@@ -73,7 +74,7 @@ export function CoachCard({ c }) {
     c.monthlyRate ? `${rateSym}${c.monthlyRate}/mo` : null,
   ].filter(Boolean).join(' · ') || null;
   const best = c.ratings.fide || c.ratings.lichess || c.ratings.chesscom;
-  const bestLabel = c.ratings.fide ? 'FIDE' : c.ratings.lichess ? 'Lichess' : 'Chess.com';
+  const bestLabel = c.ratings.fide ? tr('FIDE') : c.ratings.lichess ? tr('Lichess') : tr('Chess.com');
   const blurb = shortBioOf(c.bio);
 
   // Credibility line. The API already returns all of this — the card simply was
@@ -86,12 +87,12 @@ export function CoachCard({ c }) {
   // Platforms the coach linked — chess accounts first (most relevant to a
   // parent judging a coach), then the optional social/web links.
   const platforms = [
-    c.handles?.lichess  ? { k: 'li', icon: '♞', label: 'Lichess',   title: `Lichess: ${c.handles.lichess}` } : null,
-    c.handles?.chesscom ? { k: 'cc', icon: '♟', label: 'Chess.com', title: `Chess.com: ${c.handles.chesscom}` } : null,
-    c.handles?.fideId   ? { k: 'fi', icon: '🏅', label: 'FIDE',      title: `FIDE ID: ${c.handles.fideId}` } : null,
-    c.links?.website    ? { k: 'we', icon: '🌐', label: 'Website',   title: 'Has a website' } : null,
-    c.links?.instagram  ? { k: 'ig', icon: '📸', label: 'Instagram', title: 'Has an Instagram page' } : null,
-    c.links?.youtube    ? { k: 'yt', icon: '▶️', label: 'YouTube',   title: 'Has a YouTube channel' } : null,
+    c.handles?.lichess  ? { k: 'li', icon: '♞', label: tr('Lichess'),   title: `Lichess: ${c.handles.lichess}` } : null,
+    c.handles?.chesscom ? { k: 'cc', icon: '♟', label: tr('Chess.com'), title: `Chess.com: ${c.handles.chesscom}` } : null,
+    c.handles?.fideId   ? { k: 'fi', icon: '🏅', label: tr('FIDE'),      title: tr("FIDE ID: {fideId}", { fideId: c.handles.fideId }) } : null,
+    c.links?.website    ? { k: 'we', icon: '🌐', label: tr('Website'),   title: tr('Has a website') } : null,
+    c.links?.instagram  ? { k: 'ig', icon: '📸', label: tr('Instagram'), title: tr('Has an Instagram page') } : null,
+    c.links?.youtube    ? { k: 'yt', icon: '▶️', label: tr('YouTube'),   title: tr('Has a YouTube channel') } : null,
   ].filter(Boolean);
 
   // How many students a coach has is PRIVATE and never shown here: a coach
@@ -113,7 +114,7 @@ export function CoachCard({ c }) {
             {c.photo ? <img src={resolveApiAssetUrl(c.photo)} alt="" /> : <span>{initials(c.name)}</span>}
           </div>
           {c.verified && (
-            <span className="cd-verified" title="Verified by ChessNexus" aria-label="Verified coach">✓</span>
+            <span className="cd-verified" title={tr("Verified by ChessNexus")} aria-label={tr("Verified coach")}>✓</span>
           )}
         </div>
 
@@ -130,7 +131,7 @@ export function CoachCard({ c }) {
 
           <div className="cd-meta-line">
             {c.country && <span className="cd-country">{c.country}</span>}
-            {c.isAcademy && <span className="cd-academy">🏫 Academy</span>}
+            {c.isAcademy && <span className="cd-academy">{tr("🏫 Academy")}</span>}
           </div>
 
           {/* The coach's one-liner, then the opening of their bio. */}
@@ -149,7 +150,7 @@ export function CoachCard({ c }) {
               invalid HTML that breaks the card's own click target. Tapping the
               card opens the profile, where these are real links. */}
           {platforms.length > 0 && (
-            <div className="cd-platforms" aria-label="Linked profiles">
+            <div className="cd-platforms" aria-label={tr("Linked profiles")}>
               {platforms.map(pf => (
                 <span key={pf.k} className="cd-platform" title={pf.title}>{pf.icon} {pf.label}</span>
               ))}
@@ -172,12 +173,12 @@ export function CoachCard({ c }) {
       {blurb && <p className="cd-bio">{blurb}</p>}
 
       <div className="cd-tags">
-        {c.acceptingStudents && <span className="cd-tag cd-tag-open">● Taking students</span>}
+        {c.acceptingStudents && <span className="cd-tag cd-tag-open">{tr("● Taking students")}</span>}
         {c.teaches.map(t => <span key={t} className="cd-tag">{LEVEL_LABEL[t] || t}</span>)}
       </div>
 
       {/* A card that is a link should say where it goes. */}
-      <span className="cd-view">View profile →</span>
+      <span className="cd-view">{tr("View profile →")}</span>
     </Link>
   );
 }
@@ -198,7 +199,7 @@ export default function CoachesDirectoryPage() {
     api.get('/api/public/coaches')
       .then(r => { if (alive) setAll(r.data.coaches || []); })
       .catch(e => {
-        if (alive) { setAll([]); setErr(e.response?.data?.message || 'Could not load coaches.'); }
+        if (alive) { setAll([]); setErr(e.response?.data?.message || tr('Could not load coaches.')); }
       });
     return () => { alive = false; };
   }, []);
@@ -230,13 +231,13 @@ export default function CoachesDirectoryPage() {
   return (
     <div className="cd-page">
       <SEO
-        title="Chess coaches — find a coach on Chess Nexus"
-        description="Browse verified chess coaches on Chess Nexus. Filter by language, level and rate, then ask to join their students."
+        title={tr("Chess coaches — find a coach on Chess Nexus")}
+        description={tr("Browse verified chess coaches on Chess Nexus. Filter by language, level and rate, then ask to join their students.")}
         canonical="/coaches"
       />
 
       <header className="cd-head">
-        <h1>Find a chess coach</h1>
+        <h1>{tr("Find a chess coach")}</h1>
         <p>
           Every coach here is verified by the Chess Nexus team. Browse their
           pages, then ask to join — the coach decides who joins their students.
@@ -248,22 +249,22 @@ export default function CoachesDirectoryPage() {
           className="cd-search"
           value={q}
           onChange={e => setQ(e.target.value)}
-          placeholder="Search by name, country or what they teach"
-          aria-label="Search coaches"
+          placeholder={tr("Search by name, country or what they teach")}
+          aria-label={tr("Search coaches")}
         />
         <div className="cd-filter-row">
           <button type="button"
                   className={`cd-chip ${openOnly ? 'on' : ''}`}
                   onClick={() => setOpenOnly(v => !v)}>
-            {openOnly ? '✓ ' : ''}Taking students
+            {openOnly ? '✓ ' : ''}{tr("Taking students")}
           </button>
-          <select className="cd-select" value={level} onChange={e => setLevel(e.target.value)} aria-label="Level">
-            <option value="">Any level</option>
+          <select className="cd-select" value={level} onChange={e => setLevel(e.target.value)} aria-label={tr("Level")}>
+            <option value="">{tr("Any level")}</option>
             {Object.entries(LEVEL_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
           {languages.length > 0 && (
-            <select className="cd-select" value={language} onChange={e => setLanguage(e.target.value)} aria-label="Language">
-              <option value="">Any language</option>
+            <select className="cd-select" value={language} onChange={e => setLanguage(e.target.value)} aria-label={tr("Language")}>
+              <option value="">{tr("Any language")}</option>
               {languages.map(l => <option key={l} value={l}>{l}</option>)}
             </select>
           )}
@@ -271,7 +272,7 @@ export default function CoachesDirectoryPage() {
       </div>
 
       {all === null ? (
-        <div className="cd-muted">Loading coaches…</div>
+        <div className="cd-muted">{tr("Loading coaches…")}</div>
       ) : err ? (
         <div className="cd-muted">{err}</div>
       ) : all.length === 0 ? (
@@ -279,27 +280,27 @@ export default function CoachesDirectoryPage() {
         // grid that reads as a broken page.
         <div className="cd-empty">
           <div className="cd-empty-ic" aria-hidden="true">🎓</div>
-          <h2>No coaches listed yet</h2>
+          <h2>{tr("No coaches listed yet")}</h2>
           <p>
             Coaches appear here once they are verified and choose to be listed.
             Are you a coach? Your first year is free.
           </p>
-          <Link to="/coach-hub" className="cd-btn">Start coaching on Chess Nexus</Link>
+          <Link to="/coach-hub" className="cd-btn">{tr("Start coaching on Chess Nexus")}</Link>
         </div>
       ) : shown.length === 0 ? (
         <div className="cd-empty">
-          <h2>No coaches match that</h2>
-          <p>Try clearing a filter or searching for something else.</p>
+          <h2>{tr("No coaches match that")}</h2>
+          <p>{tr("Try clearing a filter or searching for something else.")}</p>
           <button type="button" className="cd-btn"
                   onClick={() => { setQ(''); setOpenOnly(false); setLevel(''); setLanguage(''); }}>
-            Clear filters
+            {tr("Clear filters")}
           </button>
         </div>
       ) : (
         <>
           <div className="cd-count">
-            {shown.length} coach{shown.length === 1 ? '' : 'es'}
-            {shown.length !== all.length && ` of ${all.length}`}
+            {shown.length} {tr("coach")}{shown.length === 1 ? '' : 'es'}
+            {shown.length !== all.length && tr(" of {length}", { length: all.length })}
           </div>
           <div className="cd-grid">
             {shown.map(c => <CoachCard key={c.code} c={c} />)}

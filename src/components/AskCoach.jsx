@@ -8,6 +8,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 const MAX_LEN = 500;
 const QUICK = [
@@ -34,7 +35,7 @@ export default function AskCoach({ game, gameType, gameId, mySide, ply, moveAnal
         if (!alive) return;
         const list = (data?.coaches || [])
           .filter(l => l.coachId && l.coachId._id)
-          .map(l => ({ id: String(l.coachId._id), name: l.coachId.displayName || l.coachId.username || 'Coach' }));
+          .map(l => ({ id: String(l.coachId._id), name: l.coachId.displayName || l.coachId.username || tr('Coach') }));
         // One link per coach, even if the student has several (e.g. two batches).
         const seen = new Set();
         const uniq = list.filter(c => (seen.has(c.id) ? false : seen.add(c.id)));
@@ -80,10 +81,10 @@ export default function AskCoach({ game, gameType, gameId, mySide, ply, moveAnal
   if (sentTo) {
     return (
       <div className="sga-card sga-ask sga-ask--sent">
-        <div>✓ Sent to <b>{sentTo}</b>. The reply comes in your coach messages.</div>
+        <div>{tr("✓ Sent to")} <b>{sentTo}</b>{tr(". The reply comes in your coach messages.")}</div>
         <div className="sga-ask-row">
-          <Link to="/my-coach?tab=messages" className="sga-ask-link">💬 Open messages</Link>
-          <button type="button" className="sga-ask-ghost" onClick={() => { setSentTo(null); setOpen(true); }}>Ask another question</button>
+          <Link to="/my-coach?tab=messages" className="sga-ask-link">{tr("💬 Open messages")}</Link>
+          <button type="button" className="sga-ask-ghost" onClick={() => { setSentTo(null); setOpen(true); }}>{tr("Ask another question")}</button>
         </div>
       </div>
     );
@@ -92,8 +93,8 @@ export default function AskCoach({ game, gameType, gameId, mySide, ply, moveAnal
   if (!open) {
     return (
       <button type="button" className="sga-card sga-ask sga-ask--cta" onClick={() => setOpen(true)}>
-        <span className="sga-ask-title">🎓 Ask my coach</span>
-        <span className="sga-ask-sub">Send this game and your question to {coaches.length === 1 ? coaches[0].name : 'your coach'}</span>
+        <span className="sga-ask-title">{tr("🎓 Ask my coach")}</span>
+        <span className="sga-ask-sub">{tr("Send this game and your question to")} {coaches.length === 1 ? coaches[0].name : 'your coach'}</span>
       </button>
     );
   }
@@ -101,8 +102,8 @@ export default function AskCoach({ game, gameType, gameId, mySide, ply, moveAnal
   return (
     <div className="sga-card sga-ask">
       <div className="sga-ask-head">
-        <span className="sga-ask-title">🎓 Ask my coach</span>
-        <button type="button" className="sga-ask-x" onClick={() => setOpen(false)} aria-label="Close">✕</button>
+        <span className="sga-ask-title">{tr("🎓 Ask my coach")}</span>
+        <button type="button" className="sga-ask-x" onClick={() => setOpen(false)} aria-label={tr("Close")}>✕</button>
       </div>
 
       {coaches.length > 1 && (
@@ -114,10 +115,10 @@ export default function AskCoach({ game, gameType, gameId, mySide, ply, moveAnal
       {moveLabel ? (
         <label className="sga-ask-move">
           <input type="checkbox" checked={aboutMove} onChange={e => setAboutMove(e.target.checked)} />
-          About move <b>{moveLabel}</b> <span>(the link opens there)</span>
+          {tr("About move")} <b>{moveLabel}</b> <span>{tr("(the link opens there)")}</span>
         </label>
       ) : (
-        <div className="sga-ask-tip">Tip: step to a move first to ask about that exact position.</div>
+        <div className="sga-ask-tip">{tr("Tip: step to a move first to ask about that exact position.")}</div>
       )}
 
       <div className="sga-ask-chips">
@@ -130,7 +131,7 @@ export default function AskCoach({ game, gameType, gameId, mySide, ply, moveAnal
         className="sga-ask-text"
         rows={3}
         maxLength={MAX_LEN}
-        placeholder="Your question…"
+        placeholder={tr("Your question…")}
         value={text}
         onChange={e => setText(e.target.value)}
       />
@@ -138,7 +139,7 @@ export default function AskCoach({ game, gameType, gameId, mySide, ply, moveAnal
       <div className="sga-ask-row">
         <span className="sga-ask-len">{text.length}/{MAX_LEN}</span>
         <button type="button" className="sga-btn sga-ask-send" disabled={!text.trim() || sending} onClick={send}>
-          {sending ? 'Sending…' : 'Send to coach'}
+          {sending ? tr('Sending…') : tr('Send to coach')}
         </button>
       </div>
     </div>

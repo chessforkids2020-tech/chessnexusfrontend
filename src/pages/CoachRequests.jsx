@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 // Student-facing page: review and respond to coach requests (a coach asking to
 // add you as their student). Mirrors the sidebar bell, but persistent.
@@ -32,7 +33,7 @@ export default function CoachRequests() {
       await api.post(`/api/coach/requests/${linkId}/${action}`);
       setRequests(prev => prev.filter(r => r._id !== linkId));
     } catch (err) {
-      setError(err.response?.data?.message || `Could not ${action} the request.`);
+      setError(err.response?.data?.message || tr("Could not {action} the request.", { action: action }));
     } finally {
       setBusy(null);
     }
@@ -41,15 +42,15 @@ export default function CoachRequests() {
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', padding: '24px 16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--color-text)', margin: 0 }}>🎓 Coach Requests</h1>
+        <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--color-text)', margin: 0 }}>{tr("🎓 Coach Requests")}</h1>
         <button
           onClick={() => navigate(-1)}
           style={{ background: 'var(--color-white-a07)', color: 'var(--color-text-muted)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', padding: '8px 16px', cursor: 'pointer', fontWeight: 600 }}
-        >← Back</button>
+        >{tr("← Back")}</button>
       </div>
 
       <p style={{ color: 'var(--color-text-muted)', fontSize: 14, marginBottom: 20 }}>
-        These coaches want to add you as their student. You stay in control — approve only the ones you want.
+        {tr("These coaches want to add you as their student. You stay in control — approve only the ones you want.")}
       </p>
 
       {error && (
@@ -59,37 +60,37 @@ export default function CoachRequests() {
       )}
 
       {loading ? (
-        <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '40px 0' }}>Loading…</div>
+        <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '40px 0' }}>{tr("Loading…")}</div>
       ) : requests.length === 0 ? (
         <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '40px 0', background: 'rgba(23,23,23,0.6)', border: '1px solid var(--color-white-a04)', borderRadius: 'var(--radius-lg)' }}>
-          No pending coach requests.
+          {tr("No pending coach requests.")}
         </div>
       ) : (
         requests.map(r => {
           const coach = r.coachId || {};
-          const coachName = coach.displayName || coach.username || 'A coach';
+          const coachName = coach.displayName || coach.username || tr('A coach');
           return (
             <div
               key={r._id}
               style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid var(--color-accent-2-a15)', borderRadius: 'var(--radius-lg)', padding: '18px 20px', marginBottom: 14 }}
             >
               <div style={{ fontSize: 16, fontWeight: 700, color: '#e9d5ff' }}>
-                Coach {coachName}
+                {tr("Coach")} {coachName}
               </div>
               <div style={{ fontSize: 13.5, color: 'var(--color-text-muted)', margin: '6px 0 14px' }}>
-                wants to add you as a student.
+                {tr("wants to add you as a student.")}
               </div>
               <div style={{ display: 'flex', gap: 10 }}>
                 <button
                   disabled={busy === r._id}
                   onClick={() => respond(r._id, 'approve')}
                   style={{ flex: 1, background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-md)', padding: '10px 0', fontSize: 14, fontWeight: 700, cursor: busy === r._id ? 'wait' : 'pointer' }}
-                >✓ Approve</button>
+                >{tr("✓ Approve")}</button>
                 <button
                   disabled={busy === r._id}
                   onClick={() => respond(r._id, 'decline')}
                   style={{ flex: 1, background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', padding: '10px 0', fontSize: 14, fontWeight: 700, cursor: busy === r._id ? 'wait' : 'pointer' }}
-                >✕ Decline</button>
+                >{tr("✕ Decline")}</button>
               </div>
             </div>
           );

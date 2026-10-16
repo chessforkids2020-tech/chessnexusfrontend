@@ -7,6 +7,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../api";
+import { t as tr } from '../i18n/LanguageContext';
 
 // Build a cross-app redirect URL with the JWT appended as ?token=...
 function buildCrossAppRedirect(redirectUrl, token) {
@@ -244,7 +245,7 @@ export default function LoginPage() {
   if (authLoading || redirecting) {
     return (
       <div style={{ height: "100vh", width: "100vw", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--color-bg)", color: "var(--color-accent-2)", fontSize: "1.1rem", fontFamily: "sans-serif" }}>
-        Redirecting…
+        {tr("Redirecting…")}
       </div>
     );
   }
@@ -303,10 +304,10 @@ export default function LoginPage() {
         <div style={styles.backgroundEffect}></div>
         <div style={styles.formCard} className="formCard">
           <h2 style={{ ...styles.title, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }} className="title">
-            <img src="/logo.png" alt="Chess Nexus" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
-            <span>Welcome Back</span>
+            <img src="/logo.png" alt={tr("Chess Nexus")} style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
+            <span>{tr("Welcome Back")}</span>
           </h2>
-          <p style={styles.subtitle}>Sign in to continue your chess journey</p>
+          <p style={styles.subtitle}>{tr("Sign in to continue your chess journey")}</p>
           {stateMessage && (
             <div style={{ background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.35)', borderRadius: 'var(--radius-md)', padding: '10px 14px', marginBottom: 16, color: '#d8b4fe', fontSize: 13 }}>
               🔒 {stateMessage}
@@ -316,10 +317,10 @@ export default function LoginPage() {
             {error && <div style={styles.error}>{error}</div>}
             
             <div style={styles.inputGroup}>
-              <label style={styles.label}>Username</label>
+              <label style={styles.label}>{tr("Username")}</label>
               <input
                 style={styles.input}
-                placeholder="Enter your username"
+                placeholder={tr("Enter your username")}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="username"
@@ -330,11 +331,11 @@ export default function LoginPage() {
             </div>
 
             <div style={styles.inputGroup}>
-              <label style={styles.label}>Password</label>
+              <label style={styles.label}>{tr("Password")}</label>
               <input
                 style={styles.input}
                 type="password"
-                placeholder="Enter your password"
+                placeholder={tr("Enter your password")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
@@ -362,15 +363,15 @@ export default function LoginPage() {
                 }
               }}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? tr("Logging in...") : tr("Login")}
             </button>
           </form>
           
           <div style={styles.signupLink}>
             <p style={styles.signupText}>
-              Don't have an account?{' '}
+              {tr("Don't have an account?")}{' '}
               <Link to="/signup-request" style={styles.link}>
-                Request Signup
+                {tr("Request Signup")}
               </Link>
             </p>
           </div>

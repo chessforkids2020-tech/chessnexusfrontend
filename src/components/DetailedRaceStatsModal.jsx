@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
+import { t as tr } from '../i18n/LanguageContext';
 
 const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit, displayName }) => {
   const [stats, setStats] = useState(null);
@@ -72,8 +73,8 @@ const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit, displayN
       arenaRace: '🏟️ Arena Race',
       teamRace: '👥 Team Race'
     };
-    const base = titles[raceType] || 'Race Details';
-    if (timeLimit) return `${base} — ${timeLimit} min`;
+    const base = titles[raceType] || tr('Race Details');
+    if (timeLimit) return tr("{base} — {timeLimit} min", { base: base, timeLimit: timeLimit });
     return base;
   };
 
@@ -83,7 +84,7 @@ const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit, displayN
     <div style={styles.modalOverlay} onClick={onClose}>
       <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div style={styles.modalHeader}>
-          <h2 style={styles.modalTitle}>{getRaceTitle()} - Detailed Stats by Topic</h2>
+          <h2 style={styles.modalTitle}>{getRaceTitle()} {tr("- Detailed Stats by Topic")}</h2>
           <button 
             style={styles.closeButton} 
             onClick={onClose}
@@ -104,17 +105,17 @@ const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit, displayN
           {loading ? (
             <div style={styles.loading}>
               <div style={styles.loadingIcon}>⏳</div>
-              <div>Loading detailed statistics...</div>
+              <div>{tr("Loading detailed statistics...")}</div>
             </div>
           ) : stats && stats.topicStats && stats.topicStats.length > 0 ? (
             <div style={styles.tableContainer}>
               <table style={styles.statsTable}>
                 <thead>
                   <tr style={styles.tableHeaderRow}>
-                    <th style={styles.tableHeader}>Topics</th>
-                    <th style={styles.tableHeader}>Highest Points</th>
-                    <th style={styles.tableHeader}>Attempts</th>
-                    <th style={styles.tableHeader}>Last Attempt</th>
+                    <th style={styles.tableHeader}>{tr("Topics")}</th>
+                    <th style={styles.tableHeader}>{tr("Highest Points")}</th>
+                    <th style={styles.tableHeader}>{tr("Attempts")}</th>
+                    <th style={styles.tableHeader}>{tr("Last Attempt")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -161,7 +162,7 @@ const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit, displayN
           ) : (
             <div style={styles.noData}>
               <div style={styles.noDataIcon}>📊</div>
-              <div style={styles.noDataText}>No race data available yet. Complete some races to see detailed statistics!</div>
+              <div style={styles.noDataText}>{tr("No race data available yet. Complete some races to see detailed statistics!")}</div>
             </div>
           )}
         </div>

@@ -6,6 +6,7 @@ import api from '../../api';
 import { getTopicTitle } from '../../utils/topicTitles';
 import PlayerName from '../../components/PlayerName';
 import './TeamLobby.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 function TeamLobby() {
   const { raceId } = useParams();
@@ -314,15 +315,15 @@ function TeamLobby() {
   };
 
   if (loading) {
-    return <div style={{ padding: '40px', textAlign: 'center' }}>Loading lobby...</div>;
+    return <div style={{ padding: '40px', textAlign: 'center' }}>{tr("Loading lobby...")}</div>;
   }
 
   if (!race) {
     return (
       <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h2>Unable to load race</h2>
+        <h2>{tr("Unable to load race")}</h2>
         <button onClick={() => navigate('/team-race')} className="btn-back">
-          ← Back to Races
+          {tr("← Back to Races")}
         </button>
       </div>
     );
@@ -332,7 +333,7 @@ function TeamLobby() {
     // Redirect to team selection so user can join (even during running race)
     return (
       <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h2>You haven't joined a team yet</h2>
+        <h2>{tr("You haven't joined a team yet")}</h2>
         <p>
           {race && race.status === 'running'
             ? 'The race is already running — you can still join a team and start playing!'
@@ -342,7 +343,7 @@ function TeamLobby() {
           {race && race.status === 'running' ? '➕ Join a Team Now' : '← Select Team'}
         </button>
         <button onClick={() => navigate('/team-race')} className="btn-back" style={{ marginLeft: '10px' }}>
-          ← Back to Races
+          {tr("← Back to Races")}
         </button>
       </div>
     );
@@ -351,13 +352,13 @@ function TeamLobby() {
   return (
     <div className="team-lobby">
       <div className="lobby-header">
-        <h1>🏁 {race.raceName} - Lobby</h1>
+        <h1>🏁 {race.raceName} {tr("- Lobby")}</h1>
         <div className="race-status-banner">
           {race.status === 'waiting' ? (
             <div className="status-waiting">
               {countdown !== null && countdown > 0 ? (
                 <>
-                  🕐 Race starts in{' '}
+                  {tr("🕐 Race starts in")}{' '}
                   <span className="countdown-timer">
                     {String(Math.floor(countdown / 3600000)).padStart(2, '0')}:
                     {String(Math.floor((countdown % 3600000) / 60000)).padStart(2, '0')}:
@@ -365,18 +366,18 @@ function TeamLobby() {
                   </span>
                 </>
               ) : countdown === 0 ? (
-                <>⚡ Starting now...</>
+                <>{tr("⚡ Starting now...")}</>
               ) : (
-                <>⏳ Waiting for admin to start the race...</>
+                <>{tr("⏳ Waiting for admin to start the race...")}</>
               )}
             </div>
           ) : race.status === 'running' ? (
             <div className="status-running">
-              🏃 Race is running! Redirecting to puzzles...
+              {tr("🏃 Race is running! Redirecting to puzzles...")}
             </div>
           ) : (
             <div className="status-ready">
-              🏃 Race is about to begin!
+              {tr("🏃 Race is about to begin!")}
             </div>
           )}
         </div>
@@ -394,7 +395,7 @@ function TeamLobby() {
                 fontSize: '14px'
               }}
             >
-              {showLeaderboard ? '📊 Hide Leaderboard' : '📊 Show Leaderboard'}
+              {showLeaderboard ? tr('📊 Hide Leaderboard') : tr('📊 Show Leaderboard')}
             </button>
           )}
         </div>
@@ -403,7 +404,7 @@ function TeamLobby() {
       <div className="lobby-content">
         {/* Left Section: All Teams Overview */}
         <div className="teams-overview">
-          <h2>📊 Teams Overview</h2>
+          <h2>{tr("📊 Teams Overview")}</h2>
           <div className="teams-list">
             {teams.map(team => (
               <div 
@@ -413,14 +414,14 @@ function TeamLobby() {
                 <div className="team-summary-header">
                   <h3>{team.teamName}</h3>
                   {team._id === userTeam._id && (
-                    <span className="my-team-badge">Your Team</span>
+                    <span className="my-team-badge">{tr("Your Team")}</span>
                   )}
                 </div>
                 <div className="team-stats">
                   <div className="stat">
                     <span className="stat-icon">👥</span>
                     <span className="stat-value">{(team.players || []).length}/{team.maxPlayers}</span>
-                    <span className="stat-label">Players</span>
+                    <span className="stat-label">{tr("Players")}</span>
                   </div>
                 </div>
                 <div className="team-mini-players">
@@ -431,7 +432,7 @@ function TeamLobby() {
                   ))}
                   {(team.players || []).length > 3 && (
                     <div className="mini-player-more">
-                      +{(team.players || []).length - 3} more
+                      +{(team.players || []).length - 3} {tr("more")}
                     </div>
                   )}
                 </div>
@@ -450,16 +451,16 @@ function TeamLobby() {
             return (
               <>
                 <div className="players-section-header">
-                  <h2>👥 All Participants ({allPlayers.length})</h2>
+                  <h2>{tr("👥 All Participants (")}{allPlayers.length})</h2>
                   <span className="players-page-info">
-                    Page {safePage + 1} / {totalPages}
+                    {tr("Page")} {safePage + 1} / {totalPages}
                   </span>
                 </div>
                 <div className="players-table">
                   <div className="players-table-header">
                     <div className="header-position">#</div>
-                    <div className="header-player">Player</div>
-                    <div className="header-team">Team</div>
+                    <div className="header-player">{tr("Player")}</div>
+                    <div className="header-team">{tr("Team")}</div>
                   </div>
                   <div className="players-table-body">
                     {pagePlayers.map((player) => (
@@ -480,7 +481,7 @@ function TeamLobby() {
                       </div>
                     ))}
                     {pagePlayers.length === 0 && (
-                      <div className="players-empty">No participants yet</div>
+                      <div className="players-empty">{tr("No participants yet")}</div>
                     )}
                   </div>
                 </div>
@@ -491,7 +492,7 @@ function TeamLobby() {
                       onClick={() => setPlayersPage(p => Math.max(0, p - 1))}
                       disabled={safePage === 0}
                     >
-                      ← Prev
+                      {tr("← Prev")}
                     </button>
                     <div className="pagination-dots">
                       {Array.from({ length: totalPages }).map((_, i) => (
@@ -507,7 +508,7 @@ function TeamLobby() {
                       onClick={() => setPlayersPage(p => Math.min(totalPages - 1, p + 1))}
                       disabled={safePage === totalPages - 1}
                     >
-                      Next →
+                      {tr("Next →")}
                     </button>
                   </div>
                 )}
@@ -523,15 +524,15 @@ function TeamLobby() {
           <div className="lb-tables-wrap">
             {/* Team Standings Table */}
             <div className="lb-table-block">
-              <h3>🏆 Team Standings</h3>
+              <h3>{tr("🏆 Team Standings")}</h3>
               <table className="lb-table">
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Team</th>
-                    <th>Score</th>
-                    <th>Players</th>
-                    <th>Status</th>
+                    <th>{tr("Team")}</th>
+                    <th>{tr("Score")}</th>
+                    <th>{tr("Players")}</th>
+                    <th>{tr("Status")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -552,7 +553,7 @@ function TeamLobby() {
                       </tr>
                     ))}
                   {liveLeaderboard.length === 0 && (
-                    <tr><td colSpan="5" className="lb-empty">Race hasn't started yet</td></tr>
+                    <tr><td colSpan="5" className="lb-empty">{tr("Race hasn't started yet")}</td></tr>
                   )}
                 </tbody>
               </table>
@@ -574,7 +575,7 @@ function TeamLobby() {
                     <h3>🎯 Top Players{playerLeaderboard.length > 0 ? ` (${playerLeaderboard.length})` : ''}</h3>
                     <table className="lb-table">
                       <thead>
-                        <tr><th>#</th><th>Player</th><th>Score</th></tr>
+                        <tr><th>#</th><th>{tr("Player")}</th><th>{tr("Score")}</th></tr>
                       </thead>
                       <tbody>
                         {pagePlayers.map((player, i) => {
@@ -595,15 +596,15 @@ function TeamLobby() {
                           </tr>
                         )}
                         {playerLeaderboard.length === 0 && (
-                          <tr><td colSpan="3" className="lb-empty">No player data yet</td></tr>
+                          <tr><td colSpan="3" className="lb-empty">{tr("No player data yet")}</td></tr>
                         )}
                       </tbody>
                     </table>
                     {plTotal > 1 && (
                       <div className="lb-pagination">
-                        <button className="lb-page-btn" onClick={() => setPlayerLbPage(p => Math.max(0, p - 1))} disabled={safePlPage === 0}>‹ Prev</button>
+                        <button className="lb-page-btn" onClick={() => setPlayerLbPage(p => Math.max(0, p - 1))} disabled={safePlPage === 0}>{tr("‹ Prev")}</button>
                         <span className="lb-page-info">{safePlPage + 1} / {plTotal}</span>
-                        <button className="lb-page-btn" onClick={() => setPlayerLbPage(p => Math.min(plTotal - 1, p + 1))} disabled={safePlPage === plTotal - 1}>Next ›</button>
+                        <button className="lb-page-btn" onClick={() => setPlayerLbPage(p => Math.min(plTotal - 1, p + 1))} disabled={safePlPage === plTotal - 1}>{tr("Next ›")}</button>
                       </div>
                     )}
                   </>
@@ -616,28 +617,28 @@ function TeamLobby() {
 
       <div className="lobby-info">
         <div className="info-card">
-          <h3>📋 Race Information</h3>
+          <h3>{tr("📋 Race Information")}</h3>
           <div className="info-details">
             <div className="info-item">
-              <strong>Topic:</strong> {getTopicTitle(race.topic)}
+              <strong>{tr("Topic:")}</strong> {getTopicTitle(race.topic)}
             </div>
             <div className="info-item">
-              <strong>Duration:</strong> {Math.floor(race.duration / 60)} minutes
+              <strong>{tr("Duration:")}</strong> {Math.floor(race.duration / 60)} {tr("minutes")}
             </div>
             <div className="info-item">
-              <strong>Points per Puzzle:</strong> {race.pointsPerPuzzle}
+              <strong>{tr("Points per Puzzle:")}</strong> {race.pointsPerPuzzle}
             </div>
           </div>
         </div>
 
         <div className="info-card">
-          <h3>🎯 How It Works</h3>
+          <h3>{tr("🎯 How It Works")}</h3>
           <ul className="rules-list">
-            <li>Each team competes simultaneously</li>
-            <li>Players at the same position get the same puzzles</li>
-            <li>Your position: <strong>#{(userTeam.players || []).find(p => getUserId() && p.userId._id === getUserId())?.position || '?'}</strong></li>
-            <li>Team score = Sum of all player scores</li>
-            <li>Get ready when the admin starts the race!</li>
+            <li>{tr("Each team competes simultaneously")}</li>
+            <li>{tr("Players at the same position get the same puzzles")}</li>
+            <li>{tr("Your position:")} <strong>#{(userTeam.players || []).find(p => getUserId() && p.userId._id === getUserId())?.position || '?'}</strong></li>
+            <li>{tr("Team score = Sum of all player scores")}</li>
+            <li>{tr("Get ready when the admin starts the race!")}</li>
           </ul>
         </div>
       </div>

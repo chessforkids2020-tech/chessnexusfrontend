@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function ArenaJoin() {
   const [roomCode, setRoomCode] = useState('');
@@ -139,12 +140,12 @@ export default function ArenaJoin() {
     if (loading) return;
 
     if (!roomCode.trim()) {
-      setError('Please enter a room code');
+      setError(tr('Please enter a room code'));
       return;
     }
 
     if (!user) {
-      setError('Please log in first');
+      setError(tr('Please log in first'));
       return;
     }
 
@@ -545,8 +546,8 @@ export default function ArenaJoin() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 style={styles.title}>🏎️ Race Arena</h1>
-          <p style={styles.subtitle}>Join competitive puzzle racing and challenge your skills</p>
+          <h1 style={styles.title}>{tr("🏎️ Race Arena")}</h1>
+          <p style={styles.subtitle}>{tr("Join competitive puzzle racing and challenge your skills")}</p>
         </motion.div>
 
         {/* Active Rooms */}
@@ -558,7 +559,7 @@ export default function ArenaJoin() {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <h2 style={styles.sectionTitle}>
-              <span>🎯</span> Your Active Rooms
+              <span>🎯</span> {tr("Your Active Rooms")}
             </h2>
 
             {joinedRooms.map(room => {
@@ -583,40 +584,40 @@ export default function ArenaJoin() {
                   <div style={styles.roomHeader}>
                     <span style={{ fontSize: '32px' }}>🔥</span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>ROOM CODE</div>
+                      <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>{tr("ROOM CODE")}</div>
                       <div style={styles.roomCode}>{room.roomId}</div>
                     </div>
                   </div>
 
                   <div style={styles.roomGrid}>
                     <div style={styles.statBox}>
-                      <div style={styles.statLabel}>Topic</div>
+                      <div style={styles.statLabel}>{tr("Topic")}</div>
                       <div style={styles.statValue}>📚 {room.topic || 'N/A'}</div>
                     </div>
                     <div style={styles.statBox}>
-                      <div style={styles.statLabel}>Players</div>
+                      <div style={styles.statLabel}>{tr("Players")}</div>
                       <div style={styles.statValue}>👥 {room.playerCount}</div>
                     </div>
                     <div style={styles.statBox}>
-                      <div style={styles.statLabel}>Time Limit</div>
-                      <div style={styles.statValue}>⏱️ {room.timeLimit} min</div>
+                      <div style={styles.statLabel}>{tr("Time Limit")}</div>
+                      <div style={styles.statValue}>⏱️ {room.timeLimit} {tr("min")}</div>
                     </div>
                   </div>
 
                   {room.userProgress && (
                     <div style={styles.progressCard}>
-                      <div style={styles.progressTitle}>📊 Your Progress</div>
+                      <div style={styles.progressTitle}>{tr("📊 Your Progress")}</div>
                       <div style={styles.progressRow}>
-                        <span style={styles.progressLabel}>Current Puzzle</span>
+                        <span style={styles.progressLabel}>{tr("Current Puzzle")}</span>
                         {/* Position only — the "/N" told the user the race length. */}
                         <span style={styles.progressValue}>{room.userProgress.currentPuzzleIndex + 1}</span>
                       </div>
                       <div style={styles.progressRow}>
-                        <span style={styles.progressLabel}>Score</span>
+                        <span style={styles.progressLabel}>{tr("Score")}</span>
                         <span style={{ ...styles.progressValue, color: 'var(--color-warning)' }}>⭐ {room.userProgress.score}</span>
                       </div>
                       <div style={styles.progressRow}>
-                        <span style={styles.progressLabel}>Solved</span>
+                        <span style={styles.progressLabel}>{tr("Solved")}</span>
                         <span style={{ ...styles.progressValue, color: 'var(--color-success)' }}>✅ {room.userProgress.puzzlesSolved}</span>
                       </div>
                     </div>
@@ -627,7 +628,7 @@ export default function ArenaJoin() {
                       ...styles.timerBox,
                       ...(timeRemaining <= 60 ? styles.timerDanger : timeRemaining <= 300 ? styles.timerWarning : {})
                     }}>
-                      <div style={styles.timerLabel}>⏳ Time Remaining</div>
+                      <div style={styles.timerLabel}>{tr("⏳ Time Remaining")}</div>
                       <div style={styles.timerValue}>{formatTimeRemaining(timeRemaining)}</div>
                     </div>
                   )}
@@ -646,7 +647,7 @@ export default function ArenaJoin() {
                     } : {}}
                     transition={{ duration: 0.2 }}
                   >
-                    {isCompleted ? '🏁 Finished' : loading ? '⏳ Joining...' : '🚀 Rejoin Race'}
+                    {isCompleted ? tr('🏁 Finished') : loading ? tr('⏳ Joining...') : tr('🚀 Rejoin Race')}
                   </motion.button>
                 </motion.div>
               );
@@ -658,7 +659,7 @@ export default function ArenaJoin() {
           <div style={styles.card}>
             <div style={styles.loadingContainer}>
               <div style={styles.loadingIcon}>⏳</div>
-              <div style={styles.loadingText}>Loading your active rooms...</div>
+              <div style={styles.loadingText}>{tr("Loading your active rooms...")}</div>
             </div>
           </div>
         )}
@@ -678,10 +679,10 @@ export default function ArenaJoin() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
                 <h2 style={{ ...styles.sectionTitle, justifyContent: 'flex-start', margin: 0 }}>
-                  <span>🏁</span> Today's Arena Races
+                  <span>🏁</span> {tr("Today's Arena Races")}
                 </h2>
                 <span style={{ background: 'var(--color-accent-a15)', color: 'var(--color-accent)', borderRadius: 'var(--radius-2xl)', padding: '3px 12px', fontSize: 13, fontWeight: 700 }}>
-                  {sorted.length} race{sorted.length !== 1 ? 's' : ''} today
+                  {sorted.length} {tr("race")}{sorted.length !== 1 ? 's' : ''} {tr("today")}
                 </span>
               </div>
 
@@ -697,7 +698,7 @@ export default function ArenaJoin() {
                     : null;
 
                   // Display name without the trailing date (e.g. "– 23 Jun 2026").
-                  const rawName = race.name || `${race.topic} Race`;
+                  const rawName = race.name || tr("{topic} Race", { topic: race.topic });
                   const displayName = rawName.replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim();
 
                   const fmtCountdown = (ms) => {
@@ -732,22 +733,22 @@ export default function ArenaJoin() {
                           <h3 style={{ color: 'var(--color-text)', margin: '0 0 4px 0', fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>
                             {displayName}
                           </h3>
-                          <div style={{ color: 'var(--color-accent)', fontWeight: 700, fontFamily: 'monospace', fontSize: 12, letterSpacing: 1 }}>ROOM: {race.roomId}</div>
+                          <div style={{ color: 'var(--color-accent)', fontWeight: 700, fontFamily: 'monospace', fontSize: 12, letterSpacing: 1 }}>{tr("ROOM:")} {race.roomId}</div>
                         </div>
                         {isLive && (
                           <span style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 'var(--radius-2xl)', padding: '3px 10px', fontSize: 11, fontWeight: 700, color: 'var(--color-success)', whiteSpace: 'nowrap', flexShrink: 0 }}>
                             <span style={{ width: 6, height: 6, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
-                            LIVE
+                            {tr("LIVE")}
                           </span>
                         )}
                         {!isLive && isSoon && (
                           <span style={{ background: 'var(--color-warning-a12)', color: 'var(--color-warning)', borderRadius: 'var(--radius-2xl)', padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
-                            SOON
+                            {tr("SOON")}
                           </span>
                         )}
                         {!isLive && !isSoon && (
                           <span style={{ background: 'var(--color-accent-a12)', color: 'var(--color-accent)', borderRadius: 'var(--radius-2xl)', padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
-                            SCHEDULED
+                            {tr("SCHEDULED")}
                           </span>
                         )}
                       </div>
@@ -756,10 +757,10 @@ export default function ArenaJoin() {
                       {fmtStartTime && (
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--color-black-a35)', borderRadius: 'var(--radius-md)', padding: '10px 14px' }}>
                           <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                            {isLive ? 'In progress' : 'Starts in'}
+                            {isLive ? tr('In progress') : tr('Starts in')}
                           </div>
                           <div style={{ fontSize: 20, fontWeight: 800, color: isLive ? 'var(--color-success)' : isSoon ? 'var(--color-warning)' : 'var(--color-accent)' }}>
-                            {isLive ? '🚀 Now' : fmtCountdown(diffMs)}
+                            {isLive ? tr('🚀 Now') : fmtCountdown(diffMs)}
                           </div>
                         </div>
                       )}
@@ -767,8 +768,8 @@ export default function ArenaJoin() {
                       {/* Stats */}
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                         <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>📚 <span style={{ color: 'var(--color-text)' }}>{race.topicTitle || race.topic}</span></div>
-                        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱️ <span style={{ color: 'var(--color-text)' }}>{race.timeLimit} min</span></div>
-                        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 <span style={{ color: 'var(--color-text)' }}>{race.playerCount} joined</span></div>
+                        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱️ <span style={{ color: 'var(--color-text)' }}>{race.timeLimit} {tr("min")}</span></div>
+                        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 <span style={{ color: 'var(--color-text)' }}>{race.playerCount} {tr("joined")}</span></div>
                       </div>
 
                       <button
@@ -791,7 +792,7 @@ export default function ArenaJoin() {
                             : 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
                         }}
                       >
-                        {isLive ? '🚀 Join Now — Live!' : isSoon ? '⚡ Join — Starting Soon' : '👀 Preview & Wait'}
+                        {isLive ? tr('🚀 Join Now — Live!') : isSoon ? tr('⚡ Join — Starting Soon') : tr('👀 Preview & Wait')}
                       </button>
                     </motion.div>
                   );
@@ -820,17 +821,17 @@ export default function ArenaJoin() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <h2 style={styles.sectionTitle}>
-              <span>🎫</span> Join Arena
+              <span>🎫</span> {tr("Join Arena")}
             </h2>
 
             <div style={{ maxWidth: '100%' }}>
               <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', marginBottom: '20px', fontSize: '15px' }}>
-                Enter the 6-character room code
+                {tr("Enter the 6-character room code")}
               </p>
 
               <input
                 type="text"
-                placeholder="ABC123"
+                placeholder={tr("ABC123")}
                 value={roomCode}
                 onChange={(e) => setRoomCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
                 onKeyPress={handleKeyPress}
@@ -875,7 +876,7 @@ export default function ArenaJoin() {
                 } : {}}
                 transition={{ duration: 0.2 }}
               >
-                {loading ? '⏳ Joining Race...' : '🏁 Join Race'}
+                {loading ? tr('⏳ Joining Race...') : tr('🏁 Join Race')}
               </motion.button>
             </div>
           </motion.div>
@@ -892,12 +893,12 @@ export default function ArenaJoin() {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <h2 style={styles.sectionTitle}>
-              <span>🏁</span> Create Arena
+              <span>🏁</span> {tr("Create Arena")}
             </h2>
 
             <div style={{ maxWidth: '100%', textAlign: 'center' }}>
               <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px', fontSize: '15px' }}>
-                Host your own puzzle race! Choose a topic, set the time limit, and invite your friends.
+                {tr("Host your own puzzle race! Choose a topic, set the time limit, and invite your friends.")}
               </p>
 
               <motion.button
@@ -916,11 +917,11 @@ export default function ArenaJoin() {
                 }}
                 transition={{ duration: 0.2 }}
               >
-                🚀 Create New Race
+                {tr("🚀 Create New Race")}
               </motion.button>
 
               <p style={{ ...styles.hint, marginTop: '16px' }}>
-                👑 You'll be the host and can start the race when everyone joins
+                {tr("👑 You'll be the host and can start the race when everyone joins")}
               </p>
             </div>
           </motion.div>
@@ -935,7 +936,7 @@ export default function ArenaJoin() {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <h2 style={{ ...styles.sectionTitle, justifyContent: 'flex-start', marginBottom: '16px' }}>
-              <span>🏆</span> Recently Finished Arena Races
+              <span>🏆</span> {tr("Recently Finished Arena Races")}
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
               {recentRaces.map(race => (
@@ -946,21 +947,21 @@ export default function ArenaJoin() {
                   padding: '16px 18px',
                 }}>
                   <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 15, marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {(race.name || `${race.topic} Race`).replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim()}
+                    {(race.name || tr("{topic} Race", { topic: race.topic })).replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim()}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: 8 }}>
                     <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>📚 <span style={{ color: 'var(--color-text)' }}>{race.topic}</span></div>
-                    <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 <span style={{ color: 'var(--color-text)' }}>{race.playerCount} players</span></div>
-                    <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱️ <span style={{ color: 'var(--color-text)' }}>{race.timeLimit} min</span></div>
+                    <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 <span style={{ color: 'var(--color-text)' }}>{race.playerCount} {tr("players")}</span></div>
+                    <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱️ <span style={{ color: 'var(--color-text)' }}>{race.timeLimit} {tr("min")}</span></div>
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>
                     Finished {(() => {
                       const diff = Date.now() - new Date(race.finishedAt).getTime();
                       const mins = Math.floor(diff / 60000);
                       if (mins < 1) return 'just now';
-                      if (mins < 60) return `${mins}m ago`;
+                      if (mins < 60) return tr("{mins}m ago", { mins: mins });
                       const h = Math.floor(mins / 60);
-                      return h < 24 ? `${h}h ago` : `${Math.floor(h / 24)}d ago`;
+                      return h < 24 ? tr("{h}h ago", { h: h }) : tr("{v0}d ago", { v0: Math.floor(h / 24) });
                     })()}
                   </div>
                 </div>

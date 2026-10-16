@@ -8,6 +8,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import EndgameTrainer from "../../components/EndgameTrainer";
+import { t as tr } from '../../i18n/LanguageContext';
 
 export default function EndgameChallengesPage() {
   const navigate = useNavigate();
@@ -18,14 +19,14 @@ export default function EndgameChallengesPage() {
       <div style={styles.page}>
         <div style={styles.header}>
           <div>
-            <h1 style={styles.title}>👑 Endgame Challenges</h1>
+            <h1 style={styles.title}>{tr("👑 Endgame Challenges")}</h1>
             <p style={styles.subtitle}>
               Hand-picked endgames to play out against the engine. Convert the win —
               or hold the draw — to master each one.
             </p>
           </div>
           <button style={styles.secondaryBtn} onClick={() => navigate("/study/endgames")}>
-            ← Back to Endgames
+            {tr("← Back to Endgames")}
           </button>
         </div>
 
@@ -35,13 +36,13 @@ export default function EndgameChallengesPage() {
           emptyFallback={
             <div style={styles.empty}>
               <div style={{ fontSize: 34, marginBottom: 10 }}>👑</div>
-              <div style={{ fontWeight: 700, marginBottom: 6 }}>No challenges yet</div>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{tr("No challenges yet")}</div>
               <div style={{ color: "var(--color-text-muted)", fontSize: 13.5, lineHeight: 1.6 }}>
                 Your coach hasn't added any endgame challenges. In the meantime you can
                 browse thousands of real endgames by type.
               </div>
               <button style={{ ...styles.secondaryBtn, marginTop: 16 }} onClick={() => navigate("/study/endgames")}>
-                Browse endgames →
+                {tr("Browse endgames →")}
               </button>
             </div>
           }

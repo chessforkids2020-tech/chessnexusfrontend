@@ -4,6 +4,7 @@ import { Chess } from 'chess.js';
 import Chessboard from '../../components/Chessboard';
 import api from '../../api';
 import './ArenaTournamentLeaderboard.css';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const DEFAULT_START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -13,7 +14,7 @@ const formatResult = (result) => {
   if (result === 'draw') return 'Draw';
   if (result === 'aborted') return 'Aborted';
   if (result === 'pending') return 'Pending';
-  return result || 'Unknown';
+  return result || tr('Unknown');
 };
 
 let _nodeCount = 0;
@@ -89,7 +90,7 @@ export default function ArenaTournamentGames() {
         setGames(gamesResponse.data.games || []);
       } catch (err) {
         console.error('Failed to load arena tournament games:', err);
-        setError('Unable to load tournament games.');
+        setError(tr('Unable to load tournament games.'));
       } finally {
         setLoading(false);
       }
@@ -180,7 +181,7 @@ export default function ArenaTournamentGames() {
     return (
       <div className="atg-loading">
         <div className="atg-loading-orb" />
-        <div className="atg-loading-text">Loading Games...</div>
+        <div className="atg-loading-text">{tr("Loading Games...")}</div>
       </div>
     );
   }
@@ -190,10 +191,10 @@ export default function ArenaTournamentGames() {
       <div className="atg-error-screen">
         <div className="atg-error-card">
           <div className="atg-error-icon">⚠</div>
-          <h2>Failed to Load</h2>
+          <h2>{tr("Failed to Load")}</h2>
           <p>{error}</p>
           <button onClick={() => navigate(`/arenatournament/leaderboard/${tournamentId}`)} className="atg-error-back">
-            ← Back to Results
+            {tr("← Back to Results")}
           </button>
         </div>
       </div>
@@ -274,20 +275,20 @@ export default function ArenaTournamentGames() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="15 18 9 12 15 6" />
           </svg>
-          Results
+          {tr("Results")}
         </button>
 
         <div className="atg-topbar-title">
           <span className="atg-topbar-name">{tournament?.name || 'Arena Tournament'}</span>
           <span className="atg-topbar-sep">·</span>
-          <span className="atg-topbar-sub">Games</span>
+          <span className="atg-topbar-sub">{tr("Games")}</span>
         </div>
 
         <div className="atg-topbar-meta">
           <span className={`atg-status-chip atg-status-${tournament?.status}`}>
             {tournament?.status?.toUpperCase()}
           </span>
-          <span className="atg-game-count">{games.length} games</span>
+          <span className="atg-game-count">{games.length} {tr("games")}</span>
         </div>
       </header>
 
@@ -304,7 +305,7 @@ export default function ArenaTournamentGames() {
               <input
                 type="text"
                 className="atg-search-input"
-                placeholder="Search by player name…"
+                placeholder={tr("Search by player name…")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -319,7 +320,7 @@ export default function ArenaTournamentGames() {
             </div>
             {searchQuery.trim() && (
               <span className="atg-search-results-count">
-                {filteredGames.length} {filteredGames.length === 1 ? 'game' : 'games'} found
+                {filteredGames.length} {filteredGames.length === 1 ? 'game' : 'games'} {tr("found")}
               </span>
             )}
           </div>
@@ -327,7 +328,7 @@ export default function ArenaTournamentGames() {
           {filteredGames.length === 0 ? (
             <div className="atg-empty">
               <div className="atg-empty-icon">♟</div>
-              <p>{searchQuery.trim() ? `No games found for "${searchQuery}"` : 'No finished games yet for this tournament.'}</p>
+              <p>{searchQuery.trim() ? tr("No games found for \"{searchQuery}\"", { searchQuery: searchQuery }) : tr('No finished games yet for this tournament.')}</p>
             </div>
           ) : (
             <div className="atg-games-grid">
@@ -365,7 +366,7 @@ export default function ArenaTournamentGames() {
 
                   {/* Meta */}
                   <div className="atg-card-meta">
-                    <span>{game.moves?.length ?? 0} moves</span>
+                    <span>{game.moves?.length ?? 0} {tr("moves")}</span>
                     <span>{game.startedAt ? new Date(game.startedAt).toLocaleDateString() : '—'}</span>
                   </div>
                 </button>
@@ -405,7 +406,7 @@ export default function ArenaTournamentGames() {
                       <span className="atg-modal-color-dot atg-dot-white" />
                       {selectedGame.whitePlayerDisplayName || selectedGame.whitePlayerUsername}
                     </span>
-                    <span className="atg-modal-vs">vs</span>
+                    <span className="atg-modal-vs">{tr("vs")}</span>
                     <span className="atg-modal-player atg-modal-player--black">
                       <span className="atg-modal-color-dot atg-dot-black" />
                       {selectedGame.blackPlayerDisplayName || selectedGame.blackPlayerUsername}
@@ -425,7 +426,7 @@ export default function ArenaTournamentGames() {
                   {/* Scrollable analysis move tree — no fixed header */}
                   <div className="atg-notation-scroll">
                     {!analysisRoot || !analysisNodes[analysisRoot]?.childIds.length ? (
-                      <div className="atg-notation-empty">No moves recorded</div>
+                      <div className="atg-notation-empty">{tr("No moves recorded")}</div>
                     ) : (
                       <div className="atg-analysis-moves">
                         {renderMoves(analysisNodes[analysisRoot]?.childIds[0])}
@@ -436,15 +437,15 @@ export default function ArenaTournamentGames() {
 
                 {/* Controls — navigation + analysis hint */}
                 <div className="atg-controls">
-                  <button type="button" className="atg-ctrl-btn" onClick={navStart} title="Start">⏮</button>
-                  <button type="button" className="atg-ctrl-btn" onClick={navPrev} title="Previous">◀</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navStart} title={tr("Start")}>⏮</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navPrev} title={tr("Previous")}>◀</button>
                   <div className="atg-ctrl-counter">
                     <span className="atg-ctrl-cur">{currentNode?.ply ?? 0}</span>
                     <span className="atg-ctrl-sep">/</span>
                     <span className="atg-ctrl-tot">{selectedGame.moves?.length ?? 0}</span>
                   </div>
-                  <button type="button" className="atg-ctrl-btn" onClick={navNext} title="Next">▶</button>
-                  <button type="button" className="atg-ctrl-btn" onClick={navEnd} title="End">⏭</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navNext} title={tr("Next")}>▶</button>
+                  <button type="button" className="atg-ctrl-btn" onClick={navEnd} title={tr("End")}>⏭</button>
                 </div>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { t as tr } from '../i18n/LanguageContext';
 
 export default function Footer() {
   // The footer's inline stylesheet is ~4.8k characters and renders on EVERY
@@ -194,31 +195,31 @@ export default function Footer() {
 
       <footer className="site-footer">
         <div className="footer-content">
-          <img src="/logo.png" alt="Chess Nexus Logo" className="footer-logo" />
+          <img src="/logo.png" alt={tr("Chess Nexus Logo")} className="footer-logo" />
           <nav className="footer-nav">
-            <Link to="/">Home</Link>
+            <Link to="/">{tr("Home")}</Link>
             <span className="footer-sep">|</span>
-            <Link to="/features">Features</Link>
+            <Link to="/features">{tr("Features")}</Link>
             <span className="footer-sep">|</span>
-            <Link to="/members">Members</Link>
+            <Link to="/members">{tr("Members")}</Link>
             <span className="footer-sep">|</span>
-            <Link to="/contact">Contact Us</Link>
+            <Link to="/contact">{tr("Contact Us")}</Link>
             <span className="footer-sep">|</span>
-            <Link to="/report">Report</Link>
+            <Link to="/report">{tr("Report")}</Link>
             <span className="footer-sep">|</span>
-            <Link to="/privacy-policy">Privacy Policy</Link>
+            <Link to="/privacy-policy">{tr("Privacy Policy")}</Link>
             <span className="footer-sep">|</span>
-            <Link to="/terms">Terms</Link>
+            <Link to="/terms">{tr("Terms")}</Link>
             <span className="footer-sep">|</span>
-            <Link to="/refund-policy">Refund</Link>
+            <Link to="/refund-policy">{tr("Refund")}</Link>
           </nav>
           <div className="footer-social">
             <a
               href="https://www.instagram.com/chessnexus.in_official/"
               target="_blank"
               rel="noopener noreferrer me"
-              aria-label="Chess Nexus on Instagram"
-              title="Chess Nexus on Instagram"
+              aria-label={tr("Chess Nexus on Instagram")}
+              title={tr("Chess Nexus on Instagram")}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
@@ -230,8 +231,8 @@ export default function Footer() {
               href="https://www.facebook.com/profile.php?id=100064068341481"
               target="_blank"
               rel="noopener noreferrer me"
-              aria-label="Chess Nexus on Facebook"
-              title="Chess Nexus on Facebook"
+              aria-label={tr("Chess Nexus on Facebook")}
+              title={tr("Chess Nexus on Facebook")}
             >
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z" />
@@ -239,8 +240,8 @@ export default function Footer() {
             </a>
           </div>
           <p className="footer-text">
-            © {new Date().getFullYear()} CHESS NEXUS
-            <img src="/logo.png" alt="Chess Nexus Logo" className="footer-text-logo" />
+            © {new Date().getFullYear()} {tr("CHESS NEXUS")}
+            <img src="/logo.png" alt={tr("Chess Nexus Logo")} className="footer-text-logo" />
           </p>
         </div>
       </footer>

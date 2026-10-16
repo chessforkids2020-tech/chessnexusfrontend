@@ -8,7 +8,7 @@ export const ACADEMY_CARDS = [
   { id: 'piece-value',     title: 'Piece Value',     emoji: '💎', color: 'var(--color-success)', desc: 'How strong is each piece?', ready: false },
   { id: 'capture',         title: 'Capture',         emoji: '⚔️', color: 'var(--color-danger)', desc: 'Capture safely — take the right piece.', ready: false },
   { id: 'protection',      title: 'Protection',      emoji: '🛡️', color: 'var(--color-accent-2)', desc: 'Keep your pieces safe.', ready: false },
-  { id: 'check',           title: 'Check',           emoji: '👑', color: 'var(--color-warning)', desc: 'Give check to the enemy king.', ready: false },
+  { id: 'check',           title: 'Check', titleKey: 'Check (the chess move)',           emoji: '👑', color: 'var(--color-warning)', desc: 'Give check to the enemy king.', ready: false },
   { id: 'stop-check',      title: 'Stop Check',      emoji: '🚫', color: '#fb7185', desc: 'Save your king from check.', ready: false },
   { id: 'castling',        title: 'Castling',        emoji: '🏰', color: '#c084fc', desc: 'The special king-and-rook move.', ready: false },
   { id: 'start-game',      title: 'Start a Game',    emoji: '🚀', color: '#2dd4bf', desc: 'How to begin a real chess game.', ready: false },

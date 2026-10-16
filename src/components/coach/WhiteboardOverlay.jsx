@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const COLORS = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#a855f7', '#ffffff'];
 const MIN_FONT = 14;
@@ -231,9 +232,9 @@ export default function WhiteboardOverlay({ width, height, isHost, orientation, 
     <div style={{ position: 'absolute', top: 0, left: 0, width, height, zIndex: 10, pointerEvents: toolActive ? 'auto' : 'none' }}>
       {toolActive && (
         <div style={tb.bar}>
-          <button style={tb.btn(tool === 'pen')} onClick={() => setTool(t => t === 'pen' ? null : 'pen')} title="Pencil">✏️</button>
-          <button style={tb.btn(tool === 'eraser')} onClick={() => setTool(t => t === 'eraser' ? null : 'eraser')} title="Eraser">🧹</button>
-          <button style={tb.btn(tool === 'text')} onClick={() => setTool(t => t === 'text' ? null : 'text')} title="Text">T</button>
+          <button style={tb.btn(tool === 'pen')} onClick={() => setTool(t => t === 'pen' ? null : 'pen')} title={tr("Pencil")}>✏️</button>
+          <button style={tb.btn(tool === 'eraser')} onClick={() => setTool(t => t === 'eraser' ? null : 'eraser')} title={tr("Eraser")}>🧹</button>
+          <button style={tb.btn(tool === 'text')} onClick={() => setTool(t => t === 'text' ? null : 'text')} title={tr("Text")}>T</button>
           <div style={tb.sep} />
           {tool === 'pen' && COLORS.map(c => (
             <button key={c} style={tb.swatch(c, color === c)} onClick={() => setColor(c)} title={c} />
@@ -249,8 +250,8 @@ export default function WhiteboardOverlay({ width, height, isHost, orientation, 
             <button key={c} style={tb.swatch(c, color === c)} onClick={() => setColor(c)} title={c} />
           ))}
           <div style={tb.sep} />
-          <button style={tb.btn(false)} onClick={undoStroke} title="Undo last stroke">↩</button>
-          <button style={tb.btn(false)} onClick={clearAll} title="Clear all">🗑️</button>
+          <button style={tb.btn(false)} onClick={undoStroke} title={tr("Undo last stroke")}>↩</button>
+          <button style={tb.btn(false)} onClick={clearAll} title={tr("Clear all")}>🗑️</button>
         </div>
       )}
 
@@ -294,15 +295,15 @@ export default function WhiteboardOverlay({ width, height, isHost, orientation, 
                 }}
               />
               <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-                <button style={tb.btn(t.bold)} onClick={() => updateText(t.id, { bold: !t.bold })} title="Bold">B</button>
-                <button style={tb.btn(false)} onClick={() => updateText(t.id, { fontSize: Math.max(MIN_FONT, t.fontSize - 2) })} title="Smaller">A-</button>
-                <button style={tb.btn(false)} onClick={() => updateText(t.id, { fontSize: Math.min(MAX_FONT, t.fontSize + 2) })} title="Bigger">A+</button>
+                <button style={tb.btn(t.bold)} onClick={() => updateText(t.id, { bold: !t.bold })} title={tr("Bold")}>B</button>
+                <button style={tb.btn(false)} onClick={() => updateText(t.id, { fontSize: Math.max(MIN_FONT, t.fontSize - 2) })} title={tr("Smaller")}>A-</button>
+                <button style={tb.btn(false)} onClick={() => updateText(t.id, { fontSize: Math.min(MAX_FONT, t.fontSize + 2) })} title={tr("Bigger")}>A+</button>
                 {COLORS.map(c => (
                   <button key={c} style={tb.swatch(c, t.color === c)} onClick={() => updateText(t.id, { color: c })} />
                 ))}
                 <div style={tb.sep} />
-                <button style={tb.btn(false)} onClick={() => setEditingText(null)} title="Done">✓</button>
-                <button style={{ ...tb.btn(false), color: '#fca5a5' }} onClick={() => deleteText(t.id)} title="Delete">✗</button>
+                <button style={tb.btn(false)} onClick={() => setEditingText(null)} title={tr("Done")}>✓</button>
+                <button style={{ ...tb.btn(false), color: '#fca5a5' }} onClick={() => deleteText(t.id)} title={tr("Delete")}>✗</button>
               </div>
             </div>
           ) : (
@@ -314,7 +315,7 @@ export default function WhiteboardOverlay({ width, height, isHost, orientation, 
                 pointerEvents: isHost ? 'auto' : 'none', lineHeight: 1.25,
               }}
             >
-              {t.text || (isHost ? '(click to type)' : '')}
+              {t.text || (isHost ? tr('(click to type)') : '')}
             </div>
           )}
         </div>

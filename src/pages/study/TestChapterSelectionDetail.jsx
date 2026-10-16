@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { t as tr } from '../../i18n/LanguageContext';
 
 const TestChapterSelectionDetail = () => {
   const { studyId } = useParams();
@@ -24,7 +25,7 @@ const TestChapterSelectionDetail = () => {
         const chaptersResponse = await api.get(`/api/testpuzzle/studies/${studyId}/chapters`);
         setChapters(chaptersResponse.data);
       } catch (err) {
-        setError('Failed to load chapters');
+        setError(tr('Failed to load chapters'));
       } finally {
         setLoading(false);
       }
@@ -138,7 +139,7 @@ const TestChapterSelectionDetail = () => {
     return (
       <div style={styles.page}>
         <div style={styles.container}>
-          <div style={styles.loading}>Loading chapters...</div>
+          <div style={styles.loading}>{tr("Loading chapters...")}</div>
         </div>
       </div>
     );
@@ -171,14 +172,14 @@ const TestChapterSelectionDetail = () => {
             e.currentTarget.style.borderColor = 'var(--color-white-a10)';
           }}
         >
-          ← Back to Studies
+          {tr("← Back to Studies")}
         </button>
 
-        <h1 style={styles.title}>{study?.title} Test</h1>
-        <p style={styles.subtitle}>Select a chapter to take a test</p>
+        <h1 style={styles.title}>{study?.title} {tr("Test")}</h1>
+        <p style={styles.subtitle}>{tr("Select a chapter to take a test")}</p>
 
         {chapters.length === 0 ? (
-          <div style={styles.error}>No chapters available for this study.</div>
+          <div style={styles.error}>{tr("No chapters available for this study.")}</div>
         ) : (
           <div style={styles.chaptersGrid}>
             {chapters.map((chapter) => (
@@ -197,7 +198,7 @@ const TestChapterSelectionDetail = () => {
                   e.currentTarget.style.borderColor = 'var(--color-white-a04)';
                 }}
               >
-                <div style={styles.chapterNumber}>Chapter {chapter.chapterNumber}</div>
+                <div style={styles.chapterNumber}>{tr("Chapter")} {chapter.chapterNumber}</div>
                 <h3 style={styles.chapterTitle}>{chapter.title}</h3>
               </div>
             ))}
