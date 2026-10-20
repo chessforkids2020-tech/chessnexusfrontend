@@ -147,6 +147,41 @@ a.sga-player-name:hover { color: var(--color-accent); }
 .sga-ask-text { resize: vertical; min-height: 64px; }
 .sga-ask-move { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; cursor: pointer; }
 .sga-ask-move span, .sga-ask-tip, .sga-ask-len { font-size: 0.78rem; color: var(--color-text-muted); }
+/* Move picker: every move of the game as a tap-to-pick chip. */
+.sga-ask-pick {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 8px; border: 1px solid var(--color-white-a07); border-radius: var(--radius-md);
+  background: var(--color-black-a20);
+}
+.sga-ask-pick-head { display: flex; align-items: center; gap: 8px; }
+.sga-ask-pick-title { flex: 1; font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); }
+.sga-ask-pick-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.sga-ask-pick-tools:empty { display: none; }
+.sga-ask-mini {
+  padding: 3px 9px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 600; cursor: pointer;
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a13); color: var(--color-text-muted);
+}
+.sga-ask-mini:hover { color: var(--color-text); border-color: var(--color-accent-a40); }
+.sga-ask-only { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--color-text-muted); cursor: pointer; }
+.sga-ask-movelist {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  max-height: 150px; overflow-y: auto; padding-right: 2px;
+}
+.sga-ask-mv {
+  padding: 3px 7px; border-radius: 6px; font-size: 0.8rem; font-family: inherit; cursor: pointer;
+  background: transparent; border: 1px solid var(--color-white-a07); color: var(--color-text-muted);
+  line-height: 1.3;
+}
+.sga-ask-mv.is-mine { color: var(--color-text); }
+.sga-ask-mv:hover { border-color: var(--color-accent-a40); }
+.sga-ask-mv.is-inaccuracy { color: #facc15; }
+.sga-ask-mv.is-mistake { color: #fb923c; }
+.sga-ask-mv.is-blunder { color: #f87171; }
+.sga-ask-mv.is-on {
+  background: var(--color-accent-a20); border-color: var(--color-accent);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+.sga-ask-mvno { color: var(--color-text-faint); margin-right: 3px; }
 .sga-ask-chips { display: flex; flex-wrap: wrap; gap: 5px; }
 .sga-ask-chip {
   border: 1px solid var(--color-border);
@@ -431,4 +466,33 @@ a.sga-player-name:hover { color: var(--color-accent); }
   .sgr-phase { grid-template-columns: 96px minmax(0, 1fr) 40px; }
   .sgr-tabs { grid-template-columns: 1fr 1fr; }
   .sgr-tabs .sgr-tab:last-child { grid-column: 1 / -1; }
+}
+
+/* ── ⏱ Tempo inside the Game Report (components/TempoList.jsx) ─────────── */
+.q-tempo { color: var(--color-warning); }
+.sgr-qpending { font-size: 0.78rem; color: var(--color-text-muted); }
+.tempo-block { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.tempo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.tempo-item {
+  width: 100%; text-align: left; cursor: pointer; font-family: inherit; color: var(--color-text);
+  display: flex; flex-direction: column; gap: 4px; padding: 10px 12px;
+  background: var(--color-black-a20); border: 1px solid var(--color-white-a07); border-radius: var(--radius-md);
+}
+.tempo-item:hover { border-color: var(--color-accent-a40); }
+.tempo-item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tempo-move { font-size: 0.95rem; }
+.tempo-lost { font-size: 0.8rem; font-weight: 700; color: var(--color-warning); }
+.tempo-conf {
+  margin-left: auto; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 2px 7px; border-radius: var(--radius-pill); border: 1px solid var(--color-white-a13);
+  color: var(--color-text-muted);
+}
+.tempo-conf--high { color: var(--color-warning); border-color: var(--color-warning); }
+.tempo-why { font-size: 0.86rem; }
+.tempo-better { font-size: 0.86rem; color: var(--color-success); }
+.tempo-evidence { font-size: 0.75rem; color: var(--color-text-faint); font-variant-numeric: tabular-nums; }
+.tempo-note { margin: 0; font-size: 0.75rem; color: var(--color-text-faint); line-height: 1.5; }
+.tempo-phase {
+  font-size: 0.7rem; font-weight: 600; padding: 2px 7px; border-radius: var(--radius-pill);
+  background: var(--color-white-a04); color: var(--color-text-muted);
 }

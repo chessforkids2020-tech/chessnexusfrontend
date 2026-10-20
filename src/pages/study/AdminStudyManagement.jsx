@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import AdminTestManagement from '../test/AdminTestManagement';
+import AdminPuzzleBoardEditor from './AdminPuzzleBoardEditor';
+import { parseSolutionsForBoard } from '../../utils/solutionLine';
 
 const AdminStudyManagement = () => {
   const navigate = useNavigate();
@@ -42,6 +44,31 @@ const AdminStudyManagement = () => {
     puzzleDescription: '',
     puzzleSolutions: [{ pgn: '', description: '' }]
   });
+  // 'board' = set up the position + play the moves on a board (default).
+  // 'text'  = the old typed FEN/PGN form — used automatically for an old puzzle
+  //           whose solution is written notes rather than moves, so the board
+  //           editor can never overwrite it.
+  const [puzzleMode, setPuzzleMode] = useState('board');
+  const [boardResult, setBoardResult] = useState({ puzzleFen: '', pgn: '' });
+  const [puzzleFormErr, setPuzzleFormErr] = useState('');
+  const [puzzleFormKey, setPuzzleFormKey] = useState(0); // remounts the board editor per open
+
+  // Single entry point for Add / Edit so the mode is always chosen the same way.
+  const openPuzzleForm = (puzzle) => {
+    const form = puzzle ? {
+      name: puzzle.name || '',
+      puzzleFen: puzzle.puzzleFen,
+      puzzleDescription: puzzle.puzzleDescription || '',
+      puzzleSolutions: puzzle.puzzleSolutions?.length > 0 ? puzzle.puzzleSolutions : [{ pgn: '', description: '' }],
+    } : { name: '', puzzleFen: '', puzzleDescription: '', puzzleSolutions: [{ pgn: '', description: '' }] };
+    setEditingPuzzle(puzzle || null);
+    setPuzzleForm(form);
+    setPuzzleMode(puzzle && parseSolutionsForBoard(puzzle.puzzleFen, puzzle.puzzleSolutions) === null ? 'text' : 'board');
+    setBoardResult({ puzzleFen: form.puzzleFen, pgn: '' });
+    setPuzzleFormErr('');
+    setPuzzleFormKey(k => k + 1);
+    setShowPuzzleForm(true);
+  };
 
   useEffect(() => {
     fetchStudies();
@@ -147,11 +174,25 @@ const AdminStudyManagement = () => {
 
   const handlePuzzleSubmit = async (e) => {
     e.preventDefault();
+    let payload = puzzleForm;
+    if (puzzleMode === 'board') {
+      if (!boardResult.puzzleFen) { setPuzzleFormErr('Set up the position first.'); return; }
+      if (!boardResult.pgn) { setPuzzleFormErr('Play at least one move of the solution on the board.'); return; }
+      // The whole board line (mainline + sidelines + comments) is ONE solution.
+      // Descriptions of an older multi-solution puzzle are kept, joined.
+      const description = puzzleForm.puzzleSolutions.map(s => (s.description || '').trim()).filter(Boolean).join('\n\n');
+      payload = { ...puzzleForm, puzzleFen: boardResult.puzzleFen, puzzleSolutions: [{ pgn: boardResult.pgn, description }] };
+    } else {
+      // The browser `required` checks went with the <form>; check here instead.
+      if (!puzzleForm.puzzleFen.trim()) { setPuzzleFormErr('Enter the puzzle FEN.'); return; }
+      if (puzzleForm.puzzleSolutions.some(s => !(s.pgn || '').trim())) { setPuzzleFormErr('Every solution needs its moves (PGN).'); return; }
+    }
+    setPuzzleFormErr('');
     try {
       if (editingPuzzle) {
-        await api.put(`/api/admin/puzzles/${editingPuzzle._id}`, puzzleForm);
+        await api.put(`/api/admin/puzzles/${editingPuzzle._id}`, payload);
       } else {
-        await api.post(`/api/admin/chapters/${selectedChapter}/puzzles`, puzzleForm);
+        await api.post(`/api/admin/chapters/${selectedChapter}/puzzles`, payload);
       }
       setShowPuzzleForm(false);
       setEditingPuzzle(null);
@@ -160,6 +201,25 @@ const AdminStudyManagement = () => {
     } catch (err) {
       setError('Failed to save puzzle');
     }
+  };
+
+  const switchPuzzleMode = (mode) => {
+    if (mode === puzzleMode) return;
+    if (mode === 'text') {
+      // Carry the board work over so nothing is lost.
+      const sols = puzzleForm.puzzleSolutions.length ? puzzleForm.puzzleSolutions : [{ pgn: '', description: '' }];
+      setPuzzleForm({
+        ...puzzleForm,
+        puzzleFen: boardResult.puzzleFen || puzzleForm.puzzleFen,
+        puzzleSolutions: boardResult.pgn ? [{ ...sols[0], pgn: boardResult.pgn }, ...sols.slice(1)] : sols,
+      });
+    } else if (puzzleForm.puzzleFen && parseSolutionsForBoard(puzzleForm.puzzleFen, puzzleForm.puzzleSolutions) === null) {
+      setPuzzleFormErr('These solutions are written notes (or the FEN is invalid), so they can\'t be shown on the board. Keep typing, or clear them first.');
+      return;
+    }
+    setPuzzleFormErr('');
+    setPuzzleFormKey(k => k + 1);
+    setPuzzleMode(mode);
   };
 
   const handleDeletePuzzle = async (puzzleId) => {
@@ -739,14 +799,18 @@ const AdminStudyManagement = () => {
           
           <div style={styles.header}>
             <h2>Puzzles</h2>
-            <button style={styles.addButton} onClick={() => setShowPuzzleForm(true)}>
+            <button style={styles.addButton} onClick={() => openPuzzleForm(null)}>
               Add Puzzle
             </button>
           </div>
 
           {/* Puzzle Form */}
           {showPuzzleForm && (
-            <form style={styles.form} onSubmit={handlePuzzleSubmit}>
+            // A plain container, NOT a <form>: the reused board components have
+            // buttons without type="button", which would submit a form on every
+            // click (and Enter in the FEN box would save). Saving happens only on
+            // the Create/Update button below.
+            <div style={styles.form}>
               <h3>{editingPuzzle ? 'Edit Puzzle' : 'Add New Puzzle'}</h3>
               <div style={styles.formGroup}>
                 <label style={styles.label}>Puzzle Name</label>
@@ -758,6 +822,29 @@ const AdminStudyManagement = () => {
                   placeholder="e.g., Fork Knight, Pin Tactic, Checkmate Pattern"
                 />
               </div>
+              {/* How the position + solution are entered. */}
+              <div style={{ ...styles.formGroup, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                {[['board', '♟ Use the board'], ['text', '⌨ Type FEN / PGN']].map(([m, label]) => (
+                  <button key={m} type="button" onClick={() => switchPuzzleMode(m)}
+                    style={{
+                      padding: '7px 14px', borderRadius: 'var(--radius-md)', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                      border: puzzleMode === m ? '1px solid var(--color-accent)' : '1px solid var(--color-white-a13)',
+                      background: puzzleMode === m ? 'var(--color-accent-a20)' : 'transparent',
+                      color: puzzleMode === m ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                    }}>{label}</button>
+                ))}
+              </div>
+
+              {puzzleMode === 'board' ? (
+                <div style={styles.formGroup}>
+                  <AdminPuzzleBoardEditor
+                    key={puzzleFormKey}
+                    initialFen={puzzleForm.puzzleFen}
+                    initialSolutions={puzzleForm.puzzleSolutions}
+                    onChange={setBoardResult}
+                  />
+                </div>
+              ) : (
               <div style={styles.formGroup}>
                 <label style={styles.label}>Puzzle FEN</label>
                 <input
@@ -769,6 +856,7 @@ const AdminStudyManagement = () => {
                   required
                 />
               </div>
+              )}
               <div style={styles.formGroup}>
                 <label style={styles.label}>Puzzle Description (shown to users — leave blank to hide)</label>
                 <textarea
@@ -779,6 +867,7 @@ const AdminStudyManagement = () => {
                   rows="3"
                 />
               </div>
+              {puzzleMode === 'text' && (
               <div style={styles.formGroup}>
                 <label style={styles.label}>Solutions</label>
                 {puzzleForm.puzzleSolutions.map((solution, index) => (
@@ -825,8 +914,12 @@ const AdminStudyManagement = () => {
                   Add Another Solution
                 </button>
               </div>
+              )}
+              {puzzleFormErr && (
+                <div style={{ color: 'var(--color-danger)', fontSize: 13, fontWeight: 600, margin: '4px 0 10px' }}>⚠️ {puzzleFormErr}</div>
+              )}
               <div style={styles.formButtons}>
-                <button type="submit" style={styles.addButton}>
+                <button type="button" style={styles.addButton} onClick={handlePuzzleSubmit}>
                   {editingPuzzle ? 'Update' : 'Create'}
                 </button>
                 <button
@@ -841,7 +934,7 @@ const AdminStudyManagement = () => {
                   Cancel
                 </button>
               </div>
-            </form>
+            </div>
           )}
 
           <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
@@ -884,14 +977,7 @@ const AdminStudyManagement = () => {
                         <button
                           style={{ ...styles.button, ...styles.editButton }}
                           onClick={() => {
-                            setEditingPuzzle(puzzle);
-                            setPuzzleForm({
-                              name: puzzle.name || '',
-                              puzzleFen: puzzle.puzzleFen,
-                              puzzleDescription: puzzle.puzzleDescription || '',
-                              puzzleSolutions: puzzle.puzzleSolutions.length > 0 ? puzzle.puzzleSolutions : [{ pgn: '', description: '' }]
-                            });
-                            setShowPuzzleForm(true);
+                            openPuzzleForm(puzzle);
                           }}
                         >
                           Edit
@@ -1022,14 +1108,7 @@ const AdminStudyManagement = () => {
                 <button
                   style={{ ...styles.button, ...styles.editButton }}
                   onClick={() => {
-                    setEditingPuzzle(viewingPuzzle);
-                    setPuzzleForm({
-                      name: viewingPuzzle.name || '',
-                      puzzleFen: viewingPuzzle.puzzleFen,
-                      puzzleDescription: viewingPuzzle.puzzleDescription || '',
-                      puzzleSolutions: viewingPuzzle.puzzleSolutions.length > 0 ? viewingPuzzle.puzzleSolutions : [{ pgn: '', description: '' }]
-                    });
-                    setShowPuzzleForm(true);
+                    openPuzzleForm(viewingPuzzle);
                     setViewingPuzzle(null);
                   }}
                 >

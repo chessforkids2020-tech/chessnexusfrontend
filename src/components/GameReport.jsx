@@ -8,6 +8,7 @@
 import React, { useMemo, useState } from 'react';
 import { Chess } from 'chess.js';
 import { t as tr } from '../i18n/LanguageContext';
+import TempoList from './TempoList';
 
 // analyzeGame's win curve is 100 / (1 + e^(-K·cp)), so a stored win % maps back
 // to the exact centipawn eval. Evals are capped at ±1000 like Lichess, so a
@@ -37,9 +38,10 @@ const PHASES = [
   { key: 'middlegame', label: tr('Middlegame'), icon: '⚔' },
   { key: 'endgame', label: tr('Endgame'), icon: '👑' },
 ];
+// Lichess style: only the three error marks. "Best" (= exactly the engine's
+// move) and "Good" (= everything else unflagged) were removed — the analysis
+// no longer marks them anywhere, so counting them only confused.
 const QUALITY = [
-  { key: 'best', label: tr('Best'), mark: '★' },
-  { key: 'good', label: tr('Good'), mark: '✓' },
   { key: 'inaccuracy', label: tr('Inaccuracy'), mark: '?!' },
   { key: 'mistake', label: tr('Mistake'), mark: '?' },
   { key: 'blunder', label: tr('Blunder'), mark: '??' },
@@ -58,7 +60,7 @@ function emptySide() {
   const phase = () => ({ moves: 0, accSum: 0, cplSum: 0, inaccuracy: 0, mistake: 0, blunder: 0 });
   return {
     moves: 0, accSum: 0, cplSum: 0,
-    quality: { best: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0 },
+    quality: { inaccuracy: 0, mistake: 0, blunder: 0 },
     phases: { opening: phase(), middlegame: phase(), endgame: phase() },
     pieces: { p: 0, n: 0, b: 0, r: 0, q: 0, k: 0 },
   };
@@ -76,15 +78,12 @@ function buildReport(rows, startFen) {
     const sign = mv.color === 'w' ? 1 : -1;
     const cpl = Math.max(0, sign * (winToCp(r.winBefore) - winToCp(r.winAfter)));
     const acc = moveAccuracy(r.drop || 0);
-    const uci = mv.from + mv.to + (mv.promotion || '');
-    const quality = r.classification
-      || ((r.bestUci ? r.bestUci === uci : mv.san.endsWith('#')) ? 'best' : 'good');
+    const quality = ERRORS.includes(r.classification) ? r.classification : null;
     const ph = s.phases[phaseAfter(i, chess)];
 
     s.moves++; s.accSum += acc; s.cplSum += cpl;
-    s.quality[quality]++;
     ph.moves++; ph.accSum += acc; ph.cplSum += cpl;
-    if (ERRORS.includes(quality)) { ph[quality]++; s.pieces[mv.piece]++; }
+    if (quality) { s.quality[quality]++; ph[quality]++; s.pieces[mv.piece]++; }
   }
   const finish = (s) => ({
     moves: s.moves,
@@ -115,7 +114,16 @@ function ErrorChips({ p }) {
   );
 }
 
-function SideView({ s }) {
+// "⏱ Tempo lost" value for one side: a number, or "…45%" while still checking.
+// `tempo` = { status: 'running'|'done'|'error', progress?, events? } from the page.
+function tempoCount(tempo, side) {
+  if (!tempo || tempo.status === 'error') return null;
+  if (tempo.status === 'running') return null;
+  return tempo.events.filter(e => e.side === side).reduce((n, e) => n + e.tempi, 0);
+}
+
+function SideView({ s, side, tempo, onSeek }) {
+  const tempoN = tempoCount(tempo, side);
   const errorTotal = PIECES.reduce((n, pc) => n + s.pieces[pc.key], 0);
   const maxPiece = Math.max(1, ...PIECES.map(pc => s.pieces[pc.key]));
   const worst = errorTotal ? PIECES.reduce((a, b) => (s.pieces[b.key] > s.pieces[a.key] ? b : a)) : null;
@@ -142,13 +150,21 @@ function SideView({ s }) {
                 <b>{s.quality[q.key]}</b>
               </div>
             ))}
+            {/* Middlegame tempo (utils/tempoAnalysis) — runs after the review. */}
+            {tempo && tempo.status !== 'error' && (
+              <div className="sgr-qitem">
+                <span className="sgr-qmark q-tempo">⏱</span>
+                <span className="sgr-qlabel">{tr("Tempo lost")}</span>
+                {tempo.status === 'running'
+                  ? <span className="sgr-qpending">{tr("checking… {p}%", { p: tempo.progress || 0 })}</span>
+                  : <b>{tempoN}</b>}
+              </div>
+            )}
           </div>
         </div>
-        <div className="sgr-qbar" aria-hidden="true">
-          {QUALITY.map(q => s.quality[q.key] > 0 && (
-            <span key={q.key} className={`q-${q.key}`} style={{ flexGrow: s.quality[q.key] }} />
-          ))}
-        </div>
+        {tempo?.status === 'done' && (
+          <TempoList events={tempo.events.filter(e => e.side === side)} onSeek={onSeek} />
+        )}
         <p className="sgr-note">Centipawn loss = how much each move gave away vs the engine&apos;s best (100 = one pawn). Lower is better.</p>
       </section>
 
@@ -212,7 +228,7 @@ function CmpRow({ label, a, b, fmt = (v) => v, lower = false, neutral = false, s
   );
 }
 
-function CompareView({ left, right }) {
+function CompareView({ left, right, tempo }) {
   const A = left.s, B = right.s;
   const pct = (v) => `${v}%`;
   return (
@@ -228,8 +244,15 @@ function CompareView({ left, right }) {
       <CmpRow label={tr("Accuracy")} a={A.accuracy} b={B.accuracy} fmt={pct} />
       {QUALITY.map(q => (
         <CmpRow key={q.key} label={`${q.label} ${q.mark}`} a={A.quality[q.key]} b={B.quality[q.key]}
-          lower={ERRORS.includes(q.key)} neutral={q.key === 'good'} />
+          lower />
       ))}
+      {tempo && tempo.status !== 'error' && (
+        <CmpRow
+          label={tempo.status === 'running'
+            ? tr("Tempo lost ⏱ (checking… {p}%)", { p: tempo.progress || 0 })
+            : tr("Tempo lost ⏱")}
+          a={tempoCount(tempo, left.side)} b={tempoCount(tempo, right.side)} lower />
+      )}
 
       <div className="sgr-cmp-group">{tr("📊 Game phases")}</div>
       {PHASES.map(ph => (
@@ -255,8 +278,22 @@ function CompareView({ left, right }) {
  * @param mySide     'white' | 'black' — shown first
  * @param isMe       true when the viewer actually played mySide (adds "You")
  */
-export default function GameReport({ rows, startFen, names, mySide = 'white', isMe = false }) {
-  const report = useMemo(() => buildReport(rows, startFen), [rows, startFen]);
+// `sideStats` = the page's { white, black } stats; their `accuracy` is the
+// Lichess game accuracy, so the report shows the SAME number as the header.
+// Phase accuracy stays a plain average of per-move accuracy (Lichess has no
+// per-phase figure).
+// `tempo` = middlegame tempo check from the page ({ status, progress, events });
+// shown as a ⏱ row in Move quality and the Compare table. `onSeek(ply)` jumps
+// the board to a flagged move.
+export default function GameReport({ rows, startFen, names, mySide = 'white', isMe = false, sideStats, tempo, onSeek }) {
+  const report = useMemo(() => {
+    const r = buildReport(rows, startFen);
+    for (const side of ['white', 'black']) {
+      const acc = sideStats?.[side]?.accuracy;
+      if (acc != null && r[side].moves) r[side].accuracy = Math.round(acc);
+    }
+    return r;
+  }, [rows, startFen, sideStats]);
   const other = mySide === 'white' ? 'black' : 'white';
   const [view, setView] = useState(mySide);
   if (!report.white.moves && !report.black.moves) return null;
@@ -292,9 +329,12 @@ export default function GameReport({ rows, startFen, names, mySide = 'white', is
         <CompareView
           left={{ side: mySide, name: label(mySide), s: report[mySide] }}
           right={{ side: other, name: label(other), s: report[other] }}
+          tempo={tempo}
         />
       ) : (
-        report[view].moves ? <SideView s={report[view]} /> : <div className="sgr-card sgr-clean-big">{tr("No moves for this side.")}</div>
+        report[view].moves
+          ? <SideView s={report[view]} side={view} tempo={tempo} onSeek={onSeek} />
+          : <div className="sgr-card sgr-clean-big">{tr("No moves for this side.")}</div>
       )}
     </div>
   );

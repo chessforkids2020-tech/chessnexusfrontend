@@ -1,0 +1,43 @@
+/* Live classroom video tiles — overlay sizes that follow the TILE's own width.
+ *
+ * Each tile is a size container, so `cqw` = 1% of that tile's width. With many
+ * students the tiles shrink to ~70–140px, and the old fixed 26px coach buttons
+ * (a ~120px bar) covered the student's face. Now the buttons, the mic badge and
+ * the name scale with the tile, and on small tiles the coach bar only appears on
+ * hover — like Zoom's "…" — so faces stay visible.
+ */
+
+.lc-tile { container-type: inline-size; }
+
+/* Coach controls: mute / camera / fix video / board control. */
+.lc-tilectl {
+  position: absolute; z-index: 4;
+  bottom: clamp(3px, 3cqw, 8px); right: clamp(3px, 3cqw, 8px);
+  display: flex; gap: clamp(2px, 1.5cqw, 4px); padding: clamp(2px, 1cqw, 3px);
+  border-radius: 8px; background: rgba(10, 12, 18, 0.72); backdrop-filter: blur(6px);
+  transition: opacity 0.15s ease;
+}
+.lc-tilebtn {
+  width: clamp(16px, 11cqw, 26px); height: clamp(16px, 11cqw, 26px);
+  font-size: clamp(8px, 6cqw, 13px);
+  display: grid; place-items: center; padding: 0; min-width: 0; min-height: 0; line-height: 1;
+}
+.lc-tilebtn svg { width: clamp(9px, 7cqw, 15px); height: clamp(9px, 7cqw, 15px); }
+
+/* Mic-off badge (top-right) and the name label (bottom-left). */
+.lc-tile-mic { width: clamp(14px, 10cqw, 24px); height: clamp(14px, 10cqw, 24px); }
+.lc-tile-mic svg { width: clamp(8px, 6cqw, 14px); height: clamp(8px, 6cqw, 14px); }
+.lc-tile-label {
+  font-size: clamp(9px, 6cqw, 12px);
+  padding: clamp(1px, 0.6cqw, 2px) clamp(4px, 2.5cqw, 8px);
+  max-width: calc(100% - 16px);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* Small tiles: keep the face clear — show the coach bar only while the mouse is
+   over the tile (or a button in it has keyboard focus). */
+@container (max-width: 170px) {
+  .lc-tilectl { opacity: 0; pointer-events: none; }
+  .lc-tile:hover .lc-tilectl,
+  .lc-tile:focus-within .lc-tilectl { opacity: 1; pointer-events: auto; }
+}

@@ -15,6 +15,7 @@ import { Chess } from 'chess.js';
 import api from '../api';
 import GameReplay from '../components/GameReplay';
 import GameReport from '../components/GameReport';
+import { findLostTempi } from '../utils/tempoAnalysis';
 import AskCoach from '../components/AskCoach';
 import { useAuth } from '../contexts/AuthContext';
 import { analyzeGame } from '../components/masterGames/analyzeGame';
@@ -23,8 +24,15 @@ import './GameAnalysis.css';
 import './SingleGameAnalysis.css';
 import { t as tr } from '../i18n/LanguageContext';
 
-const ANALYSIS_DEPTH = 12;
-const CACHE_PREFIX = 'sga:v1:';
+// Lichess-quality review in the browser: depth 20 (≈ Lichess server analysis;
+// measured ~2.4 s/position on a laptop — 22 tripled the time for no visible
+// gain), judged with lila's exact rules (analyzeGame judge: 'lichess').
+// MOVE_TIME caps one position so a slow phone keeps moving.
+const ANALYSIS_DEPTH = 20;
+const MOVE_TIME = 15000;
+// v2: depth-20 Lichess-rule results. v1 entries (depth 12, old bands) are
+// simply not read, so every game is re-reviewed once at the new quality.
+const CACHE_PREFIX = 'sga:v2:';
 
 const TYPE_LABEL = { arena: tr('Arena'), friend: tr('vs Friend'), stockfish: tr('vs Stockfish') };
 
@@ -48,8 +56,54 @@ function resultScore(result) {
   return '*';
 }
 
-// Lichess move accuracy from the win % the mover gave away.
-const moveAccuracy = (drop) => Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.04354 * drop) - 3.1669));
+// ── Lichess accuracy (port of lila AccuracyPercent) ─────────────────────────
+// Per move: 100 if the mover's win % didn't fall, else the fitted curve on the
+// win-% points lost, +1 "uncertainty bonus" for imperfect analysis.
+const moveAccuracy = (before, after) => {
+  if (after >= before) return 100;
+  const raw = 103.1668100711649 * Math.exp(-0.04354415386753951 * (before - after)) - 3.166924740191411;
+  return Math.max(0, Math.min(100, raw + 1));
+};
+const stdDev = (xs) => {
+  const mean = xs.reduce((s, x) => s + x, 0) / xs.length;
+  return Math.sqrt(xs.reduce((s, x) => s + (x - mean) ** 2, 0) / xs.length);
+};
+// Game accuracy per side: weighted mean (weights = how volatile the position
+// was around the move) averaged with the harmonic mean, exactly as lila does.
+// `rows` are analyzeGame rows (White win % before/after each move).
+function lichessAccuracy(rows) {
+  if (!rows.length) return {};
+  const initial = 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * 15)) - 1);   // Cp.initial = 15
+  const wins = [initial, ...rows.map(r => r.winAfter)];
+  const size = Math.max(2, Math.min(8, Math.floor(rows.length / 10)));
+  const windows = [
+    ...Array(Math.max(0, Math.min(size, wins.length) - 2)).fill(wins.slice(0, size)),
+    ...Array.from({ length: Math.max(0, wins.length - size + 1) }, (_, i) => wins.slice(i, i + size)),
+  ];
+  const weights = windows.map(w => Math.max(0.5, Math.min(12, stdDev(w))));
+  const per = { white: [], black: [] };
+  for (let i = 0; i < rows.length; i++) {
+    const side = rows[i].side === 'b' ? 'black' : 'white';
+    const prev = wins[i], next = wins[i + 1];
+    const acc = side === 'white' ? moveAccuracy(prev, next) : moveAccuracy(100 - prev, 100 - next);
+    per[side].push([acc, weights[i] ?? 0.5]);
+  }
+  const out = {};
+  for (const side of ['white', 'black']) {
+    const xs = per[side];
+    if (!xs.length) continue;
+    const weighted = xs.reduce((s, [a, w]) => s + a * w, 0) / xs.reduce((s, [, w]) => s + w, 0);
+    const harmonic = xs.some(([a]) => a === 0) ? 0 : xs.length / xs.reduce((s, [a]) => s + 1 / a, 0);
+    out[side] = (weighted + harmonic) / 2;
+  }
+  return out;
+}
+
+// "2 min 10 s" / "40 s" for the progress line.
+const fmtLeft = (ms) => {
+  const s = Math.max(1, Math.round(ms / 1000));
+  return s >= 60 ? `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, '0')} s` : `${s} s`;
+};
 
 function buildPgn(game) {
   const headers = [
@@ -80,14 +134,9 @@ function toMoveAnalysis(rows, startFen) {
   const blackFirst = c.turn() === 'b';
   return rows.map((r, i) => {
     const ply = i + (blackFirst ? 1 : 0);
-    // The played move as UCI, to tell "the engine's own choice" (★) apart from
-    // merely "good". Same rule as GameReport: a mate with no engine move counts.
-    let playedUci = null;
-    try {
-      const mv = c.move(r.san);
-      playedUci = mv.from + mv.to + (mv.promotion || '');
-    } catch { /* keep going — the replay just loses the ★ marks */ }
-    const isBest = !r.classification && (r.bestUci ? r.bestUci === playedUci : /#$/.test(r.san));
+    // Lichess style: no ★ "best move" marks, so the played move only needs
+    // replaying to keep the position in step.
+    try { c.move(r.san); } catch { /* keep going */ }
     const side = r.side === 'b' ? 'black' : 'white';
     const mover = (w) => Math.round(side === 'white' ? w : 100 - w);
     const before = mover(r.winBefore);
@@ -101,15 +150,20 @@ function toMoveAnalysis(rows, startFen) {
       } catch { /* engine move not legal here — leave it out */ }
     }
     const label = r.classification === 'blunder' ? 'Blunder!' : r.classification === 'mistake' ? 'Mistake.' : 'Inaccuracy.';
+    // Lichess wording for the mate rules; win-chance wording otherwise.
+    const why = r.mateNote === 'mateLost' ? ' Lost forced checkmate sequence.'
+      : r.mateNote === 'mateCreated' ? ' Checkmate is now unavoidable.'
+      : ` Win chance dropped from ${before}% to ${after}% (−${drop}%).`;
     const explanation = r.classification
-      ? `${label} Win chance dropped from ${before}% to ${after}% (−${drop}%).${bestMove ? ` Better was ${bestMove}.` : ''}`
+      ? `${label}${why}${bestMove ? ` ${bestMove} was best.` : ''}`
       : null;
     return {
       moveNumber: firstNo + Math.floor(ply / 2),
       move: r.san,
       side,
       classification: r.classification || 'good',
-      isBest,
+      // Lichess style: only ?! / ? / ?? are marked — no ★ "best move" badges.
+      isBest: false,
       bestMove,
       // engine move as UCI — "Learn from your mistakes" checks answers against it
       bestUci: r.bestUci || null,
@@ -125,12 +179,11 @@ function toMoveAnalysis(rows, startFen) {
   });
 }
 
-function sideStats(ma, side) {
+function sideStats(ma, side, accuracy) {
   const mine = ma.filter(m => m.side === side);
   if (!mine.length) return null;
-  const acc = mine.reduce((s, m) => s + moveAccuracy(m.drop), 0) / mine.length;
   const count = (cls) => mine.filter(m => m.classification === cls).length;
-  return { accuracy: Math.round(acc), inaccuracy: count('inaccuracy'), mistake: count('mistake'), blunder: count('blunder') };
+  return { accuracy: Math.round(accuracy ?? 0), inaccuracy: count('inaccuracy'), mistake: count('mistake'), blunder: count('blunder') };
 }
 
 // ── Eval graph: White win % per ply, click to jump ─────────────────────────
@@ -185,10 +238,12 @@ export default function SingleGameAnalysis() {
   // Stockfish panel, and two searches on one worker break each other.
   const engineRef = useRef(null);
   const cacheKey = `${CACHE_PREFIX}${type}:${id}`;
+  const tempoKey = `sga:tempo:v2:${type}:${id}`;
+  const [tempo, setTempo] = useState(null);   // { status:'running'|'done'|'error', events?, progress? }
 
   useEffect(() => {
     let alive = true;
-    setGame(null); setError(''); setRows(null); setProgress(null); setAnalysisError('');
+    setGame(null); setError(''); setRows(null); setProgress(null); setAnalysisError(''); setTempo(null);
     api.get(`/api/user-games/game/${encodeURIComponent(type)}/${encodeURIComponent(id)}`)
       .then(({ data }) => {
         if (!alive) return;
@@ -215,26 +270,47 @@ export default function SingleGameAnalysis() {
     if (!game || !game.moves.length) return;
     const run = ++runRef.current;
     setAnalysisError('');
-    setProgress({ done: 0, total: game.moves.length });
+    setProgress({ pct: 0, leftMs: null, depth: 0, target: ANALYSIS_DEPTH });
     dropEngine();
     const engine = new StockfishService();
     engineRef.current = engine;
+    const startedAt = Date.now();
     try {
       const { analysis } = await analyzeGame(game.moves, {
+        judge: 'lichess',
         depth: ANALYSIS_DEPTH,
+        moveTime: MOVE_TIME,
         engine,
         startFen: game.startFen || undefined,
         isCancelled: () => run !== runRef.current,
-        onProgress: (done, total) => { if (run === runRef.current) setProgress({ done, total }); },
+        // 1–100%: finished positions plus how deep the current one has got.
+        // Time left is projected from the time spent so far.
+        onTick: ({ done, total, depth, targetDepth }) => {
+          if (run !== runRef.current) return;
+          // Each extra ply of depth costs ~1.7× the one before, so depth 19 of
+          // 20 is only ~60% of a position's time, not 95%. A linear depth/20
+          // made the bar race ahead and then sit at "6 s left" for a minute.
+          const inPos = done < total && depth > 0 ? Math.pow(1.7, depth - targetDepth) : 0;
+          const frac = Math.min(1, (done + inPos) / Math.max(1, total));
+          const elapsed = Date.now() - startedAt;
+          setProgress({
+            pct: Math.max(1, Math.min(99, Math.floor(frac * 100))),
+            leftMs: frac > 0.03 ? (elapsed / frac) - elapsed : null,
+            depth, target: targetDepth,
+          });
+        },
       });
       if (run !== runRef.current) return;
       // Only what the page needs — keeps the cached entry small.
       const slim = analysis.map(r => ({
-        san: r.san, side: r.side, classification: r.classification, bestUci: r.bestUci,
+        san: r.san, side: r.side, classification: r.classification, mateNote: r.mateNote || null, bestUci: r.bestUci,
         fenBefore: r.fenBefore, winBefore: r.winBefore, winAfter: r.winAfter, drop: r.drop,
       }));
       try { localStorage.setItem(cacheKey, JSON.stringify(slim)); } catch { /* storage full — fine */ }
       setRows(slim);
+      // New review → the tempo check must run again on it.
+      try { localStorage.removeItem(tempoKey); } catch { /* ignore */ }
+      setTempo(null);
     } catch (e) {
       if (run === runRef.current && e?.message !== 'cancelled') setAnalysisError(tr('Analysis failed. Please try again.'));
     } finally {
@@ -244,6 +320,51 @@ export default function SingleGameAnalysis() {
 
   // Review the game as soon as it opens (unless this device already has it) —
   // there is no button for it.
+  // ── Stage 2: middlegame tempo check (utils/tempoAnalysis) ─────────────────
+  // Runs on the finished review rows with its OWN engine, one null-move search
+  // per qualifying move. Cached per device like the review.
+  useEffect(() => {
+    if (!rows || progress || tempo) return undefined;
+    try {
+      const cached = JSON.parse(localStorage.getItem(tempoKey) || 'null');
+      if (Array.isArray(cached)) { setTempo({ status: 'done', events: cached }); return undefined; }
+    } catch { /* ignore */ }
+    let alive = true;
+    const engine = new StockfishService();
+    setTempo({ status: 'running', progress: 0 });
+    (async () => {
+      try {
+        await engine.init();
+        const events = await findLostTempi(rows, {
+          startFen: game?.startFen || undefined,
+          engine,
+          isCancelled: () => !alive,
+          // Opening theory = the move appears in ≥ 3 master games after the same
+          // move order. Any failure throws → the analyser flags nothing in the
+          // opening (never a wrong flag because the explorer was down).
+          isBookMove: async (prefix, san) => {
+            const { data } = await api.get('/api/master-games/explorer', { params: { moves: prefix.join(','), limit: 1 } });
+            const hit = (data?.moves || []).find(m => m.san === san);
+            return !!hit && hit.games >= 3;
+          },
+          onTick: ({ done, total }) => {
+            if (alive) setTempo({ status: 'running', progress: Math.round((done / Math.max(1, total)) * 100) });
+          },
+        });
+        if (!alive) return;
+        try { localStorage.setItem(tempoKey, JSON.stringify(events)); } catch { /* storage full — fine */ }
+        setTempo({ status: 'done', events });
+      } catch {
+        if (alive) setTempo({ status: 'error' });
+      } finally {
+        engine.quit();
+      }
+    })();
+    return () => { alive = false; };
+  // `tempo` is deliberately not a dependency: setting it must not restart the run.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, progress, tempoKey, game]);
+
   const autoRanFor = useRef(null);
   useEffect(() => {
     if (!game || rows || game.moves.length < 2 || autoRanFor.current === cacheKey) return;
@@ -260,9 +381,11 @@ export default function SingleGameAnalysis() {
       : String(game.blackId) === myId ? 'black' : null;
   const playerSide = mySide || (pov === 'black' || pov === 'white' ? pov : 'white');
   const moveAnalysis = useMemo(() => (rows && game ? toMoveAnalysis(rows, game.startFen) : []), [rows, game]);
-  const stats = useMemo(() => (moveAnalysis.length
-    ? { white: sideStats(moveAnalysis, 'white'), black: sideStats(moveAnalysis, 'black') }
-    : null), [moveAnalysis]);
+  const stats = useMemo(() => {
+    if (!moveAnalysis.length) return null;
+    const acc = lichessAccuracy(rows || []);
+    return { white: sideStats(moveAnalysis, 'white', acc.white), black: sideStats(moveAnalysis, 'black', acc.black) };
+  }, [moveAnalysis, rows]);
 
   const replayGame = useMemo(() => {
     if (!game) return null;
@@ -352,8 +475,11 @@ export default function SingleGameAnalysis() {
 
         {progress && (
           <div className="sga-progress">
-            <div className="sga-progress-bar"><div style={{ width: `${Math.round((progress.done / Math.max(1, progress.total)) * 100)}%` }} /></div>
-            <span>{tr("Reviewing every move for blunders…")} {progress.done}/{progress.total}</span>
+            <div className="sga-progress-bar"><div style={{ width: `${progress.pct}%` }} /></div>
+            <span>
+              <b>{progress.pct}%</b> · {tr("Deep review (depth {d})…", { d: progress.target })}
+              {progress.leftMs != null && <> · {tr("about {t} left", { t: fmtLeft(progress.leftMs) })}</>}
+            </span>
           </div>
         )}
         {analysisError && (
@@ -399,10 +525,12 @@ export default function SingleGameAnalysis() {
           {/* Only for the people who played it — a coach viewing a student's
               game has nobody to "ask". */}
           {mySide && (
-            <AskCoach game={game} gameType={type} gameId={id} mySide={mySide} ply={ply} moveAnalysis={moveAnalysis} />
+            <AskCoach game={game} gameType={type} gameId={id} mySide={mySide} ply={ply} moveAnalysis={moveAnalysis} onSeek={seekTo} />
           )}
         </>}
         practiceEnabled={!!showGraph}
+        practiceOkDrop={5}
+        quietGoodMoves
         belowAll={showGraph && (
           <GameReport
             key={`${cacheKey}:${playerSide}`}
@@ -411,6 +539,9 @@ export default function SingleGameAnalysis() {
             names={{ white: game.white, black: game.black }}
             mySide={playerSide}
             isMe={!!mySide}
+            sideStats={stats}
+            tempo={tempo}
+            onSeek={seekTo}
           />
         )}
       />

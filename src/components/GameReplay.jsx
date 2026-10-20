@@ -379,6 +379,11 @@ export default function GameReplay({
   game, totalGames, onClose, onNext, onPrev, quick = false,
   headerTitle, headerSub, backLabel, seekPly, seekNonce, onPlyChange, belowBoard, belowMoves, belowAll,
   hideHeader = false, practiceEnabled = false,
+  // A retry counts as right if it loses less than this many win-% points.
+  // Matches the page's own inaccuracy band (Lichess rules = 5).
+  practiceOkDrop = PRACTICE_OK_DROP,
+  // Lichess style: an unmarked move gets no "Good move." commentary at all.
+  quietGoodMoves = false,
 }) {
   const { pgn, playerSide, moveAnalysis = [], accuracy, totalBlunders, gameThemes = [], opening, result, gameNumber, coachAnalysis, turningPoint } = game;
 
@@ -798,6 +803,9 @@ export default function GameReplay({
   const mainlinePly = onMainline ? path.length : 0;
   const currentAnalysis = (onMainline && mainlinePly > 0) ? moveAnalysis[mainlinePly - 1] : null;
   const meta = currentAnalysis ? CLASS_META[currentAnalysis.classification] || CLASS_META.good : null;
+  // An unmarked move has nothing to say in Lichess style — no bubble at all.
+  const showMoveComment = !!currentAnalysis
+    && !(quietGoodMoves && currentAnalysis.classification === 'good' && !currentAnalysis.explanation);
   // End-of-game summary: only at the end of the real mainline, and only with
   // analysis (without it every stat would be blank).
   const showSummary = moveAnalysis.length > 0 && onMainline && path.length > 0 && path.length === mainlinePath.length;
@@ -915,11 +923,11 @@ export default function GameReplay({
         ? (-line.score > 0 ? 100 : 0)
         : winChanceCp(-line.score);
       const drop = Math.max(0, Math.round(m.winChanceBefore - moverWin));
-      if (drop < PRACTICE_OK_DROP) right(false, drop);
+      if (drop < practiceOkDrop) right(false, drop);
       else wrong({ san: mv.san, drop });
     })();
     return true;
-  }, [practiceItem, practice, currentFen]);
+  }, [practiceItem, practice, currentFen, practiceOkDrop]);
 
   // The practice check uses the shared engine; stop it if the session ends
   // mid-search so the live panel can have it back.
@@ -1271,7 +1279,7 @@ export default function GameReplay({
 
           {/* Commentary — only rendered when it has something to say (inside a
               variation, or on an unanalysed move, there is nothing). */}
-          {(path.length === 0 || currentAnalysis || showSummary) && (
+          {(path.length === 0 || showMoveComment || showSummary) && (
           <div className="gr-commentary">
             {path.length === 0 && (
               <div className="gr-comment-bubble gr-comment-info">
@@ -1281,7 +1289,7 @@ export default function GameReplay({
               </div>
             )}
 
-            {path.length > 0 && currentAnalysis && (
+            {path.length > 0 && showMoveComment && (
               <div
                 ref={commentRef}
                 className={`gr-comment-bubble gr-comment-${currentAnalysis.classification}`}

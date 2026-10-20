@@ -102,7 +102,9 @@ class StockfishService {
   }
 
   async getBestMove(fen, options = {}) {
-    const { depth = 15, moveTime = 1000, multipv = 1, skill = null } = options;
+    // onInfo({ depth }) — optional; called as the search deepens, so a caller
+    // can show progress within one position (game analysis' 1–100% bar).
+    const { depth = 15, moveTime = 1000, multipv = 1, skill = null, onInfo = null } = options;
     
     return new Promise((resolve, reject) => {
       if (!this.ready) {
@@ -162,14 +164,22 @@ class StockfishService {
                scoreVal = parseInt(scoreMatch[2]);
              }
              
+             // "lowerbound"/"upperbound" scores are provisional (an aspiration
+             // window failed and the engine is re-searching) — not the real
+             // value. Never let one become the final evaluation.
+             const bound = / (lowerbound|upperbound)/.test(message);
+             const lineDepth = parseInt(message.match(/ depth (\d+)/)?.[1] || 0);
+             if (k === 1 && lineDepth && onInfo) { try { onInfo({ depth: lineDepth }); } catch { /* caller's problem */ } }
+             if (bound) return;
+
              lines[k] = {
                k: k,
                move: move,
                score: scoreVal,
                type: scoreType,
-               depth: parseInt(message.match(/depth (\d+)/)?.[1] || 0)
+               depth: lineDepth
              };
-             
+
              // Update main evaluation if it's the primary line (k=1)
              if (k === 1) {
                 evaluation = {
@@ -224,11 +234,25 @@ class StockfishService {
       // Timeout fallback. Only fires for a search that is still the current one
       // and has not already settled — otherwise a superseded search's timeout
       // would reject a promise the caller already resolved.
+      // A slow device can overrun movetime. Don't throw away the search: ask the
+      // engine to `stop` — it then sends `bestmove` and the handler above
+      // resolves with the deepest result so far. Only if it stays silent after
+      // that do we give up (with the partial result if there is one). Before,
+      // one slow position failed a whole multi-minute game review.
       setTimeout(() => {
-        if (settled) return;
-        settled = true;
-        this.callbacks.delete(messageId);
-        reject(new Error('Analysis timeout'));
+        if (settled || gen !== this._bestMoveGen) return;
+        this.sendCommand('stop');
+        setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          this.callbacks.delete(messageId);
+          if (evaluation) {
+            resolve({ bestMove: lines[1]?.move || null, ponderMove: null, evaluation,
+              lines: Object.values(lines).sort((a, b) => a.k - b.k), fen });
+          } else {
+            reject(new Error('Analysis timeout'));
+          }
+        }, 3000);
       }, moveTime + 5000);
     });
   }

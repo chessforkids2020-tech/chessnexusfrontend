@@ -23,6 +23,8 @@ import { renderFrame } from '../../lib/videoEffects';
 import CoachArenaLive from './CoachArenaLive';
 import WhiteboardOverlay, { wbToolbarSpace } from '../../components/coach/WhiteboardOverlay';
 import WhiteboardPanel from '../../components/coach/WhiteboardPanel';
+// Tile overlay sizes that follow each tile's width (container queries).
+import './LiveClassroomTiles.css';
 import { wbPanelWidth } from '../../components/coach/whiteboardPanelSizes';
 import VideoDebugPanel from '../../components/coach/VideoDebugPanel';
 import { createSampler, collectStudentReport } from '../../lib/videoDebug';
@@ -734,10 +736,11 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
       {micOff && !isScreen && (
         <div
           title={tr("Microphone off")}
+          className="lc-tile-mic"
           style={{
             position: 'absolute', top: 6, right: 6,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 24, height: 24, borderRadius: 'var(--radius-circle)',
+            borderRadius: 'var(--radius-circle)',
             background: 'rgba(0,0,0,0.62)', color: '#f87171',
             boxShadow: '0 1px 4px rgba(0,0,0,0.5)',
           }}
@@ -746,7 +749,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
         </div>
       )}
 
-      {label && <div style={{ position: 'absolute', bottom: 6, left: 8, fontSize: 12, color: '#fff', background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: 'var(--radius-sm)' }}>{label}</div>}
+      {label && <div className="lc-tile-label" style={{ position: 'absolute', bottom: 6, left: 8, color: '#fff', background: 'rgba(0,0,0,0.5)', borderRadius: 'var(--radius-sm)' }}>{label}</div>}
     </div>
   );
 }
@@ -2182,8 +2185,22 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       return next;
     });
   }, []);
+  // Detached-video layout. 'strip' (default) = one tall column like Zoom's
+  // video panel, easy to park beside the board; 'grid' = the old rectangle.
+  // A per-device preference, so it's remembered between classes.
+  const [videoLayout, setVideoLayoutState] = useState(() => {
+    try { return localStorage.getItem('lc_video_layout') === 'grid' ? 'grid' : 'strip'; } catch { return 'strip'; }
+  });
+  const stripSize = () => ({ w: 220, h: Math.max(260, (typeof window !== 'undefined' ? window.innerHeight : 800) - 140) });
   const [floatPos, setFloatPos] = useState({ x: null, y: 96 });    // floating box position
-  const [floatSize, setFloatSize] = useState({ w: 300, h: 250 });  // floating box size
+  const [floatSize, setFloatSize] = useState(() => (videoLayout === 'grid' ? { w: 300, h: 250 } : stripSize()));
+  const setVideoLayout = (layout) => {
+    setVideoLayoutState(layout);
+    try { localStorage.setItem('lc_video_layout', layout); } catch { /* ignore */ }
+    // Snap the float box to the new shape (the coach can still resize it).
+    setFloatSize(layout === 'grid' ? { w: 300, h: 250 } : stripSize());
+    setFloatPos(p => ({ ...p, y: 96 }));
+  };
   // Which inline device menu is open: 'mic' | 'cam' | null (the ˅ next to each icon).
   const [devMenu, setDevMenu] = useState(null);
   // Video-effects panel (light / touch-up / blur) open state.
@@ -3309,6 +3326,12 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
   // Exit puzzle mode back to free study.
   const exitPuzzle = () => { setPuzzle(null); setPuzzleMode(null); broadcastPuzzleStatus(''); setPuzzleStep(0); };
+  // Loading ANY other content (study position, game, FEN/PGN, reset) ends the
+  // puzzle. Previously only the Exit button did: after going back to Studies the
+  // old puzzle stayed active, so onDrop checked every coach move against its
+  // solution — each move was rejected and "Wrong" was sent to the whole class
+  // until a page reload cleared it.
+  const endPuzzleIfActive = () => { if (puzzle) exitPuzzle(); };
 
   const broadcastPuzzleStatus = (s) => {
     setPuzzleStatus(s);
@@ -3507,6 +3530,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
   // Load a PGN (a game) as a fresh study tree — coach can then free-style/branch.
   const loadPgnIntoTree = (pgn) => {
+    endPuzzleIfActive();
     const t = buildTreeFromPgn(pgn || '');
     applyTree(t, []); // start at the initial position; step forward through the game
     if (!showBoard) toggleBoard();
@@ -3533,6 +3557,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const setBoardFen = (fen) => {
     let start;
     try { start = new Chess(fen).fen(); } catch { return false; }
+    endPuzzleIfActive();
     // A one-node tree whose root IS the position; moves branch from here.
     const t = buildTreeFromPgn(`[FEN "${start}"]\n\n*`);
     applyTree(t, []);
@@ -3660,7 +3685,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     }
   };
 
-  const resetBoard = () => { applyTree(buildTreeFromPgn(''), []); };
+  const resetBoard = () => { endPuzzleIfActive(); applyTree(buildTreeFromPgn(''), []); };
 
   // ── Board editor (reused PositionEditor pieces) ──────────────────────────────
   const openEditor = () => {
@@ -4289,8 +4314,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         // Open as large as the screen allows. The browser still caps how tall a PiP
         // window can be dragged — the reliable way to truly fill the screen is the
         // Fullscreen button below (requestFullscreen), NOT dragging/maximizing.
-        const w = Math.round((window.screen?.availWidth || 1280) * 0.95);
-        const h = Math.round((window.screen?.availHeight || 800) * 0.95);
+        // Strip (default): a narrow, tall window — like Zoom's video panel — to park
+        // beside the browser or on a 2nd monitor. Grid: the old large window.
+        const strip = videoLayout === 'strip';
+        const w = strip ? 280 : Math.round((window.screen?.availWidth || 1280) * 0.95);
+        const h = Math.round((window.screen?.availHeight || 800) * (strip ? 0.9 : 0.95));
         const pip = await dpip.requestWindow({ width: w, height: h });
         if (cancelled) { try { pip.close(); } catch { /* */ } return; }
         popWinRef.current = pip;
@@ -4302,16 +4330,17 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         // SECOND MONITOR (its real purpose). For big edge-to-edge video on THIS screen,
         // the host uses the "⛶ Fullscreen" button on the in-page (docked) video grid,
         // which uses the main tab's Fullscreen API and actually works.
-        // Centered flexbox (wrap) so the last partial row centers — continuous, no gap.
-        const pbg = bestGrid(popTiles.length, (pip.innerWidth || 320) - 20, (pip.innerHeight || 240) - 20, 4 / 3, 8);
-        const popTileW = Math.max(80, Math.floor(pbg.tileW));
+        // A self-adjusting CSS grid: as many ≥220px columns as fit. A narrow window
+        // is one column (a vertical strip), a wide one becomes a grid — and it
+        // re-flows live when the coach resizes the window (the old layout was
+        // computed once, so resizing just left a gap or clipped tiles).
         const grid = doc.createElement('div');
-        grid.style.cssText = 'flex:1 1 auto;display:flex;flex-wrap:wrap;gap:8px;padding:10px;align-content:center;justify-content:center;box-sizing:border-box;overflow:auto;min-height:0';
+        grid.style.cssText = `flex:1 1 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(${strip ? 200 : 260}px,1fr));grid-auto-rows:max-content;gap:8px;padding:10px;align-content:start;box-sizing:border-box;overflow-y:auto;overflow-x:hidden;min-height:0`;
         doc.body.appendChild(grid);
 
         popTiles.forEach(p => {
           const cell = doc.createElement('div');
-          cell.style.cssText = `position:relative;flex:0 0 auto;width:${popTileW}px;aspect-ratio:4/3;background:linear-gradient(135deg,#141a24,#0f141c);border-radius: var(--radius-md);overflow:hidden;display:grid;place-items:center`;
+          cell.style.cssText = 'position:relative;width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,#141a24,#0f141c);border-radius:8px;overflow:hidden;display:grid;place-items:center';
           if (p.videoTrack) {
             const v = doc.createElement('video');
             v.autoplay = true; v.playsInline = true; v.muted = true;
@@ -4346,7 +4375,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     // Rebuild only when the pop-out opens/closes or the SET of people (or their video
     // tracks) changes — not on every render, which would flicker the window.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHost, videoMode, lk.connected, lk.participants.map(p => `${p.identity}:${p.videoTrack?.sid || 'none'}`).join('|')]);
+  }, [isHost, videoMode, videoLayout, lk.connected, lk.participants.map(p => `${p.identity}:${p.videoTrack?.sid || 'none'}`).join('|')]);
 
   // When the meeting ends, a STUDENT is auto-sent to their own portal after a short
   // beat (they can't stay in the coach's classroom, and must not land on the coach's
@@ -4530,6 +4559,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     // what made the coach's tile blink while every student tile was steady.
     <div
       key={p.isLocal ? `${p.identity}-self` : `${p.identity}-${p.videoTrackRaw?.sid || p.videoTrack?.sid || 'nocam'}`}
+      className="lc-tile"
       style={{ minWidth: 0, width, flex: '0 0 auto', position: 'relative' }}
     >
       {raisedHandIds.map(String).includes(String(p.identity)) && (
@@ -4574,11 +4604,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           students get an ASK action instead — we never force a child's mic or camera
           back on. */}
       {isHost && !p.isLocal && (
-        <div style={s.tileCtl}>
+        <div className="lc-tilectl">
           {coachMutedIds.map(String).includes(String(p.identity))
-            ? <button style={{ ...s.tileBtn, ...s.tileBtnAsk }} title={tr("Ask this student to unmute")}
+            ? <button className="lc-tilebtn" style={{ ...s.tileBtn, ...s.tileBtnAsk }} title={tr("Ask this student to unmute")}
                 onClick={(e) => { e.stopPropagation(); requestUnmute(p.identity); }}>🎙️</button>
-            : <button style={s.tileBtn} title={tr("Mute this student")}
+            : <button className="lc-tilebtn" style={s.tileBtn} title={tr("Mute this student")}
                 onClick={(e) => { e.stopPropagation(); muteStudent(p.identity); }}>
                 <MicIcon off={false} size={15} />
               </button>}
@@ -4589,27 +4619,27 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               was already on — the coach then nags a student who did nothing wrong. */}
           {(p.videoTrack || p.camPublished)
             ? <>
-                <button style={s.tileBtn} title={tr("Turn this student's camera off")}
+                <button className="lc-tilebtn" style={s.tileBtn} title={tr("Turn this student's camera off")}
                   onClick={(e) => { e.stopPropagation(); cameraOffStudent(p.identity); }}>
                   <CamIcon off={false} size={15} />
                 </button>
                 {/* Repairs a black tile remotely. Shown only when their camera is
                     meant to be ON — that is exactly when a black tile is wrong. */}
                 <button
-                  style={{ ...s.tileBtn, ...(camFixedIds.includes(String(p.identity)) ? s.tileBtnAsked : {}) }}
+                  className="lc-tilebtn" style={{ ...s.tileBtn, ...(camFixedIds.includes(String(p.identity)) ? s.tileBtnAsked : {}) }}
                   title={tr("Fix this student's video (no reload needed)")}
                   onClick={(e) => { e.stopPropagation(); restartCamera(p.identity); }}>
                   🔄
                 </button>
               </>
-            : <button style={{ ...s.tileBtn, ...(camAskedIds.includes(String(p.identity)) ? s.tileBtnAsked : s.tileBtnAsk) }}
+            : <button className="lc-tilebtn" style={{ ...s.tileBtn, ...(camAskedIds.includes(String(p.identity)) ? s.tileBtnAsked : s.tileBtnAsk) }}
                 title={tr("Ask this student to turn their camera on")}
                 onClick={(e) => { e.stopPropagation(); requestCamera(p.identity); }}>
                 <CamIcon off size={15} />
               </button>}
 
           <button
-            style={{ ...s.tileBtn, ...(String(controllerId) === String(p.identity) ? s.tileBtnOn : {}) }}
+            className="lc-tilebtn" style={{ ...s.tileBtn, ...(String(controllerId) === String(p.identity) ? s.tileBtnOn : {}) }}
             title={String(controllerId) === String(p.identity)
               ? 'Take back board control'
               : 'Give this student board control'}
@@ -4828,6 +4858,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 onClick={() => setVideoMode(m)}
               >{icon}</button>
             ))}
+            {/* Strip ▯ / grid ▦ — only matters once the videos are detached. */}
+            {(videoMode === 'float' || videoMode === 'pop') && (
+              <button
+                style={{ ...s.vmodeBtn, marginLeft: 4 }}
+                title={videoLayout === 'strip' ? tr("Show videos as a grid") : tr("Show videos as a vertical strip")}
+                onClick={() => setVideoLayout(videoLayout === 'strip' ? 'grid' : 'strip')}
+              >{videoLayout === 'strip' ? '▦' : '▯'}</button>
+            )}
           </div>
         )}
         <button style={s.iconBtn} title={isFs ? 'Exit fullscreen' : 'Fullscreen (video if shown, else the class)'} onClick={toggleVideoFullscreen}>
@@ -5891,7 +5929,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     </span>
                   </div>
                 )}
-                {isHost && puzzle && contentTab === 'puzzles' && (
+                {/* Shown on EVERY tab while a puzzle is active — it was Puzzles-tab
+                    only, so after switching tabs the coach couldn't see why moves
+                    were rejected, nor reach Exit. */}
+                {isHost && puzzle && (
                   <div style={s.puzBar}>
                     <span style={{ fontSize: 12.5, fontWeight: 700,
                       color: puzzleStatus === 'wrong' ? '#fca5a5' : puzzleStatus === 'solved' ? '#6ee7b7' : puzzleStatus === 'correct' ? '#67e8f9' : '#9ca3af' }}>
@@ -6183,14 +6224,22 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           >
             <span style={s.vFloatTitle}>{tr("📹 Class video")} <span style={{ color: '#6b7280', fontWeight: 600 }}>· {allTiles.length}</span></span>
             <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+              <button style={s.vfBtn}
+                title={videoLayout === 'strip' ? tr("Show videos as a grid") : tr("Show videos as a vertical strip")}
+                onClick={() => setVideoLayout(videoLayout === 'strip' ? 'grid' : 'strip')}>
+                {videoLayout === 'strip' ? '▦' : '▯'}
+              </button>
               <button style={s.vfBtn} title={tr("Pin videos back into the panel")} onClick={() => setVideoMode('dock')}>📌</button>
               <button style={s.vfBtn} title={tr("Pop out to its own window")} onClick={() => setVideoMode('pop')}>⧉</button>
               <button style={s.vfBtn} title={tr("Hide videos")} onClick={() => setVideoMode('hidden')}>✕</button>
             </span>
           </div>
-          <div style={s.vFloatBody}>
+          <div style={videoLayout === 'strip' ? s.vFloatStrip : s.vFloatBody}>
             {(() => {
-              // Same area-maximizing + centered-last-row layout as the main stage, sized
+              // Strip: one column, every tile the full width, scrolls when the class
+              // is bigger than the box — like Zoom's vertical video panel.
+              if (videoLayout === 'strip') return tiles.map(p => renderTile(p, { small: true, width: '100%' }));
+              // Grid: same area-maximizing + centered-last-row layout as the main stage, sized
               // to the float box so its tiles also flow continuously (no trailing gap).
               const innerW = floatSize.w - 16, innerH = floatSize.h - 46; // minus padding + header
               const bg = bestGrid(tiles.length, innerW, innerH, 4 / 3, 6);
@@ -6403,10 +6452,11 @@ const s = {
     display: 'flex', gap: 4, padding: 3, borderRadius: 'var(--radius-md)',
     background: 'rgba(10,12,18,0.72)', backdropFilter: 'blur(6px)',
   },
+  // Size (width/height/font) lives in LiveClassroomTiles.css (.lc-tilebtn) so it
+  // can follow the tile's width — inline sizes would override it.
   tileBtn: {
-    display: 'grid', placeItems: 'center', width: 26, height: 26, padding: 0,
     borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.14)',
-    background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13,
+    background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', cursor: 'pointer',
   },
   tileBtnOn: { background: 'rgba(6,182,212,0.22)', borderColor: 'rgba(6,182,212,0.55)', color: '#67e8f9' },
   tileBtnAsk: { background: 'rgba(245,158,11,0.18)', borderColor: 'rgba(245,158,11,0.5)', color: '#fcd34d' },
@@ -6560,6 +6610,7 @@ const s = {
   vFloatHead: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', cursor: 'grab', background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.08)' },
   vFloatTitle: { fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: 6 },
   vFloatBody: { flex: 1, minHeight: 0, minWidth: 0, width: '100%', overflow: 'auto', padding: 8, display: 'flex', flexWrap: 'wrap', gap: 6, alignContent: 'center', justifyContent: 'center' },
+  vFloatStrip: { flex: 1, minHeight: 0, minWidth: 0, width: '100%', overflowY: 'auto', overflowX: 'hidden', padding: 8, display: 'flex', flexDirection: 'column', gap: 6, boxSizing: 'border-box' },
   vFloatResize: { position: 'absolute', right: 3, bottom: 3, width: 16, height: 16, cursor: 'nwse-resize', color: '#6b7280', display: 'grid', placeItems: 'center', fontSize: 11, touchAction: 'none' },
   vfBtn: { width: 26, height: 22, borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#cbd5e1', cursor: 'pointer', fontSize: 11, display: 'grid', placeItems: 'center' },
   // "Show video" pill shown when videos are hidden.

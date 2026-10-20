@@ -102,3 +102,20 @@ export function formatSolutionTree(tree, keep = () => true) {
   walk(rootId, true);
   return out.join(' ');
 }
+
+// Admin study puzzles keep a LIST of solutions ({ pgn, description }). Parse
+// them all into ONE tree — the first is the mainline, the rest become
+// sidelines, the same way the student view shows them. Returns null if any
+// solution is written prose rather than moves, so a board editor never
+// overwrites hand-written notes.
+export function parseSolutionsForBoard(fen, solutions) {
+  const kids = [];
+  for (const s of solutions || []) {
+    const text = (s?.pgn || '').trim();
+    if (!text) continue;
+    const parsed = parseSolutionTree(text, fen);
+    if (!parsed) return null;
+    kids.push(...parsed.children);
+  }
+  return { children: kids };
+}
