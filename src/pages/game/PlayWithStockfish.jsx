@@ -184,7 +184,18 @@ export default function PlayWithStockfish() {
       // Phone/tablet (single column, see the 900px media query): the side card
       // sits BELOW the board, so the board gets the full width. Subtracting
       // the card here shrank a phone's board to a third of the screen.
-      const narrow = window.innerWidth <= 900;
+      const narrow = window.innerWidth <= 1024;
+      // Phone/tablet: edge to edge like the Friend room. Chessboard's own touch
+      // layout (<=1024px) draws coordinates INSIDE the board with no frame, so
+      // there's no gutter to subtract, and it caps the height itself. Measuring
+      // a padded grid minus a gutter here left the board narrower than the
+      // screen while the board component and page layout disagreed on the
+      // breakpoint (900 vs 1024).
+      if (narrow) {
+        const full = Math.floor(window.innerWidth);
+        setBoardSize(prev => (Math.abs(prev - full) > 1 ? full : prev));
+        return;
+      }
       const avail = Math.max(240, narrow ? gridW : gridW - SIDE_CARD_W - COL_GAP);
       const g = gutterFor(avail);
       const byWidth = avail - g.left - g.right;
@@ -716,7 +727,7 @@ export default function PlayWithStockfish() {
             {tc.base != null && <span className="pvs-player-clock">{fmtClock(topMs)}</span>}
           </div>
           {/* The board, with the game-over popup laid over it. */}
-          <div className="pvs-board-wrap" style={{ width: boardSize }}>
+          <div className="pvs-board-wrap board-fullbleed" style={{ width: boardSize }}>
           <Chessboard
             allowAutoQueen
             position={displayFen}

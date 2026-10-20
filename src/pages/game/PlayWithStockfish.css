@@ -288,12 +288,17 @@ button.pvs-move-san.active { background: var(--color-accent-a30); }
 .pvs-thinking-dot { color: var(--color-warning); font-size: 12px; margin-left: auto; animation: pvs-pulse 1s ease-in-out infinite; }
 @keyframes pvs-pulse { 50% { opacity: .3; } }
 
-@media (max-width: 900px) {
+/* 1024px = the board's own touch layout (coordinates inside, no frame) and the
+   Friend room's phone line. It was 900, so a tablet at 901-1024px got the
+   two-column desktop grid around a board that had already switched to its
+   touch sizing. */
+@media (max-width: 1024px) {
   /* Tighter side padding so the board can use nearly the whole width. */
   .pvs-page--game { overflow: visible; padding: 0 6px 12px; }
   /* Single column: [opponent] board [you], then the card. */
   .pvs-game { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 10px; }
-  .pvs-board-col { display: flex; flex-direction: column; gap: 6px; line-height: normal; }
+  /* Full width so the board's edge-to-edge breakout (.board-fullbleed) centres. */
+  .pvs-board-col { display: flex; flex-direction: column; gap: 6px; line-height: normal; width: 100%; }
   .pvs-player--m { display: flex; }
   /* The floating menu button sits at the top-left of the screen: start the
      opponent strip to its right instead of underneath it. */

@@ -182,9 +182,9 @@ const UserStudyPuzzleView = () => {
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      if (w <= 480)       setBoardWidth(Math.min(340, w - 40));
-      else if (w <= 768)  setBoardWidth(Math.min(420, w - 60));
-      else if (w <= 1024) setBoardWidth(Math.min(460, Math.floor(w * 0.36)));
+      // Phones/tablets (<=1024px): edge to edge, the way the board's own touch
+      // layout and the Friend room do it. Chessboard caps the height itself.
+      if (w <= 1024)      setBoardWidth(Math.floor(w));
       else {
         // FULL-SCREEN BOARD (chess.com style).
         //
@@ -697,7 +697,7 @@ const UserStudyPuzzleView = () => {
     // FULL-SCREEN: the page is exactly one viewport tall and never scrolls.
     // Each column scrolls inside itself instead, so the board can own the
     // full height without the controls below it pushing the page taller.
-    page: { fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", background: 'var(--color-bg)', height: isMobile ? 'auto' : '100dvh', minHeight: isMobile ? '100vh' : 0, padding: isMobile ? '8px 20px 20px 20px' : `${PAGE_PAD_TOP}px ${PAGE_PAD_X}px ${PAGE_PAD_BOTTOM}px ${PAGE_PAD_X}px`, position: 'relative', overflow: 'hidden', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' },
+    page: { fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", background: 'var(--color-bg)', height: isMobile ? 'auto' : '100dvh', minHeight: isMobile ? '100vh' : 0, padding: isMobile ? '8px 0 20px 0' : `${PAGE_PAD_TOP}px ${PAGE_PAD_X}px ${PAGE_PAD_BOTTOM}px ${PAGE_PAD_X}px`, position: 'relative', overflow: 'hidden', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' },
     bg: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: `radial-gradient(circle at 30% 20%, ${currentColor.bgColor} 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(99,102,241,0.08) 0%, transparent 50%)`, pointerEvents: 'none', zIndex: 0 },
     grid: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: `linear-gradient(${currentColor.accentColor} 1px, transparent 1px), linear-gradient(90deg, ${currentColor.accentColor} 1px, transparent 1px)`, backgroundSize: '50px 50px', pointerEvents: 'none', zIndex: 0, opacity: 0.5 },
     // No 1600px cap on desktop: on a wide monitor that cap threw away centre
@@ -711,11 +711,15 @@ const UserStudyPuzzleView = () => {
     // (Back to Chapters) moves into the left column, so no horizontal band sits
     // above the board stealing height from it. On mobile it still holds the
     // list toggle, so it keeps its row there.
-    header: { textAlign: 'center', marginBottom: isMobile ? 6 : 0, position: 'relative', minHeight: isMobile ? 46 : 0, display: isMobile ? 'block' : 'none' },
-    backButton: { position: isMobile ? 'absolute' : 'static', left: 0, top: isMobile ? '50%' : 'auto', transform: isMobile ? 'translateY(-50%)' : 'none', width: isMobile ? 'auto' : '100%', justifyContent: isMobile ? 'flex-start' : 'center', marginBottom: isMobile ? 0 : 12, flexShrink: 0, padding: isMobile ? '12px 24px' : '9px 14px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, zIndex: 2 },
-    toggleButton: { position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: isMobile ? 'flex' : 'none', alignItems: 'center', gap: 8, zIndex: 2 },
-    mainContent: { display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 0 : COL_GAP, minHeight: isMobile ? 600 : 0, flex: 1, alignItems: isMobile ? 'stretch' : 'stretch' },
-    leftPanel: { flex: isMobile ? 'none' : `0 0 ${LEFT_W}px`, display: isMobile && !showPuzzleList ? 'none' : 'flex', flexDirection: 'column', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: 16, overflowY: 'auto', maxHeight: isMobile ? 400 : 'none', height: isMobile ? 'auto' : '100%', minHeight: 0, boxSizing: 'border-box', position: isMobile ? 'absolute' : 'static', top: isMobile ? 100 : 'auto', left: isMobile ? 20 : 'auto', right: isMobile ? 20 : 'auto', zIndex: isMobile ? 1000 : 'auto', boxShadow: isMobile ? '0 20px 60px var(--color-black-a50)' : 'none' },
+    // Phone: one compact row [Back to Chapters] [Positions n/N]. The old
+    // absolutely-positioned 12/24px-padded buttons overlapped each other on a
+    // 390px screen and sat under the floating menu button. Left padding clears
+    // that button, like the page headers do.
+    header: { marginBottom: isMobile ? 8 : 0, display: isMobile ? 'flex' : 'none', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: isMobile ? '0 10px 0 var(--menu-btn-clearance, 52px)' : 0 },
+    backButton: { position: 'static', width: isMobile ? 'auto' : '100%', justifyContent: isMobile ? 'flex-start' : 'center', marginBottom: isMobile ? 0 : 12, flexShrink: 0, whiteSpace: 'nowrap', padding: isMobile ? '9px 12px' : '9px 14px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, zIndex: 2 },
+    toggleButton: { position: 'static', flexShrink: 0, whiteSpace: 'nowrap', padding: '9px 12px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: isMobile ? 'flex' : 'none', alignItems: 'center', gap: 8, zIndex: 2 },
+    mainContent: { display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 0 : COL_GAP, padding: isMobile ? '0 10px' : 0, boxSizing: 'border-box', minHeight: isMobile ? 600 : 0, flex: 1, alignItems: isMobile ? 'stretch' : 'stretch' },
+    leftPanel: { flex: isMobile ? 'none' : `0 0 ${LEFT_W}px`, display: isMobile && !showPuzzleList ? 'none' : 'flex', flexDirection: 'column', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: 16, overflowY: 'auto', maxHeight: isMobile ? '70dvh' : 'none', height: isMobile ? 'auto' : '100%', minHeight: 0, boxSizing: 'border-box', position: isMobile ? 'fixed' : 'static', top: isMobile ? 64 : 'auto', left: isMobile ? 10 : 'auto', right: isMobile ? 10 : 'auto', zIndex: isMobile ? 1000 : 'auto', boxShadow: isMobile ? '0 20px 60px var(--color-black-a50)' : 'none' },
     tableHeaderRow: { borderBottom: `2px solid ${currentColor.color}40` },
     tableHeader: { padding: '5px 8px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: currentColor.color, letterSpacing: '0.5px', textTransform: 'uppercase' },
     tableRow: { borderBottom: '1px solid var(--color-white-a04)', cursor: 'pointer', transition: 'all 0.3s' },
@@ -725,7 +729,9 @@ const UserStudyPuzzleView = () => {
     // justifyContent flex-start (not centre): the board already fills the
     // height, and centring made a tall centre column drift the board down.
     centerPanel: { flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: 0, order: isMobile ? -1 : 0, minWidth: 0, minHeight: 0, overflowY: isMobile ? 'visible' : 'auto' },
-    chessboardContainer: { marginBottom: isMobile ? 24 : 10, flexShrink: 0, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: '0px 10px 10px 10px' },
+    chessboardContainer: isMobile
+      ? { marginBottom: 10, flexShrink: 0, padding: 0 } // bare: the board runs edge to edge (.board-fullbleed)
+      : { marginBottom: 10, flexShrink: 0, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: '0px 10px 10px 10px' },
     controlButtons: { display: 'flex', gap: 8, marginTop: 20, flexWrap: 'wrap', justifyContent: 'center' },
     btn: { padding: '12px 24px', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', cursor: 'pointer', fontSize: 15, fontWeight: 600, transition: 'all 0.3s', background: 'var(--color-surface)', backdropFilter: 'blur(10px)', color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 },
     navBtn: { borderColor: currentColor.color + '40', color: currentColor.color },
@@ -902,7 +908,7 @@ const UserStudyPuzzleView = () => {
               initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.4 }}
               whileHover={{ x: 4, background: currentColor.accentColor, borderColor: currentColor.color + '40' }}
             >
-              {showPuzzleList ? tr('Hide List') : tr('Show List')}
+              {showPuzzleList ? tr('Hide List') : `☰ ${tr('Positions')} ${currentPuzzleIndex + 1}/${puzzles.length}`}
             </motion.button>
           )}
         </div>
@@ -988,6 +994,7 @@ const UserStudyPuzzleView = () => {
           <div style={st.centerPanel}>
             <motion.div
               ref={chessboardRef}
+              className={isMobile ? 'board-fullbleed' : undefined}
               style={{ ...st.chessboardContainer, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', maxWidth: '100%' }}
               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}
             >
@@ -1002,7 +1009,7 @@ const UserStudyPuzzleView = () => {
             </motion.div>
 
             {/* Current position FEN — copy it straight into an analysis board. */}
-            <FenCopyBar fen={currentNode.fen} style={{ maxWidth: boardWidth }} />
+            <FenCopyBar fen={currentNode.fen} style={{ maxWidth: isMobile ? '100%' : boardWidth }} />
 
             <div style={st.controlButtons}>
               {(() => {
