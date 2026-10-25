@@ -34,7 +34,7 @@ const MOVE_TIME = 15000;
 // simply not read, so every game is re-reviewed once at the new quality.
 const CACHE_PREFIX = 'sga:v2:';
 
-const TYPE_LABEL = { arena: tr('Arena'), friend: tr('vs Friend'), stockfish: tr('vs Stockfish') };
+const TYPE_LABEL = { arena: tr('Arena'), friend: tr('vs Friend'), stockfish: tr('vs Stockfish'), board: tr('On my board') };
 
 const REASON_LABEL = {
   checkmate: 'Checkmate', resignation: 'Resignation', resign: 'Resignation',

@@ -2,7 +2,27 @@
 // Audio-only LiveKit call (friend-game voice). Mic in, remote voices out.
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const AUDIO_CAPTURE = { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 };
+// Same capture settings as the live classroom mic (48 kHz mono matches RNNoise).
+const AUDIO_CAPTURE = {
+  echoCancellation: true, noiseSuppression: true, autoGainControl: true,
+  channelCount: 1, voiceIsolation: true, sampleRate: 48000, sampleSize: 16,
+};
+
+// Attach/remove the free RNNoise AI denoiser (shared with the live classroom).
+// Best-effort: on any failure the browser's built-in noiseSuppression still applies.
+async function applyNoiseSuppression(r, on) {
+  try {
+    const pub = r?.localParticipant?.getTrackPublication?.('microphone');
+    const track = pub?.audioTrack || pub?.track;
+    if (!track || typeof track.setProcessor !== 'function') return;
+    if (on) {
+      const { createNoiseSuppressionProcessor } = await import('../lib/noiseSuppression');
+      await track.setProcessor(createNoiseSuppressionProcessor());
+    } else if (typeof track.stopProcessor === 'function') {
+      await track.stopProcessor();
+    }
+  } catch { /* unsupported/blocked — built-in noiseSuppression still applies */ }
+}
 
 export default function useVoiceCall() {
   const roomRef = useRef(null);
@@ -16,6 +36,11 @@ export default function useVoiceCall() {
   const [peerSpeaking, setPeerSpeaking] = useState(false);
   const [meSpeaking, setMeSpeaking] = useState(false);
   const [audioBlocked, setAudioBlocked] = useState(false);
+  // Same persisted preference as the live classroom; defaults ON.
+  const [noiseOn, setNoiseOn] = useState(() => {
+    try { return localStorage.getItem('cn_noise_suppression') !== 'off'; } catch { return true; }
+  });
+  const noiseRef = useRef(noiseOn);
 
   const removeAudio = () => {
     audioElsRef.current.forEach(el => { try { el.remove(); } catch { /* */ } });
@@ -84,6 +109,7 @@ export default function useVoiceCall() {
     try {
       await r.localParticipant.setMicrophoneEnabled(true);
       setMicOn(true);
+      if (noiseRef.current) await applyNoiseSuppression(r, true);
     } catch (e) {
       // Stay in the call listen-only rather than failing the whole thing.
       setMicOn(false);
@@ -118,6 +144,14 @@ export default function useVoiceCall() {
     }
   }, []);
 
+  const toggleNoise = useCallback(async () => {
+    const next = !noiseRef.current;
+    noiseRef.current = next;
+    setNoiseOn(next);
+    try { localStorage.setItem('cn_noise_suppression', next ? 'on' : 'off'); } catch { /* */ }
+    await applyNoiseSuppression(roomRef.current, next);
+  }, []);
+
   const enableAudio = useCallback(async () => {
     const r = roomRef.current;
     if (!r) return;
@@ -131,5 +165,5 @@ export default function useVoiceCall() {
     removeAudio();
   }, []);
 
-  return { state, error, micOn, peerIn, peerSpeaking, meSpeaking, audioBlocked, join, leave, toggleMic, enableAudio };
+  return { state, error, micOn, peerIn, peerSpeaking, meSpeaking, audioBlocked, noiseOn, join, leave, toggleMic, toggleNoise, enableAudio };
 }

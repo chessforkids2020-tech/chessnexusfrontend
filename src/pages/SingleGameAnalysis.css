@@ -50,6 +50,10 @@
   background: color-mix(in srgb, var(--color-warning) 18%, transparent);
   color: var(--color-warning);
 }
+.sga-type-board {
+  background: color-mix(in srgb, var(--color-accent-2, var(--color-accent)) 18%, transparent);
+  color: var(--color-accent-2, var(--color-accent));
+}
 
 .sga-players { display: flex; flex-direction: column; gap: 6px; }
 .sga-side {

@@ -52,6 +52,7 @@ import TermsPage from "./pages/marketing/TermsPage";
 import RefundPolicyPage from "./pages/marketing/RefundPolicyPage";
 import ChessPuzzlesPage from "./pages/marketing/ChessPuzzlesPage";
 import ChessTacticsRacePage from "./pages/marketing/ChessTacticsRacePage";
+import ChessboardPage from "./pages/marketing/ChessboardPage";
 import PlayChessOnlinePage from "./pages/marketing/PlayChessOnlinePage";
 import PlayWithFriendsPage from "./pages/marketing/PlayWithFriendsPage";
 import MastersGamesPage from "./pages/marketing/MastersGamesPage";
@@ -93,6 +94,7 @@ import CoachRequests from "./pages/CoachRequests";
 import AdminReports from "./pages/AdminReports";
 import AdminTestimonials from "./pages/AdminTestimonials";
 import AdminFeedback from "./pages/AdminFeedback";
+import AdminBoardGuess from "./pages/AdminBoardGuess";
 import AdminHelpCenter from "./pages/AdminHelpCenter";
 
 import ArenaTournamentDashboard from "./pages/ArenaTournamentDashboard";
@@ -641,6 +643,11 @@ export default function App() {
             <ChessTacticsRacePage />
           </MarketingLayout>
         } />
+        <Route path="/chessboard" element={
+          <MarketingLayout>
+            <ChessboardPage />
+          </MarketingLayout>
+        } />
         <Route path="/play-chess-online" element={
           <MarketingLayout>
             <PlayChessOnlinePage />
@@ -901,6 +908,16 @@ export default function App() {
             <div style={styles.content}>
               <ProtectedRoute requiredRole="admin">
                 <AdminFeedback />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
+        <Route path="/admin/board-guess" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminBoardGuess />
               </ProtectedRoute>
             </div>
             <Footer />

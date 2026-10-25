@@ -246,16 +246,6 @@ export default function StudyPuzzleSidebar() {
         </div>
         <div 
           style={styles.sidebarIcon} 
-          onClick={() => handleNavigate('/race')}
-          title={tr("Race Hub")}
-          onMouseEnter={(e) => handleMouseEnter(e, "Race Hub")}
-          onMouseLeave={handleMouseLeave}
-        >
-          🏁
-          <div className="tooltip" style={styles.tooltip}></div>
-        </div>
-        <div 
-          style={styles.sidebarIcon} 
           onClick={() => handleNavigate('/study')}
           title={tr("Study")}
           onMouseEnter={(e) => handleMouseEnter(e, "Study")}
@@ -272,6 +262,16 @@ export default function StudyPuzzleSidebar() {
           onMouseLeave={handleMouseLeave}
         >
           🎮
+          <div className="tooltip" style={styles.tooltip}></div>
+        </div>
+        <div 
+          style={styles.sidebarIcon} 
+          onClick={() => handleNavigate('/chessboard')}
+          title={tr("Chessboard")}
+          onMouseEnter={(e) => handleMouseEnter(e, "Chessboard")}
+          onMouseLeave={handleMouseLeave}
+        >
+          ♞
           <div className="tooltip" style={styles.tooltip}></div>
         </div>
         <div 

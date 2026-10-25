@@ -17,6 +17,7 @@ const GAME_ROWS = [
   { id: 'classical', icon: '🐢', label: (k) => `${plural(k, 'classical game', 'classical games')}` },
   { id: 'friend', icon: '🤝', label: (k) => tr("{v0} vs friends", { v0: plural(k, 'game', 'games') }) },
   { id: 'stockfish', icon: '🤖', label: (k) => tr("{v0} vs Stockfish", { v0: plural(k, 'game', 'games') }) },
+  { id: 'board', icon: '♟', label: (k) => tr("{v0} on my board", { v0: plural(k, 'game', 'games') }) },
 ];
 const RATINGS = [
   { id: 'puzzle', icon: '🧩', label: tr('Puzzle') },

@@ -190,6 +190,13 @@ export default function FriendVoiceBar({ socket, roomCode, isGuest, friendName }
               <button style={btn()} onClick={v.toggleMic} title={v.micOn ? 'Mute' : 'Unmute'}>
                 {v.micOn ? tr('🎤 Mute') : tr('🔇 Unmute')}
               </button>
+              <button
+                style={btn()}
+                onClick={v.toggleNoise}
+                title={tr("Filters out background noise like fans, TV and keyboards")}
+              >
+                {v.noiseOn ? tr('🔉 Noise filter: On') : tr('🔉 Noise filter: Off')}
+              </button>
               <button style={btn('stop')} onClick={v.leave}>{tr("Leave")}</button>
             </>
           )}

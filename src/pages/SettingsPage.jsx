@@ -11,6 +11,7 @@ import ProfilePanel from '../components/ProfilePanel';
 import MemberPanel from '../components/MemberPanel';
 import ChessboardDevicePanel from '../components/ChessboardDevicePanel';
 import { useT, useLanguage, LANGUAGES } from '../i18n/LanguageContext';
+import api from '../api';
 import './SettingsPage.css';
 
 // Mini 4-square swatch to preview each board theme
@@ -210,6 +211,99 @@ function GamesPanel() {
   );
 }
 
+// Languages people can ask for with one tap. A REQUEST, not a vote: the admin
+// reads them on Admin → User Feedback, with a tally of what was asked for.
+const REQUESTABLE_LANGUAGES = [
+  'Hindi', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali', 'Marathi',
+  'Gujarati', 'Arabic', 'French', 'German', 'Portuguese', 'Russian',
+];
+
+function LanguageRequest() {
+  const t = useT();
+  const [other, setOther] = useState('');
+  const [sent, setSent] = useState([]);     // languages requested in this visit
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  async function request(language) {
+    const name = String(language || '').trim();
+    if (!name || busy || sent.includes(name.toLowerCase())) return;
+    setBusy(true);
+    setError('');
+    try {
+      await api.post('/api/feedback/language-request', { language: name });
+      setSent(list => [...list, name.toLowerCase()]);
+      setOther('');
+    } catch (err) {
+      setError(err.response?.data?.message || t('Could not send your request. Please try again.'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const done = (name) => sent.includes(name.toLowerCase());
+
+  return (
+    <div style={{ marginTop: 22, paddingTop: 18, borderTop: '1px solid var(--color-border)' }} data-testid="language-request">
+      <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', margin: '0 0 4px' }}>{t('Need another language?')}</h3>
+      <p style={{ color: 'var(--color-text-muted)', fontSize: 13, margin: '0 0 12px' }}>
+        {t('Tell us which language you would like Chess Nexus in. We read every request and use them to decide what to add next.')}
+      </p>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+        {REQUESTABLE_LANGUAGES.map(name => (
+          <button
+            key={name}
+            onClick={() => request(name)}
+            disabled={busy || done(name)}
+            style={{
+              padding: '7px 14px', borderRadius: 'var(--radius-pill)', fontSize: 13, fontWeight: 600,
+              cursor: done(name) ? 'default' : 'pointer',
+              border: done(name) ? '1px solid var(--color-success)' : '1px solid var(--color-border)',
+              background: done(name) ? 'var(--color-success-a20)' : 'var(--color-white-a04)',
+              color: done(name) ? 'var(--color-success)' : 'var(--color-text)',
+            }}
+          >
+            {done(name) ? `✓ ${name}` : name}
+          </button>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <input
+          value={other}
+          maxLength={40}
+          onChange={(e) => setOther(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') request(other); }}
+          placeholder={t('Another language…')}
+          aria-label={t('Another language…')}
+          style={{
+            flex: '1 1 200px', minWidth: 0, padding: '9px 12px', fontSize: 14,
+            borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)',
+            background: 'var(--color-white-a04)', color: 'var(--color-text)',
+          }}
+        />
+        <button
+          onClick={() => request(other)}
+          disabled={busy || other.trim().length < 2}
+          style={{
+            padding: '9px 18px', borderRadius: 'var(--radius-md)', border: 'none', fontWeight: 700, fontSize: 14,
+            cursor: busy || other.trim().length < 2 ? 'default' : 'pointer',
+            opacity: busy || other.trim().length < 2 ? 0.5 : 1,
+            background: 'var(--color-accent)', color: 'var(--color-bg)',
+          }}
+        >
+          {t('Request')}
+        </button>
+      </div>
+      {sent.length > 0 && !error && (
+        <p style={{ color: 'var(--color-success)', fontSize: 13, margin: '10px 0 0' }}>
+          {t('Thanks! Your request has been sent to the Chess Nexus team.')}
+        </p>
+      )}
+      {error && <p style={{ color: 'var(--color-danger, #ef4444)', fontSize: 13, margin: '10px 0 0' }}>{error}</p>}
+    </div>
+  );
+}
+
 // Settings → Language. English / Spanish; saved per account (see i18n/LanguageContext).
 function LanguagePanel() {
   const t = useT();
@@ -232,6 +326,7 @@ function LanguagePanel() {
           />
         ))}
       </div>
+      <LanguageRequest />
     </section>
   );
 }

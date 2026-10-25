@@ -15,6 +15,7 @@ export default {
   'games': 'partidas',
   'Analysing…': 'Analizando…',
   'Social Hub': 'Social',
+  'Chessboard': 'Tablero',
   'Search players...': 'Buscar jugadores...',
   'Notifications': 'Notificaciones',
   'Settings': 'Configuración',

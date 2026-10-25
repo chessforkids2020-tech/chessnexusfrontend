@@ -49,7 +49,6 @@ const newGameId = () => {
 // base = minutes, inc = increment seconds. `null` base means unlimited (no clock
 // at all — the clock UI is not rendered and nothing can flag).
 const TIME_CONTROLS = [
-  { id: 'unlimited', label: tr('Unlimited'), base: null, inc: 0, group: 'unlimited' },
   { id: '1+0',   label: '1+0',   base: 1,  inc: 0,  group: tr('Bullet') },
   { id: '3+0',   label: '3+0',   base: 3,  inc: 0,  group: tr('Blitz') },
   { id: '3+2',   label: '3+2',   base: 3,  inc: 2,  group: tr('Blitz') },
@@ -59,21 +58,26 @@ const TIME_CONTROLS = [
   { id: '15+10', label: '15+10', base: 15, inc: 10, group: tr('Rapid') },
   { id: '30+0',  label: '30+0',  base: 30, inc: 0,  group: tr('Classical') },
   { id: '30+10', label: '30+10', base: 30, inc: 10, group: tr('Classical') },
+  { id: 'unlimited', label: tr('Unlimited'), base: null, inc: 0, group: 'unlimited' },
 ];
 
 // ── Difficulty ───────────────────────────────────────────────────────────────
 // Two dials move together, because depth alone is a poor difficulty knob: a
 // shallow search still plays near-perfectly in simple positions. `skill` is
 // Stockfish's own Skill Level (0-20), which makes it choose humanly-imperfect
-// moves; depth/movetime cap how far it looks. Levels 1-3 are genuinely gentle
-// for beginners; 6 is full strength.
+// moves; depth/movetime cap how far it looks. Each level is strictly stronger
+// than the one before. Levels 7-8 use skill 20 (no deliberate mistakes) and
+// differ only in how deep they search. Keep LEVEL_NAMES in
+// backend/routes/userGames.js in step with this list.
 const LEVELS = [
   { id: 1, label: tr('Depth 2'),  depth: 2,  skill: 1,  moveTime: 200,  blurb: tr('Beginner — blunders often') },
   { id: 2, label: tr('Depth 3'),  depth: 3,  skill: 3,  moveTime: 300,  blurb: tr('Casual — misses tactics') },
   { id: 3, label: tr('Depth 5'),  depth: 5,  skill: 6,  moveTime: 500,  blurb: tr('Club player') },
   { id: 4, label: tr('Depth 8'),  depth: 8,  skill: 10, moveTime: 800,  blurb: tr('Strong club') },
-  { id: 5, label: tr('Depth 12'), depth: 12, skill: 15, moveTime: 1200, blurb: tr('Expert') },
-  { id: 6, label: tr('Depth 16'), depth: 16, skill: 20, moveTime: 2000, blurb: tr('Hardest — full strength') },
+  { id: 5, label: tr('Depth 10'), depth: 10, skill: 13, moveTime: 1000, blurb: tr('Advanced') },
+  { id: 6, label: tr('Depth 13'), depth: 13, skill: 17, moveTime: 1400, blurb: tr('Master — rarely errs') },
+  { id: 7, label: tr('Depth 18'), depth: 18, skill: 20, moveTime: 2000, blurb: tr('Expert — no mistakes') },
+  { id: 8, label: tr('Max'),      depth: 40, skill: 20, moveTime: 4000, blurb: tr('Hardest — full strength') },
 ];
 
 const fmtClock = (ms) => {
@@ -154,7 +158,7 @@ export default function PlayWithStockfish() {
   const [customFen, setCustomFen] = useState(START_FEN);
   const [showEditor, setShowEditor] = useState(false);
 
-  const tc = TIME_CONTROLS.find(t => t.id === tcId) || TIME_CONTROLS[0];
+  const tc = TIME_CONTROLS.find(t => t.id === tcId) || TIME_CONTROLS.find(t => t.id === 'unlimited');
   const level = LEVELS.find(l => l.id === levelId) || LEVELS[2];
 
   // ── Game state ──
@@ -601,12 +605,12 @@ export default function PlayWithStockfish() {
               {TIME_CONTROLS.map(t => (
                 <button
                   key={t.id}
-                  className={`pvs-chip${tcId === t.id ? ' is-on' : ''}${t.base == null ? ' pvs-chip--wide' : ''}`}
+                  className={`pvs-chip${tcId === t.id ? ' is-on' : ''}`}
                   onClick={() => setTcId(t.id)}
                 >
                   <span className="pvs-chip-label">{t.label}</span>
                   {t.group !== 'unlimited' && <span className="pvs-chip-sub">{t.group}</span>}
-                  {t.base == null && <span className="pvs-chip-sub">{tr("No clock — take as long as you like")}</span>}
+                  {t.base == null && <span className="pvs-chip-sub">{tr("No clock")}</span>}
                 </button>
               ))}
             </div>

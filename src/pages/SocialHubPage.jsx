@@ -1431,10 +1431,10 @@ export default function SocialHubPage() {
             <button
               type="button"
               className="sh-chat-launch"
-              title={tr("Chess Nexus news and new features")}
+              title={tr("What's new in Chess Nexus")}
               onClick={() => navigate('/newsletter')}
             >
-              <span>{tr("📰 Newsletter")}</span>
+              <span>{tr("🆕 New Updates")}</span>
             </button>
           }
         />
@@ -1501,10 +1501,10 @@ export default function SocialHubPage() {
           <button
             type="button"
             className="sh-chat-launch"
-            title={tr("Chess Nexus news and new features")}
+            title={tr("What's new in Chess Nexus")}
             onClick={() => navigate('/newsletter')}
           >
-            <span>{tr("📰 Newsletter")}</span>
+            <span>{tr("🆕 New Updates")}</span>
           </button>
           <button
             type="button"

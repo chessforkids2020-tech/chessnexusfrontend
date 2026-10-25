@@ -623,6 +623,7 @@ export default function Sidebar({ user, onNavigate }) {
     if (path === '/study' && location.pathname.startsWith('/study')) return true;
     if (path === '/attendance' && location.pathname.startsWith('/attendance')) return true;
     if (path === '/choose-topic' && location.pathname === '/choose-topic') return true;
+    if (path === '/chessboard' && location.pathname === '/chessboard') return true;
     if (path === '/games' && location.pathname === '/games') return true;
     if (path === '/game-analysis' && location.pathname === '/game-analysis') return true;
     if (path === '/arenatournament' && location.pathname.startsWith('/arenatournament')) return true;
@@ -899,33 +900,6 @@ export default function Sidebar({ user, onNavigate }) {
             </div>
 
             <div
-              style={isActive('/race') ? styles.navItemActive : styles.navItem}
-              onClick={() => {
-                if ((isMobile || isLandscape) && !isExpanded) {
-                  setIsExpanded(true);
-                } else {
-                  handleNavigate('/race');
-                }
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--color-accent-a15)';
-                e.currentTarget.style.color = 'var(--color-accent)';
-                e.currentTarget.style.transform = 'translateX(5px)';
-                e.currentTarget.style.borderLeft = '5px solid var(--color-success)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = isActive('/race') ? 'var(--color-accent-a15)' : 'transparent';
-                e.currentTarget.style.color = isActive('/race') ? 'var(--color-accent)' : 'var(--color-text)';
-                e.currentTarget.style.transform = 'translateX(0)';
-                e.currentTarget.style.borderLeft = 'none';
-              }}
-              title={t('Race Hub')}
-            >
-              <span style={styles.navIcon}>🏁</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Race Hub')}</span>}
-            </div>
-
-            <div
               style={isActive('/study') ? styles.navItemActive : styles.navItem}
               onClick={() => {
                 if ((isMobile || isLandscape) && !isExpanded) {
@@ -1103,6 +1077,29 @@ export default function Sidebar({ user, onNavigate }) {
             >
               <span style={styles.navIcon}>🌐</span>
               {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Social Hub')}</span>}
+            </div>
+
+            {/* Chessboard — the ChessNexus electronic & robotic board (sales start 24 Nov 2026) */}
+            <div
+              style={isActive('/chessboard') ? styles.navItemActive : styles.navItem}
+              onClick={() => {
+                if ((isMobile || isLandscape) && !isExpanded) { setIsExpanded(true); }
+                else { handleNavigate('/chessboard'); }
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.color = 'var(--color-accent)';
+                e.currentTarget.style.transform = 'translateX(5px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = isActive('/chessboard') ? 'var(--color-accent-a15)' : 'transparent';
+                e.currentTarget.style.color = isActive('/chessboard') ? 'var(--color-accent)' : 'var(--color-text)';
+                e.currentTarget.style.transform = 'translateX(0)';
+              }}
+              title={t('Chessboard')}
+            >
+              <span style={styles.navIcon}>♞</span>
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>{t('Chessboard')}</span>}
             </div>
           </nav>
           

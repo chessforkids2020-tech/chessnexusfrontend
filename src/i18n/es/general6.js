@@ -243,4 +243,9 @@ export default {
   "Stockfish will play against you until you complete the admin's solution.": "Stockfish jugará contra ti hasta que completes la solución del administrador.",
   "🚀 Start Test": "🚀 Empezar prueba",
   "Select a time to continue": "Elige un tiempo para continuar",
+  "🆕 New Updates": "🆕 Novedades",
+  "What's new in Chess Nexus": "Novedades de Chess Nexus",
+  "Filters out background noise like fans, TV and keyboards": "Filtra el ruido de fondo como ventiladores, TV y teclados",
+  "🔉 Noise filter: On": "🔉 Filtro de ruido: activado",
+  "🔉 Noise filter: Off": "🔉 Filtro de ruido: desactivado",
 };

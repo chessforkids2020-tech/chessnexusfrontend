@@ -32,6 +32,7 @@ const TYPES = [
   { id: 'arena', label: tr('Arena') },
   { id: 'friend', label: tr('Friends') },
   { id: 'stockfish', label: tr('Stockfish') },
+  { id: 'board', label: tr('On my board') },
 ];
 const RESULTS = [
   { id: '', label: tr('Any result') },
@@ -48,8 +49,9 @@ const STAT_ROWS = [
   { id: 'arena', label: tr('🏟 Arena') },
   { id: 'friend', label: tr('🤝 vs Friends') },
   { id: 'stockfish', label: tr('🤖 vs Stockfish') },
+  { id: 'board', label: tr('♟ On my board') },
 ];
-const TYPE_BADGE ={ arena: tr('🏟 Arena'), friend: tr('🤝 Friend'), stockfish: tr('🤖 Stockfish') };
+const TYPE_BADGE ={ arena: tr('🏟 Arena'), friend: tr('🤝 Friend'), stockfish: tr('🤖 Stockfish'), board: tr('♟ On my board') };
 const OUTCOME = { win: tr('Won'), loss: tr('Lost'), draw: tr('Draw') };
 const SPEED = { bullet: tr('Bullet'), blitz: tr('Blitz'), rapid: tr('Rapid'), classical: tr('Classical'), friendly: tr('Friendly') };
 
@@ -154,7 +156,7 @@ export default function AllGamesTab({ who }) {
 
   const countFor = (id) => {
     if (!counts) return null;
-    if (id === 'all') return (counts.arena || 0) + (counts.friend || 0) + (counts.stockfish || 0);
+    if (id === 'all') return (counts.arena || 0) + (counts.friend || 0) + (counts.stockfish || 0) + (counts.board || 0);
     return counts[id] || 0;
   };
 

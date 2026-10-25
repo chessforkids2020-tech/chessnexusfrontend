@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './PuzzlesHub.css';
 import { t as tr } from '../i18n/LanguageContext';
+import RacesSection from '../components/RacesSection';
 
 export default function PuzzlesHub() {
   const [showRulesModal, setShowRulesModal] = useState(false);
@@ -127,6 +128,9 @@ export default function PuzzlesHub() {
         </Link>
 
       </div>
+
+      {/* ── ROW 3: Races (Timed / Arena / Team) — moved here from the old Race Hub ── */}
+      <RacesSection />
 
       {/* ── ACTION BAR ── */}
       <div className="action-bar">

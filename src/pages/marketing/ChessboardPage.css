@@ -1,0 +1,757 @@
+/* ChessNexus chessboard — launch page. Always dark: a launch page is a
+   moment, not a settings screen, so it ignores the user's theme on purpose. */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&display=swap');
+@property --cbl-a {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.cbl-page {
+  --cyan: #22d3ee;
+  --green: #34d399;
+  --violet: #a78bfa;
+  --ink: #05070d;
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background: var(--ink);
+  color: #e8edf5;
+  font-family: 'Manrope', system-ui, sans-serif;
+  padding-bottom: 96px;
+  overflow-x: hidden;
+}
+
+/* ── atmosphere ─────────────────────────────────────────────────────────
+   Two fixed layers behind everything: a slow-drifting aurora and a faint
+   technical grid that fades out at the edges. Fixed = parallax while
+   scrolling without any JS. */
+.cbl-page::before {
+  content: '';
+  position: fixed;
+  inset: -30%;
+  z-index: -2;
+  background:
+    radial-gradient(38% 38% at 22% 18%, rgba(34, 211, 238, 0.30), transparent 62%),
+    radial-gradient(34% 34% at 82% 12%, rgba(167, 139, 250, 0.28), transparent 62%),
+    radial-gradient(42% 42% at 62% 88%, rgba(52, 211, 153, 0.22), transparent 64%);
+  filter: blur(44px) saturate(125%);
+  animation: cbl-aurora 24s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.cbl-page::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 100% 64px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 64px 100%;
+  -webkit-mask-image: radial-gradient(120% 80% at 50% 30%, #000 30%, transparent 85%);
+  mask-image: radial-gradient(120% 80% at 50% 30%, #000 30%, transparent 85%);
+  pointer-events: none;
+}
+
+/* ── hero ───────────────────────────────────────────────────────────── */
+.cbl-hero {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 40px 24px 56px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.cbl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #a5f3fc;
+  background: linear-gradient(120deg, rgba(34, 211, 238, 0.18), rgba(52, 211, 153, 0.08));
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.08),
+    0 8px 32px rgba(34, 211, 238, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.cbl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: cbl-pulse 2s ease-out infinite;
+}
+
+.cbl-hero h1 {
+  margin: 0 0 30px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(36px, 5.6vw, 70px);
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(
+    100deg,
+    #ffffff 0%,
+    #a5f3fc 22%,
+    #ffffff 38%,
+    #6ee7b7 58%,
+    #c4b5fd 78%,
+    #ffffff 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 42px rgba(34, 211, 238, 0.25));
+  animation: cbl-sheen 7s ease-in-out infinite alternate;
+}
+
+/* ── countdown ──────────────────────────────────────────────────────── */
+.cbl-count {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 34px;
+}
+.cbl-tile {
+  position: relative;
+  min-width: 90px;
+  padding: 16px 10px 11px;
+  text-align: center;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.55), rgba(8, 12, 20, 0.88));
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+/* 1px gradient hairline border via mask — a real border can't do a gradient. */
+.cbl-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    160deg,
+    rgba(34, 211, 238, 0.8),
+    rgba(255, 255, 255, 0.08) 38%,
+    rgba(167, 139, 250, 0.6)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.cbl-tile b {
+  display: block;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  text-shadow:
+    0 0 22px rgba(34, 211, 238, 0.75),
+    0 0 46px rgba(34, 211, 238, 0.35);
+}
+.cbl-tile span {
+  display: block;
+  margin-top: 4px;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(165, 210, 255, 0.65);
+}
+
+/* ── buttons ────────────────────────────────────────────────────────── */
+.cbl-btn {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: 14px;
+  color: #04211d;
+  background: linear-gradient(135deg, #22d3ee, #34d399 55%, #22d3ee);
+  background-size: 200% 100%;
+  box-shadow:
+    0 14px 40px rgba(34, 211, 238, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background-position 0.5s ease;
+}
+.cbl-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+.cbl-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  background-position: 100% 50%;
+  box-shadow:
+    0 20px 52px rgba(34, 211, 238, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.cbl-btn:hover:not(:disabled)::after {
+  left: 130%;
+}
+.cbl-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.cbl-btn-lg {
+  padding: 17px 36px;
+  font-size: 16px;
+}
+
+/* ── board photo ── */
+.cbl-board-wrap { position: relative; display: grid; place-items: start center; align-self: start; margin-top: -28px; }
+.cbl-photo {
+  position: relative; z-index: 1; display: block; width: min(100%, 600px); height: auto;
+  animation: cbl-float 7s ease-in-out infinite;
+  /* transparent cut-out: a shadow that follows the board's outline, not a box */
+  filter: drop-shadow(0 30px 38px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 40px rgba(34, 211, 238, 0.12));
+}
+.cbl-board-glow {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 115%;
+  height: 85%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.32), transparent 72%);
+  filter: blur(56px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── ticker ─────────────────────────────────────────────────────────── */
+.cbl-ticker {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  border-block: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.06), rgba(167, 139, 250, 0.06));
+  padding: 16px 0;
+  font-weight: 600;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.82);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.cbl-ticker-track {
+  display: inline-block;
+  animation: cbl-scroll 28s linear infinite;
+}
+
+/* ── sections ───────────────────────────────────────────────────────── */
+.cbl-section {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 88px 24px 0;
+}
+.cbl-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 0 0 36px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #67e8f9;
+}
+.cbl-eyebrow::before,
+.cbl-eyebrow::after {
+  content: '';
+  height: 1px;
+  width: 64px;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.7));
+}
+.cbl-eyebrow::after {
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.7), transparent);
+}
+
+.cbl-products {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+}
+.cbl-product {
+  position: relative;
+  padding: 38px 30px 34px;
+  border-radius: 26px;
+  overflow: hidden;
+  background:
+    radial-gradient(460px 300px at 0% 0%, rgba(34, 211, 238, 0.20), transparent 68%),
+    linear-gradient(165deg, rgba(20, 28, 44, 0.92), rgba(7, 10, 18, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.3, 1),
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.cbl-p-robo {
+  background:
+    radial-gradient(460px 300px at 100% 0%, rgba(167, 139, 250, 0.24), transparent 68%),
+    linear-gradient(165deg, rgba(24, 22, 46, 0.92), rgba(7, 10, 18, 0.95));
+}
+.cbl-product:hover {
+  transform: translateY(-8px);
+  border-color: rgba(34, 211, 238, 0.45);
+  box-shadow:
+    0 34px 80px rgba(0, 0, 0, 0.7),
+    0 0 64px rgba(34, 211, 238, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.cbl-p-robo:hover {
+  border-color: rgba(167, 139, 250, 0.5);
+  box-shadow:
+    0 34px 80px rgba(0, 0, 0, 0.7),
+    0 0 64px rgba(167, 139, 250, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.cbl-ribbon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #04211d;
+  background: linear-gradient(135deg, #67e8f9, #34d399);
+  box-shadow: 0 6px 20px rgba(34, 211, 238, 0.45);
+}
+
+.cbl-p-ic {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 20px;
+  font-size: 36px;
+  line-height: 1;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.cbl-p-elec .cbl-p-ic {
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.45),
+    0 0 44px rgba(34, 211, 238, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.cbl-p-robo .cbl-p-ic {
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.45),
+    0 0 44px rgba(167, 139, 250, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.cbl-product h2 {
+  margin: 20px 0 6px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #fff;
+}
+.cbl-product p {
+  margin: 0;
+  line-height: 1.7;
+  color: rgba(226, 232, 240, 0.72);
+}
+.cbl-tag,
+.cbl-product p.cbl-tag {
+  margin: 0 0 14px;
+  font-weight: 700;
+  color: #67e8f9;
+}
+.cbl-p-robo .cbl-tag {
+  color: #c4b5fd;
+}
+
+/* ── notify ─────────────────────────────────────────────────────────── */
+.cbl-notify {
+  position: relative;
+  max-width: 760px;
+  margin-top: 88px;
+  padding: 52px 28px 54px;
+  text-align: center;
+  border-radius: 30px;
+  overflow: hidden;
+  background:
+    radial-gradient(600px 300px at 50% 0%, rgba(34, 211, 238, 0.12), transparent 70%),
+    linear-gradient(160deg, rgba(20, 30, 48, 0.85), rgba(10, 13, 24, 0.9));
+  border: 1px solid rgba(34, 211, 238, 0.28);
+  box-shadow:
+    0 36px 90px rgba(0, 0, 0, 0.6),
+    0 0 100px rgba(34, 211, 238, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+/* Slow rotating conic border. Falls back to a static cyan edge where
+   @property isn't supported. */
+.cbl-notify::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--cbl-a),
+    rgba(34, 211, 238, 0.9),
+    rgba(52, 211, 153, 0.4),
+    rgba(167, 139, 250, 0.9),
+    rgba(34, 211, 238, 0.9)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: cbl-spin 9s linear infinite;
+  pointer-events: none;
+}
+.cbl-notify h2 {
+  margin: 0 0 8px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+}
+.cbl-notify > p {
+  margin: 0 0 26px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.cbl-form {
+  display: grid;
+  gap: 12px;
+  max-width: 460px;
+  margin: 0 auto;
+  text-align: left;
+}
+.cbl-form input,
+.cbl-form select {
+  width: 100%;
+  padding: 15px 18px;
+  font: inherit;
+  font-size: 15px;
+  color: #fff;
+  background: rgba(6, 10, 18, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+.cbl-form input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+.cbl-form input:focus,
+.cbl-form select:focus {
+  outline: none;
+  background: rgba(6, 10, 18, 0.95);
+  border-color: rgba(34, 211, 238, 0.85);
+  box-shadow:
+    0 0 0 4px rgba(34, 211, 238, 0.16),
+    0 0 32px rgba(34, 211, 238, 0.18);
+}
+.cbl-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 46px;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2367e8f9' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 18px;
+}
+.cbl-form select option {
+  background: #111827;
+}
+
+.cbl-hint {
+  margin: -4px 2px 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+}
+.cbl-err {
+  margin: 0;
+  color: #fca5a5;
+  font-size: 14px;
+  text-align: center;
+}
+.cbl-done-ic {
+  font-size: 44px;
+}
+.cbl-done h3 {
+  margin: 8px 0 4px;
+  font-size: 22px;
+}
+.cbl-done p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* ── motion ─────────────────────────────────────────────────────────── */
+@keyframes cbl-aurora {
+  0%   { transform: translate3d(-3%, -2%, 0) scale(1); }
+  50%  { transform: translate3d(2%, 3%, 0) scale(1.06); }
+  100% { transform: translate3d(-2%, 2%, 0) scale(1.02); }
+}
+@keyframes cbl-sheen {
+  from { background-position: 0% 50%; }
+  to   { background-position: 100% 50%; }
+}
+@keyframes cbl-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.65), 0 0 10px var(--cyan); }
+  70%  { box-shadow: 0 0 0 10px rgba(34, 211, 238, 0), 0 0 10px var(--cyan); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0), 0 0 10px var(--cyan); }
+}
+@keyframes cbl-scroll {
+  to { transform: translateX(-50%); }
+}
+@keyframes cbl-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes cbl-spin {
+  to { --cbl-a: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cbl-page::before,
+  .cbl-hero h1,
+  .cbl-dot,
+  .cbl-photo,
+  .cbl-ticker-track,
+  .cbl-notify::before {
+    animation: none;
+  }
+  .cbl-product:hover { transform: none; }
+  .cbl-btn:hover:not(:disabled) { transform: none; }
+}
+
+/* ── responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .cbl-hero {
+    grid-template-columns: 1fr;
+    padding-top: 28px;
+    gap: 32px;
+    text-align: center;
+  }
+  .cbl-count { justify-content: center; }
+  .cbl-board-wrap { margin-top: 0; }
+  .cbl-photo { max-width: 440px; }
+  .cbl-products { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .cbl-tile { min-width: 0; flex: 1; }
+  .cbl-tile b { font-size: 26px; }
+  .cbl-count { gap: 8px; }
+  .cbl-notify { padding: 40px 18px 44px; border-radius: 24px; }
+  .cbl-eyebrow::before,
+  .cbl-eyebrow::after { width: 32px; }
+}
+/* ── guess the price ────────────────────────────────────────────────── */
+.cbl-money { position: relative; }
+.cbl-money > span {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  font-weight: 700; color: #fcd34d; pointer-events: none;
+}
+.cbl-money input { padding-left: 34px !important; }
+.cbl-done-guess { margin-top: 12px !important; color: #fcd34d !important; }
+.cbl-result { margin: 26px auto 0; max-width: 460px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.12); }
+.cbl-result h3 { margin: 0 0 10px; font-family: 'Fraunces', Georgia, serif; font-size: 18px; }
+.cbl-result-form { display: flex; gap: 8px; }
+.cbl-result-form input {
+  flex: 1; min-width: 0; padding: 12px 14px; font: inherit; color: #fff;
+  background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 12px;
+}
+.cbl-result-out { margin: 12px 0 0; line-height: 1.6; color: rgba(255, 255, 255, 0.85); }
+@media (max-width: 480px) {
+  .cbl-result-form { flex-direction: column; }
+}
+
+.cbl-cur { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cbl-cur button {
+  padding: 10px 0; border-radius: 12px; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer;
+  color: rgba(255, 255, 255, 0.7); background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.16);
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.cbl-cur button.on { color: #fcd34d; background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.55); }
+
+/* hero: primary + guess buttons side by side */
+.cbl-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.cbl-btn-ghost {
+  cursor: pointer; font: inherit; font-weight: 700; font-size: 16px;
+  padding: 16px 28px; border-radius: 14px; color: #fcd34d;
+  background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.5);
+  box-shadow: 0 0 28px rgba(251, 191, 36, 0.12);
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+.cbl-btn-ghost:hover { transform: translateY(-2px); background: rgba(251, 191, 36, 0.16); box-shadow: 0 0 36px rgba(251, 191, 36, 0.28); }
+@media (max-width: 900px) { .cbl-actions { justify-content: center; } }
+@media (max-width: 480px) { .cbl-actions .cbl-btn, .cbl-actions .cbl-btn-ghost { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .cbl-btn-ghost:hover { transform: none; } }
+.cbl-actions .cbl-btn-lg { padding: 17px 26px; }
+.cbl-actions .cbl-btn-ghost { padding: 16px 22px; font-size: 15px; }
+@media (max-width: 480px) { .cbl-actions .cbl-btn-lg, .cbl-actions .cbl-btn-ghost { padding-inline: 18px; } }
+
+/* ── name our electronic chessboard: a highlighted band under the hero ── */
+.cbl-name {
+  position: relative; z-index: 1;
+  max-width: 1080px; margin: 0 auto 28px; padding: 22px 26px;
+  display: grid; grid-template-columns: 1fr 1.25fr; gap: 24px; align-items: center;
+  border-radius: 22px;
+  background: linear-gradient(120deg, rgba(251, 191, 36, 0.16), rgba(34, 211, 238, 0.08));
+  border: 1px solid rgba(251, 191, 36, 0.55);
+  box-shadow: 0 0 60px rgba(251, 191, 36, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.cbl-name-badge {
+  display: inline-block; padding: 4px 12px; border-radius: 999px; margin-bottom: 8px;
+  font-size: 11.5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #1c1203; background: linear-gradient(135deg, #fcd34d, #f59e0b);
+}
+.cbl-name h2 { margin: 0 0 6px; font-family: 'Fraunces', Georgia, serif; font-size: 26px; line-height: 1.15; color: #fff; }
+.cbl-name-text p { margin: 0; font-size: 14.5px; line-height: 1.55; color: rgba(255, 255, 255, 0.75); }
+.cbl-name-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cbl-name-form input {
+  width: 100%; min-width: 0; padding: 13px 15px; font: inherit; font-size: 14.5px; color: #fff;
+  background: rgba(0, 0, 0, 0.42); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 12px;
+}
+.cbl-name-form input::placeholder { color: rgba(255, 255, 255, 0.45); }
+.cbl-name-form input:focus { outline: none; border-color: #fcd34d; box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.25); }
+.cbl-name-form .cbl-name-idea { grid-column: 1 / -1; font-weight: 700; font-size: 16px; border-color: rgba(251, 191, 36, 0.5); }
+.cbl-name-form .cbl-btn { grid-column: 1 / -1; padding: 13px 20px; }
+.cbl-name-err { grid-column: 1 / -1; margin: 0; text-align: center; }
+.cbl-name-done { font-size: 16px; color: #fcd34d; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.cbl-name-done button {
+  cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 999px;
+  color: #fcd34d; background: transparent; border: 1px solid rgba(251, 191, 36, 0.5);
+}
+@media (max-width: 900px) {
+  .cbl-name { grid-template-columns: 1fr; gap: 16px; margin-inline: 16px; padding: 20px 18px; text-align: center; }
+}
+@media (max-width: 480px) {
+  .cbl-name-form { grid-template-columns: 1fr; }
+}
+
+/* naming challenge: hidden name + live count */
+.cbl-name-mask {
+  display: inline-flex; align-items: baseline; gap: 10px; margin: 2px 0 10px;
+  font-family: 'Fraunces', Georgia, serif; font-size: 20px; color: rgba(255, 255, 255, 0.85);
+}
+.cbl-name-mask b {
+  font-weight: 800; letter-spacing: 0.18em; color: #fcd34d;
+  padding: 2px 12px; border-radius: 10px;
+  background: rgba(251, 191, 36, 0.12); border: 1px dashed rgba(251, 191, 36, 0.6);
+  animation: cbl-blink-soft 1.8s ease-in-out infinite;
+}
+@keyframes cbl-blink-soft { 50% { opacity: 0.45; } }
+.cbl-name-count { margin-top: 10px !important; font-weight: 600; color: #fcd34d !important; }
+.cbl-name-in { font-family: 'Fraunces', Georgia, serif; font-size: 26px; font-weight: 800; color: #fcd34d; margin-bottom: 6px; }
+.cbl-name-done p { margin: 0 0 12px; font-size: 15px; line-height: 1.6; color: rgba(255, 255, 255, 0.82); }
+@media (prefers-reduced-motion: reduce) { .cbl-name-mask b { animation: none; } }
+@media (max-width: 900px) { .cbl-name-text { text-align: center; } }
+
+/* anonymous naming: two fields (one per board) + the secret code */
+.cbl-name-field { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: #fcd34d; }
+.cbl-name-field input { font-weight: 700; font-size: 16px; border-color: rgba(251, 191, 36, 0.5); }
+.cbl-name-note { grid-column: 1 / -1; margin: 0; font-size: 12.5px; color: rgba(255, 255, 255, 0.55); text-align: center; }
+.cbl-name-mycode { grid-column: 1 / -1; margin: 0; font-size: 12.5px; text-align: center; color: rgba(255, 255, 255, 0.6); }
+.cbl-name-mycode b { color: #fcd34d; font-family: monospace; letter-spacing: 0.06em; }
+.cbl-name-code {
+  display: grid; gap: 4px; margin: 6px 0 14px; padding: 12px 16px; border-radius: 14px; max-width: 360px;
+  background: rgba(0, 0, 0, 0.35); border: 1px dashed rgba(251, 191, 36, 0.6);
+}
+.cbl-name-code span { font-size: 11.5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+.cbl-name-code b { font-family: monospace; font-size: 24px; letter-spacing: 0.08em; color: #fcd34d; }
+.cbl-name-code small { font-size: 12.5px; color: rgba(255, 255, 255, 0.65); line-height: 1.5; }
+@media (max-width: 480px) { .cbl-name-code { max-width: none; } }
+.cbl-name-done { display: grid; gap: 4px; justify-items: start; }
+.cbl-name-done p { margin: 0; }
+@media (max-width: 900px) { .cbl-name-done { justify-items: center; } }
+
+/* ── connect your accounts: ChessNexus + Lichess side by side ── */
+.cbl-accounts { text-align: center; }
+.cbl-accounts-title {
+  margin: 0 0 26px; font-family: 'Fraunces', Georgia, serif; font-size: clamp(24px, 3.4vw, 34px); color: #fff;
+}
+.cbl-accounts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; text-align: left; }
+.cbl-acct {
+  position: relative; padding: 28px 26px 26px; border-radius: 22px; overflow: hidden;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+}
+.cbl-acct-cn { background-image: radial-gradient(380px 220px at 0% 0%, rgba(34, 211, 238, 0.15), transparent 70%); }
+.cbl-acct-li { background-image: radial-gradient(380px 220px at 100% 0%, rgba(255, 255, 255, 0.1), transparent 70%); }
+.cbl-acct-head { display: flex; align-items: center; gap: 12px; }
+.cbl-acct-ic {
+  width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 26px;
+  background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.14);
+  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols 2', 'DejaVu Sans', sans-serif;
+}
+.cbl-acct h3 { margin: 0; font-family: 'Fraunces', Georgia, serif; font-size: 24px; color: #fff; }
+.cbl-acct-lead { margin: 14px 0 10px; font-weight: 700; color: var(--cyan); }
+.cbl-acct ul { margin: 0 0 16px; padding: 0; list-style: none; display: grid; gap: 8px; }
+.cbl-acct li { position: relative; padding-left: 24px; line-height: 1.5; color: rgba(255, 255, 255, 0.8); }
+.cbl-acct li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 800; }
+.cbl-acct-link { display: inline-block; font-weight: 700; color: #67e8f9; text-decoration: none; }
+.cbl-acct-link:hover { text-decoration: underline; }
+.cbl-acct-note { margin: 0; font-size: 13px; color: rgba(255, 255, 255, 0.55); }
+@media (max-width: 900px) { .cbl-accounts-grid { grid-template-columns: 1fr; } }
+
+/* phones: the two hero buttons share ONE row and shrink to fit (they used to be
+   full-width and stacked, which made them huge) */
+@media (max-width: 600px) {
+  .cbl-actions { flex-wrap: nowrap; align-items: stretch; gap: 8px; width: 100%; }
+  .cbl-actions .cbl-arrow { display: none; }
+  .cbl-actions .cbl-btn,
+  .cbl-actions .cbl-btn-ghost {
+    flex: 1 1 0; min-width: 0; width: auto;
+    padding: 12px 8px; font-size: 13px; line-height: 1.25; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+  }
+}

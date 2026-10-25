@@ -32,7 +32,7 @@ export default function AdminFeedback() {
   const nav = useNavigate();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // all | new | reviewed | archived
+  const [filter, setFilter] = useState('all'); // all | new | reviewed | archived | language
 
   async function load() {
     setLoading(true);
@@ -64,7 +64,21 @@ export default function AdminFeedback() {
     } catch { alert('Failed to delete'); }
   }
 
-  const shown = filter === 'all' ? items : items.filter(f => f.status === filter);
+  // Language requests (Settings -> Language) ride on the same collection. Tally
+  // them by language so the admin sees demand at a glance: people, not clicks
+  // (the server already keeps one row per user per language).
+  const langItems = items.filter(f => f.kind === 'language');
+  const langTally = Object.values(langItems.reduce((acc, f) => {
+    const key = (f.language || '').trim().toLowerCase();
+    if (!key) return acc;
+    acc[key] = acc[key] || { name: f.language.trim(), count: 0 };
+    acc[key].count += 1;
+    return acc;
+  }, {})).sort((a, b) => b.count - a.count);
+
+  const shown = filter === 'all' ? items
+    : filter === 'language' ? langItems
+    : items.filter(f => f.status === filter);
 
   const chip = (id, label) => (
     <button onClick={() => setFilter(id)} style={{
@@ -104,7 +118,21 @@ export default function AdminFeedback() {
           {chip('new', `New (${items.filter(f => f.status === 'new').length})`)}
           {chip('reviewed', `Reviewed (${items.filter(f => f.status === 'reviewed').length})`)}
           {chip('archived', `Archived (${items.filter(f => f.status === 'archived').length})`)}
+          {chip('language', `🌐 Language requests (${langItems.length})`)}
         </div>
+
+        {langTally.length > 0 && (
+          <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-lg)', padding: '14px 18px', marginBottom: 22 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: C.cyan, letterSpacing: 0.3, marginBottom: 10 }}>🌐 LANGUAGES REQUESTED</div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {langTally.map(l => (
+                <span key={l.name} style={{ fontSize: 13, fontWeight: 600, color: C.text, background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.3)', borderRadius: 'var(--radius-pill)', padding: '4px 12px' }}>
+                  {l.name} <b style={{ color: C.cyan }}>×{l.count}</b>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {loading ? (
           <div style={{ color: C.dim, textAlign: 'center', padding: 60 }}>Loading feedback…</div>
@@ -120,6 +148,9 @@ export default function AdminFeedback() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                     {statusBadge(f.status)}
+                    {f.kind === 'language' && (
+                      <span style={{ fontSize: 11, fontWeight: 700, color: C.cyan, background: 'rgba(6,182,212,0.14)', border: '1px solid rgba(6,182,212,0.35)', borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>🌐 LANGUAGE REQUEST</span>
+                    )}
                     {typeof f.accountAgeDays === 'number' && (
                       <span style={{ fontSize: 11, fontWeight: 600, color: C.dim, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>
                         {f.accountAgeDays === 0 ? 'joined today' : `${f.accountAgeDays}d old`}
@@ -129,6 +160,7 @@ export default function AdminFeedback() {
                   <span style={{ color: C.faint, fontSize: 12 }}>{new Date(f.createdAt).toLocaleString()}</span>
                 </div>
 
+                {f.kind === 'language' && <Answer label="Language requested" value={f.language} />}
                 <Answer label="Anything missing?" value={f.missing} />
                 <Answer label="Feature they want" value={f.wantedFeature} />
                 <Answer label="Experience" value={f.experience} />

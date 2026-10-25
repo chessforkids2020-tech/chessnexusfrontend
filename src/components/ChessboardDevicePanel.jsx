@@ -4,7 +4,7 @@
 // Once connected, the board's puzzles count on this account (rating, history).
 // The board isn't on sale yet, so everyone sees a "Coming soon" showcase; the
 // pairing form only shows for admins and accounts that already have a board.
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { t as tr } from '../i18n/LanguageContext';
@@ -14,7 +14,7 @@ const FEATURES = [
   ['🔊', 'Talks to your child', 'A friendly voice says what to do — "White king, e one" — so kids learn without staring at a screen.'],
   ['♟', 'Feels every move', 'Sensors under each square detect your moves and check the pieces are set up right.'],
   ['🧩', 'Your ChessNexus puzzles', 'Healthy Mix, Daily puzzle, themes and rated puzzles — every solve counts on your account.'],
-  ['🤖', 'Play on a real board', 'Play Stockfish at six levels, or a friend sitting across the same board.'],
+  ['🤖', 'Play on a real board', 'Play Stockfish at eight levels or a friend across the same board. Those games are saved to your account to analyse later. Lichess games stay on Lichess.'],
   ['📱', 'Simple touch menu', 'A small built-in touchscreen to pick what to play. Connect once with a 6-digit code.'],
 ];
 
@@ -61,6 +61,133 @@ function ComingSoon() {
     </section>
   );
 }
+
+// "Sign in to play": the two places the board can play, side by side. ChessNexus is
+// the board itself (paired with the code below). Lichess is a login on the player's
+// own Lichess account, so the board can play random games and tournaments there.
+// Lichess only allows rapid and classical games from a board.
+function LichessCard() {
+  const [st, setSt] = useState({ loading: true, connected: false, username: '', expired: false });
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const finishedLogin = useRef(false);
+
+  const load = useCallback(() => {
+    api.get('/api/lichess/status')
+      .then(r => setSt({ loading: false, ...r.data }))
+      .catch(() => setSt(s0 => ({ ...s0, loading: false })));
+  }, []);
+
+  useEffect(() => {
+    // Lichess sends the player back here with ?code=...&state=... after they allow it.
+    const q = new URLSearchParams(window.location.search);
+    const code = q.get('code');
+    const state = q.get('state');
+    const denied = q.get('error');
+    if ((code && state || denied) && !finishedLogin.current) {
+      finishedLogin.current = true;
+      const clean = () => window.history.replaceState({}, '', `${window.location.pathname}?tab=chessboard`);
+      if (denied) { clean(); setErr(tr('Lichess login was cancelled.')); load(); return; }
+      setBusy(true);
+      api.post('/api/lichess/callback', { code, state })
+        .then(() => { setErr(''); })
+        .catch(e => setErr(e.response?.data?.message || tr('Could not connect Lichess. Please try again.')))
+        .finally(() => { clean(); setBusy(false); load(); });
+      return;
+    }
+    load();
+  }, [load]);
+
+  const connect = async () => {
+    setErr(''); setBusy(true);
+    try {
+      const r = await api.post('/api/lichess/connect', { redirectUri: `${window.location.origin}/settings?tab=chessboard` });
+      window.location.href = r.data.url;     // off to Lichess; it returns here
+    } catch (e) {
+      setErr(e.response?.data?.message || tr('Could not start the Lichess login.'));
+      setBusy(false);
+    }
+  };
+  const disconnect = async () => {
+    if (!window.confirm(tr('Disconnect Lichess? The board will stop playing on your Lichess account.'))) return;
+    setBusy(true);
+    try { await api.delete('/api/lichess'); } catch { /* shown by reload */ }
+    setBusy(false);
+    load();
+  };
+
+  const connected = st.connected;
+  return (
+    <div style={accountCard(connected)}>
+      <div style={accountHead}>
+        <span style={{ fontSize: 22 }}>♞</span>
+        <strong style={{ color: 'var(--color-text)', fontSize: 16 }}>Lichess</strong>
+        {connected && <span style={okPill}>✓ {tr('Connected')}</span>}
+      </div>
+      <p style={accountText}>
+        {connected
+          ? <>{tr('Signed in as')} <b>{st.username}</b>. {tr('On the board: Play > Lichess online.')}</>
+          : tr('Play random opponents and tournaments on Lichess from your board. Rapid and classical games.')}
+      </p>
+      {st.expired && <p style={{ ...accountText, color: 'var(--color-warning)' }}>{tr('Your Lichess login expired. Please connect again.')}</p>}
+      {err && <p style={{ ...accountText, color: 'var(--color-danger)' }}>{err}</p>}
+      {connected ? (
+        <button onClick={disconnect} disabled={busy} style={ghostBtn}>{tr('Disconnect Lichess')}</button>
+      ) : (
+        <button onClick={connect} disabled={busy || st.loading} style={primaryBtn(busy)}>
+          {busy ? tr('Connecting…') : tr('Connect Lichess')}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function PlayAccounts({ boards }) {
+  const paired = boards.length > 0;
+  return (
+    <section style={card}>
+      <h2 style={h2}>{tr("Sign in to play")}</h2>
+      <p style={p}>{tr("Choose where the board plays. You can use either one.")}</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
+        <div style={accountCard(paired)}>
+          <div style={accountHead}>
+            <span style={{ fontSize: 22 }}>♟</span>
+            <strong style={{ color: 'var(--color-text)', fontSize: 16 }}>ChessNexus</strong>
+            {paired && <span style={okPill}>✓ {tr('Connected')}</span>}
+          </div>
+          <p style={accountText}>
+            {paired
+              ? tr('Your board is connected. Puzzles, Stockfish and friends count on your account.')
+              : tr('Connect your board with the 6-digit code above to play puzzles, Stockfish and friends.')}
+          </p>
+        </div>
+        <LichessCard />
+      </div>
+    </section>
+  );
+}
+
+const accountCard = (on) => ({
+  padding: '16px 18px', borderRadius: 'var(--radius-lg)',
+  border: `1px solid ${on ? 'var(--color-success)' : 'var(--color-border)'}`,
+  background: on ? 'var(--color-success-a20)' : 'var(--color-white-a04)',
+  display: 'flex', flexDirection: 'column', gap: 6,
+});
+const accountHead = { display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' };
+const accountText = { color: 'var(--color-text-muted)', fontSize: 13, lineHeight: 1.55, margin: '0 0 6px' };
+const okPill = {
+  fontSize: 11, fontWeight: 700, padding: '2px 9px', borderRadius: 999,
+  color: 'var(--color-success)', border: '1px solid var(--color-success)',
+};
+const primaryBtn = (busy) => ({
+  alignSelf: 'flex-start', padding: '10px 18px', borderRadius: 'var(--radius-md)', border: 'none',
+  cursor: busy ? 'default' : 'pointer', background: 'var(--color-accent)', color: 'var(--color-bg)',
+  fontWeight: 700, fontSize: 14, opacity: busy ? 0.6 : 1,
+});
+const ghostBtn = {
+  alignSelf: 'flex-start', padding: '8px 14px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 13,
+  border: '1px solid var(--color-border)', background: 'transparent', color: 'var(--color-text-muted)',
+};
 
 const card = { background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)', padding: '24px', marginBottom: 20 };
 const h2 = { fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 };
@@ -160,6 +287,8 @@ export default function ChessboardDevicePanel() {
         {error && <div style={{ color: 'var(--color-danger)', fontSize: 13, marginTop: 10 }}>{error}</div>}
         {success && <div style={{ color: 'var(--color-success)', fontSize: 13, marginTop: 10 }}>{success}</div>}
       </section>
+
+      <PlayAccounts boards={boards} />
 
       <section style={card}>
         <h2 style={h2}>{tr("My boards")}</h2>

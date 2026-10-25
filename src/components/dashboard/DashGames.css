@@ -124,6 +124,7 @@
 .dg-type { font-weight: 600; color: var(--color-accent); }
 .dg-type--stockfish { color: var(--color-success); }
 .dg-type--friend { color: var(--color-warning); }
+.dg-type--board { color: var(--color-accent-2, var(--color-accent)); }
 .dg-when { margin-left: auto; color: var(--color-text-faint); }
 .dg-players { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-weight: 600; font-size: 0.92rem; }
 .dg-p { display: inline-flex; align-items: center; gap: 6px; min-width: 0; overflow-wrap: anywhere; }

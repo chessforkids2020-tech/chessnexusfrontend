@@ -47,6 +47,7 @@ const ROUTES = [
   '/features',
   '/chess-puzzles',
   '/chess-tactics-race',
+  '/chessboard',
   '/play-chess-online',
   '/play-chess-with-friends',
   '/masters-chess-games',

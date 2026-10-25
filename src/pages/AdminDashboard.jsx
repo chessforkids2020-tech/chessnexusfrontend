@@ -1384,6 +1384,7 @@ function AdminDashboard() {
           { to: '/admin/newsletter',   label: '📰 Newsletter' },
           { to: '/admin/testimonials', label: '💬 Testimonials', count: badgeCounts.testimonials },
           { to: '/admin/feedback',     label: '💡 User Feedback', count: badgeCounts.feedback },
+          { to: '/admin/board-guess',  label: '🏁 Chessboard launch' },
           { to: '/admin/help-center',  label: '❓ Help Center',  count: badgeCounts.helpCenter },
         ].map(item => {
           const waiting = item.count > 0;
