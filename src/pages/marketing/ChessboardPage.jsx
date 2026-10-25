@@ -387,7 +387,7 @@ export default function ChessboardPage() {
   return (
     <div className="cbl-page">
       <SEO
-        title={tr("ChessNexus Chessboard — Electronic & Robotic")}
+        title={tr("A New Move in Chess | ChessNexus Electronic Chessboard")}
         description="The ChessNexus electronic chessboard with light-up squares and a voice that guides every move, and a robotic chessboard that moves the pieces for you. Sales start 24 November 2026."
         keywords="electronic chessboard, robotic chessboard, smart chessboard India, light up chessboard, chess board for kids, chessnexus chessboard"
         canonical={CANONICAL}
@@ -401,7 +401,14 @@ export default function ChessboardPage() {
       {/* ── HERO ── */}
       <header className="cbl-hero">
         <div className="cbl-hero-text">
-          <h1>{tr("The chessboard that plays back.")}</h1>
+          <p className="cbl-presents">{tr("CHESSNEXUS PRESENTS")}</p>
+          <h1>{tr("A New Move in Chess.")}</h1>
+
+          {/* What is launching, and when. */}
+          <p className="cbl-launchline">
+            {tr("Meet the ChessNexus Electronic Chessboard.")}
+            <b>{onSale ? tr("On sale now") : <><span aria-hidden="true">🚀</span> {tr("Launching 24 November 2026")}</>}</b>
+          </p>
 
           {!onSale && (
             <div className="cbl-count" role="timer" aria-label={tr("Time until launch")}>

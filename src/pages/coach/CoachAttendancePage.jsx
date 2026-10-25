@@ -4,10 +4,16 @@ import CoachChatFab from '../../components/coach/CoachChatFab';
 import './CoachAttendancePage.css';
 import { t as tr } from '../../i18n/LanguageContext';
 
-// ─── IST helpers ────────────────────────────────────────────────────────────
-const IST = 'Asia/Kolkata';
-const todayIST = () => new Date().toLocaleDateString('en-CA', { timeZone: IST }); // YYYY-MM-DD
-const fmtIST   = (d) => new Date(d).toLocaleString('en-IN', { timeZone: IST, dateStyle: 'medium' });
+// ─── The coach's own calendar ────────────────────────────────────────────────
+// Attendance follows the COACH'S time zone (their browser's), not Indian time and
+// not UTC. A class day is a plain calendar date: the server stores it as that date
+// at 00:00 UTC, so such dates are always SHOWN as that date (timeZone 'UTC' below),
+// whatever zone the viewer is in. Real moments (when something was entered) are
+// shown on the coach's own clock.
+const MY_TZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { return ''; } })();
+const todayLocal = () => new Date().toLocaleDateString('en-CA');                       // YYYY-MM-DD on the coach's clock
+const fmtDate    = (d) => new Date(d).toLocaleDateString('en-IN', { timeZone: 'UTC', dateStyle: 'medium' });   // a calendar date
+const fmtMoment  = (d) => new Date(d).toLocaleDateString('en-IN', { dateStyle: 'medium' });                     // a moment, on the coach's clock
 const monthName = (y, m) => new Date(y, m - 1, 1).toLocaleString('en-IN', { month: 'long', year: 'numeric' });
 
 // ─── Status badge ────────────────────────────────────────────────────────────
@@ -33,7 +39,7 @@ function DownloadBar() {
   const download = async (kind) => {
     setBusy(kind);
     try {
-      const url = `/api/coach-attendance/${kind}/export.csv?months=${range}&studentId=${student}`;
+      const url = `/api/coach-attendance/${kind}/export.csv?months=${range}&studentId=${student}&tz=${encodeURIComponent(MY_TZ)}`;
       const res = await api.get(url, { responseType: 'blob' });
       const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8;' });
       const href = URL.createObjectURL(blob);
@@ -181,7 +187,7 @@ function TabDashboard() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const r = await api.get(`/api/coach-attendance/attendance/summary?year=${year}&month=${month}`);
+      const r = await api.get(`/api/coach-attendance/attendance/summary?year=${year}&month=${month}&tz=${encodeURIComponent(MY_TZ)}`);
       setData(r.data);
     } catch {
       setData(null);
@@ -195,7 +201,7 @@ function TabDashboard() {
   // Also fetch top stats
   const [stats, setStats] = useState(null);
   useEffect(() => {
-    api.get('/api/coach-attendance/dashboard').then(r => setStats(r.data)).catch(() => {});
+    api.get('/api/coach-attendance/dashboard', { params: { tz: MY_TZ } }).then(r => setStats(r.data)).catch(() => {});
   }, []);
 
   const prevMonth = () => {
@@ -423,7 +429,7 @@ function TabPlayers() {
                     <td>{p.enrolled ? p.classesPerMonth : <span className="cap-muted">—</span>}</td>
                     <td>{p.enrolled ? `${p.currency} ${(p.fees || 0).toLocaleString()}` : <span className="cap-muted">—</span>}</td>
                     <td>{p.classType || tr('Private')}</td>
-                    <td>{p.enrollmentDate ? fmtIST(p.enrollmentDate) : <span className="cap-muted">—</span>}</td>
+                    <td>{p.enrollmentDate ? fmtDate(p.enrollmentDate) : <span className="cap-muted">—</span>}</td>
                     <td>
                       <div className="cap-row-actions">
                         <button className="cap-btn cap-btn-ghost"
@@ -708,7 +714,7 @@ function PasteMarker({ selDate, onApplied }) {
 // TAB: ATTENDANCE
 // ════════════════════════════════════════════════════════════════════════════
 function TabAttendance() {
-  const [selDate, setSelDate]   = useState(todayIST());
+  const [selDate, setSelDate]   = useState(todayLocal());
   const [players, setPlayers]   = useState([]);
   const [records, setRecords]   = useState([]);   // records for selDate
   const [saving,  setSaving]    = useState('');   // studentId being saved
@@ -755,7 +761,7 @@ function TabAttendance() {
   const fmtEntryTime = (r) => {
     const t = r.updatedAt || r.createdAt;
     if (!t) return '';
-    return new Date(t).toLocaleString('en-IN', { timeZone: IST, day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    return new Date(t).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
   };
 
   // Add another entry for this student today. Omitting `slot` tells the server to
@@ -786,14 +792,14 @@ function TabAttendance() {
     }
   };
 
-  const istNow = new Date().toLocaleString('en-IN', { timeZone: IST, weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const istNow = new Date().toLocaleString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });   // the coach's own today
 
   return (
     <div>
       <div className="cap-card" style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
           <div>
-            <label className="cap-label">{tr("Date (IST)")}</label>
+            <label className="cap-label">{tr("Date")}{MY_TZ ? ` (${MY_TZ})` : ''}</label>
             <input type="date" className="cap-input" value={selDate}
               onChange={e => setSelDate(e.target.value)} />
           </div>
@@ -843,7 +849,7 @@ function TabAttendance() {
                             <StatusBadge s={r.status} />
                             <span className="cap-att-chip-time">
                               {new Date(r.createdAt || r.date).toLocaleTimeString('en-IN', {
-                                timeZone: IST, hour: '2-digit', minute: '2-digit',
+                                hour: '2-digit', minute: '2-digit',
                               })}
                             </span>
                             <button className="cap-att-chip-x" title={tr("Remove this entry")}
@@ -911,7 +917,7 @@ function TabPayments() {
 
   const [form, setForm] = useState({
     studentId: '', amount: '', currency: 'INR',
-    datePaid: todayIST(), fromDate: '', untilDate: '', notes: ''
+    datePaid: todayLocal(), fromDate: '', untilDate: '', notes: ''
   });
 
   const load = async () => {
@@ -965,7 +971,7 @@ function TabPayments() {
       await api.post('/api/coach-attendance/payments', form);
       setMsg(tr('Payment saved!'));
       setShowForm(false);
-      setForm({ studentId: '', amount: '', currency: 'INR', datePaid: todayIST(), fromDate: '', untilDate: '', notes: '' });
+      setForm({ studentId: '', amount: '', currency: 'INR', datePaid: todayLocal(), fromDate: '', untilDate: '', notes: '' });
       await load();
     } catch (e) {
       setMsg(e?.response?.data?.error || 'Error');
@@ -1102,7 +1108,7 @@ function TabPayments() {
                     <td>{p.classesPerMonth}</td>
                     <td>{p.currency} {(p.fees || 0).toLocaleString()}</td>
                     <td>{p.classType || tr('Private')}</td>
-                    <td>{p.enrollmentDate ? fmtIST(p.enrollmentDate) : <span className="cap-muted">—</span>}</td>
+                    <td>{p.enrollmentDate ? fmtDate(p.enrollmentDate) : <span className="cap-muted">—</span>}</td>
                     <td>
                       <div className="cap-row-actions">
                         <button className="cap-btn cap-btn-green" onClick={() => rejoin(p._id)}>{tr("Rejoin")}</button>
@@ -1142,9 +1148,9 @@ function PaymentTable({ rows, playerName, onDelete }) {
             <tr key={p._id}>
               <td>{playerName(p.studentId)}</td>
               <td>{p.currency} {p.amount.toLocaleString()}</td>
-              <td>{fmtIST(p.datePaid)}</td>
-              <td>{fmtIST(p.fromDate)}</td>
-              <td>{fmtIST(p.untilDate)}</td>
+              <td>{fmtDate(p.datePaid)}</td>
+              <td>{fmtDate(p.fromDate)}</td>
+              <td>{fmtDate(p.untilDate)}</td>
               <td>{p.notes || '—'}</td>
               <td>
                 <button className="cap-btn cap-btn-danger" onClick={() => onDelete(p._id)}>{tr("Del")}</button>
@@ -1220,12 +1226,12 @@ function TabRequests() {
                   {(r.fromDate || r.untilDate || r.paidDate) && (
                     <div className="cap-muted" style={{ fontSize: 12 }}>
                       {(r.fromDate || r.untilDate) && (
-                        <>{tr("Period:")} {r.fromDate ? fmtIST(r.fromDate) : '—'} – {r.untilDate ? fmtIST(r.untilDate) : '—'}</>
+                        <>{tr("Period:")} {r.fromDate ? fmtDate(r.fromDate) : '—'} – {r.untilDate ? fmtDate(r.untilDate) : '—'}</>
                       )}
-                      {r.paidDate && <> · Paid {fmtIST(r.paidDate)}</>}
+                      {r.paidDate && <> · Paid {fmtDate(r.paidDate)}</>}
                     </div>
                   )}
-                  <div className="cap-muted" style={{ fontSize: 12 }}>{tr("Submitted")} {fmtIST(r.createdAt)}</div>
+                  <div className="cap-muted" style={{ fontSize: 12 }}>{tr("Submitted")} {fmtMoment(r.createdAt)}</div>
                 </div>
                 <div className="cap-req-actions">
                   <span className={`cap-badge ${r.status === 'pending' ? 'badge-catchup' : r.status === 'approved' ? 'badge-present' : 'badge-absent'}`}>
@@ -1288,8 +1294,8 @@ function TabHistory() {
   // Group by month
   const grouped = {};
   for (const rec of history) {
-    const d = new Date(rec.date);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const d = new Date(rec.date);   // a calendar date stored at 00:00 UTC: read it in UTC
+    const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(rec);
   }
@@ -1310,7 +1316,7 @@ function TabHistory() {
             <div><span className="cap-muted">{tr("Student:")}</span> <strong>{selPlayer.studentName}</strong></div>
             <div><span className="cap-muted">{tr("Classes/mo:")}</span> <strong>{selPlayer.classesPerMonth}</strong></div>
             <div><span className="cap-muted">{tr("Type:")}</span> <strong>{selPlayer.classType}</strong></div>
-            {selPlayer.enrollmentDate && <div><span className="cap-muted">{tr("Since:")}</span> <strong>{fmtIST(selPlayer.enrollmentDate)}</strong></div>}
+            {selPlayer.enrollmentDate && <div><span className="cap-muted">{tr("Since:")}</span> <strong>{fmtDate(selPlayer.enrollmentDate)}</strong></div>}
           </div>
         </div>
       )}
@@ -1338,7 +1344,7 @@ function TabHistory() {
             <div className="cap-hist-grid">
               {recs.sort((a, b) => new Date(a.date) - new Date(b.date)).map(rec => (
                 <div key={rec._id} className={`cap-hist-cell cap-hist-${rec.status.toLowerCase().replace('-', '')}`}>
-                  <div className="cap-hist-day">{new Date(rec.date).getDate()}</div>
+                  <div className="cap-hist-day">{new Date(rec.date).getUTCDate()}</div>
                   <div className="cap-hist-s">{rec.status === 'Catch-up' ? 'CU' : rec.status.charAt(0)}</div>
                 </div>
               ))}

@@ -159,7 +159,7 @@ export default function FriendsPage() {
         <div>
           <input
             type="text"
-            placeholder={tr("Search by username or display name…")}
+            placeholder={tr("Search by display name…")}
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={s.searchInput}
@@ -176,7 +176,7 @@ export default function FriendsPage() {
                   <div style={s.avatar}>{(u.displayName || u.username || '?')[0].toUpperCase()}</div>
                   <div style={s.cardInfo}>
                     <div style={s.cardName}><PlayerName displayName={u.displayName} username={u.username} userId={u._id} /></div>
-                    <div style={s.cardSub}>@{u.username} · {u.friendCount || 0} {tr("friends")}</div>
+                    <div style={s.cardSub}>{u.friendCount || 0} {u.friendCount === 1 ? tr("friend") : tr("friends")}</div>
                   </div>
                   {!st || st.status === 'none' ? (
                     <button style={s.btnAdd} onClick={() => sendRequest(u._id)}>{tr("+ Add")}</button>

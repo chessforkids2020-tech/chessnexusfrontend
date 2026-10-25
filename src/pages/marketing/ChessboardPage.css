@@ -57,12 +57,12 @@
 .cbl-hero {
   position: relative;
   z-index: 1;
-  max-width: 1180px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 40px 24px 56px;
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
-  gap: 48px;
+  gap: 32px;
   align-items: center;
 }
 
@@ -95,7 +95,7 @@
 }
 
 .cbl-hero h1 {
-  margin: 0 0 30px;
+  margin: 0 0 16px;
   font-family: 'Fraunces', Georgia, serif;
   font-size: clamp(36px, 5.6vw, 70px);
   line-height: 1.02;
@@ -231,9 +231,9 @@
 }
 
 /* ── board photo ── */
-.cbl-board-wrap { position: relative; display: grid; place-items: start center; align-self: start; margin-top: -28px; }
+.cbl-board-wrap { position: relative; display: grid; place-items: start center; align-self: start; margin-top: 44px; }
 .cbl-photo {
-  position: relative; z-index: 1; display: block; width: min(100%, 600px); height: auto;
+  position: relative; z-index: 1; display: block; width: min(100%, 800px); height: auto;
   animation: cbl-float 7s ease-in-out infinite;
   /* transparent cut-out: a shadow that follows the board's outline, not a box */
   filter: drop-shadow(0 30px 38px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 40px rgba(34, 211, 238, 0.12));
@@ -583,7 +583,7 @@
   }
   .cbl-count { justify-content: center; }
   .cbl-board-wrap { margin-top: 0; }
-  .cbl-photo { max-width: 440px; }
+  .cbl-photo { max-width: 620px; }
   .cbl-products { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
@@ -754,4 +754,26 @@
     padding: 12px 8px; font-size: 13px; line-height: 1.25; border-radius: 12px;
     display: flex; align-items: center; justify-content: center; text-align: center;
   }
+}
+
+/* the launch line under the headline: what is coming, and when (date on its own line) */
+.cbl-launchline {
+  margin: 0 0 26px; font-size: clamp(15px, 1.6vw, 19px); line-height: 1.45; color: rgba(255, 255, 255, 0.82);
+}
+.cbl-launchline b { display: block; margin-top: 2px; color: #67e8f9; font-weight: 800; font-size: 1.12em; }
+.cbl-launchline-sep { display: none; }
+@media (max-width: 900px) { .cbl-launchline { margin-bottom: 20px; } }
+
+/* "CHESSNEXUS PRESENTS" above the headline */
+.cbl-presents {
+  margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: 0.26em; text-transform: uppercase; color: #67e8f9;
+}
+@media (max-width: 480px) { .cbl-presents { font-size: 11.5px; letter-spacing: 0.2em; } }
+
+/* big screens: the board takes all the room the text side does not need (smaller laptops keep the original split so the text never wraps) */
+@media (min-width: 1360px) {
+  /* text side: just wide enough for the countdown and the two buttons; the board takes the rest */
+  .cbl-hero { grid-template-columns: minmax(0, 470px) minmax(0, 1fr); gap: 16px; padding-inline: 12px; }
+  .cbl-actions .cbl-btn-lg { padding: 15px 16px; font-size: 14.5px; white-space: nowrap; }
+  .cbl-actions .cbl-btn-ghost { padding: 14px 14px; font-size: 14px; white-space: nowrap; }
 }

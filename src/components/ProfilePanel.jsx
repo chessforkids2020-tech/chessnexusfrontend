@@ -299,6 +299,13 @@ export default function ProfilePanel() {
           )}
         </div>
 
+        {/* Login username (read-only): the name they sign in with. It cannot be changed. */}
+        <div style={styles.infoCard}>
+          <h4 style={styles.infoCardH4}>{tr("🔑 Login Username")}</h4>
+          <p style={{ ...styles.infoCardP, fontFamily: 'monospace' }}>{user.username}</p>
+          <p style={{ color: 'var(--color-text-faint)', fontSize: 11.5, margin: '4px 0 0' }}>{tr("This is the name you sign in with. It can't be changed.")}</p>
+        </div>
+
         {/* Email (read-only) */}
         <div style={styles.infoCard}>
           <h4 style={styles.infoCardH4}>{tr("📧 Email")}</h4>

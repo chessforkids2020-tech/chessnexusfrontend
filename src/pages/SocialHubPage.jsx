@@ -481,10 +481,11 @@ function PlayersTab() {
               <button key={u._id} className="pl-search-row" onClick={() => openProfile(u)}>
                 <PlayerAvatar user={u} size={34} />
                 <div className="pl-search-info">
-                  <div className="pl-search-name" title={u.displayName || u.username}>
+                  <div className="pl-search-name" title={u.displayName}>
                     <PlayerName displayName={u.displayName} username={u.username} userId={u._id} />
                   </div>
-                  <div className="pl-search-handle">@{u.username}</div>
+                  {/* Never the username (it is private): display name + friend count only. */}
+                  <div className="pl-search-handle">{u.friendCount || 0} {u.friendCount === 1 ? tr("friend") : tr("friends")}</div>
                 </div>
                 <span className="pl-search-go">{tr("View →")}</span>
               </button>
