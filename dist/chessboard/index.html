@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en" data-theme="obsidianGlass"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+      THEME BOOTSTRAP — must stay here, inline and before any stylesheet.
+
+      NOTE: nothing may be inserted between <!doctype html> and <html>.
+      @vitejs/plugin-react finds its dev preamble by matching on the start of the
+      document, and a comment there makes it fail with "can't detect preamble" —
+      in the DEV SERVER ONLY, so a production build looks perfectly fine. The
+      data-theme default therefore lives on the <html> tag above with no comment
+      attached; this block documents it instead.
+
+      The default on <html> is only a fallback. The script below overwrites it
+      with the signed-in user's saved choice before the first paint.
+
+      React sets data-theme too (see src/contexts/UiThemeContext.jsx), but that
+      only runs after the bundle has downloaded, parsed and mounted. By then the
+      browser has already painted, so a user whose theme is Deep Ember would see
+      a flash of the default cyan first. This script runs synchronously during
+      head parsing, before the first paint, which is the only place the flash can
+      actually be prevented.
+
+      `lastUserId` is written by AppWithTheme in src/App.jsx. It exists because
+      this script cannot wait for the auth check to resolve — it needs to know
+      which uiTheme_<id> key to read while the page is still blank.
+
+      Everything is wrapped in try/catch: localStorage throws in some privacy
+      modes and inside sandboxed iframes, and a theme preference must never be
+      able to stop the page loading. The id is validated against the known list
+      so a stale or hand-edited value cannot select a palette that no longer
+      exists (which would leave the app with no colours at all).
+    -->
+    <script>
+      (function () {
+        try {
+          var VALID = ['obsidianGlass', 'midnightCyan', 'slateBlueSteel',
+                       'deepEmber', 'purpleHaze', 'obsidianRose',
+                       'obsidianEmerald', 'royalViolet', 'goldSovereign'];
+          var uid = localStorage.getItem('lastUserId');
+          var key = uid ? 'uiTheme_' + uid : 'uiTheme_guest';
+          var saved = localStorage.getItem(key);
+          if (saved && VALID.indexOf(saved) !== -1) {
+            document.documentElement.setAttribute('data-theme', saved);
+          }
+        } catch (e) {
+          /* keep the default already on <html> */
+        }
+      })();
+    </script>
+
+    <!--
+      Per-page SEO tags (title, description, keywords, canonical, robots,
+      Open Graph, Twitter) are managed at runtime by react-helmet-async via
+      src/components/SEO.jsx, and are baked into each prerendered page by
+      prerender.js. They are intentionally NOT hardcoded here — duplicating
+      them would produce two <title>/canonical/og:* tags on prerendered pages.
+      A default title (below) prevents an empty tab title before hydration.
+    -->
+    <title>ChessNexus Chessboard — Electronic &amp; Robotic | Chess Nexus</title>
+    <meta name="author" content="Chess Nexus">
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png">
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="msapplication-TileColor" content="#06b6d4">
+
+    <!-- Performance hints -->
+    <!-- FONTS.
+         Orbitron (display) and Poppins (body) were referenced in ~37 places
+         across the CSS but never actually LOADED, so every one of them silently
+         fell back to the system font — which is why titles and body text looked
+         identical everywhere. Loading them makes the existing font-family rules
+         do what they always said they did.
+         `display=swap` so text paints immediately in the fallback rather than
+         holding the page blank while the font downloads. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&amp;family=Poppins:wght@400;500;600;700;800&amp;family=Fontdiner+Swanky&amp;family=Jost:wght@300;400;500&amp;family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://www.chessnexus.in">
+    <link rel="dns-prefetch" href="https://www.chessnexus.in">
+
+    <!-- JSON-LD: WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Chess Nexus",
+      "url": "https://www.chessnexus.in/",
+      "description": "Free online chess platform for solving puzzles, practicing tactics, and competing in live arena races.",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires JavaScript",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "featureList": [
+        "Daily Chess Puzzles",
+        "Live Arena Races",
+        "Chess Tactics Training",
+        "Monthly Focus Challenges",
+        "Global Leaderboard",
+        "Team Race Mode",
+        "Chess Study System"
+      ],
+      "screenshot": "https://www.chessnexus.in/logo.png",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <!-- JSON-LD: Organization — 'alternateName' + 'sameAs' help Google treat
+         "chessnexus" and "chess nexus" as the SAME brand entity and consolidate
+         search results. Fill in every official profile URL under sameAs; the more
+         verified profiles, the stronger the brand signal. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Chess Nexus",
+      "alternateName": ["ChessNexus", "Chess Nexus Academy", "chessnexus.in"],
+      "url": "https://www.chessnexus.in/",
+      "logo": "https://www.chessnexus.in/logo.png",
+      "sameAs": [
+        "https://www.instagram.com/chessnexus.in_official/",
+        "https://www.facebook.com/profile.php?id=100064068341481"
+      ],
+      "description": "Chess Nexus is a free online chess training and competition platform offering puzzles, tactics, live races, and leaderboards."
+    }
+    </script>
+
+    <!-- JSON-LD: WebSite — helps Google understand the site as a single entity -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Chess Nexus",
+      "alternateName": "ChessNexus",
+      "url": "https://www.chessnexus.in/"
+    }
+    </script>
+
+    <!-- JSON-LD: SiteNavigationElement — the strongest signal Google uses to
+         build sitelinks. Order matters: Google favours the earliest items, and
+         typically shows ~4-6. The priority quick-actions (Sign up, Coach, Learn,
+         Tournaments, Analyze) are listed FIRST so they're the strongest sitelink
+         candidates. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Chess Nexus main navigation",
+      "itemListElement": [
+        { "@type": "SiteNavigationElement", "position": 1, "name": "Sign Up", "description": "Create a free Chess Nexus account and start training.", "url": "https://www.chessnexus.in/signup-request" },
+        { "@type": "SiteNavigationElement", "position": 2, "name": "Sign In", "description": "Log in to your Chess Nexus account.", "url": "https://www.chessnexus.in/login" },
+        { "@type": "SiteNavigationElement", "position": 3, "name": "Coach", "description": "Coach-led chess training and academy tools for coaches.", "url": "https://www.chessnexus.in/chess-coaching" },
+        { "@type": "SiteNavigationElement", "position": 4, "name": "Learn Chess", "description": "Solve puzzles, train tactics and improve at chess.", "url": "https://www.chessnexus.in/improve-at-chess" },
+        { "@type": "SiteNavigationElement", "position": 5, "name": "Live Tournaments", "description": "Compete in live 3D arena chess tournaments and races.", "url": "https://www.chessnexus.in/3d-chess-arena-tournament" },
+        { "@type": "SiteNavigationElement", "position": 6, "name": "Analyze Game", "description": "Analyse your chess games with Stockfish and accuracy scores.", "url": "https://www.chessnexus.in/analyse-my-chess-game" },
+        { "@type": "SiteNavigationElement", "position": 7, "name": "Chess Puzzles", "description": "Solve daily chess puzzles and train tactics.", "url": "https://www.chessnexus.in/chess-puzzles" },
+        { "@type": "SiteNavigationElement", "position": 8, "name": "Play Chess Online", "description": "Play live chess against people or the Stockfish engine.", "url": "https://www.chessnexus.in/play-chess-online" },
+        { "@type": "SiteNavigationElement", "position": 9, "name": "Chess Study", "description": "Learn with structured chess study lessons.", "url": "https://www.chessnexus.in/chess-study" },
+        { "@type": "SiteNavigationElement", "position": 10, "name": "Leaderboard", "description": "See the top players on the global leaderboard.", "url": "https://www.chessnexus.in/leaderboard" }
+      ]
+    }
+    </script>
+
+    <!-- JSON-LD: FAQPage for SEO rich results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Chess Nexus free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Chess Nexus is completely free. All core features including daily puzzles, tactics training, and live arena races are available at no cost."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What chess features does Chess Nexus offer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Chess Nexus offers daily chess puzzles, live arena races, team race mode, monthly focus challenges, a global leaderboard, chess study system, and tactics training."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I improve my chess rating on Chess Nexus?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Solve daily puzzles, participate in arena races, complete monthly focus challenges, and use the study system to improve your chess rating on Chess Nexus."
+          }
+        }
+      ]
+    }
+    </script>
+    <script type="module" crossorigin="" src="/assets/index-D7Vbkt9k.js"></script>
+    <link rel="modulepreload" crossorigin="" href="/assets/charts-BEQTlAck.js">
+    <link rel="modulepreload" crossorigin="" href="/assets/editor-BjNrA3Jh.js">
+    <link rel="modulepreload" crossorigin="" href="/assets/react-vendor-NrRSxcBc.js">
+    <link rel="modulepreload" crossorigin="" href="/assets/motion-C3teKbbu.js">
+    <link rel="stylesheet" crossorigin="" href="/assets/index-BS5LEGTK.css">
+  <style data-shake-animation="true">
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(30px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes glassGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
+}
+</style><style data-responsive-styles="true">
+/* Desktop styles - Submit button to the right of chessboard */
+@media (min-width: 769px) {
+  .tournament-layout {
+    gap: 8px !important;
+  }
+  
+  .tournament-center {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 30px !important;
+  }
+  
+  .chessboard-container {
+    flex: 1 !important;
+  }
+  
+  .submit-button-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tournament-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+    align-items: center !important;
+  }
+  
+  .tournament-sidebar {
+    width: 100% !important;
+    max-width: 500px !important;
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+  
+  .tournament-center {
+    order: 2 !important;
+    width: 100% !important;
+    flex-direction: column !important;
+  }
+  
+  .tournament-timer {
+    font-size: 28px !important;
+  }
+  
+  .tournament-notation {
+    max-height: 200px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tournament-layout {
+    gap: 16px !important;
+  }
+  
+  .tournament-sidebar {
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+  
+  .tournament-timer {
+    font-size: 24px !important;
+  }
+  
+  .tournament-notation-list {
+    max-height: 150px !important;
+  }
+  
+  .tournament-action-buttons {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  .tournament-mode-button {
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+  
+  .tournament-submit-button {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+  }
+}
+</style><style data-spin-animation="true">
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style><meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" data-rh="true"><meta property="og:image" content="https://www.chessnexus.in/logo.png" data-rh="true"><meta property="og:type" content="website" data-rh="true"><meta property="og:site_name" content="Chess Nexus" data-rh="true"><meta name="twitter:card" content="summary_large_image" data-rh="true"><meta name="twitter:image" content="https://www.chessnexus.in/logo.png" data-rh="true"><link rel="canonical" href="https://www.chessnexus.in/chessboard" data-rh="true"><meta name="description" content="The ChessNexus electronic chessboard with light-up squares and a voice that guides every move, and a robotic chessboard that moves the pieces for you. Sales start 24 November 2026." data-rh="true"><meta name="keywords" content="electronic chessboard, robotic chessboard, smart chessboard India, light up chessboard, chess board for kids, chessnexus chessboard" data-rh="true"><meta property="og:title" content="ChessNexus Chessboard — Electronic &amp; Robotic | Chess Nexus" data-rh="true"><meta property="og:description" content="The ChessNexus electronic chessboard with light-up squares and a voice that guides every move, and a robotic chessboard that moves the pieces for you. Sales start 24 November 2026." data-rh="true"><meta property="og:image:alt" content="ChessNexus Chessboard — Electronic &amp; Robotic | Chess Nexus" data-rh="true"><meta property="og:url" content="https://www.chessnexus.in/chessboard" data-rh="true"><meta name="twitter:title" content="ChessNexus Chessboard — Electronic &amp; Robotic | Chess Nexus" data-rh="true"><meta name="twitter:description" content="The ChessNexus electronic chessboard with light-up squares and a voice that guides every move, and a robotic chessboard that moves the pieces for you. Sales start 24 November 2026." data-rh="true"><script type="application/ld+json" data-rh="true">{"@context":"https://schema.org","@type":"WebPage","name":"ChessNexus Electronic & Robotic Chessboard","description":"The ChessNexus electronic chessboard with light-up squares and voice, and the robotic chessboard that moves the pieces for you. Sales start 24 November 2026.","url":"https://www.chessnexus.in/chessboard"}</script></head>
+  <body class="no-header-padding">
+    <div id="root"><div class="user-layout-container"><div class="user-content-wrapper"><div class="user-main-content with-sidebar desktop"><div class="cbl-page"><header class="cbl-hero"><div class="cbl-hero-text"><h1>The chessboard that plays back.</h1><div class="cbl-count" role="timer" aria-label="Time until launch"><div class="cbl-tile"><b>29</b><span>Days</span></div><div class="cbl-tile"><b>08</b><span>Hours</span></div><div class="cbl-tile"><b>54</b><span>Minutes</span></div><div class="cbl-tile"><b>53</b><span>Seconds</span></div></div><div class="cbl-actions"><button type="button" class="cbl-btn cbl-btn-lg">Notify me at launch<span class="cbl-arrow"> →</span></button><button type="button" class="cbl-btn-ghost">🎯 Guess to win a discount</button></div></div><div class="cbl-board-wrap"><img class="cbl-photo" src="/chessnexus-board.webp" alt="The ChessNexus electronic chessboard with the e2 and e4 squares lit up" width="1200" height="902" fetchpriority="high"><div class="cbl-board-glow"></div></div></header><section class="cbl-name" aria-label="The naming challenge"><div class="cbl-name-text"><span class="cbl-name-badge">🎮 Naming challenge</span><h2>Be the one who names it.</h2><div class="cbl-name-mask" aria-hidden="true"><span>ChessNexus</span><b>? ? ? ? ?</b></div><p>Both boards are about to get their names, and they could be yours. Nobody sees who sent what. The winning names, and who sent them, are revealed at launch.</p></div><form class="cbl-name-form"><label class="cbl-name-field"><span>💡 Electronic board</span><input maxlength="30" placeholder="Its name…" aria-label="Name for the electronic board" value=""></label><label class="cbl-name-field"><span>🤖 Robotic board</span><input maxlength="30" placeholder="Its name…" aria-label="Name for the robotic board" value=""></label><p class="cbl-name-note">Name one board, or both. No name or email needed.</p><button type="submit" class="cbl-btn">Enter the challenge</button></form></section><div class="cbl-ticker" aria-hidden="true"><div class="cbl-ticker-track"><span>✨ Light-up squares &nbsp;·&nbsp; 🔊 Voice guidance &nbsp;·&nbsp; ♟️ Moves the pieces &nbsp;·&nbsp; 🧠 Plays Stockfish &nbsp;·&nbsp; 📵 No screen needed &nbsp;·&nbsp;&nbsp;</span><span>✨ Light-up squares &nbsp;·&nbsp; 🔊 Voice guidance &nbsp;·&nbsp; ♟️ Moves the pieces &nbsp;·&nbsp; 🧠 Plays Stockfish &nbsp;·&nbsp; 📵 No screen needed &nbsp;·&nbsp;&nbsp;</span></div></div><section class="cbl-section"><p class="cbl-eyebrow">Two boards. One launch.</p><div class="cbl-products"><article class="cbl-product cbl-p-elec"><span class="cbl-ribbon">Coming 24 Nov</span><div class="cbl-p-ic">💡</div><h2>Electronic Chessboard</h2><p class="cbl-tag">Light says where. Voice says what.</p><p>Screen-free training. Every square can light up, so the board shows where to move, and a voice tells you what the idea is.</p></article><article class="cbl-product cbl-p-robo"><span class="cbl-ribbon">Coming 24 Nov</span><div class="cbl-p-ic">🤖</div><h2>Robotic Chessboard</h2><p class="cbl-tag">It moves the pieces for you.</p><p>Play a real game on a real board. A hidden mechanism under the board slides the opponent's pieces, so the computer plays back like a person would.</p></article></div></section><section class="cbl-section cbl-accounts" aria-label="Connect your accounts"><p class="cbl-eyebrow">Connect your accounts</p><h2 class="cbl-accounts-title">Sign in once. Play either way.</h2><div class="cbl-accounts-grid"><article class="cbl-acct cbl-acct-cn"><div class="cbl-acct-head"><span class="cbl-acct-ic" aria-hidden="true">♟</span><h3>ChessNexus</h3></div><p class="cbl-acct-lead">Your academy account, on a real board.</p><ul><li>Solve puzzles on a real board</li><li>Play Stockfish and friends</li><li>Do your coach's assignments</li><li>Keep every game in your account</li></ul><a class="cbl-acct-link" href="/signup-request">Create a free account →</a></article><article class="cbl-acct cbl-acct-li"><div class="cbl-acct-head"><span class="cbl-acct-ic" aria-hidden="true">♞</span><h3>Lichess</h3></div><p class="cbl-acct-lead">Play real opponents online.</p><ul><li>Random opponents and tournaments</li><li>Rapid and classical games</li><li>Your games stay on Lichess</li></ul><p class="cbl-acct-note">Connect it once in Settings when your board arrives.</p></article></div></section><section class="cbl-section cbl-notify" id="notify"><h2>Be first in line</h2><p>Leave your email and we'll tell you the moment sales open.</p><form class="cbl-form"><input required="" placeholder="Your name" aria-label="Your name" value=""><input required="" type="email" placeholder="Email address" aria-label="Email address" value=""><input type="tel" inputmode="tel" autocomplete="tel" placeholder="WhatsApp number (optional)" aria-label="WhatsApp number (optional)" value=""><p class="cbl-hint">Add your WhatsApp number and we'll send you one reminder when sales open.</p><div class="cbl-cur" role="group" aria-label="Currency"><button type="button" class="on">₹ INR</button><button type="button" class="">$ USD</button></div><div class="cbl-money"><span aria-hidden="true">₹</span><input inputmode="numeric" placeholder="Your price guess (optional)" aria-label="Your price guess (optional)" value=""></div><p class="cbl-hint">The closer your guess when we reveal the price on 24 November, the better your discount. One guess per person.</p><select aria-label="Which board?"><option value="Both boards">Both boards</option><option value="Electronic board">Electronic board</option><option value="Robotic board">Robotic board</option></select><button type="submit" class="cbl-btn">Notify me at launch</button></form></section></div></div></div><footer class="site-footer"><div class="footer-content"><img src="/logo.png" alt="Chess Nexus Logo" class="footer-logo"><nav class="footer-nav"><a href="/">Home</a><span class="footer-sep">|</span><a href="/features">Features</a><span class="footer-sep">|</span><a href="/members">Members</a><span class="footer-sep">|</span><a href="/contact">Contact Us</a><span class="footer-sep">|</span><a href="/report">Report</a><span class="footer-sep">|</span><a href="/privacy-policy">Privacy Policy</a><span class="footer-sep">|</span><a href="/terms">Terms</a><span class="footer-sep">|</span><a href="/refund-policy">Refund</a></nav><div class="footer-social"><a href="https://www.instagram.com/chessnexus.in_official/" target="_blank" rel="noopener noreferrer me" aria-label="Chess Nexus on Instagram" title="Chess Nexus on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a><a href="https://www.facebook.com/profile.php?id=100064068341481" target="_blank" rel="noopener noreferrer me" aria-label="Chess Nexus on Facebook" title="Chess Nexus on Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"></path></svg></a></div><p class="footer-text">© 2026 CHESS NEXUS<img src="/logo.png" alt="Chess Nexus Logo" class="footer-text-logo"></p></div></footer></div></div>
+  
+
+</body></html>
