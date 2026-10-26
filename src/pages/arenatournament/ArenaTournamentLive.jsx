@@ -8,6 +8,7 @@ import api from '../../api';
 import TournamentChat from '../../components/TournamentChat';
 import { AuthContext } from '../../contexts/AuthContext';
 import { playArenaSound } from '../../utils/arenaSound';
+import useArenaBoardSize from './useArenaBoardSize';
 import './ArenaTournamentLive.css';
 import { t as tr } from '../../i18n/LanguageContext';
 
@@ -114,13 +115,13 @@ export default function ArenaTournamentLive() {
   const [crownToast, setCrownToast] = useState(null); // null | 'gold' | 'platinum' | 'gem'
   const [carryBonusToast, setCarryBonusToast] = useState(0);
   const [carryExpiredToast, setCarryExpiredToast] = useState(false);
-  const [boardWidth, setBoardWidth] = useState(560);
   // The chess COLUMN, measured directly. Sizing the board from window.innerWidth
   // ignored the fact that the board sits in a 1fr middle column between two 0.7fr
   // panels, so on a wide screen the board grew past its column and slid under the
   // right-hand card. Measuring the container is the only thing that cannot drift
   // out of step with the CSS grid.
   const chessColRef = useRef(null);
+  const { boardWidth, maxBoard, onResize: onBoardResize, minBoard } = useArenaBoardSize(chessColRef);
   const [whiteTimeRemaining, setWhiteTimeRemaining] = useState(null);
   const [blackTimeRemaining, setBlackTimeRemaining] = useState(null);
   const [lastMove, setLastMove] = useState(null);
@@ -292,70 +293,6 @@ export default function ArenaTournamentLive() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentGame, gameState, whiteTimeRemaining === null, blackTimeRemaining === null]);
-
-  // Responsive board size — proportional to viewport for consistency across all screens.
-  // On MOBILE (≤768px) the board AUTO-FITS the screen like Lichess/Chess.com: it fills
-  // almost the full viewport width, no fixed pixel cap and no manual resize needed.
-  // On DESKTOP it's proportional to the window (and the coach can still drag-resize).
-  const [isMobileBoard, setIsMobileBoard] = useState(typeof window !== 'undefined' && window.innerWidth <= 768);
-  useEffect(() => {
-    const updateBoardSize = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      setIsMobileBoard(width <= 768);
-      if (width <= 768) {
-        // Fill the width (small 12px side margin), but never taller than fits the
-        // screen with room for the header/clocks — so the whole board is reachable
-        // without scrolling. This is the "just fits the phone" behaviour.
-        const byWidth = width - 24;
-        const byHeight = Math.floor(height * 0.62);
-        setBoardWidth(Math.max(260, Math.min(byWidth, byHeight)));
-        return;
-      }
-
-      // DESKTOP / TABLET: size from the column the board actually lives in, not
-      // from the viewport. The old `window.innerWidth * 0.36` was a guess at how
-      // wide the middle column would be; at 1920px it asked for ~691px inside a
-      // column that is narrower than that, which is how the board ended up
-      // overlapping the right-hand card. COLUMN_PAD leaves the board clear of the
-      // column's own padding and border so it never touches the neighbouring panel.
-      const COLUMN_PAD = 24;
-      const el = chessColRef.current;
-      const colWidth = el ? el.clientWidth - COLUMN_PAD : null;
-
-      // Height still matters: the board shares the column with the clocks and the
-      // player rows above and below it, so a very wide, short window must not
-      // produce a board taller than the screen.
-      const byHeight = Math.floor(height * 0.74);
-
-      // Before the ref attaches (first paint) fall back to the old proportional
-      // guess rather than rendering a 260px board for one frame.
-      const fallback = Math.floor(width * 0.36);
-      const available = colWidth && colWidth > 0 ? colWidth : fallback;
-
-      // Cap raised 760 -> 900: with the column measured, a bigger board can no
-      // longer overlap anything, so large monitors get a genuinely larger board.
-      setBoardWidth(Math.max(280, Math.min(900, available, byHeight)));
-    };
-
-    updateBoardSize();
-    window.addEventListener('resize', updateBoardSize);
-
-    // The column can change width without the WINDOW changing — the right panel
-    // growing, a scrollbar appearing, the grid reflowing. A resize listener alone
-    // misses those, and the board would stay too wide until the next window
-    // resize; ResizeObserver catches every one of them.
-    let ro = null;
-    if (typeof ResizeObserver !== 'undefined' && chessColRef.current) {
-      ro = new ResizeObserver(() => updateBoardSize());
-      ro.observe(chessColRef.current);
-    }
-
-    return () => {
-      window.removeEventListener('resize', updateBoardSize);
-      if (ro) ro.disconnect();
-    };
-  }, []);
 
   useEffect(() => {
     console.log('⚡ [ArenaTournamentLive] Component mounted, Tournament ID:', tournamentId);
@@ -1708,6 +1645,9 @@ export default function ArenaTournamentLive() {
                   lastMove={displayLastMove}
                   draggable={!reviewing}
                   boardWidth={boardWidth}
+                  onResize={onBoardResize}
+                  minBoardWidth={minBoard}
+                  maxBoardWidth={maxBoard}
                   showCoordinates={false}
                   allowPremove={!reviewing}
                   playerColor={myColor}

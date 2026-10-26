@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
@@ -9,7 +9,25 @@ import { t as tr } from '../i18n/LanguageContext';
 // Student player for a coach "find the blunders" assignment. Steps through each
 // game's moves; the student types the blunder moves they spot into slots, then
 // submits. The backend grades (the answers are never sent to the client).
+// How big the board should be. The board draws itself at the width it is TOLD (it
+// does not fill its container), so tell it: on a desktop it is height-capped so the
+// board, the game tabs and the move buttons all fit inside the modal; on a phone it
+// is the screen width. Follows window resizes.
+function useBoardWidth() {
+  const calc = () => (window.innerWidth > 1024
+    ? Math.max(320, Math.min(640, Math.floor(window.innerHeight * 0.92 - 230)))
+    : window.innerWidth);
+  const [w, setW] = useState(calc);
+  useEffect(() => {
+    const on = () => setW(calc());
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, []);
+  return w;
+}
+
 export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded }) {
+  const boardWidth = useBoardWidth();
   const games = assignment.pgnTask?.games || [];
   const findTarget = assignment.pgnTask?.findTarget || 1;
 
@@ -85,7 +103,7 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
   // bar and the footer.
   return createPortal((
     <div className="bap-overlay">
-      <div className="bap-modal">
+      <div className="bap-modal bap-blunder">
         <div className="bap-head">
           <div>
             <div className="bap-title">🔍 {assignment.title}</div>
@@ -125,7 +143,7 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
                 </div>
               )}
               {/* No onDrop handler → display-only board. */}
-              <Chessboard position={fen} />
+              <Chessboard position={fen} boardWidth={boardWidth} />
               <div className="bap-nav">
                 <button onClick={() => setPly(0)} disabled={ply === 0}>⏮</button>
                 <button onClick={() => setPly(p => Math.max(0, p - 1))} disabled={ply === 0}>◀</button>

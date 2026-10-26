@@ -197,3 +197,23 @@
   /* The board fills the sheet's content width. */
   .bap-board { width: 100%; display: flex; justify-content: center; }
 }
+
+/* ── Desktop: board on the left, answers on the right ─────────────────────
+   FenAssignmentPlayer.css reuses the .bap-* class names for ITS two-column layout
+   (a fixed-width side panel, the title hidden, the header floated to the corner).
+   Those rules also reached this screen, where the board then measured a collapsed
+   container, drew itself wider than it, and covered the answer panel. The rules
+   below are scoped to .bap-blunder and carry more specificity, so they win
+   whatever order the files load in. */
+@media (min-width: 1025px) {
+  .bap-modal.bap-blunder { width: fit-content; margin: 0 auto; padding-top: 22px; }
+  .bap-modal.bap-blunder .bap-head { position: static; margin-bottom: 14px; }
+  .bap-modal.bap-blunder .bap-head .bap-title { display: block; }
+  .bap-modal.bap-blunder .bap-body { flex-direction: row; align-items: flex-start; gap: 24px; }
+  /* An explicit width: the board sizes itself by measuring this box. Height-capped
+     so the board plus its game tabs and move buttons fit inside the 92vh modal. */
+  .bap-modal.bap-blunder .bap-body .bap-board { flex: 0 0 auto; width: fit-content; max-width: none; }
+  .bap-modal.bap-blunder .bap-body .bap-finds {
+    flex: 0 0 320px; width: 320px; max-width: 320px; margin: 0;
+  }
+}

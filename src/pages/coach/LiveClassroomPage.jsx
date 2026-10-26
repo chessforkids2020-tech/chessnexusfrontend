@@ -19,6 +19,7 @@ import { SideToMoveControl, CastlingControl, EnPassantControl } from '../../comp
 import EnginePanel from '../../components/EnginePanel';
 import ClassOpeningExplorer from '../../components/coach/ClassOpeningExplorer';
 import { copyText } from '../../utils/clipboard';
+import { floatTileWidth, boxFor, readSavedCols, COLS_CHOICES } from '../../utils/videoGrid';
 import { renderFrame } from '../../lib/videoEffects';
 import CoachArenaLive from './CoachArenaLive';
 import WhiteboardOverlay, { wbToolbarSpace } from '../../components/coach/WhiteboardOverlay';
@@ -2185,22 +2186,48 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       return next;
     });
   }, []);
-  // Detached-video layout. 'strip' (default) = one tall column like Zoom's
-  // video panel, easy to park beside the board; 'grid' = the old rectangle.
-  // A per-device preference, so it's remembered between classes.
-  const [videoLayout, setVideoLayoutState] = useState(() => {
-    try { return localStorage.getItem('lc_video_layout') === 'grid' ? 'grid' : 'strip'; } catch { return 'strip'; }
-  });
-  const stripSize = () => ({ w: 220, h: Math.max(260, (typeof window !== 'undefined' ? window.innerHeight : 800) - 140) });
+  // Detached-video layout: how many COLUMNS of tiles the coach wants in the floating
+  // box / pop-out window — 1, 2, 3, 4, or 0 = Auto (the area-maximising grid). More
+  // columns plus a bigger box = bigger pictures; more students just add rows (it
+  // scrolls). A per-device preference, remembered between classes. (This replaces the
+  // old strip/grid toggle, whose one-column strip could not show more than a narrow
+  // sliver of video however big the box was made.)
+  const [videoCols, setVideoColsState] = useState(() => readSavedCols(localStorage));
   const [floatPos, setFloatPos] = useState({ x: null, y: 96 });    // floating box position
-  const [floatSize, setFloatSize] = useState(() => (videoLayout === 'grid' ? { w: 300, h: 250 } : stripSize()));
-  const setVideoLayout = (layout) => {
-    setVideoLayoutState(layout);
-    try { localStorage.setItem('lc_video_layout', layout); } catch { /* ignore */ }
-    // Snap the float box to the new shape (the coach can still resize it).
-    setFloatSize(layout === 'grid' ? { w: 300, h: 250 } : stripSize());
+  const [floatSize, setFloatSize] = useState(() => boxFor(videoCols, window.innerWidth, window.innerHeight));
+  const setVideoCols = (cols) => {
+    setVideoColsState(cols);
+    try { localStorage.setItem('lc_video_cols', String(cols)); } catch { /* ignore */ }
+    // Snap the float box to a size that suits this many columns (still resizable).
+    setFloatSize(boxFor(cols, window.innerWidth, window.innerHeight));
     setFloatPos(p => ({ ...p, y: 96 }));
   };
+  // Drag-to-resize for the floating box: from the corner (both ways) or an edge (one way).
+  const startFloatResize = (e, horiz, vert) => {
+    e.stopPropagation();
+    const sx = e.clientX, sy = e.clientY, sw = floatSize.w, sh = floatSize.h;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const move = (ev) => setFloatSize({
+      w: horiz ? Math.min(window.innerWidth - 8, Math.max(160, sw + (ev.clientX - sx))) : sw,
+      h: vert ? Math.min(window.innerHeight - 8, Math.max(130, sh + (ev.clientY - sy))) : sh,
+    });
+    const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  // The column picker (Auto · 1 · 2 · 3 · 4): shown in the top bar and in the box header.
+  const colsPicker = (compact) => (
+    <span style={{ ...s.vmodeGroup, marginLeft: compact ? 0 : 4 }} title={tr("How many columns of videos")}>
+      {COLS_CHOICES.map(c => (
+        <button
+          key={c}
+          style={{ ...s.vmodeBtn, width: compact ? 22 : 26, height: compact ? 20 : 26, fontSize: compact ? 11 : 12, fontWeight: 700, ...(videoCols === c ? s.vmodeBtnOn : {}) }}
+          title={c === 0 ? tr("Auto layout") : (c === 1 ? tr("1 column") : tr("{v0} columns", { v0: c }))}
+          onClick={() => setVideoCols(c)}
+        >{c === 0 ? tr('Auto') : c}</button>
+      ))}
+    </span>
+  );
   // Which inline device menu is open: 'mic' | 'cam' | null (the ˅ next to each icon).
   const [devMenu, setDevMenu] = useState(null);
   // Video-effects panel (light / touch-up / blur) open state.
@@ -4316,8 +4343,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         // Fullscreen button below (requestFullscreen), NOT dragging/maximizing.
         // Strip (default): a narrow, tall window — like Zoom's video panel — to park
         // beside the browser or on a 2nd monitor. Grid: the old large window.
-        const strip = videoLayout === 'strip';
-        const w = strip ? 280 : Math.round((window.screen?.availWidth || 1280) * 0.95);
+        const strip = videoCols === 1;
+        const availW = window.screen?.availWidth || 1280;
+        const w = videoCols >= 2 ? Math.min(Math.round(availW * 0.95), videoCols * 260 + 24) : strip ? 280 : Math.round(availW * 0.95);
         const h = Math.round((window.screen?.availHeight || 800) * (strip ? 0.9 : 0.95));
         const pip = await dpip.requestWindow({ width: w, height: h });
         if (cancelled) { try { pip.close(); } catch { /* */ } return; }
@@ -4335,7 +4363,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         // re-flows live when the coach resizes the window (the old layout was
         // computed once, so resizing just left a gap or clipped tiles).
         const grid = doc.createElement('div');
-        grid.style.cssText = `flex:1 1 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(${strip ? 200 : 260}px,1fr));grid-auto-rows:max-content;gap:8px;padding:10px;align-content:start;box-sizing:border-box;overflow-y:auto;overflow-x:hidden;min-height:0`;
+        grid.style.cssText = `flex:1 1 auto;display:grid;grid-template-columns:${videoCols >= 2 ? `repeat(${videoCols},1fr)` : `repeat(auto-fill,minmax(${strip ? 200 : 260}px,1fr))`};grid-auto-rows:max-content;gap:8px;padding:10px;align-content:start;box-sizing:border-box;overflow-y:auto;overflow-x:hidden;min-height:0`;
         doc.body.appendChild(grid);
 
         popTiles.forEach(p => {
@@ -4375,7 +4403,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     // Rebuild only when the pop-out opens/closes or the SET of people (or their video
     // tracks) changes — not on every render, which would flicker the window.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHost, videoMode, videoLayout, lk.connected, lk.participants.map(p => `${p.identity}:${p.videoTrack?.sid || 'none'}`).join('|')]);
+  }, [isHost, videoMode, videoCols, lk.connected, lk.participants.map(p => `${p.identity}:${p.videoTrack?.sid || 'none'}`).join('|')]);
 
   // When the meeting ends, a STUDENT is auto-sent to their own portal after a short
   // beat (they can't stay in the coach's classroom, and must not land on the coach's
@@ -4858,14 +4886,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 onClick={() => setVideoMode(m)}
               >{icon}</button>
             ))}
-            {/* Strip ▯ / grid ▦ — only matters once the videos are detached. */}
-            {(videoMode === 'float' || videoMode === 'pop') && (
-              <button
-                style={{ ...s.vmodeBtn, marginLeft: 4 }}
-                title={videoLayout === 'strip' ? tr("Show videos as a grid") : tr("Show videos as a vertical strip")}
-                onClick={() => setVideoLayout(videoLayout === 'strip' ? 'grid' : 'strip')}
-              >{videoLayout === 'strip' ? '▦' : '▯'}</button>
-            )}
+            {/* Columns — only matters once the videos are detached. */}
+            {(videoMode === 'float' || videoMode === 'pop') && colsPicker(false)}
           </div>
         )}
         <button style={s.iconBtn} title={isFs ? 'Exit fullscreen' : 'Fullscreen (video if shown, else the class)'} onClick={toggleVideoFullscreen}>
@@ -6224,22 +6246,18 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           >
             <span style={s.vFloatTitle}>{tr("📹 Class video")} <span style={{ color: '#6b7280', fontWeight: 600 }}>· {allTiles.length}</span></span>
             <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-              <button style={s.vfBtn}
-                title={videoLayout === 'strip' ? tr("Show videos as a grid") : tr("Show videos as a vertical strip")}
-                onClick={() => setVideoLayout(videoLayout === 'strip' ? 'grid' : 'strip')}>
-                {videoLayout === 'strip' ? '▦' : '▯'}
-              </button>
+              {colsPicker(true)}
               <button style={s.vfBtn} title={tr("Pin videos back into the panel")} onClick={() => setVideoMode('dock')}>📌</button>
               <button style={s.vfBtn} title={tr("Pop out to its own window")} onClick={() => setVideoMode('pop')}>⧉</button>
               <button style={s.vfBtn} title={tr("Hide videos")} onClick={() => setVideoMode('hidden')}>✕</button>
             </span>
           </div>
-          <div style={videoLayout === 'strip' ? s.vFloatStrip : s.vFloatBody}>
+          <div style={videoCols === 1 ? s.vFloatStrip : videoCols >= 2 ? s.vFloatCols : s.vFloatBody}>
             {(() => {
-              // Strip: one column, every tile the full width, scrolls when the class
-              // is bigger than the box — like Zoom's vertical video panel.
-              if (videoLayout === 'strip') return tiles.map(p => renderTile(p, { small: true, width: '100%' }));
-              // Grid: same area-maximizing + centered-last-row layout as the main stage, sized
+              // Fixed columns: the tiles share the box's width, so a bigger box means
+              // bigger pictures, and extra students flow onto new rows (it scrolls).
+              if (videoCols >= 1) return tiles.map(p => renderTile(p, { small: true, width: videoCols === 1 ? '100%' : floatTileWidth(videoCols, floatSize.w) }));
+              // Auto: same area-maximizing + centered-last-row layout as the main stage, sized
               // to the float box so its tiles also flow continuously (no trailing gap).
               const innerW = floatSize.w - 16, innerH = floatSize.h - 46; // minus padding + header
               const bg = bestGrid(tiles.length, innerW, innerH, 4 / 3, 6);
@@ -6248,19 +6266,12 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           </div>
           <div
             style={s.vFloatResize}
-            onPointerDown={(e) => {
-              e.stopPropagation();
-              const sx = e.clientX, sy = e.clientY, sw = floatSize.w, sh = floatSize.h;
-              e.currentTarget.setPointerCapture(e.pointerId);
-              const move = (ev) => setFloatSize({
-                w: Math.max(160, sw + (ev.clientX - sx)),
-                h: Math.max(130, sh + (ev.clientY - sy)),
-              });
-              const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
-              window.addEventListener('pointermove', move);
-              window.addEventListener('pointerup', up);
-            }}
+            title={tr("Drag to resize")}
+            onPointerDown={(e) => startFloatResize(e, true, true)}
           >⤡</div>
+          {/* Edge handles: drag the right or bottom edge to resize one way. */}
+          <div style={s.vFloatEdgeR} onPointerDown={(e) => startFloatResize(e, true, false)} />
+          <div style={s.vFloatEdgeB} onPointerDown={(e) => startFloatResize(e, false, true)} />
         </div>
       )}
 
@@ -6611,7 +6622,11 @@ const s = {
   vFloatTitle: { fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: 6 },
   vFloatBody: { flex: 1, minHeight: 0, minWidth: 0, width: '100%', overflow: 'auto', padding: 8, display: 'flex', flexWrap: 'wrap', gap: 6, alignContent: 'center', justifyContent: 'center' },
   vFloatStrip: { flex: 1, minHeight: 0, minWidth: 0, width: '100%', overflowY: 'auto', overflowX: 'hidden', padding: 8, display: 'flex', flexDirection: 'column', gap: 6, boxSizing: 'border-box' },
-  vFloatResize: { position: 'absolute', right: 3, bottom: 3, width: 16, height: 16, cursor: 'nwse-resize', color: '#6b7280', display: 'grid', placeItems: 'center', fontSize: 11, touchAction: 'none' },
+  // Fixed-column layout: tiles wrap into rows of exactly N, scrolling when the class is bigger.
+  vFloatCols: { flex: 1, minHeight: 0, minWidth: 0, width: '100%', overflowY: 'auto', overflowX: 'hidden', padding: 8, display: 'flex', flexWrap: 'wrap', gap: 6, alignContent: 'flex-start', justifyContent: 'flex-start', boxSizing: 'border-box' },
+  vFloatResize: { position: 'absolute', right: 0, bottom: 0, width: 26, height: 26, cursor: 'nwse-resize', color: '#9ca3af', background: 'rgba(6,182,212,0.18)', borderTopLeftRadius: 8, display: 'grid', placeItems: 'center', fontSize: 14, touchAction: 'none', zIndex: 3 },
+  vFloatEdgeR: { position: 'absolute', top: 30, right: 0, bottom: 26, width: 8, cursor: 'ew-resize', touchAction: 'none', zIndex: 2 },
+  vFloatEdgeB: { position: 'absolute', left: 0, right: 26, bottom: 0, height: 8, cursor: 'ns-resize', touchAction: 'none', zIndex: 2 },
   vfBtn: { width: 26, height: 22, borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#cbd5e1', cursor: 'pointer', fontSize: 11, display: 'grid', placeItems: 'center' },
   // "Show video" pill shown when videos are hidden.
   showVideoPill: { position: 'fixed', bottom: 20, right: 20, zIndex: 80, display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 16px', borderRadius: 'var(--radius-lg)', border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, fontSize: 13, cursor: 'pointer', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' },
