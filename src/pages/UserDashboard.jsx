@@ -1907,7 +1907,9 @@ export default function UserDashboard() {
 
         {/* Event notifications now live in the sidebar bell (see data/notifications.js) */}
 
-        {user && (
+        {/* The Guide tab is the player's training plan — it opens straight on
+            the level card, without the profile header. */}
+        {user && activeView !== 'guide' && (
           <div className="welcome-section">
             <div className="welcome-avatar-col">
               <div className="welcome-avatar-wrap">

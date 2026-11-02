@@ -11,6 +11,7 @@ import PieceSelector from '../components/PositionEditor/PieceSelector';
 import SetupControls from '../components/PositionEditor/SetupControls';
 import FenBar from '../components/PositionEditor/FenBar';
 import { useAnalysisTree } from '../hooks/useAnalysisTree';
+import useSquareEvals from '../hooks/useSquareEvals';
 import StudyMovesCard from '../components/StudyMovesCard';
 import SolutionText from '../components/SolutionText';
 import { parseSolutionTree, formatSolutionTree } from '../utils/solutionLine';
@@ -35,10 +36,15 @@ const SHELL_W = 0;             // no persistent sidebar on this route
 const PAGE_PAD_X = 16;         // st.page horizontal padding, per side
 const PAGE_PAD_TOP = 8;        // st.page padding-top
 const PAGE_PAD_BOTTOM = 8;     // st.page padding-bottom
-const LEFT_W = 260;            // positions list column
-const RIGHT_W = 340;           // analysis / solution column
-const COL_GAP = 12;            // gap between the three columns
-const BOARD_CARD_CHROME = 20;  // board card's own padding (top 0 + bottom 10 + border)
+// Lichess-style desktop layout: the board is bare (coordinates inside it) and
+// its column is exactly the board's width; the two side panels share whatever
+// width is left (between their min and max), so the gaps are even and all three
+// columns start and end on the same line.
+const LEFT_MIN = 200;          // positions list column
+const LEFT_MAX = 340;
+const RIGHT_MIN = 320;         // engine / moves column
+const RIGHT_MAX = 480;
+const COL_GAP = 16;            // gap between the three columns
 
 // Shared look for the inline "annotate this position" editor (creator only).
 const metaInputStyle = {
@@ -83,6 +89,20 @@ const UserStudyPuzzleView = () => {
   const { current: currentNode } = analysis;
   // A Chess instance for the current node — used for turn/legal-move checks.
   const chess = useMemo(() => new Chess(currentNode.fen), [currentNode.fen]);
+  // Square evals: click a piece → each square it can reach shows the eval after
+  // that move. Uses the shared stockfishService, separate from this page's own
+  // Stockfish workers. Off while playing vs Stockfish. Remembered under the same
+  // key as Healthy Mix / Analyse my games.
+  const [squaresOn, setSquaresOn] = useState(() => {
+    try { return localStorage.getItem('gaSquareEvals') === 'true'; } catch { return false; }
+  });
+  const toggleSquares = useCallback(() => {
+    setSquaresOn(prev => {
+      const next = !prev;
+      try { localStorage.setItem('gaSquareEvals', String(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
 
   const [studyName, setStudyName] = useState('');
   const [chapterName, setChapterName] = useState('');
@@ -139,6 +159,7 @@ const UserStudyPuzzleView = () => {
   // Separate from "play vs Stockfish": this runs an infinite search on whatever
   // position is on the board and streams back the top three lines.
   const [anMode, setAnMode] = useState(false);
+  const { squareEvals, onSelectionChange } = useSquareEvals(currentNode.fen, squaresOn && !sfMode);
   // Top-3 engine lines, keyed by MultiPV index: { 1: {cp|mate, san}, 2: …, 3: … }.
   // Keyed rather than an array because Stockfish emits each line separately and
   // out of order, so we overwrite per index and render whatever we have.
@@ -197,18 +218,16 @@ const UserStudyPuzzleView = () => {
         // Width budget: the shell sidebar + page gutters + the two side panels.
         // No 1600px container cap any more — on a wide monitor that cap was
         // throwing away centre width for nothing.
-        const centre = w - SHELL_W - PAGE_PAD_X * 2 - LEFT_W - RIGHT_W - COL_GAP * 2;
-        // Height budget: viewport minus the page's own vertical padding and the
-        // board card's padding. Everything else in the centre column (FEN bar,
-        // control buttons) scrolls inside that column, so it does not reserve
-        // height from the board.
-        const byHeight = window.innerHeight - PAGE_PAD_TOP - PAGE_PAD_BOTTOM - BOARD_CARD_CHROME;
+        const centre = w - SHELL_W - PAGE_PAD_X * 2 - LEFT_MIN - RIGHT_MIN - COL_GAP * 2;
+        // Height budget: the full viewport height minus the page's own vertical
+        // padding. The board is bare with its coordinates inside, so the board
+        // IS the column — nothing above or below it takes height.
+        const byHeight = window.innerHeight - PAGE_PAD_TOP - PAGE_PAD_BOTTOM;
         setBoardWidth(Math.max(360, Math.floor(Math.min(centre, byHeight))));
       }
     };
     update();
-    // Nothing is measured from the DOM any more — the budget is pure arithmetic
-    // over the layout constants — so a single pass plus resize is enough.
+    // Recomputed on resize.
     window.addEventListener('resize', update);
     window.addEventListener('orientationchange', update);
     return () => {
@@ -702,7 +721,9 @@ const UserStudyPuzzleView = () => {
     grid: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: `linear-gradient(${currentColor.accentColor} 1px, transparent 1px), linear-gradient(90deg, ${currentColor.accentColor} 1px, transparent 1px)`, backgroundSize: '50px 50px', pointerEvents: 'none', zIndex: 0, opacity: 0.5 },
     // No 1600px cap on desktop: on a wide monitor that cap threw away centre
     // width and shrank the board for nothing.
-    container: { maxWidth: isMobile ? '1600px' : 'none', width: '100%', margin: '0 auto', position: 'relative', zIndex: 1, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' },
+    // Desktop: the row is exactly board-tall; centred vertically for the rare
+    // width-limited screen where the board is shorter than the viewport.
+    container: { maxWidth: isMobile ? '1600px' : 'none', width: '100%', margin: '0 auto', position: 'relative', zIndex: 1, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: isMobile ? 'flex-start' : 'center' },
     // The header holds only absolutely-positioned buttons, so its height is
     // whatever the tallest one is (~45px). Pinning it keeps the row from
     // reserving more than the button needs — the board is height-limited here,
@@ -718,27 +739,33 @@ const UserStudyPuzzleView = () => {
     header: { marginBottom: isMobile ? 8 : 0, display: isMobile ? 'flex' : 'none', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: isMobile ? '0 10px 0 var(--menu-btn-clearance, 52px)' : 0 },
     backButton: { position: 'static', width: isMobile ? 'auto' : '100%', justifyContent: isMobile ? 'flex-start' : 'center', marginBottom: isMobile ? 0 : 12, flexShrink: 0, whiteSpace: 'nowrap', padding: isMobile ? '9px 12px' : '9px 14px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, zIndex: 2 },
     toggleButton: { position: 'static', flexShrink: 0, whiteSpace: 'nowrap', padding: '9px 12px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: isMobile ? 'flex' : 'none', alignItems: 'center', gap: 8, zIndex: 2 },
-    mainContent: { display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 0 : COL_GAP, padding: isMobile ? '0 10px' : 0, boxSizing: 'border-box', minHeight: isMobile ? 600 : 0, flex: 1, alignItems: isMobile ? 'stretch' : 'stretch' },
-    leftPanel: { flex: isMobile ? 'none' : `0 0 ${LEFT_W}px`, display: isMobile && !showPuzzleList ? 'none' : 'flex', flexDirection: 'column', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: 16, overflowY: 'auto', maxHeight: isMobile ? '70dvh' : 'none', height: isMobile ? 'auto' : '100%', minHeight: 0, boxSizing: 'border-box', position: isMobile ? 'fixed' : 'static', top: isMobile ? 64 : 'auto', left: isMobile ? 10 : 'auto', right: isMobile ? 10 : 'auto', zIndex: isMobile ? 1000 : 'auto', boxShadow: isMobile ? '0 20px 60px var(--color-black-a50)' : 'none' },
+    mainContent: isMobile
+      ? { display: 'flex', flexDirection: 'column', gap: 0, padding: '0 10px', boxSizing: 'border-box', minHeight: 600, flex: 1, alignItems: 'stretch' }
+      : { display: 'flex', flexDirection: 'row', gap: COL_GAP, boxSizing: 'border-box', flex: 'none', height: boardWidth, alignItems: 'stretch', justifyContent: 'center' },
+    leftPanel: { flex: isMobile ? 'none' : `1 1 ${LEFT_MIN}px`, minWidth: isMobile ? 0 : LEFT_MIN, maxWidth: isMobile ? 'none' : LEFT_MAX, display: isMobile && !showPuzzleList ? 'none' : 'flex', flexDirection: 'column', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: isMobile ? 16 : 12, overflowY: 'auto', maxHeight: isMobile ? '70dvh' : 'none', height: isMobile ? 'auto' : '100%', minHeight: 0, boxSizing: 'border-box', position: isMobile ? 'fixed' : 'static', top: isMobile ? 64 : 'auto', left: isMobile ? 10 : 'auto', right: isMobile ? 10 : 'auto', zIndex: isMobile ? 1000 : 'auto', boxShadow: isMobile ? '0 20px 60px var(--color-black-a50)' : 'none' },
     tableHeaderRow: { borderBottom: `2px solid ${currentColor.color}40` },
     tableHeader: { padding: '5px 8px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: currentColor.color, letterSpacing: '0.5px', textTransform: 'uppercase' },
     tableRow: { borderBottom: '1px solid var(--color-white-a04)', cursor: 'pointer', transition: 'all 0.3s' },
     tableRowActive: { background: currentColor.accentColor, boxShadow: `0 4px 12px ${currentColor.accentColor}` },
     tableCell: { padding: '5px 8px', textAlign: 'center', fontSize: 13, fontWeight: 600, color: 'var(--color-text-muted)' },
     tableCellName: { padding: '5px 8px', textAlign: 'left', fontSize: 13, fontWeight: 600, color: 'var(--color-text)' },
-    // justifyContent flex-start (not centre): the board already fills the
-    // height, and centring made a tall centre column drift the board down.
-    centerPanel: { flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: 0, order: isMobile ? -1 : 0, minWidth: 0, minHeight: 0, overflowY: isMobile ? 'visible' : 'auto' },
+    // Desktop: exactly the board's width — no empty margin either side of it.
+    centerPanel: { flex: isMobile ? 'none' : `0 0 ${boardWidth}px`, width: isMobile ? '100%' : boardWidth, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: 0, order: isMobile ? -1 : 0, minWidth: 0, minHeight: 0, overflow: 'visible' },
+    // Bare board on both: no card around it (lichess style). Phone: edge to
+    // edge (.board-fullbleed); desktop: coordinates sit inside the squares.
     chessboardContainer: isMobile
-      ? { marginBottom: 10, flexShrink: 0, padding: 0 } // bare: the board runs edge to edge (.board-fullbleed)
-      : { marginBottom: 10, flexShrink: 0, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: '0px 10px 10px 10px' },
-    controlButtons: { display: 'flex', gap: 8, marginTop: 20, flexWrap: 'wrap', justifyContent: 'center' },
+      ? { marginBottom: 10, flexShrink: 0, padding: 0 }
+      : { marginBottom: 0, flexShrink: 0, padding: 0 },
+    controlButtons: { display: 'flex', gap: isMobile ? 8 : 6, marginTop: isMobile ? 4 : 0, marginBottom: isMobile ? 14 : 0, flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start', flexShrink: 0 },
+    rowBtn: { padding: isMobile ? '6px 14px' : '5px 10px', fontSize: isMobile ? 13 : 12, border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 700, background: 'var(--color-white-a04)', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', transition: 'background 0.2s' },
     btn: { padding: '12px 24px', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', cursor: 'pointer', fontSize: 15, fontWeight: 600, transition: 'all 0.3s', background: 'var(--color-surface)', backdropFilter: 'blur(10px)', color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 },
     navBtn: { borderColor: currentColor.color + '40', color: currentColor.color },
     navBtnDisabled: { background: 'rgba(23,23,23,0.8)', borderColor: 'var(--color-white-a04)', color: 'var(--color-text-faint)', cursor: 'not-allowed' },
     resetBtn: { borderColor: 'var(--color-text-muted)', color: 'var(--color-text-muted)' },
     solBtn: { background: currentColor.accentColor, borderColor: currentColor.color + '60', color: 'var(--color-text)' },
-    rightPanel: { flex: isMobile ? 'none' : `0 0 ${RIGHT_W}px`, width: isMobile ? '100%' : 'auto', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: isMobile ? 24 : 18, overflowY: 'auto', maxHeight: 'none', height: isMobile ? 'auto' : '100%', minHeight: 0, boxSizing: 'border-box', order: isMobile ? 1 : 0 },
+    // Desktop: a flex column, so the moves card (fill) takes all the height the
+    // engine row and notes leave, with its nav bar at the bottom.
+    rightPanel: { flex: isMobile ? 'none' : `1.2 1 ${RIGHT_MIN}px`, minWidth: isMobile ? 0 : RIGHT_MIN, maxWidth: isMobile ? 'none' : RIGHT_MAX, width: isMobile ? '100%' : 'auto', display: isMobile ? 'block' : 'flex', flexDirection: 'column', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: isMobile ? 24 : 14, overflowY: 'auto', maxHeight: 'none', height: isMobile ? 'auto' : '100%', minHeight: 0, boxSizing: 'border-box', order: isMobile ? 1 : 0 },
     turnIndicator: { display: 'flex', alignItems: 'center', gap: 12, padding: 16, background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', marginBottom: 20 },
     movesContainer: { background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', padding: 20, marginBottom: 20, minHeight: 180 },
     sectionTitle: { fontSize: 16, fontWeight: 700, color: currentColor.color, marginBottom: 16, letterSpacing: '-0.5px' },
@@ -885,6 +912,26 @@ const UserStudyPuzzleView = () => {
 
   const currentPuzzle = puzzles[currentPuzzleIndex];
 
+  // Board tools: copy the FEN, reset, square evals. Under the board on phones;
+  // on desktop in the right panel, so the board can take the full height.
+  // Stepping through moves is the moves card's ⏮ ◀ ▶ ⏭.
+  const boardTools = (
+    <div style={st.controlButtons}>
+      <FenCopyBar asButton fen={currentNode.fen} buttonStyle={st.rowBtn} />
+      <button style={st.rowBtn} onClick={resetPosition}>{tr("↺ Reset")}</button>
+      <button
+        data-testid="square-evals-toggle"
+        onClick={toggleSquares}
+        aria-pressed={squaresOn}
+        title={tr("Click a piece — every square it can reach gets a score.")}
+        disabled={sfMode}
+        style={{ ...st.rowBtn, ...(squaresOn && !sfMode ? { background: 'rgba(56,189,248,0.16)', color: '#38bdf8', borderColor: 'rgba(56,189,248,0.45)' } : {}), ...(sfMode ? { opacity: 0.45, cursor: 'not-allowed' } : {}) }}
+      >
+        🎯 {tr("Square evals")} {squaresOn && !sfMode ? tr('On') : tr('Off')}
+      </button>
+    </div>
+  );
+
   return (
     <div style={st.page}>
       <div style={st.bg}/>
@@ -926,9 +973,8 @@ const UserStudyPuzzleView = () => {
                   onClick={() => navigate(`/public-studies/${id}`)}
                 >{tr("← Back to Chapters")}</button>
               )}
-              <div style={{ fontSize: 13, fontWeight: 700, color: currentColor.color, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 14, flexShrink: 0 }}>{tr("Positions")}</div>
               {/* The list is the flexible, scrolling part of the column so the
-                  Back button and the "Positions" heading stay pinned. */}
+                  Back button stays pinned. */}
               <div style={{ overflowX: 'auto', overflowY: 'auto', flex: isMobile ? 'none' : 1, minHeight: 0 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
@@ -1005,37 +1051,32 @@ const UserStudyPuzzleView = () => {
                 draggable={true}
                 orientation={boardOrientation}
                 lastMove={lastMove}
+                squareEvals={squareEvals}
+                onSelectionChange={onSelectionChange}
+                // The page's own budget (full height minus padding) governs, not
+                // the board's default 92%-of-viewport cap.
+                desktopHeightRatio={0.99}
+                coordinatesInside
+                // Small corner labels, lichess size — the default inside size
+                // is meant for phones and looks oversized on a big board.
+                coordinateScale={isMobile ? 1 : 0.75}
               />
             </motion.div>
 
-            {/* Current position FEN — copy it straight into an analysis board. */}
-            <FenCopyBar fen={currentNode.fen} style={{ maxWidth: isMobile ? '100%' : boardWidth }} />
-
-            <div style={st.controlButtons}>
-              {(() => {
-                const canBack = !!currentNode.parentId;
-                const canFwd = currentNode.children.length > 0;
-                return (
-                  <>
-                    <motion.button style={{ ...st.btn, ...(!canBack ? st.navBtnDisabled : st.navBtn) }} onClick={moveBackward} disabled={!canBack} whileHover={canBack ? { scale: 1.05, background: currentColor.accentColor } : {}}>{tr("← Back")}</motion.button>
-                    <motion.button style={{ ...st.btn, ...(!canFwd ? st.navBtnDisabled : st.navBtn) }} onClick={moveForward} disabled={!canFwd} whileHover={canFwd ? { scale: 1.05, background: currentColor.accentColor } : {}}>{tr("Forward →")}</motion.button>
-                  </>
-                );
-              })()}
-              <motion.button style={{ ...st.btn, ...st.resetBtn }} onClick={resetPosition} whileHover={{ scale: 1.05, background: 'rgba(156,163,175,0.2)' }}>{tr("↺ Reset")}</motion.button>
-            </div>
+            {/* Phones: the board tools sit right under the board. */}
+            {isMobile && boardTools}
           </div>
 
           {/* Right Panel – moves + solution + description */}
           <motion.div style={st.rightPanel} initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
-            {/* ── Engine row: Stockfish on/off (evaluates the position, plays
-                nothing) + play vs Stockfish, side by side ── */}
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            {/* Engine row: Stockfish lines on/off (evaluates, plays nothing) +
+                play vs Stockfish — small, side by side. */}
+            <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexShrink: 0 }}>
               <button
                 data-testid="sf-analysis-toggle"
                 onClick={toggleAnalysis}
                 title={anMode ? tr('Turn the engine evaluation off') : tr('Show the engine evaluation for this position')}
-                style={{ flex: 1, padding: '8px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap', background: anMode ? 'rgba(56,189,248,0.16)' : 'var(--color-white-a04)', color: anMode ? '#38bdf8' : 'var(--color-text-muted)', border: `1px solid ${anMode ? 'rgba(56,189,248,0.45)' : 'var(--color-white-a10)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '5px 12px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', background: anMode ? 'rgba(56,189,248,0.16)' : 'var(--color-white-a04)', color: anMode ? '#38bdf8' : 'var(--color-text-muted)', border: `1px solid ${anMode ? 'rgba(56,189,248,0.45)' : 'var(--color-white-a10)'}`, transition: 'all 0.2s' }}
               >
                 {tr("🔍 Stockfish")} {anMode ? tr('On') : tr('Off')}
                 {anMode && anDepth ? <span style={{ fontWeight: 500, opacity: 0.75 }}> · d{anDepth}</span> : null}
@@ -1043,9 +1084,10 @@ const UserStudyPuzzleView = () => {
               <button
                 data-testid="sf-play-toggle"
                 onClick={toggleSfMode}
-                style={{ flex: 1, padding: '8px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap', background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '5px 12px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
               >{sfMode ? (sfReady ? tr('■ Stop vs Stockfish') : tr('Loading…')) : tr('🤖 vs Stockfish')}</button>
             </div>
+            {!isMobile && <div style={{ marginBottom: 10 }}>{boardTools}</div>}
             {anMode && (
               <div data-testid="sf-lines" style={{ marginBottom: 14, padding: '6px 12px 10px', borderRadius: 'var(--radius-md)', background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
                 {!anLines[1] && (
@@ -1116,6 +1158,7 @@ const UserStudyPuzzleView = () => {
                 tree={analysis.tree}
                 currentId={analysis.tree.currentId}
                 accentColor={currentColor.color}
+                fill={!isMobile}
                 onSelect={(nid) => analysis.goTo(nid)}
                 onComment={isCreator && recordable && !sfMode ? startComment : undefined}
                 onFirst={() => analysis.toStart()}
@@ -1158,10 +1201,6 @@ const UserStudyPuzzleView = () => {
                       </button>
                     </span>
                   )
-                ) : !isCreator ? (
-                  <span style={{ fontSize: 10.5, color: 'var(--color-text-faint)', textAlign: 'center' }}>
-                    {tr("Play your own moves to explore — they aren't saved.")}
-                  </span>
                 ) : null}
               />
 

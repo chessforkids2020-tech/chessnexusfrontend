@@ -9,7 +9,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { copyText } from '../utils/clipboard';
 import { t as tr } from '../i18n/LanguageContext';
 
-export default function FenCopyBar({ fen, style }) {
+// asButton: just a "📋 Copy FEN" button (no FEN strip), styled by buttonStyle —
+// for a compact control row under the board.
+export default function FenCopyBar({ fen, style, asButton = false, buttonStyle }) {
   const [state, setState] = useState('idle'); // 'idle' | 'copied' | 'failed'
   const timer = useRef(null);
 
@@ -27,6 +29,21 @@ export default function FenCopyBar({ fen, style }) {
   };
 
   const label = state === 'copied' ? '✓ Copied' : state === 'failed' ? 'Press Ctrl+C' : '📋 Copy';
+
+  if (asButton) {
+    return (
+      <button
+        onClick={onCopy}
+        title={tr("Copy FEN to clipboard")}
+        style={{
+          ...buttonStyle,
+          ...(state === 'copied' ? { background: 'var(--color-success-a20)', borderColor: 'var(--color-success-a30)', color: 'var(--color-success)' } : {}),
+        }}
+      >
+        {state === 'idle' ? tr("📋 Copy FEN") : label}
+      </button>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center', width: '100%',

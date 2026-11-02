@@ -4,6 +4,7 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../api';
 import Chessboard from '../components/Chessboard';
 import { RACE_MOVE_MS } from '../contexts/GamePrefsContext';
+import { introOf, holdThen, later, INTRO_MOVE_MS } from '../utils/puzzleIntro';
 import useResponsiveBoardSize from '../hooks/useResponsiveBoardSize';
 import { t as tr } from '../i18n/LanguageContext';
 
@@ -77,6 +78,12 @@ export default function TimedRace() {
   const [attempts, setAttempts] = useState([]);
   const [maxStreak, setMaxStreak] = useState(0);
   const [boardAnimDuration, setBoardAnimDuration] = useState(RACE_MOVE_MS);
+  // The bot's opening move (utils/puzzleIntro): highlighted until the user's
+  // first move; the board is locked while it plays.
+  const [setupLast, setSetupLast] = useState(null);
+  const introingRef = useRef(false);
+  const introTimersRef = useRef([]);
+  useEffect(() => () => introTimersRef.current.forEach(cancel => cancel()), []);
   const isFetchingMoreRef = useRef(false);
 
   const currentAttemptStart = useRef(null);
@@ -105,10 +112,31 @@ export default function TimedRace() {
 
     chessRef.current = chess;
     currentAttemptStart.current = Date.now();
-    setCurrentPosition(chess.fen());
     setMoveIndex(0);
     setBoardAnimDuration(0);
     setTimeout(() => setBoardAnimDuration(RACE_MOVE_MS), 120);
+
+    // Open on Lichess's position and let the board play the bot's move; the
+    // user's time on this puzzle starts once it has landed.
+    introTimersRef.current.forEach(cancel => cancel());
+    introTimersRef.current = [];
+    const intro = introOf({ ...puzzle, fen: chess.fen() });
+    introingRef.current = !!intro;
+    if (!intro) {
+      setSetupLast(null);
+      setCurrentPosition(chess.fen());
+      return;
+    }
+    setSetupLast(null);
+    setCurrentPosition(intro.startFen);
+    introTimersRef.current.push(holdThen(() => {
+      setCurrentPosition(chess.fen());
+      setSetupLast({ from: intro.from, to: intro.to });
+      introTimersRef.current.push(later(() => {
+        introingRef.current = false;
+        currentAttemptStart.current = Date.now();
+      }, INTRO_MOVE_MS));
+    }));
   }, [availablePuzzles]);
 
   useEffect(() => {
@@ -192,6 +220,7 @@ export default function TimedRace() {
 
   const handleMove = (sourceSquare, targetSquare, promotion) => {
     if (!currentPuzzleData || !currentPuzzleData.solution) return false;
+    if (introingRef.current) return false;   // the bot's opening move is still playing
     const chess = chessRef.current;
     const solutionMoves = Array.isArray(currentPuzzleData.solution)
       ? currentPuzzleData.solution
@@ -745,6 +774,7 @@ export default function TimedRace() {
                     boardWidth={boardWidth}
                     orientation={userSide}
                     transitionDuration={boardAnimDuration}
+                    lastMove={moveIndex === 0 ? setupLast : undefined}
                     coordinatesInside={true}
                   />
                 ) : (
@@ -915,6 +945,7 @@ export default function TimedRace() {
                     boardWidth={boardWidth}
                     orientation={userSide}
                     transitionDuration={boardAnimDuration}
+                    lastMove={moveIndex === 0 ? setupLast : undefined}
                     coordinatesInside={false}
                   />
                 ) : (

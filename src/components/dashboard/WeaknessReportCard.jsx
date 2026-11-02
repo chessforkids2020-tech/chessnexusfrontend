@@ -1,7 +1,9 @@
 // components/dashboard/WeaknessReportCard.jsx
 //
-// Dashboard Guide → "Your weakness report". Free once a week for every
-// logged-in account: the user picks a window (7 or 14 days) and a time control,
+// Dashboard Guide → "Your weakness report". Every logged-in account gets its
+// first two free, then each costs XP (500 by default; the server decides and
+// sends the price in status.cost). The user picks a window (7 or 14 days) and a
+// time control,
 // and the server analyses up to 30 of those games from Chess Nexus, Lichess and
 // Chess.com. Same report page as the streak report, minus the Chess Nexus
 // puzzle stats. Backend: /api/streak-report/quick/* (kind 'quick').
@@ -69,8 +71,8 @@ export default function WeaknessReportCard() {
   if (!st) return null;
 
   const job = st.job;
-  const coolingDown = !!st.nextAvailableAt && !job;
   const noAccounts = !st.linked?.lichess && !st.linked?.chesscom;
+  const cost = st.cost || { free: true, freeLeft: null, affordable: true };
 
   return (
     <section className="gip wrc" data-testid="weakness-report-card">
@@ -79,9 +81,7 @@ export default function WeaknessReportCard() {
         <div>
           <h3 className="wrc-title">{tr("Your weakness report")}</h3>
           <p className="wrc-sub">
-            We analyse your games from Chess Nexus, Lichess and Chess.com and show where you
-            lose points — by phase, opening, endgame and the exact mistakes you made.
-            Free once a week.
+            {tr("We analyse your games from Chess Nexus, Lichess and Chess.com and show where you lose points — by phase, opening, endgame and the exact mistakes you made.")}
           </p>
         </div>
       </div>
@@ -102,10 +102,6 @@ export default function WeaknessReportCard() {
           </div>
           <p className="wrc-muted">{tr("Usually a few minutes. You can leave — we'll send you a notification when it's ready.")}</p>
         </div>
-      ) : coolingDown ? (
-        <p className="wrc-note" data-testid="wrc-cooldown">
-          {tr("Your next free report is available on")} <b>{fmtDay(st.nextAvailableAt)}</b>.
-        </p>
       ) : (
         <>
           <div className="wrc-row">
@@ -142,8 +138,26 @@ export default function WeaknessReportCard() {
           {st.lastError && !err && <p className="wrc-error">{st.lastError}</p>}
           {err && <p className="wrc-error">{err}</p>}
 
-          <button type="button" className="gip-analyze-btn" onClick={generate} disabled={busy} data-testid="wrc-generate">
-            {busy ? tr('Starting…') : tr('Generate my report')}
+          {/* The price is shown BEFORE they press Generate — being charged XP you
+              were never told about feels like a trick. */}
+          {cost.freeLeft > 0 ? (
+            <p className="wrc-note" data-testid="wrc-free-left">
+              🎁 {cost.freeLeft === 1
+                ? tr("1 free report left. After that, each report costs {price} XP.", { price: cost.paidPrice ?? 500 })
+                : tr("Your first {n} reports are free. After that, each report costs {price} XP.", { n: cost.freeLeft, price: cost.paidPrice ?? 500 })}
+            </p>
+          ) : !cost.free ? (
+            <p className={`wrc-note${cost.affordable ? '' : ' wrp-short'}`} data-testid="wrc-price">
+              {tr('Costs {price} XP · you have {balance}', { price: cost.price, balance: cost.balance })}
+              {!cost.affordable && <> — {tr('solve a few more puzzles to unlock it.')}</>}
+            </p>
+          ) : null}
+
+          <button
+            type="button" className="gip-analyze-btn" onClick={generate}
+            disabled={busy || !cost.affordable} data-testid="wrc-generate"
+          >
+            {busy ? tr('Starting…') : cost.free ? tr('Generate my report') : tr('Generate my report · {price} XP', { price: cost.price })}
           </button>
           <span className="wrc-muted wrc-cap"> {tr("Up to")} {st.maxGames || 30} {tr("games, losses first.")}</span>
         </>

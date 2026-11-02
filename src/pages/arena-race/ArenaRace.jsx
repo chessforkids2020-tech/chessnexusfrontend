@@ -8,6 +8,7 @@ import { RACE_MOVE_MS } from '../../contexts/GamePrefsContext';
 import { useAuth } from '../../contexts/AuthContext';
 import socket from '../../socket';
 import { t as tr } from '../../i18n/LanguageContext';
+import { introOf, holdThen, later, INTRO_MOVE_MS } from '../../utils/puzzleIntro';
 
 // Debug logging function
 const addLog = (message, type = 'info') => {
@@ -372,6 +373,10 @@ export default function ArenaRace({ isAdminView = false }) {
   // Tracks the pending animateBotIntro Frame-2 timeout so we can cancel it
   // if a new puzzle arrives before the previous 120 ms delay has fired.
   const botIntroTimeoutRef = useRef(null);
+  // True while the bot's opening move (utils/puzzleIntro) is being played.
+  const introingRef = useRef(false);
+  const introCancelRef = useRef(() => {});   // cancels the running intro step
+  useEffect(() => () => { clearTimeout(botIntroTimeoutRef.current); introCancelRef.current(); }, []);
   
   // Manual resize refs
 
@@ -787,17 +792,32 @@ export default function ArenaRace({ isAdminView = false }) {
   // already baked into the FEN, so we just SHOW the position and let the user
   // play solution[0]. For a resume (resumeIndex > 0), replay the solution up to
   // that index so the board is reconstructed correctly.
-  const showPuzzleStart = (newChess, resumeIndex = 0, solutionMoves = []) => {
+  const showPuzzleStart = (newChess, resumeIndex = 0, solutionMoves = [], puzzle = null) => {
     if (botIntroTimeoutRef.current) {
       clearTimeout(botIntroTimeoutRef.current);
       botIntroTimeoutRef.current = null;
     }
+    introCancelRef.current();
+    introingRef.current = false;
 
     if (!resumeIndex || resumeIndex <= 0) {
-      // Fresh puzzle — show the position, user moves first.
-      setChess(new Chess(newChess.fen()));
-      setLastMove(null);
       setMoveIndex(0);
+      // Fresh puzzle — open on Lichess's position and let the board play the
+      // bot's opening move when the puzzle knows it; the user moves after it.
+      const intro = introOf({ ...(puzzle || {}), fen: newChess.fen() });
+      if (!intro) {
+        setChess(new Chess(newChess.fen()));
+        setLastMove(null);
+        return;
+      }
+      introingRef.current = true;
+      setChess(new Chess(intro.startFen));
+      setLastMove(null);
+      introCancelRef.current = holdThen(() => {
+        setChess(new Chess(newChess.fen()));
+        setLastMove({ from: intro.from, to: intro.to });
+        introCancelRef.current = later(() => { introingRef.current = false; }, INTRO_MOVE_MS);
+      });
       return;
     }
 
@@ -841,7 +861,7 @@ export default function ArenaRace({ isAdminView = false }) {
           const newChess = new Chess(queued.fen);
           setCurrentPuzzle({ fen: queued.fen, solution: solutionMoves });
           setLoading(false);
-          showPuzzleStart(newChess);
+          showPuzzleStart(newChess, 0, solutionMoves, queued);
           if (idx >= Math.floor(queue.length * 0.7) && !prefetchingRef.current) {
             prefetchNextBatch(queue.length);
           }
@@ -896,7 +916,7 @@ export default function ArenaRace({ isAdminView = false }) {
       // Show the position as-is; the user moves first (the opponent's setup move
       // is already in the FEN). currentMoveIndex from the server is the resume
       // point; for a fresh puzzle it is 0.
-      showPuzzleStart(newChess, currentMoveIndex, solutionMoves);
+      showPuzzleStart(newChess, currentMoveIndex, solutionMoves, puzzle);
       setLoading(false);
       return;
     }
@@ -951,7 +971,7 @@ export default function ArenaRace({ isAdminView = false }) {
       }
 
       // Show the position as-is; the user moves first.
-      showPuzzleStart(newChess, currentMoveIndex, solutionMoves);
+      showPuzzleStart(newChess, currentMoveIndex, solutionMoves, puzzle);
       setLoading(false);
     } catch (err) {
       const endTime = performance.now();
@@ -1027,6 +1047,8 @@ export default function ArenaRace({ isAdminView = false }) {
       setError(tr('Authentication lost. Please refresh the page.'));
       return false;
     }
+
+    if (introingRef.current) return false;   // the bot's opening move is still playing
 
     // USER-FIRST: user plays EVEN indices (0,2,4…), bot replies at ODD (1,3,5…).
     if (moveIndex % 2 === 1) {

@@ -19,7 +19,7 @@ import { SideToMoveControl, CastlingControl, EnPassantControl } from '../../comp
 import EnginePanel from '../../components/EnginePanel';
 import ClassOpeningExplorer from '../../components/coach/ClassOpeningExplorer';
 import { copyText } from '../../utils/clipboard';
-import { floatTileWidth, boxFor, readSavedCols, COLS_CHOICES } from '../../utils/videoGrid';
+import { floatTileWidth, boxFor, readSavedCols } from '../../utils/videoGrid';
 import { renderFrame } from '../../lib/videoEffects';
 import CoachArenaLive from './CoachArenaLive';
 import WhiteboardOverlay, { wbToolbarSpace } from '../../components/coach/WhiteboardOverlay';
@@ -2215,16 +2215,17 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
   };
-  // The column picker (Auto · 1 · 2 · 3 · 4): shown in the top bar and in the box header.
+  // Layout toggle (the original one): ▯ strip = one column, ▦ grid = auto grid.
+  // Shown in the floating box header and in the video settings menu.
   const colsPicker = (compact) => (
-    <span style={{ ...s.vmodeGroup, marginLeft: compact ? 0 : 4 }} title={tr("How many columns of videos")}>
-      {COLS_CHOICES.map(c => (
+    <span style={{ ...s.vmodeGroup, marginLeft: compact ? 0 : 4 }}>
+      {[[1, '▯', 'Strip — one column'], [0, '▦', 'Grid — tiles side by side']].map(([c, icon, tip]) => (
         <button
           key={c}
-          style={{ ...s.vmodeBtn, width: compact ? 22 : 26, height: compact ? 20 : 26, fontSize: compact ? 11 : 12, fontWeight: 700, ...(videoCols === c ? s.vmodeBtnOn : {}) }}
-          title={c === 0 ? tr("Auto layout") : (c === 1 ? tr("1 column") : tr("{v0} columns", { v0: c }))}
+          style={{ ...s.vmodeBtn, width: compact ? 22 : 30, height: compact ? 20 : 28, ...((c === 1 ? videoCols === 1 : videoCols !== 1) ? s.vmodeBtnOn : {}) }}
+          title={tr(tip)}
           onClick={() => setVideoCols(c)}
-        >{c === 0 ? tr('Auto') : c}</button>
+        >{icon}</button>
       ))}
     </span>
   );
@@ -3129,6 +3130,73 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     return () => clearInterval(id);
   }, [isHost, session, refreshWaiting]);
 
+  // ── Host: a chime when a student arrives in the waiting room ─────────────────
+  // The coach is often on another tab (YouTube, notes…), so this must be audible
+  // there. WebAudio keeps playing in a background tab as long as the context was
+  // unlocked by a click earlier — the coach has always clicked in the page by the
+  // time students arrive, and we also unlock on the first pointer/key press. The
+  // waiting list itself still refreshes in the background (the socket event fires
+  // it), so the sound is driven by the list gaining a name. While the tab is hidden
+  // and someone is still waiting it repeats every 25s, and the tab title flashes.
+  const chimeCtxRef = useRef(null);
+  const playChime = useCallback(() => {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!chimeCtxRef.current) chimeCtxRef.current = new AC();
+      const ctx = chimeCtxRef.current;
+      const go = () => {
+        const t0 = ctx.currentTime;
+        [[880, 0], [1175, 0.16], [1480, 0.32]].forEach(([f, d]) => {   // a bright rising three-note "ding-ding-ding"
+          const o = ctx.createOscillator(); const g = ctx.createGain();
+          o.type = 'sine'; o.frequency.value = f;
+          g.gain.setValueAtTime(0.0001, t0 + d);
+          g.gain.exponentialRampToValueAtTime(0.35, t0 + d + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, t0 + d + 0.5);
+          o.connect(g); g.connect(ctx.destination);
+          o.start(t0 + d); o.stop(t0 + d + 0.55);
+        });
+      };
+      if (ctx.state === 'suspended') ctx.resume().then(go).catch(() => {}); else go();
+    } catch { /* no audio available */ }
+  }, []);
+  useEffect(() => {
+    if (!isHost) return;
+    const unlock = () => {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!chimeCtxRef.current) chimeCtxRef.current = new AC();
+        if (chimeCtxRef.current.state === 'suspended') chimeCtxRef.current.resume();
+      } catch { /* */ }
+    };
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('keydown', unlock);
+    return () => { window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); };
+  }, [isHost]);
+  const seenWaitingRef = useRef(new Set());
+  useEffect(() => {
+    if (!isHost) return;
+    const now = waiting.filter(w => w.state === 'waiting');
+    const ids = new Set(now.map(w => String(w.studentId)));
+    const fresh = now.filter(w => !seenWaitingRef.current.has(String(w.studentId)));
+    seenWaitingRef.current = ids;          // someone who leaves and returns chimes again
+    if (fresh.length > 0) playChime();
+  }, [waiting, isHost, playChime]);
+  // Reminder + title flash while the coach is away from this tab.
+  const waitingCountForTitle = isHost ? waiting.filter(w => w.state === 'waiting').length : 0;
+  useEffect(() => {
+    if (!isHost || waitingCountForTitle === 0) return;
+    const baseTitle = document.title;
+    let flip = false;
+    const titleId = setInterval(() => {
+      flip = !flip;
+      document.title = document.hidden && flip ? `🔔 ${waitingCountForTitle} waiting` : baseTitle;
+    }, 1000);
+    const remindId = setInterval(() => { if (document.hidden) playChime(); }, 25000);
+    return () => { clearInterval(titleId); clearInterval(remindId); document.title = baseTitle; };
+  }, [isHost, waitingCountForTitle, playChime]);
+
   // ── Host: load studies for the chosen source (mine / public / nexus) ─────────
   useEffect(() => {
     // 'endgames' is a pseudo-source handled entirely client-side (static JSON +
@@ -3213,6 +3281,22 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     document.addEventListener('fullscreenchange', onR);
     return () => { window.removeEventListener('resize', onR); document.removeEventListener('fullscreenchange', onR); };
   }, []);
+  // Top bar collapse (phones / fullscreen): the bar wraps into several rows on a small
+  // screen and eats board height. Collapsing it leaves a small ▼ tab and gives that
+  // height to the board. barH is the bar's measured height.
+  const [barCollapsed, setBarCollapsed] = useState(false);
+  const [barH, setBarH] = useState(62);
+  const barObsRef = useRef(null);
+  const attachBarObserver = useCallback((el) => {
+    if (barObsRef.current) { barObsRef.current.disconnect(); barObsRef.current = null; }
+    if (el && typeof ResizeObserver !== 'undefined') {
+      const read = () => { if (el.offsetHeight > 0) setBarH(el.offsetHeight); };   // 0 = hidden: keep the last real height
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      barObsRef.current = ro;
+      read();
+    }
+  }, []);
   // On narrow screens the stage + rail can't sit side by side, so let them stack
   // (wrap) instead of forcing the video rail off-screen.
   const isNarrow = vpW < 1000;
@@ -3254,7 +3338,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const viewerSideCols = (movesCollapsed ? 60 : 354) + (videosDetached ? 0 : 316) + 60 + wbPanelW;
   // Vertical reserve: ~62px topbar + 28px body padding + ~26px caption row under
   // the board. The old 170 was over-generous and left visible dead space below.
-  const viewerFit = Math.max(320, Math.min(vpH - 118, vpW - viewerSideCols, 900));
+  const barGain = barCollapsed ? Math.max(barH, 62) - 6 : 0;   // height freed by collapsing the bar
+  const viewerFit = Math.max(320, Math.min(vpH - 118 + barGain, vpW - viewerSideCols, 900));
   // The host/controller's dragged width is CLAMPED to what actually fits on screen.
   // Without this a stored/dragged size larger than the viewport pushed the top rank
   // off the top of the stage, and shrinking the board couldn't recover it.
@@ -3271,7 +3356,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // own starting size — so the board hit an invisible wall part-way through a drag.
   // The stage scrolls horizontally instead, which is the coach's choice to make.
   // `sideCols` still drives the VIEWER auto-fit below, where the layout decides.
-  const controlFit = Math.max(280, Math.min(boardWidth, vpH - 120, vpW - 120));
+  const controlFit = Math.max(280, Math.min(boardWidth, vpH - 120 + barGain, vpW - 120));
   const shownBoardW = iControl ? controlFit : viewerFit;
 
   // When the positions list first appears, shrink the board ONCE to make room for
@@ -4326,7 +4411,6 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   useEffect(() => {
     if (!isHost || videoMode !== 'pop') { try { popWinRef.current?.close(); } catch { /* */ } popWinRef.current = null; return; }
     const dpip = window.documentPictureInPicture;
-    if (!dpip) { setNote(tr('Pop-out needs a Chromium browser (Chrome/Edge). Videos kept in the page.')); setVideoMode('dock'); return; }
 
     // Derive the people directly from LiveKit here (this hook runs before `tiles` is
     // defined, so we must NOT reference it — that caused a "before initialization" crash).
@@ -4338,20 +4422,46 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     const attached = []; // [{track, el}] to detach on teardown
     (async () => {
       try {
-        // Open as large as the screen allows. The browser still caps how tall a PiP
-        // window can be dragged — the reliable way to truly fill the screen is the
-        // Fullscreen button below (requestFullscreen), NOT dragging/maximizing.
-        // Strip (default): a narrow, tall window — like Zoom's video panel — to park
-        // beside the browser or on a 2nd monitor. Grid: the old large window.
-        const strip = videoCols === 1;
+        // A tall, narrow VERTICAL window (like Zoom's video panel) to park beside the
+        // board or on a 2nd monitor — never a wide rectangle. It is a normal popup
+        // window first: those can be freely resized AND made fullscreen with the ⛶
+        // button below. Where the browser blocks popups we fall back to the Chromium
+        // picture-in-picture window (always on top, but the browser won't let it be
+        // fullscreened or resized much).
         const availW = window.screen?.availWidth || 1280;
-        const w = videoCols >= 2 ? Math.min(Math.round(availW * 0.95), videoCols * 260 + 24) : strip ? 280 : Math.round(availW * 0.95);
-        const h = Math.round((window.screen?.availHeight || 800) * (strip ? 0.9 : 0.95));
-        const pip = await dpip.requestWindow({ width: w, height: h });
+        const availH = window.screen?.availHeight || 800;
+        const w = 300;
+        const h = Math.round(availH * 0.9);
+        let pip = null;
+        let isPopup = false;
+        try {
+          const left = (window.screen?.availLeft || 0) + availW - w - 24;
+          pip = window.open('', 'cnx-class-videos', `popup=yes,width=${w},height=${h},left=${left},top=${(window.screen?.availTop || 0) + 24}`);
+          isPopup = !!pip && !!pip.document;
+        } catch { pip = null; }
+        if (!isPopup) {
+          pip = null;
+          if (dpip) pip = await dpip.requestWindow({ width: w, height: h });
+        }
+        if (!pip) { setNote(tr('The video window was blocked. Allow pop-ups for this site, or use Chrome/Edge. Videos kept in the page.')); setVideoMode('dock'); return; }
         if (cancelled) { try { pip.close(); } catch { /* */ } return; }
         popWinRef.current = pip;
         const doc = pip.document;
-        doc.body.style.cssText = 'margin:0;background:#0a0a0a;font-family:Poppins,Segoe UI,sans-serif;color:#e2e8f0;display:flex;flex-direction:column';
+        if (isPopup) { doc.title = 'Class videos'; doc.body.innerHTML = ''; }
+        doc.body.style.cssText = 'margin:0;background:#0a0a0a;font-family:Poppins,Segoe UI,sans-serif;color:#e2e8f0;display:flex;flex-direction:column;height:100vh';
+        if (isPopup) {
+          // Fullscreen toggle — the coach can take the video window edge to edge.
+          const fsBtn = doc.createElement('button');
+          fsBtn.textContent = '⛶';
+          fsBtn.title = 'Fullscreen';
+          fsBtn.style.cssText = 'position:fixed;top:6px;right:6px;z-index:5;width:32px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,0.25);background:rgba(17,24,39,0.85);color:#e2e8f0;font-size:16px;cursor:pointer;padding:0';
+          fsBtn.onclick = () => {
+            if (doc.fullscreenElement) { doc.exitFullscreen?.(); fsBtn.textContent = '⛶'; }
+            else { doc.documentElement.requestFullscreen?.().then(() => { fsBtn.textContent = '🡼'; }).catch(() => {}); }
+          };
+          doc.addEventListener('fullscreenchange', () => { fsBtn.textContent = doc.fullscreenElement ? '🡼' : '⛶'; });
+          doc.body.appendChild(fsBtn);
+        }
 
         // NOTE: a detached PiP window CANNOT be made fullscreen or script-resized to
         // fill the screen — Chromium blocks both. So this pop-out is for dragging to a
@@ -4363,7 +4473,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         // re-flows live when the coach resizes the window (the old layout was
         // computed once, so resizing just left a gap or clipped tiles).
         const grid = doc.createElement('div');
-        grid.style.cssText = `flex:1 1 auto;display:grid;grid-template-columns:${videoCols >= 2 ? `repeat(${videoCols},1fr)` : `repeat(auto-fill,minmax(${strip ? 200 : 260}px,1fr))`};grid-auto-rows:max-content;gap:8px;padding:10px;align-content:start;box-sizing:border-box;overflow-y:auto;overflow-x:hidden;min-height:0`;
+        grid.style.cssText = `flex:1 1 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(${videoCols === 1 ? 200 : 260}px,1fr));grid-auto-rows:max-content;gap:8px;padding:10px;align-content:start;box-sizing:border-box;overflow-y:auto;overflow-x:hidden;min-height:0`;
         doc.body.appendChild(grid);
 
         popTiles.forEach(p => {
@@ -4685,8 +4795,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
   return (
     <div style={s.wrap}>
-      {/* Top bar */}
-      <div style={s.topbar}>
+      {/* Top bar — collapsible on phones / fullscreen so the board gets the height */}
+      {barCollapsed && (
+        <button
+          style={s.barTab}
+          title={tr("Show the top bar")}
+          onClick={() => setBarCollapsed(false)}
+        >▼</button>
+      )}
+      <div style={{ ...s.topbar, ...(barCollapsed ? { display: 'none' } : {}) }} ref={attachBarObserver}>
         <span style={{ fontWeight: 700 }}>{tr("🔴 Live class")}</span>
         {session && <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, color: '#9ca3af' }}>
           {session.durationMinutes === 0 ? '' : 'Ends in'}
@@ -4821,6 +4938,34 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   </button>
                 )}
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '4px 0' }} />
+                {/* HOST video placement — where the class videos live (moved here from the
+                    top bar, which was crowded). The tracks never unmount; only their
+                    container changes, so students' faces stay up even during screen share. */}
+                {isHost && (
+                  <>
+                    <div style={s.devMenuHead}>{tr("Class videos")}</div>
+                    {[['dock', '📌', 'Pin videos in the panel'],
+                      ['float', '🗗', 'Float videos over the board (drag/resize)'],
+                      ['pop', '⧉', 'Pop videos out to their own window (drag to a 2nd monitor)'],
+                      ['hidden', '🚫', 'Hide videos (board gets full space)']].map(([m, icon, tip]) => (
+                      <button
+                        key={m}
+                        style={{ ...s.devItem, ...(videoMode === m ? s.devItemOn : {}) }}
+                        onClick={() => { setVideoMode(m); setDevMenu(null); }}
+                      >
+                        <span style={s.devCheck}>{icon}</span>
+                        <span style={s.devLabel}>{tr(tip)}</span>
+                      </button>
+                    ))}
+                    {(videoMode === 'float' || videoMode === 'pop') && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px' }}>
+                        <span style={{ ...s.devLabel, flex: 'none' }}>{tr("Layout")}</span>
+                        {colsPicker(false)}
+                      </div>
+                    )}
+                    <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '4px 0' }} />
+                  </>
+                )}
                 <div style={s.devMenuHead}>{tr("Select a camera")}</div>
                 {lk.cameras.length === 0 && <div style={s.devMenuEmpty}>{tr("No cameras found")}</div>}
                 {lk.cameras.map(d => (
@@ -4869,27 +5014,6 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             onClick={lowerAllHands}
           >✋ Lower all ({raisedHandIds.length})</button>
         )}
-        {/* HOST video placement — where the class videos live. Dock (in the rail) /
-            Float (draggable box over the board) / Pop out (own window) / Hide.
-            The tracks never unmount; only their container changes, so students'
-            faces stay up even during screen share. */}
-        {isHost && (
-          <div style={s.vmodeGroup} title={tr("Where the class videos appear")}>
-            {[['dock', '📌', 'Pin videos in the panel'],
-              ['float', '🗗', 'Float videos over the board (drag/resize)'],
-              ['pop', '⧉', 'Pop videos out to their own window (drag to a 2nd monitor)'],
-              ['hidden', '🚫', 'Hide videos (board gets full space)']].map(([m, icon, tip]) => (
-              <button
-                key={m}
-                style={{ ...s.vmodeBtn, ...(videoMode === m ? s.vmodeBtnOn : {}) }}
-                title={tip}
-                onClick={() => setVideoMode(m)}
-              >{icon}</button>
-            ))}
-            {/* Columns — only matters once the videos are detached. */}
-            {(videoMode === 'float' || videoMode === 'pop') && colsPicker(false)}
-          </div>
-        )}
         <button style={s.iconBtn} title={isFs ? 'Exit fullscreen' : 'Fullscreen (video if shown, else the class)'} onClick={toggleVideoFullscreen}>
           {isFs ? '🡼' : '⛶'}
         </button>
@@ -4904,6 +5028,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           <button style={s.leaveBtn} title={tr("Leave this class (it keeps running for everyone else)")} onClick={leaveClass}>
             {tr("🚪 Leave")}
           </button>
+        )}
+        {/* Collapse the bar so the board gets its height (phones and fullscreen). */}
+        {(isNarrow || isFs) && (
+          <button style={s.iconBtn} title={tr("Hide the top bar")} onClick={() => setBarCollapsed(true)}>▲</button>
         )}
       </div>
       {note && (
@@ -6244,9 +6372,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               window.addEventListener('pointerup', up);
             }}
           >
-            <span style={s.vFloatTitle}>{tr("📹 Class video")} <span style={{ color: '#6b7280', fontWeight: 600 }}>· {allTiles.length}</span></span>
-            <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-              {colsPicker(true)}
+            {/* The header never wraps: as the box narrows the words drop out first
+                (just "📹 3" is left), then the layout toggle, so it stays one slim row. */}
+            <span style={s.vFloatTitle}>
+              {floatSize.w >= 300 ? tr("📹 Class video") : '📹'} <span style={{ color: '#6b7280', fontWeight: 600 }}>{floatSize.w >= 300 ? '· ' : ''}{allTiles.length}</span>
+            </span>
+            <span style={{ marginLeft: 'auto', display: 'flex', gap: 4, flexShrink: 0 }}>
+              {floatSize.w >= 230 && colsPicker(true)}
               <button style={s.vfBtn} title={tr("Pin videos back into the panel")} onClick={() => setVideoMode('dock')}>📌</button>
               <button style={s.vfBtn} title={tr("Pop out to its own window")} onClick={() => setVideoMode('pop')}>⧉</button>
               <button style={s.vfBtn} title={tr("Hide videos")} onClick={() => setVideoMode('hidden')}>✕</button>
@@ -6451,6 +6583,7 @@ const s = {
   // (so any untagged text inherits the app scale instead of the browser's 16px default).
   wrap: { minHeight: '100vh', background: '#0b0f14', color: '#e2e8f0', fontFamily: "'Poppins',sans-serif", fontSize: 15 },
   center: { minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#0b0f14', color: '#e2e8f0', fontFamily: "'Poppins',sans-serif", fontSize: 15 },
+  barTab: { position: 'fixed', top: 0, right: 12, zIndex: 60, width: 44, height: 22, borderRadius: '0 0 10px 10px', border: '1px solid rgba(255,255,255,0.18)', borderTop: 'none', background: 'rgba(17,24,39,0.92)', color: '#67e8f9', fontSize: 12, lineHeight: 1, cursor: 'pointer', padding: 0 },
   topbar: { display: 'flex', alignItems: 'center', gap: 10, padding: '6px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)', flexWrap: 'wrap' },
   noteBar: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', background: 'rgba(245,158,11,0.12)', color: '#fcd34d', fontSize: 13 },
   noteClose: { flex: '0 0 auto', width: 24, height: 24, borderRadius: 'var(--radius-sm)', border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.12)', color: '#fcd34d', cursor: 'pointer', fontSize: 12, lineHeight: 1, display: 'grid', placeItems: 'center' },
@@ -6618,8 +6751,8 @@ const s = {
   vmodeBtnOn: { background: 'rgba(6,182,212,0.18)', color: '#67e8f9', boxShadow: 'inset 0 0 0 1px rgba(6,182,212,0.4)' },
   // Floating video box (Zoom-style) — sits over the board, host drags/resizes it.
   vFloat: { position: 'fixed', zIndex: 80, background: 'rgba(13,16,22,0.94)', backdropFilter: 'blur(14px)', border: '1px solid rgba(6,182,212,0.35)', borderRadius: 'var(--radius-lg)', boxShadow: '0 20px 60px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', overflow: 'hidden', userSelect: 'none' },
-  vFloatHead: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', cursor: 'grab', background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.08)' },
-  vFloatTitle: { fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: 6 },
+  vFloatHead: { display: 'flex', flexWrap: 'nowrap', alignItems: 'center', gap: 6, padding: '4px 8px', minHeight: 30, boxSizing: 'border-box', overflow: 'hidden', cursor: 'grab', background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.08)' },
+  vFloatTitle: { fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' },
   vFloatBody: { flex: 1, minHeight: 0, minWidth: 0, width: '100%', overflow: 'auto', padding: 8, display: 'flex', flexWrap: 'wrap', gap: 6, alignContent: 'center', justifyContent: 'center' },
   vFloatStrip: { flex: 1, minHeight: 0, minWidth: 0, width: '100%', overflowY: 'auto', overflowX: 'hidden', padding: 8, display: 'flex', flexDirection: 'column', gap: 6, boxSizing: 'border-box' },
   // Fixed-column layout: tiles wrap into rows of exactly N, scrolling when the class is bigger.
@@ -6627,7 +6760,7 @@ const s = {
   vFloatResize: { position: 'absolute', right: 0, bottom: 0, width: 26, height: 26, cursor: 'nwse-resize', color: '#9ca3af', background: 'rgba(6,182,212,0.18)', borderTopLeftRadius: 8, display: 'grid', placeItems: 'center', fontSize: 14, touchAction: 'none', zIndex: 3 },
   vFloatEdgeR: { position: 'absolute', top: 30, right: 0, bottom: 26, width: 8, cursor: 'ew-resize', touchAction: 'none', zIndex: 2 },
   vFloatEdgeB: { position: 'absolute', left: 0, right: 26, bottom: 0, height: 8, cursor: 'ns-resize', touchAction: 'none', zIndex: 2 },
-  vfBtn: { width: 26, height: 22, borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#cbd5e1', cursor: 'pointer', fontSize: 11, display: 'grid', placeItems: 'center' },
+  vfBtn: { flexShrink: 0, width: 26, height: 22, borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#cbd5e1', cursor: 'pointer', fontSize: 11, display: 'grid', placeItems: 'center' },
   // "Show video" pill shown when videos are hidden.
   showVideoPill: { position: 'fixed', bottom: 20, right: 20, zIndex: 80, display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 16px', borderRadius: 'var(--radius-lg)', border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, fontSize: 13, cursor: 'pointer', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' },
   // ── Video effects panel ──

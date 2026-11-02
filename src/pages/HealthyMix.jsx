@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard, { coordinateGutter } from '../components/Chessboard';
 import soundManager from '../utils/soundManager';
+import { introOf, holdThen, later, INTRO_MOVE_MS } from '../utils/puzzleIntro';
 import EnginePanel from '../components/EnginePanel';
 import stockfishService from '../services/stockfishService';
 import { useAuth } from '../contexts/AuthContext';
@@ -194,6 +195,7 @@ export default function HealthyMix() {
   // Puzzle Analytics can break HealthyMix solves down by themes / rating / pieces.
   const trainingMode = hasTheme ? 'themes' : hasPieces ? 'pieces' : hasBand ? 'rating' : 'healthymix';
   const puzzleStartTimeRef = useRef(null);
+  const practiceNoteShownRef = useRef(false);
 
   // Pieces mode: remember which puzzles we've shown so a sparse count (e.g. 3
   // pieces with only 8 puzzles) never repeats — and so we can show an
@@ -219,6 +221,30 @@ export default function HealthyMix() {
   const [message, setMessage] = useState('Loading…');
   const [botThinking, setBotThinking] = useState(false);
   const [lastMove, setLastMove] = useState(null); // { from, to } for highlight
+  // The bot's opening move (utils/puzzleIntro): while introFen is set the board
+  // shows Lichess's position BEFORE that move; clearing it lets the board play
+  // the move into `fen`. The solver can't move until it has landed.
+  const [introFen, setIntroFen] = useState(null);
+  const [introing, setIntroing] = useState(false);
+  const introingRef = useRef(false);
+  const introTimersRef = useRef([]);
+  useEffect(() => () => introTimersRef.current.forEach(cancel => cancel()), []);
+  // Start a puzzle (or a retry) on its opening: the bot's move played on the
+  // board when the puzzle knows it, otherwise just the highlight of it.
+  const playIntro = useCallback((p, startFen) => {
+    introTimersRef.current.forEach(cancel => cancel());
+    introTimersRef.current = [];
+    setLastMove(setupHighlight(p, startFen));
+    const intro = introOf(p);
+    introingRef.current = !!intro;
+    setIntroing(!!intro);
+    setIntroFen(intro ? intro.startFen : null);
+    if (!intro) return;
+    introTimersRef.current.push(holdThen(() => {
+      setIntroFen(null);
+      introTimersRef.current.push(later(() => { introingRef.current = false; setIntroing(false); }, INTRO_MOVE_MS));
+    }));
+  }, []);
 
   // Post-puzzle Stockfish panel (top 3 lines). Only offered once the puzzle is over
   // — never while solving, or it would just hand the answer over. Starts OFF every
@@ -971,7 +997,7 @@ export default function HealthyMix() {
     // Highlight the opponent's setup move that produced this position. The stored
     // fen is already AFTER that move, so without this the solver has no way to see
     // what was just played — which makes en passant in particular unfair to spot.
-    setLastMove(setupHighlight(p, game.fen()));
+    playIntro(p, game.fen());
     // Reset move history to just the starting position (ply 0).
     setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
     attemptsRef.current = [];   // new puzzle → fresh attempt log
@@ -988,7 +1014,7 @@ export default function HealthyMix() {
     setStatusSynced('solving');
     setMessage(turnPrompt(game));
     setLoading(false);
-  }, [setStatusSynced, clearVariations]);
+  }, [setStatusSynced, clearVariations, playIntro]);
 
   const loadPuzzle = useCallback(async (excludeId) => {
     setLoading(true);
@@ -1087,6 +1113,9 @@ export default function HealthyMix() {
       setPuzzle(p);
       puzzleRef.current = p;
       setFen(game.fen());
+      // The bot's opening move (or at least its highlight). This path used to
+      // leave lastMove null, so even puzzles WITH setupMove showed no highlight.
+      playIntro(p, game.fen());
       // Reset the move history to just THIS puzzle's start (clears previous puzzle's
       // notation from the moves card). This path doesn't go through renderPuzzle, so
       // it must reset plies/viewIdx itself.
@@ -1108,7 +1137,7 @@ export default function HealthyMix() {
         : 'No puzzles available. Try again later.');
       setLoading(false);
     }
-  }, [setStatusSynced, hasBand, bandMin, bandMax, hasTheme, theme, themeLabel, hasPieces, piecesParam, trainingMode, user, isRedo, renderPuzzle]);
+  }, [setStatusSynced, hasBand, bandMin, bandMax, hasTheme, theme, themeLabel, hasPieces, piecesParam, trainingMode, user, isRedo, renderPuzzle, playIntro]);
 
   useEffect(() => { loadPuzzle(); }, [loadPuzzle]);
 
@@ -1164,6 +1193,10 @@ export default function HealthyMix() {
       // why, so a flat 0 doesn't look like a bug.
       if (solved && res.data.tooEasy) {
         setMessage(tr('Correct — too easy for your level. Try harder.'));
+      } else if (solved && res.data.practice && !practiceNoteShownRef.current) {
+        // Once per session: why a topic solve earns only a few points.
+        practiceNoteShownRef.current = true;
+        setMessage(tr('Correct! Practice by topic earns small points, because you know what to look for. Healthy Mix counts fully.'));
       }
       // If this is a coach assignment, count this attempt toward it.
       reportAssignmentAttempt(solved);
@@ -1199,6 +1232,7 @@ export default function HealthyMix() {
   // ── Handle a user move ──
   const handleMove = useCallback((move) => {
     const st = statusRef.current;
+    if (introingRef.current) return false;   // the bot's opening move is still playing
 
     // After the puzzle is over (solved or failed), the board is a free analysis
     // board — accept any legal move for either side, like Lichess.
@@ -1466,7 +1500,7 @@ export default function HealthyMix() {
     setFen(game.fen());
     // Back to the starting position → restore the setup-move highlight (not null,
     // or a retry would hide the very hint the first attempt had).
-    setLastMove(setupHighlight(puzzle, game.fen()));
+    playIntro(puzzle, game.fen());
     // Retry replays from the start — clear the moves card back to the start position.
     setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
     attemptsRef.current = [];   // new puzzle → fresh attempt log
@@ -1479,7 +1513,7 @@ export default function HealthyMix() {
     setHint(null);       // a retry starts from a clean board — no stale hint
     setStatusSynced('solving');
     setMessage(failedRef.current ? 'Retry — find the right line (no points).' : turnPrompt(game));
-  }, [puzzle, setStatusSynced, clearVariations]);
+  }, [puzzle, setStatusSynced, clearVariations, playIntro]);
 
   // Copy the puzzle's STARTING fen (puzzle.fen is the position at the beginning,
   // before the solution is played) with brief "Copied!" feedback.
@@ -1509,10 +1543,12 @@ export default function HealthyMix() {
   const shownPlyIdx = viewIdx === null ? plies.length - 1 : viewIdx;
   // What the board actually displays: the active variation's ply, else the browsed
   // mainline ply, else the live position.
-  const displayFen = curVarNode ? curVarNode.fen
+  const displayFen = introFen ? introFen
+    : curVarNode ? curVarNode.fen
     : (viewIdx !== null && plies[viewIdx]) ? plies[viewIdx].fen
     : fen;
-  const displayLastMove = curVarNode ? { from: curVarNode.from, to: curVarNode.to }
+  const displayLastMove = introFen ? null
+    : curVarNode ? { from: curVarNode.from, to: curVarNode.to }
     : (viewIdx !== null && plies[viewIdx] && plies[viewIdx].from)
       ? { from: plies[viewIdx].from, to: plies[viewIdx].to }
       : lastMove;
@@ -1611,7 +1647,7 @@ export default function HealthyMix() {
     showHelpOverlay && hint ? { [hint.from]: 'var(--color-accent-2)' } : {}
   ), [showHelpOverlay, hint]);
   const boardInteractive =
-    puzzleOver || (atLive && status === 'solving' && !botThinking);
+    puzzleOver || (atLive && status === 'solving' && !botThinking && !introing);
   // Back/start are dead only at the very start of the mainline — inside a variation
   // there is always somewhere to step back to.
   const atStart = !curVar && shownPlyIdx <= 0;

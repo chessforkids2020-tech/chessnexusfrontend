@@ -402,7 +402,7 @@ export default function ChessboardPage() {
       <header className="cbl-hero">
         <div className="cbl-hero-text">
           <p className="cbl-presents">{tr("CHESSNEXUS PRESENTS")}</p>
-          <h1>{tr("A New Move in Chess.")}</h1>
+          <h1>{tr("A New Move in Chess")}</h1>
 
           {/* What is launching, and when. */}
           <p className="cbl-launchline">

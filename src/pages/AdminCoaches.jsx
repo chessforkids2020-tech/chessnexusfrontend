@@ -120,6 +120,8 @@ export default function AdminCoaches() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [sortKey, setSortKey] = useState("");
+  const [sortDir, setSortDir] = useState("desc");
   const [total, setTotal] = useState(0);
 
   // Coach overview (analytics + verify list) — moved here from the admin dashboard.
@@ -314,6 +316,7 @@ export default function AdminCoaches() {
       if (status !== "all") params.status = status;
       if (plan !== "all") params.plan = plan;
       if (search.trim()) params.q = search.trim();
+      if (sortKey) { params.sort = sortKey; params.dir = sortDir; }
       const res = await api.get("/api/coach-subscription/admin/coaches", { params });
       setRows(Array.isArray(res.data?.coaches) ? res.data.coaches : []);
       setTotalPages(res.data?.totalPages || 1);
@@ -327,10 +330,27 @@ export default function AdminCoaches() {
     } finally {
       setLoading(false);
     }
-  }, [page, status, plan, search, nav]);
+  }, [page, status, plan, search, sortKey, sortDir, nav]);
 
   useEffect(() => { load(); }, [load]);
-  useEffect(() => { setPage(1); }, [status, plan, search]);
+  useEffect(() => { setPage(1); }, [status, plan, search, sortKey, sortDir]);
+
+  // Click a column heading to sort by it; click again to reverse. Sorting runs on the
+  // server across ALL coaches, not just the 50 on screen.
+  const clickSort = (key) => {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(key); setSortDir(key === "name" || key === "plan" || key === "status" ? "asc" : "desc"); }
+  };
+  const sortTh = (key, label) => (
+    <th
+      style={{ ...styles.th, cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+      onClick={() => clickSort(key)}
+      aria-sort={sortKey === key ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
+      title="Click to sort"
+    >
+      {label} <span style={{ opacity: sortKey === key ? 1 : 0.35, fontSize: 11 }}>{sortKey === key ? (sortDir === "asc" ? "▲" : "▼") : "↕"}</span>
+    </th>
+  );
 
   const onSearchSubmit = (e) => { e.preventDefault(); setSearch(q); };
 
@@ -715,8 +735,8 @@ export default function AdminCoaches() {
                 <th style={styles.th}>Academy</th>
                 <th style={styles.th}>Head coach</th>
                 <th style={styles.th}>Coaches</th>
-                <th style={styles.th}>Plan</th>
-                <th style={styles.th}>Status</th>
+                {sortTh("plan", "Plan")}
+                {sortTh("status", "Status")}
                 <th style={styles.th}>Ends</th>
                 <th style={styles.th}>Actions</th>
               </tr>
@@ -863,14 +883,14 @@ export default function AdminCoaches() {
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>Coach</th>
+              {sortTh("name", "Coach")}
               <th style={styles.th}>Plan</th>
-              <th style={styles.th}>Paid?</th>
-              <th style={styles.th}>Last payment</th>
-              <th style={styles.th}>Duration</th>
-              <th style={styles.th}>Access until</th>
-              <th style={styles.th}>Lifetime spend</th>
-              <th style={styles.th}>Students</th>
+              {sortTh("paid", "Paid?")}
+              {sortTh("lastPayment", "Last payment")}
+              {sortTh("duration", "Duration")}
+              {sortTh("accessUntil", "Access until")}
+              {sortTh("lifetime", "Lifetime spend")}
+              {sortTh("students", "Students")}
               <th style={styles.th}>Status</th>
             </tr>
           </thead>

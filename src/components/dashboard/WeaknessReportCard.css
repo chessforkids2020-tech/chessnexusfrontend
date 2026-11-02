@@ -32,3 +32,29 @@
 @media (max-width: 520px) {
   .wrc-label { width: 100%; }
 }
+
+/* Weekly report panel (WeeklyReportPanel.jsx) — same panel, a few extra pieces. */
+.wrp-tag {
+  display: inline-block; vertical-align: middle; margin-left: 6px; padding: 2px 9px;
+  border-radius: var(--radius-pill); font-size: 10.5px; font-weight: 900; letter-spacing: .6px;
+  text-transform: uppercase; color: #2b1a10; background: var(--color-warning, #fbbf24);
+}
+.wrp-inside { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; }
+.wrp-inside li {
+  display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; line-height: 1.5; color: var(--gip-text);
+  background: var(--gip-panel); border: 1px solid var(--gip-border); border-radius: var(--radius-md); padding: 8px 12px;
+}
+.wrp-inside li span { flex: none; width: 20px; text-align: center; }
+.wrp-due-title { margin: 0 0 6px; font-size: 15px; font-weight: 800; color: var(--gip-text); }
+.wrp-short { color: var(--color-danger); }
+.wrp-streak-head { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; font-weight: 800; color: var(--gip-text); margin-bottom: 8px; }
+.wrp-days { display: flex; gap: 8px; }
+.wrp-day {
+  flex: 1; max-width: 56px; height: 36px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800;
+  background: var(--gip-panel); border: 1px solid var(--gip-border); color: var(--gip-muted);
+}
+.wrp-day.on { background: var(--color-warning, #fbbf24); border-color: transparent; color: #2b1a10; }
+.wrp-history { margin-top: 16px; }
+.wrp-history .wrc-label { width: auto; }
+.wrp-history .wrc-latest { margin-top: 8px; padding-top: 8px; }

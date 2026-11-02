@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../../components/Chessboard';
 import { RACE_MOVE_MS } from '../../contexts/GamePrefsContext';
+import { introOf, holdThen, later, INTRO_MOVE_MS } from '../../utils/puzzleIntro';
 import io from 'socket.io-client';
 import api from '../../api';
 import PlayerName from '../../components/PlayerName';
@@ -26,6 +27,10 @@ function TeamRacePuzzle() {
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
   const [game, setGame] = useState(new Chess());
   const gameRef = useRef(new Chess());
+  // The bot's opening move (utils/puzzleIntro): the board is locked while it plays.
+  const introingRef = useRef(false);
+  const introTimersRef = useRef([]);
+  useEffect(() => () => introTimersRef.current.forEach(cancel => cancel()), []);
   const [userMoves, setUserMoves] = useState([]);
   const [puzzleStartTime, setPuzzleStartTime] = useState(Date.now());
   const [score, setScore] = useState(0);
@@ -408,12 +413,24 @@ function TeamRacePuzzle() {
 
     if (resumeUserMovesArr.length === 0) {
       // USER-FIRST: do NOT pre-play solution[0] (that's the user's own move).
-      // Show the FEN as-is; the user makes the first move.
+      // The board opens on Lichess's position and plays the bot's opening move
+      // when the puzzle knows it; otherwise it shows the FEN as-is.
+      introTimersRef.current.forEach(cancel => cancel());
+      introTimersRef.current = [];
+      const intro = introOf({ ...puzzleDoc, fen: newGame.fen() });
+      introingRef.current = !!intro;
       setLastMove(null);
 
       // Set game and reset userMoves for new puzzle
-      setGame(newGame);
+      setGame(intro ? new Chess(intro.startFen) : newGame);
       gameRef.current = newGame;
+      if (intro) {
+        introTimersRef.current.push(holdThen(() => {
+          setGame(newGame);
+          setLastMove({ from: intro.from, to: intro.to });
+          introTimersRef.current.push(later(() => { introingRef.current = false; }, INTRO_MOVE_MS));
+        }));
+      }
       if (raceCache.data[raceId]) {
         raceCache.data[raceId].game = newGame;
       }
@@ -495,6 +512,7 @@ function TeamRacePuzzle() {
   };
 
   const handleMove = (from, to, promotion) => {
+    if (introingRef.current) return false;   // the bot's opening move is still playing
     const currentPuzzleMerged = puzzles[currentPuzzleIndex];
     const currentPuzzle = currentPuzzleMerged?.puzzleDoc || currentPuzzleMerged;
     if (!currentPuzzle) return false;

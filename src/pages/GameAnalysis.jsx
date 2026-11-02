@@ -1316,7 +1316,11 @@ function LoginPrompt({ feature }) {
 
 export default function GameAnalysis() {
   const { user } = useAuth();
-  const [platform, setPlatform]           = useState('chesscom');
+  // ?platform=lichess|chesscom|chessnexus opens that tab (Training Path reminders link here).
+  const [platform, setPlatform]           = useState(() => {
+    const p = new URLSearchParams(window.location.search).get('platform');
+    return ['chesscom', 'lichess', 'chessnexus'].includes(p) ? p : 'chesscom';
+  });
   const [username, setUsername]           = useState('');
   const [isOwnAccount, setIsOwnAccount]   = useState(true);  // false = scout mode
   const [timeClass, setTimeClass]         = useState('all'); // ChessNexus time-control filter

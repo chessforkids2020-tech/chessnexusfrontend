@@ -6,7 +6,10 @@ import PlayerName from './PlayerName';
 import './TournamentChat.css';
 import { t as tr } from '../i18n/LanguageContext';
 
-export default function TournamentChat({ tournamentId }) {
+// hideHeader: the host already shows its own "Chat" title bar (arena live overlay);
+// that small popup also gets a tighter input row.
+export default function TournamentChat({ tournamentId, hideHeader = false }) {
+  const compact = hideHeader;
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const messagesEndRef = useRef(null);
@@ -88,20 +91,22 @@ export default function TournamentChat({ tournamentId }) {
       backdropFilter: 'blur(5px)',
       WebkitBackdropFilter: 'blur(5px)'
     }}>
-      <div style={{
-        padding: '16px',
-        background: 'linear-gradient(135deg, var(--color-accent-a15), var(--color-accent-2-a12))',
-        color: 'var(--color-accent)',
-        fontWeight: '700',
-        fontSize: '16px',
-        borderBottom: '1px solid var(--color-white-a04)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px'
-      }}>
-        <span style={{ fontSize: '20px' }}>💬</span>
-        {tr("Tournament Chat")}
-      </div>
+      {!hideHeader && (
+        <div style={{
+          padding: '16px',
+          background: 'linear-gradient(135deg, var(--color-accent-a15), var(--color-accent-2-a12))',
+          color: 'var(--color-accent)',
+          fontWeight: '700',
+          fontSize: '16px',
+          borderBottom: '1px solid var(--color-white-a04)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
+        }}>
+          <span style={{ fontSize: '20px' }}>💬</span>
+          {tr("Tournament Chat")}
+        </div>
+      )}
 
       <div
         ref={messagesContainerRef}
@@ -159,7 +164,7 @@ export default function TournamentChat({ tournamentId }) {
       </div>
 
       <form onSubmit={handleSendMessage} style={{
-        padding: '16px',
+        padding: compact ? '8px 12px 6px' : '16px',
         borderTop: '1px solid var(--color-white-a04)',
         background: 'var(--color-black-a20)',
         backdropFilter: 'blur(5px)',
@@ -191,7 +196,8 @@ export default function TournamentChat({ tournamentId }) {
                 maxLength={100}
                 style={{
                   flex: 1,
-                  padding: '12px 16px',
+                  minWidth: 0,
+                  padding: compact ? '8px 12px' : '12px 16px',
                   background: 'var(--color-black-a35)',
                   border: '1px solid var(--color-white-a10)',
                   borderRadius: 'var(--radius-lg)',
@@ -214,7 +220,7 @@ export default function TournamentChat({ tournamentId }) {
                 type="submit"
                 disabled={!inputMessage.trim()}
                 style={{
-                  padding: '12px 24px',
+                  padding: compact ? '8px 18px' : '12px 24px',
                   background: inputMessage.trim()
                     ? 'var(--color-accent-a15)'
                     : 'rgba(107, 114, 128, 0.3)',
@@ -251,7 +257,7 @@ export default function TournamentChat({ tournamentId }) {
             <div style={{
               fontSize: '11px',
               color: 'var(--color-text-faint)',
-              marginTop: '8px',
+              marginTop: compact ? '3px' : '8px',
               textAlign: 'right',
               fontStyle: 'italic'
             }}>

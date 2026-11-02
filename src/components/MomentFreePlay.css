@@ -1,0 +1,29 @@
+.mmx-moves { margin: 0 0 10px; }
+.mmx-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 3px 4px;
+  max-height: 84px; overflow-y: auto;
+  padding: 6px 8px; border-radius: var(--radius-md);
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a07);
+}
+.mmx-no { color: var(--color-text-faint); font-size: 12px; margin-left: 4px; }
+.mmx-empty { color: var(--color-text-muted); font-size: 12.5px; }
+.mmx-mv {
+  background: none; border: none; color: var(--color-text); cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 700; padding: 2px 5px; border-radius: var(--radius-sm);
+}
+.mmx-mv:hover { background: var(--color-white-a07); }
+.mmx-mv.on { background: var(--color-accent-a30); color: var(--color-accent); }
+.mmx-ctl { display: flex; gap: 4px; margin-top: 6px; }
+.mmx-ctl button {
+  flex: 1; height: 26px; border-radius: var(--radius-sm); cursor: pointer; font-size: 11px;
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a10); color: var(--color-text);
+}
+.mmx-ctl button:disabled { opacity: 0.35; cursor: default; }
+.mmx-engine {
+  flex: none; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-pill, 999px);
+  cursor: pointer; white-space: nowrap;
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a10); color: var(--color-text-muted);
+}
+.mmx-engine.on { background: var(--color-success-a20); border-color: var(--color-success); color: var(--color-success); }
+.mmx-titlerow { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 4px; }
+.mmx-titlerow h3 { margin: 0 !important; min-width: 0; }

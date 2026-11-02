@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
-import StudyMovesCard from '../components/StudyMovesCard';
+import { MomentMoves, EngineSwitch } from '../components/MomentFreePlay';
 import { useMomentFreePlay } from '../hooks/useMomentFreePlay';
 import EnginePanel from '../components/EnginePanel';
 import api from '../api';
@@ -440,7 +440,10 @@ export default function MyMoments() {
               </div>
               <div className="mm-modal-side">
                 <div className="mm-nav mm-nav-side">{nav}</div>
-                <h3>{themeLabel(active.theme)}</h3>
+                <div className="mmx-titlerow">
+                  <h3>{themeLabel(active.theme)}</h3>
+                  {done && <EngineSwitch on={fp.engineOn} onToggle={fp.toggleEngine} />}
+                </div>
                 <p className="mm-modal-context">
                   {active.opponentName ? `vs ${active.opponentName} · ` : ''}move {active.moveNumber}
                 </p>
@@ -493,14 +496,12 @@ export default function MyMoments() {
                 {done && (
                   <div className="mm-free" data-testid="mm-free">
                     <p className="mm-free-hint">{tr("Free board — play any move for either side to see what happens.")}</p>
-                    <StudyMovesCard
-                      compact
+                    <MomentMoves
                       tree={fp.tree} currentId={fp.currentId}
                       onSelect={fp.goTo}
                       onFirst={fp.toStart} onPrev={fp.back} onNext={fp.forward} onLast={fp.toEnd}
-                      emptyText=""
                     />
-                    <EnginePanel fen={fp.fen} enabled={fp.engineOn} onToggle={fp.toggleEngine} numLines={3} />
+                    {fp.engineOn && <EnginePanel fen={fp.fen} enabled numLines={3} />}
                   </div>
                 )}
 

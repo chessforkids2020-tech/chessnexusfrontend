@@ -101,6 +101,7 @@ export default function ArenaTournamentLive() {
   const [gameState, setGameState] = useState(null);
   const [myColor, setMyColor] = useState(null);
   const [opponent, setOpponent] = useState('');
+  const [opponentId, setOpponentId] = useState(null);   // for their rating beside the clock
   const [loading, setLoading] = useState(true);
   const [waitingForPairing, setWaitingForPairing] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -121,7 +122,7 @@ export default function ArenaTournamentLive() {
   // right-hand card. Measuring the container is the only thing that cannot drift
   // out of step with the CSS grid.
   const chessColRef = useRef(null);
-  const { boardWidth, maxBoard, onResize: onBoardResize, minBoard } = useArenaBoardSize(chessColRef);
+  const { boardWidth, maxBoard, onResize: onBoardResize, minBoard, isDesktop } = useArenaBoardSize(chessColRef, !loading);
   const [whiteTimeRemaining, setWhiteTimeRemaining] = useState(null);
   const [blackTimeRemaining, setBlackTimeRemaining] = useState(null);
   const [lastMove, setLastMove] = useState(null);
@@ -179,11 +180,10 @@ export default function ArenaTournamentLive() {
 
   const [firstMoveCountdown, setFirstMoveCountdown] = useState(null); // seconds remaining
   const [drawOfferState, setDrawOfferState] = useState(null); // null | 'sent' | 'incoming'
-  const [soundEnabled, setSoundEnabled] = useState(() => {
-    try { return localStorage.getItem('arenaSound') !== 'off'; } catch { return true; }
-  });
-
-  const soundEnabledRef = useRef(soundEnabled);
+  // Sound is always on: the 🔔 toggle was removed from the action row. (Its old
+  // saved 'arenaSound' = 'off' is ignored, so nobody is left muted with no
+  // button to unmute.)
+  const soundEnabledRef = useRef(true);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -194,10 +194,6 @@ export default function ArenaTournamentLive() {
     userRef.current = user;
   }, [user]);
 
-  useEffect(() => {
-    soundEnabledRef.current = soundEnabled;
-    try { localStorage.setItem('arenaSound', soundEnabled ? 'on' : 'off'); } catch {}
-  }, [soundEnabled]);
 
   useEffect(() => {
     isPausedRef.current = isPaused;
@@ -375,6 +371,7 @@ export default function ArenaTournamentLive() {
       setCurrentGame(data.gameId);
       setMyColor(myColor);
       setOpponent(opponentName);
+      setOpponentId(String(isWhitePlayer ? data.blackPlayerId : data.whitePlayerId));
       setWaitingForPairing(false);
       // Cancel any pending auto-pairing retry since we are now in a game
       if (pairingRetryTimerRef.current) {
@@ -574,6 +571,7 @@ export default function ArenaTournamentLive() {
       setLastMove(null);
       setMyColor(null);
       setOpponent('');
+      setOpponentId(null);
       setWhiteTimeRemaining(null);
       setBlackTimeRemaining(null);
       setWaitingForPairing(false);
@@ -861,7 +859,8 @@ export default function ArenaTournamentLive() {
       
       setMyColor(myColor);
       setOpponent(opponent);
-      
+      setOpponentId(myColor === 'white' ? String(gameData.blackPlayerId) : myColor === 'black' ? String(gameData.whitePlayerId) : null);
+
       if (gameData.fen) {
         lastProcessedFenRef.current = gameData.fen;
         // For chess960 games, initialize chessRef with the starting FEN so move validation works correctly
@@ -1238,6 +1237,202 @@ export default function ArenaTournamentLive() {
     );
   }
 
+  // Tournament clock + "your stats / bonuses / info / teams". Phones/tablets show
+  // them in the panel under the board; desktop shows them in the left column
+  // above the leaderboard, so the panel beside the board is just the game.
+  const timerBlock = (
+    <>
+    {/* Time section — hidden on mobile/tablet (shown in mobile banner instead) */}
+    {/* NOTE: layout (display/align/justify/gap) lives in the CSS class,
+        NOT here. An inline `display: flex` beats any class rule, media
+        query included, so the "hide on tablet/mobile" rule in
+        ArenaTournamentLive.css could never take effect — which is why
+        this desktop timer went on showing BELOW the board while the
+        mobile banner showed above it, giving two Time Remaining panels
+        on a phone. Keep display out of this style object. */}
+    <div className="at-live-right-timer" style={{
+      background: 'var(--color-warning-a12)',
+      borderRadius: 'var(--radius-lg)',
+      padding: '8px 16px',
+      textAlign: 'center',
+      border: '1px solid var(--color-warning-a20)',
+      backdropFilter: 'blur(5px)',
+      WebkitBackdropFilter: 'blur(5px)',
+    }}>
+      <div style={{ 
+        color: 'var(--color-warning)', 
+        fontSize: '12px', 
+        fontWeight: '600',
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+        whiteSpace: 'nowrap'
+      }}>
+        {tr("Time Remaining")}
+      </div>
+      <div style={{ 
+        color: 'var(--color-warning)', 
+        fontSize: '22px', 
+        fontWeight: '800', 
+        fontFamily: 'monospace',
+        textShadow: '0 0 12px rgba(251, 191, 36, 0.5)'
+      }}>
+        {timeRemaining || '0:00:00'}
+      </div>
+    </div>
+
+    </>
+  );
+  const tourneyBlocks = (
+    <>
+    {/* YOUR STATS — below action buttons */}
+    <div className="at-live-stats" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+      <h3 className="at-live-stats-title" style={{
+        fontSize: '14px',
+        fontWeight: '700',
+        color: 'var(--color-text)',
+        marginBottom: '12px',
+        background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text'
+      }}>
+        {tr("Your Stats")}
+      </h3>
+      {tournament?.tournamentType === 'team_battle' ? (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 20px', width: '100%' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Score")}</div>
+            <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-accent)', lineHeight: 1 }}>
+              {myParticipant ? myParticipant.score : '0'}
+            </div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Games")}</div>
+            <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-text)', lineHeight: 1 }}>
+              {myParticipant ? myParticipant.gamesPlayed : '0'}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="at-live-stats-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 12px', width: '100%' }}>
+          <div style={{ textAlign: 'center', background: 'var(--color-accent-a08)', borderRadius: 'var(--radius-md)', padding: '10px 4px' }}>
+            <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Score")}</div>
+            <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-accent)', lineHeight: 1 }}>
+              {myParticipant ? myParticipant.score : '0'}
+            </div>
+          </div>
+          <div style={{ textAlign: 'center', background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', padding: '10px 4px' }}>
+            <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Rank")}</div>
+            <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-warning)', lineHeight: 1 }}>
+              {myParticipant
+                ? (() => { const r = leaderboard.findIndex(p => p.userId === myParticipant.userId) + 1; return r > 0 ? `#${r}` : '—'; })()
+                : '—'}
+            </div>
+          </div>
+          <div style={{ textAlign: 'center', background: 'var(--color-success-a12)', borderRadius: 'var(--radius-md)', padding: '10px 4px' }}>
+            <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Wins")}</div>
+            <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-success)', lineHeight: 1 }}>
+              {myParticipant ? (myParticipant.wins ?? 0) : '0'}
+            </div>
+          </div>
+          <div style={{ textAlign: 'center', background: 'var(--color-danger-a12)', borderRadius: 'var(--radius-md)', padding: '10px 4px' }}>
+            <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Losses")}</div>
+            <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-danger)', lineHeight: 1 }}>
+              {myParticipant ? (myParticipant.losses ?? 0) : '0'}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* (The "Active Bonuses" strip was removed from the live room: the
+        bonuses still count, they just are not listed here.) */}
+
+    {/* (The "♟ Standard · N online" card was removed: the online count
+        already shows on the leaderboard dots, and a marathon's phase in the
+        full-width banner at the top.) */}
+
+    {/* The "🏆 Leaderboard (n)" collapse button used to sit here. It was
+        removed because it never worked: its state only ever toggled the
+        button's own arrow — no element carried the .at-live-lb-body class
+        the collapse CSS targeted — so the leaderboard below stayed open
+        either way, and the control read as broken. The leaderboard is
+        always visible; it does not need a toggle above it. */}
+    {/* Team Score Cards — right panel (team_battle only) */}
+    {tournament?.tournamentType === 'team_battle' && teamLeaderboard.length > 0 && (
+      <div style={{ background: 'var(--color-black-a35)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', overflow: 'hidden' }}>
+        <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, background: 'linear-gradient(135deg, var(--color-accent-2), #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{tr("⚔️ Teams")}</h3>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: '12px', fontWeight: '500' }}>{teamLeaderboard.length} {tr("teams")}</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '44px 1fr 56px', gap: '8px', padding: '5px 12px', borderBottom: '2px solid var(--color-white-a10)' }}>
+          <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{tr("Rank")}</div>
+          <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{tr("Team")}</div>
+          <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>{tr("Score")}</div>
+        </div>
+        {teamLeaderboard.map((team, i) => {
+          const medals = ['🥇', '🥈', '🥉'];
+          const isMyTeam = myParticipant?.teamId === team.teamId;
+          return (
+            <div key={team.teamId} style={{ display: 'grid', gridTemplateColumns: '44px 1fr 56px', gap: '8px', padding: '8px 12px', borderBottom: '1px solid var(--color-white-a04)', alignItems: 'center', background: isMyTeam ? `${team.color}12` : 'transparent', borderLeft: isMyTeam ? `3px solid ${team.color}` : '3px solid transparent' }}>
+              <div style={{ fontSize: '14px', textAlign: 'center' }}>{medals[i] || `#${i + 1}`}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+                <div style={{ width: '9px', height: '9px', borderRadius: 'var(--radius-circle)', background: team.color, boxShadow: `0 0 6px ${team.color}`, flexShrink: 0 }} />
+                <span style={{ fontSize: '12px', fontWeight: '700', color: isMyTeam ? team.color : 'var(--color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{team.teamName}</span>
+                {isMyTeam && <span style={{ fontSize: '9px', fontWeight: '700', color: team.color, background: `${team.color}22`, border: `1px solid ${team.color}55`, borderRadius: 'var(--radius-sm)', padding: '1px 4px', flexShrink: 0 }}>{tr("You")}</span>}
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--color-success)', textAlign: 'right' }}>{team.totalScore}</div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+
+    </>
+  );
+
+  // DESKTOP (lichess layout): the players sit in the game panel to the RIGHT of
+  // the board — opponent at the top, you at the bottom, each with a big clock;
+  // the clock that is running is lit. Phones/tablets keep the rows above and
+  // below the board.
+  const sideToMove = (gameState || '').split(' ')[1] === 'b' ? 'black' : 'white';
+  // The ONE rating shown for a participant — same as the leaderboard row: the
+  // rating they joined with (the phase's rating in a marathon), moved by every
+  // game played here. null for Chess960 (unrated) or when unknown.
+  const liveRatingOf = (p) => {
+    if (!p || tournament?.tournamentType === 'chess960') return null;
+    const isMarathon = tournament?.tournamentType === 'bullet_blitz_marathon';
+    const inBlitzPhase = isMarathon && (tournament?.currentPhase ?? 0) >= 1;
+    const shown = isMarathon
+      ? (inBlitzPhase ? p.blitzRatingAtJoin : p.bulletRatingAtJoin)
+      : p.ratingAtJoin;
+    if (shown == null) return null;
+    return shown + Math.round((p.tournamentRating ?? 1200) - 1200);
+  };
+
+  const renderSidePlayer = (isOpp) => {
+    const color = isOpp ? (myColor === 'white' ? 'black' : 'white') : myColor;
+    const secs = color === 'white' ? whiteTimeRemaining : blackTimeRemaining;   // ms
+    const running = sideToMove === color;
+    const low = secs !== null && secs <= 30000;
+    const pid = isOpp ? opponentId : String(user?.id || user?._id || '');
+    const rating = pid ? liveRatingOf(leaderboard.find(p => String(p.userId) === pid)) : null;
+    return (
+      <div className={`at-live-side-player${isOpp ? ' opp' : ' me'}`}>
+        <div className={`at-live-side-clock${running ? ' running' : ''}${running && low ? ' low' : ''}`}>
+          {formatTime(secs)}
+        </div>
+        <div className="at-live-side-name">
+          <span className={`at-live-side-dot ${color}`} />
+          <span className="at-live-side-name-text" style={{ color: isOpp ? 'var(--color-text)' : 'var(--color-accent)' }}>
+            {isOpp ? (opponent || tr('Opponent')) : (user?.displayName || tr('You'))}
+          </span>
+          {rating != null && <span className="at-live-side-rating">{rating}</span>}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="at-live-page">
       {/* Background gradient effect */}
@@ -1313,7 +1508,10 @@ export default function ArenaTournamentLive() {
         </div>
       )}
 
-      <div className="at-live-grid">
+      {/* --at-board: the board + its 1px frame. On desktop the board column is
+          exactly this wide and the side panels exactly this tall, so all three
+          columns share one top and bottom (see ArenaTournamentLive.css). */}
+      <div className="at-live-grid" style={{ '--at-board': `${boardWidth + 2}px` }}>
         {/* MOBILE-ONLY timer banner — shows above chessboard on small screens */}
         <div className="at-live-mobile-timer">
           <span className="at-live-mobile-timer-label">{tr("⏰ Time Remaining")}</span>
@@ -1363,8 +1561,10 @@ export default function ArenaTournamentLive() {
           </div>
         )}
 
-        {/* LEFT CARD — Individual Leaderboard (grid-area: chat) */}
+        {/* LEFT CARD — Individual Leaderboard (grid-area: chat). On desktop the
+            tournament clock, your stats and the tournament info sit above it. */}
         <div className="at-live-chat">
+          {isDesktop && <div className="at-live-left-info">{timerBlock}{tourneyBlocks}</div>}
           <div className="at-live-chat-inner" style={{ padding: 0, borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}>
             {/* Individual Leaderboard header */}
             <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--color-white-a07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1438,12 +1638,19 @@ export default function ArenaTournamentLive() {
                         const label = isMarathon
                           ? (inBlitzPhase ? 'Blitz rating when joined' : 'Bullet rating when joined')
                           : 'Rating when joined';
+                        // Live rating: the rating they joined with, moved by every
+                        // game they have played here (tournamentRating starts at 1200
+                        // for everyone, so its drift from 1200 is the net change).
+                        // Green/red with an arrow shows the direction; no +12 figures.
+                        const net = Math.round((p.tournamentRating ?? 1200) - 1200);
+                        const live = shown + net;
+                        const color = net > 0 ? 'var(--color-success)' : net < 0 ? 'var(--color-danger)' : 'var(--color-text-muted)';
                         return (
                           <span
-                            title={label}
-                            style={{ fontSize: '10px', fontWeight: '700', color: 'var(--color-text-muted)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}
+                            title={`${label}: ${shown}`}
+                            style={{ fontSize: '10px', fontWeight: '700', color, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}
                           >
-                            {shown}
+                            {live}{net > 0 ? '▲' : net < 0 ? '▼' : ''}
                           </span>
                         );
                       })()}
@@ -1460,8 +1667,10 @@ export default function ArenaTournamentLive() {
           </div>
         </div>
 
-        {/* Floating Chat button + overlay */}
-        <button
+        {/* Floating Chat button + overlay. On desktop during a game the chat
+            button lives in the game panel's action row instead — floating
+            bottom-right it sat on top of your clock. */}
+        {!(isDesktop && currentGame && gameState) && <button
           className="at-live-chat-fab"
           onClick={() => setChatOpen(v => !v)}
           title={chatOpen ? tr('Close chat') : tr('Open chat')}
@@ -1492,11 +1701,20 @@ export default function ArenaTournamentLive() {
               {unreadChat > 99 ? '99+' : unreadChat}
             </span>
           )}
-        </button>
+        </button>}
 
         {chatOpen && (
           <div className="at-live-chat-overlay">
-            <TournamentChat tournamentId={tournamentId} />
+            {/* Its own close bar: the panel can cover the button that opened
+                it (on desktop that is the 💬 in the game panel's action row),
+                so closing must never depend on reaching that button. */}
+            <div className="at-live-chat-overlay-head">
+              <span>💬 {tr("Chat")}</span>
+              <button onClick={() => setChatOpen(false)} title={tr("Close chat")} aria-label={tr("Close chat")}>✕</button>
+            </div>
+            <div className="at-live-chat-overlay-body">
+              <TournamentChat tournamentId={tournamentId} hideHeader />
+            </div>
           </div>
         )}
 
@@ -1510,8 +1728,8 @@ export default function ArenaTournamentLive() {
               flexDirection: 'column',
               alignItems: 'center'
             }}>
-              {/* First-move 60s countdown banner */}
-              {firstMoveCountdown !== null && (
+              {/* First-move 60s countdown banner (desktop: in the game panel) */}
+              {!isDesktop && firstMoveCountdown !== null && (
                 <div style={{
                   width: '100%',
                   maxWidth: `${boardWidth}px`,
@@ -1558,8 +1776,9 @@ export default function ArenaTournamentLive() {
                   </span>
                 </div>
               )}
-              {/* Opponent Info - Above Chessboard */}
-              <div style={{
+              {/* Opponent Info - Above Chessboard (phones/tablets; desktop shows
+                  it in the game panel beside the board) */}
+              {!isDesktop && <div style={{
                 width: '100%',
                 maxWidth: `${boardWidth}px`,
                 display: 'flex',
@@ -1619,11 +1838,11 @@ export default function ArenaTournamentLive() {
                 }}>
                   ⏱ {formatTime(myColor === 'white' ? blackTimeRemaining : whiteTimeRemaining)}
                 </div>
-              </div>
+              </div>}
 
               {/* Chessboard */}
-              <div style={{ 
-                marginBottom: '8px',
+              <div style={{
+                marginBottom: isDesktop ? 0 : '8px',
                 width: '100%',
                 maxWidth: `${boardWidth}px`,
                 background: 'var(--color-black-a20)',
@@ -1648,7 +1867,12 @@ export default function ArenaTournamentLive() {
                   onResize={onBoardResize}
                   minBoardWidth={minBoard}
                   maxBoardWidth={maxBoard}
-                  showCoordinates={false}
+                  showCoordinates
+                  coordinatesInside
+                  coordinateScale={isDesktop ? 0.75 : 1}
+                  // The page sizes the board to the full height itself; the
+                  // board's own 92%-of-viewport cap would leave gaps round it.
+                  desktopHeightRatio={0.99}
                   allowPremove={!reviewing}
                   playerColor={myColor}
                   extraLegalMoves={reviewing ? [] : chess960ExtraMoves}
@@ -1660,8 +1884,8 @@ export default function ArenaTournamentLive() {
                 />
               </div>
 
-              {/* My Info - Below Chessboard */}
-              <div style={{
+              {/* My Info - Below Chessboard (phones/tablets only, as above) */}
+              {!isDesktop && <div style={{
                 width: '100%',
                 maxWidth: `${boardWidth}px`,
                 display: 'flex',
@@ -1721,12 +1945,12 @@ export default function ArenaTournamentLive() {
                 }}>
                   ⏱ {formatTime(myColor === 'white' ? whiteTimeRemaining : blackTimeRemaining)}
                 </div>
-              </div>
+              </div>}
 
               {/* Team Score Bar — hidden */}
               
-              {/* Draw offer banners */}
-              {drawOfferState === 'incoming' && (
+              {/* Draw offer banners (desktop: in the game panel) */}
+              {!isDesktop && drawOfferState === 'incoming' && (
                 <div style={{ width: '100%', maxWidth: `${boardWidth}px`, marginBottom: '8px', padding: '12px 16px', borderRadius: 'var(--radius-lg)', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
                   <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-success)' }}>{tr("🤝 Opponent offers a draw")}</span>
                   <div style={{ display: 'flex', gap: '8px' }}>
@@ -1735,7 +1959,7 @@ export default function ArenaTournamentLive() {
                   </div>
                 </div>
               )}
-              {drawOfferState === 'sent' && (
+              {!isDesktop && drawOfferState === 'sent' && (
                 <div style={{ width: '100%', maxWidth: `${boardWidth}px`, marginBottom: '8px', padding: '10px 16px', borderRadius: 'var(--radius-md)', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', textAlign: 'center', fontSize: '13px', fontWeight: '600', color: 'var(--color-warning)' }}>{tr("⏳ Draw offer sent — waiting for opponent...")}</div>
               )}
             </div>
@@ -1868,64 +2092,50 @@ export default function ArenaTournamentLive() {
         {/* RIGHT — grid-area: right */}
         <div className="at-live-right">
 
-          {/* Time section — hidden on mobile/tablet (shown in mobile banner instead) */}
-          {/* NOTE: layout (display/align/justify/gap) lives in the CSS class,
-              NOT here. An inline `display: flex` beats any class rule, media
-              query included, so the "hide on tablet/mobile" rule in
-              ArenaTournamentLive.css could never take effect — which is why
-              this desktop timer went on showing BELOW the board while the
-              mobile banner showed above it, giving two Time Remaining panels
-              on a phone. Keep display out of this style object. */}
-          <div className="at-live-right-timer" style={{
-            background: 'var(--color-warning-a12)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '8px 16px',
-            textAlign: 'center',
-            border: '1px solid var(--color-warning-a20)',
-            backdropFilter: 'blur(5px)',
-            WebkitBackdropFilter: 'blur(5px)',
-          }}>
-            <div style={{ 
-              color: 'var(--color-warning)', 
-              fontSize: '12px', 
-              fontWeight: '600',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              whiteSpace: 'nowrap'
-            }}>
-              {tr("Time Remaining")}
+          {!isDesktop && timerBlock}
+
+          {/* DESKTOP game panel, lichess style: opponent (clock + name) at the
+              top, then the alerts, controls and moves, you at the bottom. */}
+          {isDesktop && currentGame && gameState && renderSidePlayer(true)}
+          {isDesktop && currentGame && gameState && firstMoveCountdown !== null && (() => {
+            const myTurn = (firstMovePhaseRef.current === 0 && myColor === 'white') ||
+                           (firstMovePhaseRef.current === 1 && myColor === 'black');
+            return (
+              <div className={`at-live-side-alert ${myTurn ? 'danger' : 'warning'}`}>
+                <span>{myTurn ? tr('⚠️ Make your first move or you forfeit!') : tr('⏳ Opponent must make their first move')}</span>
+                <strong>{firstMoveCountdown}s</strong>
+              </div>
+            );
+          })()}
+          {isDesktop && currentGame && gameState && drawOfferState === 'incoming' && (
+            <div className="at-live-side-alert success">
+              <span>{tr("🤝 Opponent offers a draw")}</span>
+              <span style={{ display: 'flex', gap: 6 }}>
+                <button onClick={() => { socket.emit('respondArenaDraw', { gameId: currentGame, accept: true }); setDrawOfferState(null); }} className="at-live-side-alert-btn ok">{tr("Accept")}</button>
+                <button onClick={() => { socket.emit('respondArenaDraw', { gameId: currentGame, accept: false }); setDrawOfferState(null); }} className="at-live-side-alert-btn no">{tr("Decline")}</button>
+              </span>
             </div>
-            <div style={{ 
-              color: 'var(--color-warning)', 
-              fontSize: '22px', 
-              fontWeight: '800', 
-              fontFamily: 'monospace',
-              textShadow: '0 0 12px rgba(251, 191, 36, 0.5)'
-            }}>
-              {timeRemaining || '0:00:00'}
-            </div>
-          </div>
+          )}
+          {isDesktop && currentGame && gameState && drawOfferState === 'sent' && (
+            <div className="at-live-side-alert warning">{tr("⏳ Draw offer sent — waiting for opponent...")}</div>
+          )}
+          {isDesktop && !(currentGame && gameState) && (
+            <div className="at-live-side-waiting">{tr("Your next game will appear here.")}</div>
+          )}
 
           {/* Action Buttons — below Time Remaining, only during active game */}
           {currentGame && gameState && (
-            <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ marginTop: isDesktop ? 0 : '12px', display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
               {/* On mobile these stretch to fill the row (see .at-live-actions
                   in the stylesheet); on desktop they stay 40px icon buttons. */}
+              {/* Order: Back, Pause, Draw, Resign, Chat. */}
               <div className="at-live-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                {/* Sound toggle */}
-                <button onClick={() => setSoundEnabled(v => !v)} title={soundEnabled ? 'Sound On' : 'Sound Off'} style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: soundEnabled ? 'var(--color-success-a12)' : 'rgba(107,114,128,0.18)', color: soundEnabled ? 'var(--color-success)' : 'var(--color-text-muted)', border: `1px solid ${soundEnabled ? 'var(--color-success-a30)' : 'rgba(107,114,128,0.25)'}`, borderRadius: 'var(--radius-md)', fontSize: '18px', cursor: 'pointer' }}>
-                  {soundEnabled ? '🔔' : '🔕'}
-                </button>
-                {/* Offer Draw */}
-                {drawOfferState !== 'sent' && drawOfferState !== 'incoming' && (
-                  <button onClick={() => { socket.emit('offerArenaDraw', { gameId: currentGame }); }} title={tr("Offer Draw")} style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-success-a12)', color: 'var(--color-success)', border: '1px solid var(--color-success-a20)', borderRadius: 'var(--radius-md)', fontSize: '20px', cursor: 'pointer' }}>🤝</button>
-                )}
-                {/* Back to Lobby */}
+                {/* Back to Lobby — a word, not an arrow: an arrow read as "undo move". */}
                 <button onClick={() => navigate(`/arenatournament/lobby/${tournamentId}`)} title={tr("Back to Lobby")}
-                  style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-white-a04)', color: 'var(--color-text-muted)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', fontSize: '18px', cursor: 'pointer' }}
+                  style={{ minWidth: '40px', height: '40px', padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-white-a04)', color: 'var(--color-text-muted)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-accent-a15)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-white-a04)'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
-                >←</button>
+                >{tr("Back")}</button>
                 {/* Pause/Resume next game toggle */}
                 <button
                   onClick={isPaused ? handleResume : handlePause}
@@ -1934,12 +2144,29 @@ export default function ArenaTournamentLive() {
                   onMouseEnter={e => { e.currentTarget.style.background = isPaused ? 'var(--color-warning-a30)' : 'rgba(107,114,128,0.28)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = isPaused ? 'var(--color-warning-a20)' : 'rgba(107,114,128,0.15)'; }}
                 >{isPaused ? '▶' : '⏸'}</button>
+                {/* Offer Draw */}
+                {drawOfferState !== 'sent' && drawOfferState !== 'incoming' && (
+                  <button onClick={() => { socket.emit('offerArenaDraw', { gameId: currentGame }); }} title={tr("Offer Draw")} style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-success-a12)', color: 'var(--color-success)', border: '1px solid var(--color-success-a20)', borderRadius: 'var(--radius-md)', fontSize: '20px', cursor: 'pointer' }}>🤝</button>
+                )}
                 {/* Resign */}
                 <button onClick={handleResign} title={tr("Resign")}
                   style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', fontSize: '18px', cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-danger-a30)'; e.currentTarget.style.boxShadow = '0 0 14px var(--color-danger-a30)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-danger-a12)'; e.currentTarget.style.boxShadow = 'none'; }}
                 >🏳️</button>
+                {/* Desktop: chat toggle (replaces the floating button there). */}
+                {isDesktop && (
+                  <button onClick={() => setChatOpen(v => !v)} title={chatOpen ? tr('Close chat') : tr('Open chat')}
+                    style={{ position: 'relative', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: chatOpen ? 'var(--color-accent-a30)' : 'var(--color-accent-a15)', color: 'var(--color-accent)', border: '1px solid var(--color-accent-a40)', borderRadius: 'var(--radius-md)', fontSize: '18px', cursor: 'pointer' }}
+                  >
+                    {chatOpen ? '✕' : '💬'}
+                    {!chatOpen && unreadChat > 0 && (
+                      <span style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'var(--color-danger)', color: 'var(--color-text)', borderRadius: 'var(--radius-circle)', fontSize: '10px', fontWeight: '700', minWidth: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>
+                        {unreadChat > 99 ? '99+' : unreadChat}
+                      </span>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -1947,8 +2174,8 @@ export default function ArenaTournamentLive() {
           {/* MOVES — notation + review controls. Purely local; stepping back/forward
               never affects the live game (a new move snaps back to live). */}
           {currentGame && gameState && totalPlies > 0 && (
-            <div style={{
-              marginTop: '12px', background: 'var(--color-black-a35)',
+            <div className="at-live-moves-card" style={{
+              marginTop: isDesktop ? 0 : '12px', background: 'var(--color-black-a35)',
               border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', padding: '10px',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
@@ -2041,158 +2268,7 @@ export default function ArenaTournamentLive() {
             </div>
           )}
 
-          {/* YOUR STATS — below action buttons */}
-          <div className="at-live-stats" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-            <h3 style={{
-              fontSize: '14px',
-              fontWeight: '700',
-              color: 'var(--color-text)',
-              marginBottom: '12px',
-              background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}>
-              {tr("Your Stats")}
-            </h3>
-            {tournament?.tournamentType === 'team_battle' ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 20px', width: '100%' }}>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Score")}</div>
-                  <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-accent)', lineHeight: 1 }}>
-                    {myParticipant ? myParticipant.score : '0'}
-                  </div>
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Games")}</div>
-                  <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-text)', lineHeight: 1 }}>
-                    {myParticipant ? myParticipant.gamesPlayed : '0'}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 12px', width: '100%' }}>
-                <div style={{ textAlign: 'center', background: 'var(--color-accent-a08)', borderRadius: 'var(--radius-md)', padding: '10px 4px' }}>
-                  <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Score")}</div>
-                  <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-accent)', lineHeight: 1 }}>
-                    {myParticipant ? myParticipant.score : '0'}
-                  </div>
-                </div>
-                <div style={{ textAlign: 'center', background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', padding: '10px 4px' }}>
-                  <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Rank")}</div>
-                  <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-warning)', lineHeight: 1 }}>
-                    {myParticipant
-                      ? (() => { const r = leaderboard.findIndex(p => p.userId === myParticipant.userId) + 1; return r > 0 ? `#${r}` : '—'; })()
-                      : '—'}
-                  </div>
-                </div>
-                <div style={{ textAlign: 'center', background: 'var(--color-success-a12)', borderRadius: 'var(--radius-md)', padding: '10px 4px' }}>
-                  <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Wins")}</div>
-                  <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-success)', lineHeight: 1 }}>
-                    {myParticipant ? (myParticipant.wins ?? 0) : '0'}
-                  </div>
-                </div>
-                <div style={{ textAlign: 'center', background: 'var(--color-danger-a12)', borderRadius: 'var(--radius-md)', padding: '10px 4px' }}>
-                  <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>{tr("Losses")}</div>
-                  <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-danger)', lineHeight: 1 }}>
-                    {myParticipant ? (myParticipant.losses ?? 0) : '0'}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Active Bonuses strip — non-team only, only shown when at least one bonus active */}
-          {tournament?.tournamentType !== 'team_battle' && myParticipant && (
-            (myParticipant.earlyBirdBonus || myParticipant.comebackSurgeActive || myParticipant.carryBonusApplied > 0 || myParticipant.crownTierAtJoin)
-          ) && (
-            <div style={{ background: 'var(--color-black-a20)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-white-a07)', padding: '10px 12px' }}>
-              <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '8px' }}>{tr("Active Bonuses")}</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {myParticipant.earlyBirdBonus && (
-                  <span title={tr("Early Bird: +3 pts for joining early")} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '600', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', color: 'var(--color-warning)' }}>
-                    {tr("🐦 Early Bird")} <span style={{ opacity: 0.8 }}>+3</span>
-                  </span>
-                )}
-                {myParticipant.comebackSurgeActive && (
-                  <span title={tr("Comeback Surge: next win = +4 pts")} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '600', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)', color: 'var(--color-success)' }}>
-                    {tr("⚡ Surge")} <span style={{ opacity: 0.8 }}>{tr("next win +4")}</span>
-                  </span>
-                )}
-                {myParticipant.carryBonusApplied > 0 && (
-                  <span title={tr("Carry Bonus: +{carryBonusApplied} pts from previous tournament", { carryBonusApplied: myParticipant.carryBonusApplied })} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '600', background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)', color: 'var(--color-accent-2)' }}>
-                    {tr("🎁 Carry")} <span style={{ opacity: 0.8 }}>+{myParticipant.carryBonusApplied}</span>
-                  </span>
-                )}
-                {myParticipant.crownTierAtJoin && CROWN_TIERS[myParticipant.crownTierAtJoin] && (
-                  <span title={tr("{v0} — opponents earn +4 for beating you", { v0: CROWN_TIERS[myParticipant.crownTierAtJoin].label })} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '600', background: `${CROWN_TIERS[myParticipant.crownTierAtJoin].bg}`, border: `1px solid ${CROWN_TIERS[myParticipant.crownTierAtJoin].border}`, color: CROWN_TIERS[myParticipant.crownTierAtJoin].color }}>
-                    {CROWN_TIERS[myParticipant.crownTierAtJoin].emoji} {CROWN_TIERS[myParticipant.crownTierAtJoin].label}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Tournament Info card — non-team only */}
-          {tournament?.tournamentType !== 'team_battle' && (
-            <div style={{ background: 'var(--color-black-a20)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-white-a07)', padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-text)' }}>
-                  {tournament?.tournamentType === 'chess960' && '🎲 Chess960'}
-                  {tournament?.tournamentType === 'bullet_blitz_marathon' && '🏃 Bullet → Blitz Marathon'}
-                  {(!tournament?.tournamentType || tournament?.tournamentType === 'standard') && '♟ Standard'}
-                </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: '600', color: 'var(--color-success)' }}>
-                  <span style={{ width: '7px', height: '7px', borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', boxShadow: '0 0 5px var(--color-success)', display: 'inline-block' }} />
-                  {onlineUserIds.length} {tr("online")}
-                </span>
-              </div>
-              {tournament?.tournamentType === 'bullet_blitz_marathon' && (
-                <div>
-                  {marathonPhase === 0
-                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)', color: 'var(--color-danger)' }}>{tr("🔴 Phase 1 · Bullet")}</span>
-                    : <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'rgba(234,179,8,0.15)', border: '1px solid rgba(234,179,8,0.35)', color: '#fde047' }}>{tr("🟡 Phase 2 · Blitz")}</span>
-                  }
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* The "🏆 Leaderboard (n)" collapse button used to sit here. It was
-              removed because it never worked: its state only ever toggled the
-              button's own arrow — no element carried the .at-live-lb-body class
-              the collapse CSS targeted — so the leaderboard below stayed open
-              either way, and the control read as broken. The leaderboard is
-              always visible; it does not need a toggle above it. */}
-          {/* Team Score Cards — right panel (team_battle only) */}
-          {tournament?.tournamentType === 'team_battle' && teamLeaderboard.length > 0 && (
-            <div style={{ background: 'var(--color-black-a35)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', overflow: 'hidden' }}>
-              <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, background: 'linear-gradient(135deg, var(--color-accent-2), #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{tr("⚔️ Teams")}</h3>
-                <div style={{ color: 'var(--color-text-muted)', fontSize: '12px', fontWeight: '500' }}>{teamLeaderboard.length} {tr("teams")}</div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '44px 1fr 56px', gap: '8px', padding: '5px 12px', borderBottom: '2px solid var(--color-white-a10)' }}>
-                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{tr("Rank")}</div>
-                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{tr("Team")}</div>
-                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>{tr("Score")}</div>
-              </div>
-              {teamLeaderboard.map((team, i) => {
-                const medals = ['🥇', '🥈', '🥉'];
-                const isMyTeam = myParticipant?.teamId === team.teamId;
-                return (
-                  <div key={team.teamId} style={{ display: 'grid', gridTemplateColumns: '44px 1fr 56px', gap: '8px', padding: '8px 12px', borderBottom: '1px solid var(--color-white-a04)', alignItems: 'center', background: isMyTeam ? `${team.color}12` : 'transparent', borderLeft: isMyTeam ? `3px solid ${team.color}` : '3px solid transparent' }}>
-                    <div style={{ fontSize: '14px', textAlign: 'center' }}>{medals[i] || `#${i + 1}`}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
-                      <div style={{ width: '9px', height: '9px', borderRadius: 'var(--radius-circle)', background: team.color, boxShadow: `0 0 6px ${team.color}`, flexShrink: 0 }} />
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: isMyTeam ? team.color : 'var(--color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{team.teamName}</span>
-                      {isMyTeam && <span style={{ fontSize: '9px', fontWeight: '700', color: team.color, background: `${team.color}22`, border: `1px solid ${team.color}55`, borderRadius: 'var(--radius-sm)', padding: '1px 4px', flexShrink: 0 }}>{tr("You")}</span>}
-                    </div>
-                    <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--color-success)', textAlign: 'right' }}>{team.totalScore}</div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          {!isDesktop && tourneyBlocks}
 
           {/* Paused count indicator */}
           {pausedCount > 0 && (
@@ -2214,6 +2290,8 @@ export default function ArenaTournamentLive() {
             </div>
           )}
 
+          {/* DESKTOP: you, pinned to the bottom of the game panel. */}
+          {isDesktop && currentGame && gameState && renderSidePlayer(false)}
         </div>
       </div>
 

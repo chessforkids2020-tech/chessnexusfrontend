@@ -262,7 +262,9 @@ class StockfishService {
   // game analysis. Calls onUpdate({ depth, lines }) repeatedly as the engine
   // deepens, and resolves with the final set when 'bestmove' arrives.
   //   lines: [{ k, scoreType:'cp'|'mate', score, depth, pv:[uci,...] }]
-  analyzePosition(fenInput, { depth = 18, multipv = 3, onUpdate } = {}) {
+  // `searchmoves` (optional, UCI strings) limits the search to those moves, so
+  // several candidate moves are scored in ONE search and stay comparable.
+  analyzePosition(fenInput, { depth = 18, multipv = 3, onUpdate, searchmoves } = {}) {
     // Normalize 'start'/'startpos'/'' to a real FEN so both the engine command
     // and the PV-legality guard work at the initial position (otherwise the
     // panel hangs on "Analysing…" from the start / a freshly loaded position).
@@ -341,7 +343,7 @@ class StockfishService {
         this.sendCommand('stop');
         this.sendCommand(`setoption name MultiPV value ${multipv}`);
         this.sendCommand(`position fen ${fen}`);
-        this.sendCommand(`go depth ${depth}`);
+        this.sendCommand(`go depth ${depth}${searchmoves?.length ? ` searchmoves ${searchmoves.join(' ')}` : ''}`);
       } catch (e) {
         this.callbacks.delete(messageId);
         reject(e);

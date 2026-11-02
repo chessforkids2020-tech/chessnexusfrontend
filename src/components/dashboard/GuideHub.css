@@ -1,33 +1,100 @@
-/* Dashboard Guide tab: two choice cards, same obsidian glass as the Nexus Guide
-   panel (GameInsightsPanel.css). */
-.gh-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin: 16px 0;
+/* Dashboard Guide tab. "Learn from my mistakes" (MistakesHub in GuideHub.jsx)
+   sits under the level / puzzle card; picking a tool opens it full width with
+   a "← All guides" link back. */
+
+.mh {
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a10);
+  border-radius: var(--radius-lg); padding: 18px 18px 20px;
 }
-.gh-card {
-  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
-  text-align: left; cursor: pointer; font: inherit;
-  padding: 22px 20px;
-  background: var(--obsidian-surface, var(--color-surface));
-  border: 1px solid var(--obsidian-border, var(--color-white-a04));
-  border-radius: var(--radius-xl);
-  box-shadow: var(--obsidian-shadow, 0 8px 32px var(--color-black-a50));
-  color: var(--obsidian-text, var(--color-text));
-  transition: transform .15s, border-color .15s;
+.mh-head { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; }
+.mh-title { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 19px; font-weight: 900; color: var(--color-text); }
+.mh-title-icon { font-size: 20px; }
+
+/* The question, with the tips behind a "?" that gently pulses to be clicked. */
+.mh-ask {
+  display: inline-flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px;
+  border-radius: var(--radius-pill); background: var(--color-accent-a15, rgba(251, 191, 36, .15));
+  border: 1px solid var(--color-accent-a30, rgba(251, 191, 36, .3));
+  font-size: 14px; font-weight: 800; color: var(--color-text);
 }
-.gh-card:hover { transform: translateY(-2px); border-color: var(--obsidian-border-strong, var(--color-accent-a30)); }
-.gh-card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-.gh-icon {
-  width: 52px; height: 52px; border-radius: var(--radius-circle);
-  display: flex; align-items: center; justify-content: center; font-size: 26px;
-  background: var(--obsidian-button, linear-gradient(135deg, #06b6d4 0%, #10b981 100%));
-  margin-bottom: 4px;
+.mh-tip-btn {
+  width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer; flex: none;
+  display: inline-flex; align-items: center; justify-content: center; padding: 0; line-height: 1;
+  font: inherit; font-size: 15px; font-weight: 900; color: #2b1a10; background: var(--color-accent, #fbbf24);
+  box-shadow: 0 0 0 0 var(--color-accent-a30, rgba(251, 191, 36, .3));
 }
-.gh-title { font-size: 17px; font-weight: 800; }
-.gh-text { font-size: 13.5px; line-height: 1.55; color: var(--obsidian-text-muted, var(--color-text-muted)); flex: 1; }
-.gh-go { margin-top: 6px; font-size: 13px; font-weight: 800; color: var(--obsidian-accent, var(--color-accent)); }
+.mh-tip-btn.on { background: var(--color-text); }
+.mh-tip-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+.mh-tips { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+.mh-tips li {
+  display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px;
+  border-radius: var(--radius-md); background: var(--color-white-a07); border-left: 3px solid var(--color-accent, #fbbf24);
+  font-size: 14px; line-height: 1.5; color: var(--color-text);
+}
+.mh-tips li > span { flex: none; }
+
+/* The three tools. Each card has its own colour (--mh-c / --mh-g). */
+.mh-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 16px; }
+.mh-card {
+  --mh-c: #22d3ee; --mh-g: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  text-align: left; cursor: pointer; font: inherit; padding: 20px 18px 16px;
+  background: var(--obsidian-surface, var(--color-surface)); color: var(--color-text);
+  border: 1px solid var(--color-white-a10); border-top: 3px solid var(--mh-c);
+  border-radius: var(--radius-lg); box-shadow: 0 8px 24px var(--color-black-a35, rgba(0, 0, 0, .35));
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+.mh-report { --mh-c: #a78bfa; --mh-g: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); }
+.mh-weekly { --mh-c: #fbbf24; --mh-g: linear-gradient(135deg, #fbbf24 0%, #f97316 100%); }
+.mh-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px var(--color-black-a50, rgba(0, 0, 0, .5)); border-color: var(--mh-c); }
+.mh-card:focus-visible { outline: 2px solid var(--mh-c); outline-offset: 2px; }
+.mh-icon {
+  width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 26px; background: var(--mh-g); margin-bottom: 2px;
+}
+.mh-icon > span { display: inline-block; }
+.mh-name { font-size: 17px; font-weight: 900; }
+.mh-text { font-size: 13.5px; line-height: 1.5; color: var(--color-text-muted); flex: 1; }
+.mh-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: 6px; }
+.mh-badge {
+  font-size: 11.5px; font-weight: 800; padding: 3px 10px; border-radius: var(--radius-pill);
+  background: var(--color-white-a07); color: var(--color-text); border: 1px solid var(--color-white-a10); white-space: nowrap;
+}
+.mh-go { margin-left: auto; font-size: 13px; font-weight: 900; color: var(--mh-c); white-space: nowrap; }
+.mh-arrow { display: inline-block; transition: transform .2s; }
+.mh-card:hover .mh-arrow { transform: translateX(4px); }
+.mh-star {
+  position: absolute; top: 12px; right: 12px; padding: 2px 9px; border-radius: var(--radius-pill);
+  font-size: 10.5px; font-weight: 900; letter-spacing: .5px; text-transform: uppercase;
+  color: #2b1a10; background: var(--mh-c);
+}
+
+/* Small, slow, always-on motion: the compass needle wobbles, the magnifier
+   searches, the chart breathes, and the "?" invites a click. Each card also
+   slides up when scrolled into view (useScrollReveal), staggered by --i. */
+@media (prefers-reduced-motion: no-preference) {
+  .mh[data-reveal] { animation: gh-reveal 1.1s cubic-bezier(.22, 1, .36, 1) both; }
+  .mh .mh-card[data-reveal] { animation: gh-reveal 1.1s cubic-bezier(.22, 1, .36, 1) both; animation-delay: calc(.2s + var(--i, 0) * .18s); }
+  .mh[data-reveal]:not([data-revealed]),
+  .mh[data-reveal]:not([data-revealed]) *,
+  .mh .mh-card[data-reveal]:not([data-revealed]),
+  .mh .mh-card[data-reveal]:not([data-revealed]) * { animation-play-state: paused !important; }
+
+  .mh-nexus .mh-icon > span { animation: mh-wobble 3.2s ease-in-out infinite; }
+  .mh-report .mh-icon > span { animation: mh-search 3.6s ease-in-out infinite; }
+  .mh-weekly .mh-icon > span { animation: mh-breathe 2.6s ease-in-out infinite; }
+  .mh-card:hover .mh-icon > span { animation-duration: 1.2s; }
+  .mh-tip-btn:not(.on) { animation: mh-ping 2.4s ease-out infinite; }
+  .mh-tips li { animation: gh-reveal .5s ease-out both; }
+  .mh-tips li:nth-child(2) { animation-delay: .08s; }
+  .mh-tips li:nth-child(3) { animation-delay: .16s; }
+}
+@keyframes gh-reveal { from { opacity: 0; translate: 0 28px; } }
+@keyframes mh-wobble { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-16deg); } 40% { transform: rotate(12deg); } 60% { transform: rotate(-6deg); } 75% { transform: rotate(0); } }
+@keyframes mh-search { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(3px, -3px); } 50% { transform: translate(-3px, -2px); } 75% { transform: translate(2px, 3px); } }
+@keyframes mh-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.14); } }
+@keyframes mh-ping { 0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, .55); } 70%, 100% { box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); } }
 
 .gh-open { margin-top: 8px; }
 .gh-back {
@@ -36,3 +103,98 @@
   color: var(--obsidian-text-muted, var(--color-text-muted));
 }
 .gh-back:hover { color: var(--obsidian-accent, var(--color-accent)); }
+
+@media (max-width: 600px) {
+  .mh { padding: 14px 12px 16px; }
+  .mh-ask { width: 100%; justify-content: space-between; }
+}
+
+/* "Play slow games" — under "Learn from my mistakes". */
+.sg {
+  display: flex; gap: 16px; align-items: flex-start; margin-top: 16px;
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a10);
+  border-left: 4px solid #38bdf8; border-radius: var(--radius-lg); padding: 18px;
+}
+.sg-icon {
+  flex: none; width: 52px; height: 52px; border-radius: 50%; font-size: 26px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
+}
+.sg-icon > span { display: inline-block; }
+.sg-body { flex: 1; min-width: 0; }
+.sg-title { margin: 2px 0 4px; font-size: 18px; font-weight: 900; color: var(--color-text); }
+.sg-text { margin: 0; font-size: 14px; line-height: 1.55; color: var(--color-text-muted); }
+.sg-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.sg-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: var(--radius-pill);
+  font-size: 14px; font-weight: 800; text-decoration: none; color: #fff; transition: transform .15s, filter .15s;
+}
+.sg-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.sg-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.sg-lichess { background: #2b2b2b; border: 1px solid #555; }
+.sg-chesscom { background: #5d9948; border: 1px solid #81b64c; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .sg[data-reveal] { animation: gh-reveal 1.1s cubic-bezier(.22, 1, .36, 1) both; }
+  .sg[data-reveal]:not([data-revealed]),
+  .sg[data-reveal]:not([data-revealed]) * { animation-play-state: paused !important; }
+  .sg-icon > span { animation: sg-flip 4s ease-in-out infinite; }
+}
+/* The hourglass sits still, then turns over — time to think. */
+@keyframes sg-flip { 0%, 70% { transform: rotate(0); } 85%, 100% { transform: rotate(180deg); } }
+
+@media (max-width: 600px) {
+  .sg { padding: 14px 12px; gap: 12px; }
+  .sg-icon { width: 44px; height: 44px; font-size: 22px; }
+}
+
+/* "Calculation challenge" — above "Learn from my mistakes". */
+.cx {
+  display: flex; gap: 16px; align-items: center; margin-bottom: 16px; padding: 18px;
+  border-radius: var(--radius-lg); border: 1px solid rgba(52, 211, 153, .35);
+  background: linear-gradient(120deg, rgba(52, 211, 153, .12) 0%, rgba(99, 102, 241, .10) 100%), var(--color-white-a04);
+}
+.cx-icon {
+  flex: none; width: 56px; height: 56px; border-radius: 50%; font-size: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #34d399 0%, #6366f1 100%);
+}
+.cx-icon > span { display: inline-block; }
+.cx-body { flex: 1; min-width: 0; }
+.cx-tag {
+  display: inline-block; font-size: 10.5px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase;
+  padding: 2px 9px; border-radius: var(--radius-pill); background: #34d399; color: #04121a;
+}
+.cx-title { margin: 6px 0 4px; font-size: 19px; font-weight: 900; color: var(--color-text); }
+.cx-text { margin: 0; font-size: 14px; line-height: 1.5; color: var(--color-text-muted); }
+.cx-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--color-text-muted); }
+.cx-band { display: inline-flex; align-items: center; gap: 8px; }
+.cx-dots { display: inline-flex; gap: 4px; }
+.cx-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--color-white-a10); }
+.cx-dots i.on { background: #34d399; }
+.cx-side { flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 130px; }
+.cx-strength { font-size: 30px; font-weight: 900; color: #34d399; font-variant-numeric: tabular-nums; line-height: 1; }
+.cx-strength.neg { color: #f87171; }
+.cx-strength-label { font-size: 11.5px; font-weight: 700; color: var(--color-text-muted); text-align: center; }
+.cx-go {
+  margin-top: 8px; padding: 9px 18px; border-radius: var(--radius-pill); font-size: 14px; font-weight: 900;
+  text-decoration: none; color: #04121a; background: #34d399; white-space: nowrap; transition: transform .15s, filter .15s;
+}
+.cx-go:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.cx-go:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .cx[data-reveal] { animation: gh-reveal 1.1s cubic-bezier(.22, 1, .36, 1) both; }
+  .cx[data-reveal]:not([data-revealed]),
+  .cx[data-reveal]:not([data-revealed]) * { animation-play-state: paused !important; }
+  .cx-icon > span { animation: cx-think 2.8s ease-in-out infinite; }
+}
+/* The brain "thinks": a small pulse and tilt. */
+@keyframes cx-think { 0%, 100% { transform: scale(1) rotate(0); } 40% { transform: scale(1.12) rotate(-6deg); } 60% { transform: scale(1.06) rotate(4deg); } }
+
+@media (max-width: 600px) {
+  .cx { flex-wrap: wrap; padding: 14px 12px; }
+  .cx-side { flex-direction: row; flex-wrap: wrap; min-width: 0; width: 100%; justify-content: space-between; align-items: center; }
+  .cx-strength { font-size: 24px; }
+  .cx-go { margin-top: 0; }
+}

@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from './Chessboard';
-import StudyMovesCard from './StudyMovesCard';
+import { MomentMoves, EngineSwitch } from './MomentFreePlay';
 import EnginePanel from './EnginePanel';
 import { useMomentFreePlay } from '../hooks/useMomentFreePlay';
 import api from '../api';
@@ -420,7 +420,10 @@ export default function GameInsightsPanel() {
               <div className="gip-modal-side">
                <div className="gip-modal-side-inner">
                <div className="gip-modal-side-main">
-                <h3>{themeLabel(active.theme)}</h3>
+                <div className="mmx-titlerow">
+                  <h3>{themeLabel(active.theme)}</h3>
+                  {done && <EngineSwitch on={fp.engineOn} onToggle={fp.toggleEngine} />}
+                </div>
                 <p className="gip-modal-context">
                   {active.opponentName ? tr("vs {opponentName} · ", { opponentName: active.opponentName }) : ''}move {active.moveNumber}
                 </p>
@@ -475,14 +478,12 @@ export default function GameInsightsPanel() {
                 {done && (
                   <div className="gip-free" data-testid="gip-free">
                     <p className="gip-free-hint">{tr("Free board — play any move for either side to see what happens.")}</p>
-                    <StudyMovesCard
-                      compact
+                    <MomentMoves
                       tree={fp.tree} currentId={fp.currentId}
                       onSelect={fp.goTo}
                       onFirst={fp.toStart} onPrev={fp.back} onNext={fp.forward} onLast={fp.toEnd}
-                      emptyText=""
                     />
-                    <EnginePanel fen={fp.fen} enabled={fp.engineOn} onToggle={fp.toggleEngine} numLines={3} />
+                    {fp.engineOn && <EnginePanel fen={fp.fen} enabled numLines={3} />}
                   </div>
                 )}
                </div>

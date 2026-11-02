@@ -212,7 +212,37 @@
   overflow: hidden;
   box-shadow: 0 20px 60px var(--color-black-a65), 0 0 0 1px var(--color-accent-a30);
   animation: at-live-chatSlideUp 0.22s ease-out;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
 }
+.at-live-chat-overlay-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 4px 12px;
+  border-bottom: 1px solid var(--color-white-a07);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+.at-live-chat-overlay-head button {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-white-a10);
+  background: var(--color-white-a04);
+  color: var(--color-text);
+  font-size: 14px;
+  cursor: pointer;
+}
+.at-live-chat-overlay-head button:hover { background: var(--color-white-a10); }
+.at-live-chat-overlay-body { flex: 1 1 auto; min-height: 0; }
 
 @keyframes at-live-chatSlideUp {
   from { opacity: 0; transform: translateY(20px) scale(0.97); }
@@ -266,6 +296,182 @@
 @keyframes at-live-fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════
+   DESKTOP (≥ 1025 px) — lichess layout
+   [ clock · stats · leaderboard ] [ board ] [ opponent · moves · you ]
+   The board column is EXACTLY the board (--at-board, set inline from the
+   board size), so there is no empty band either side of it; both side
+   panels are exactly as tall as the board, so all three columns share one
+   top and one bottom edge. useArenaBoardSize.js sizes the board from the
+   grid with the same minimums used here (240 / 300 / 16).
+   ═══════════════════════════════════════════ */
+@media (min-width: 1025px) {
+  .at-live-grid {
+    max-width: none;
+    grid-template-columns: minmax(240px, 360px) var(--at-board, 600px) minmax(300px, 440px);
+    grid-template-rows: auto;
+    justify-content: center;
+    gap: 10px 16px;
+    min-height: 0;
+  }
+  .at-live-chess {
+    width: var(--at-board, 600px);
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .at-live-chat,
+  .at-live-right {
+    height: var(--at-board, calc(100vh - 40px));
+    max-height: var(--at-board, calc(100vh - 40px));
+  }
+
+  /* Left column: clock + stats + info on top, leaderboard fills the rest. */
+  .at-live-chat { gap: 8px; }
+  .at-live-chat-inner { height: auto; flex: 1 1 auto; min-height: 120px; }
+  .at-live-left-info { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+  .at-live-left-info .at-live-right-timer { padding: 6px 12px !important; justify-content: space-between; }
+  .at-live-left-info .at-live-stats { padding: 8px 10px; }
+  .at-live-left-info .at-live-stats-title { font-size: 11px !important; margin: 0 0 6px !important; text-transform: uppercase; letter-spacing: 0.08em; }
+  .at-live-left-info .at-live-stats-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; }
+  .at-live-left-info .at-live-stats-grid > div { padding: 6px 2px !important; }
+  .at-live-left-info .at-live-stats-grid > div > div:last-child { font-size: 18px !important; }
+
+  /* Right column: the game panel. */
+  .at-live-right { padding: 10px; gap: 10px; overflow: hidden; }
+  .at-live-moves-card { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+  .at-live-moves-card .at-live-moves { flex: 1 1 auto; min-height: 0; max-height: none; }
+
+  /* Moves as a table (like lichess): a shaded number column, one row per move
+     pair with a line between rows, and each move filling its cell. */
+  .at-live-moves {
+    border: 1px solid var(--color-white-a07);
+    border-radius: var(--radius-md);
+    align-content: start;
+  }
+  .at-live-move-row {
+    grid-template-columns: 40px 1fr 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--color-white-a04);
+  }
+  .at-live-move-row:nth-child(even) { background: var(--color-white-a04); }
+  .at-live-move-no {
+    align-self: stretch;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--color-white-a04);
+    border-right: 1px solid var(--color-white-a07);
+    font-size: 12px;
+  }
+  .at-live-move-cell > span {
+    display: block;
+    padding: 4px 10px !important;       /* beats the inline chip padding */
+    border-radius: 0 !important;
+    font-size: 14px;
+  }
+  .at-live-move-cell > span:not(.at-live-move-gap):hover { background: var(--color-white-a07); }
+
+  /* Chat panel: starts below the game panel's action row (≈ 200px from the
+     top), so the 💬 toggle there stays clickable while the chat is open. */
+  .at-live-chat-overlay {
+    bottom: 20px;
+    height: min(480px, calc(100vh - 220px));
+  }
+}
+
+/* Player strip in the desktop game panel: name left, big clock right; the
+   running clock is lit, and turns red under 30 seconds. */
+.at-live-side-player {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px 8px 14px;
+  background: var(--color-black-a35);
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+.at-live-side-player.me { margin-top: auto; }
+.at-live-side-name { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.at-live-side-name-text {
+  font-size: 15px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.at-live-side-rating {
+  flex: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.at-live-side-dot {
+  width: 12px; height: 12px;
+  border-radius: var(--radius-circle);
+  flex-shrink: 0;
+}
+.at-live-side-dot.white { background: #f5f5f5; border: 1px solid var(--color-text-faint); }
+.at-live-side-dot.black { background: #111; border: 1px solid var(--color-text-muted); }
+.at-live-side-clock {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.at-live-side-clock.running {
+  background: var(--color-accent-a20);
+  border-color: var(--color-accent-a40);
+  color: var(--color-text);
+}
+.at-live-side-clock.running.low {
+  background: var(--color-danger-a20);
+  border-color: var(--color-danger-a30);
+  color: var(--color-danger);
+}
+.at-live-side-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.at-live-side-alert.danger  { background: var(--color-danger-a12);  border: 1px solid var(--color-danger-a30);  color: var(--color-danger); }
+.at-live-side-alert.warning { background: var(--color-warning-a12); border: 1px solid var(--color-warning-a30); color: var(--color-warning); }
+.at-live-side-alert.success { background: var(--color-success-a12); border: 1px solid var(--color-success-a30); color: var(--color-success); }
+.at-live-side-alert strong { font-family: monospace; font-size: 15px; }
+.at-live-side-alert-btn {
+  padding: 5px 10px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.at-live-side-alert-btn.ok { background: var(--color-success-a20); color: var(--color-success); border: 1px solid var(--color-success-a30); }
+.at-live-side-alert-btn.no { background: var(--color-danger-a12); color: var(--color-danger); border: 1px solid var(--color-danger-a30); }
+.at-live-side-waiting {
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-faint);
 }
 
 /* ═══════════════════════════════════════════

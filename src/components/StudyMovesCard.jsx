@@ -18,7 +18,7 @@ const numberOf = (nodes, node) => {
 export default function StudyMovesCard({
   tree, currentId, accentColor, onSelect, onComment,
   onFirst, onPrev, onNext, onLast,
-  headExtra, footExtra, emptyText, compact = false,
+  headExtra, footExtra, emptyText, compact = false, fill = false,
 }) {
   const { nodes, rootId } = tree;
   const listRef = useRef(null);
@@ -90,7 +90,9 @@ export default function StudyMovesCard({
   const flush = () => {
     if (!row) return;
     rows.push(
-      <div key={`r${row.key}`} className="sm-mrow">
+      // Stripe by move number, so a row split by a comment ("1. e4" … "1. … e5")
+      // keeps one shade and the comments in between don't shift the pattern.
+      <div key={`r${row.key}`} className={`sm-mrow${row.full % 2 ? ' alt' : ''}`}>
         <span className="sm-mno">{row.full}.</span>
         {row.w ? moveBtn(row.w, 'sm-mv') : <span className="sm-mv sm-dots">…</span>}
         {row.b ? moveBtn(row.b, 'sm-mv') : <span className="sm-mv" />}
@@ -123,7 +125,7 @@ export default function StudyMovesCard({
   const atEnd = !nodes[currentId]?.children.length;
 
   return (
-    <div className={`sm-moves${compact ? ' sm-compact' : ''}`} style={{ '--sm-accent': accentColor }}>
+    <div className={`sm-moves${compact ? ' sm-compact' : ''}${fill ? ' sm-fill' : ''}`} style={{ '--sm-accent': accentColor }}>
       <div className="sm-moves-head">
         <span className="sm-moves-title">{tr("Moves")}</span>
         {headExtra}

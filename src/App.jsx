@@ -202,6 +202,8 @@ import Training from './pages/Training';
 import MyMoments from './pages/MyMoments';
 import { t as tr } from './i18n/LanguageContext';
 import HealthyMix from './pages/HealthyMix';
+import CalculationChallenge from './pages/CalculationChallenge';
+import LevelTest from './pages/LevelTest';
 import PuzzleDashboard from './pages/PuzzleDashboard';
 import ThemesPicker from './pages/ThemesPicker';
 import PiecesPicker from './pages/PiecesPicker';
@@ -1787,10 +1789,25 @@ export default function App() {
             </ProtectedRoute>
           </UserLayout>
         } />
+        {/* Calculation challenge (Guide): play the whole line, both sides, on a clock. */}
+        <Route path="/training/calculation" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <CalculationChallenge />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
         <Route path="/training/healthy-mix" element={
           <UserLayout>
             <ProtectedRoute>
               <HealthyMix />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/training/level-test" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <LevelTest />
             </ProtectedRoute>
           </UserLayout>
         } />
@@ -1944,7 +1961,7 @@ export default function App() {
                 <ArenaTournamentLive />
               </GuestAllowedRoute>
             </div>
-            <Footer />
+            {/* No footer on the live game page — it is a full-screen board. */}
           </div>
         } />
         <Route path="/arenatournament/leaderboard/:tournamentId" element={

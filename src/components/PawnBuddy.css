@@ -1,0 +1,48 @@
+.pb { display: inline-block; flex: none; width: 104px; line-height: 0; }
+.pb-mover { display: block; }
+.pb-svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* Cartoon palette: ivory pawn, gold trim, one dark ink outline. */
+.pb-light { fill: #fff4e0; }
+.pb-shade { fill: #ecd0a2; }
+.pb-gold { fill: #fcc932; }
+.pb-gold-shade { fill: #dc9b0b; }
+.pb-outline { fill: none; stroke: #2b1a10; stroke-width: 3.6; stroke-linejoin: round; }
+.pb-eye { fill: #fff; stroke: #2b1a10; stroke-width: 2.6; }
+.pb-brow { fill: none; stroke: #2b1a10; stroke-width: 3.4; stroke-linecap: round; }
+.pb-mouth { fill: #7a2a18; stroke: #2b1a10; stroke-width: 2.6; stroke-linejoin: round; }
+.pb-arm-out { fill: none; stroke: #2b1a10; stroke-width: 10; stroke-linecap: round; }
+.pb-arm-in { fill: none; stroke: #fff4e0; stroke-width: 4.4; stroke-linecap: round; }
+.pb-hand { fill: #fff4e0; stroke: #2b1a10; stroke-width: 3.2; }
+.pb-shadow { fill: #000; opacity: .3; }
+
+.pb-hop, .pb-idle, .pb-wave, .pb-eyes, .pb-pupils, .pb-shadow { transform-box: fill-box; }
+.pb-hop, .pb-idle { transform-origin: 50% 100%; }
+.pb-wave { transform-origin: 8% 92%; }
+.pb-eyes, .pb-shadow { transform-origin: center; }
+
+/* Story: three bouncy hops in from the left (squash on every landing) →
+   settle → wave at the bubble → idle bounce, blinks and glances. */
+@media (prefers-reduced-motion: no-preference) {
+  .pb-mover { animation: pb-slide 1.8s cubic-bezier(.35, .1, .45, 1) both; }
+  .pb-hop { animation: pb-hop .6s ease-in-out 3 backwards, pb-settle .45s ease-out 1.8s; }
+  .pb-shadow { animation: pb-shadow .6s ease-in-out 3; }
+  .pb-wave { animation: pb-wave .9s ease-in-out 2.1s 2; }
+  .pb-idle { animation: pb-idle 3.4s ease-in-out 3.9s infinite; }
+  .pb-eyes { animation: pb-blink 4.2s linear 2.6s infinite; }
+  .pb-pupils { animation: pb-look 7s ease-in-out 4s infinite; }
+}
+@keyframes pb-slide { from { transform: translateX(-180px); opacity: 0; } 8% { opacity: 1; } to { transform: none; } }
+@keyframes pb-hop {
+  0%   { transform: scale(1.1, .88); }
+  18%  { transform: translateY(-8px) scale(.92, 1.1); }
+  50%  { transform: translateY(-30px) scale(.97, 1.04) rotate(4deg); }
+  85%  { transform: translateY(-3px) scale(.98, 1.03); }
+  100% { transform: scale(1.12, .86); }
+}
+@keyframes pb-settle { from { transform: scale(1.12, .86); } 55% { transform: scale(.96, 1.05); } to { transform: none; } }
+@keyframes pb-shadow { 50% { transform: scale(.6); opacity: .15; } }
+@keyframes pb-wave { 0%, 100% { transform: none; } 30%, 70% { transform: rotate(-22deg); } 50% { transform: rotate(6deg); } }
+@keyframes pb-idle { 0%, 70%, 100% { transform: none; } 80% { transform: translateY(-6px) scale(.98, 1.03); } 90% { transform: scale(1.04, .96); } }
+@keyframes pb-blink { 0%, 93%, 100% { transform: none; } 96% { transform: scaleY(.1); } }
+@keyframes pb-look { 0%, 40%, 100% { transform: none; } 48%, 62% { transform: translateX(-4px); } 70%, 88% { transform: translate(1px, -2px); } }

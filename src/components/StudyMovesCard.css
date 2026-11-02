@@ -57,7 +57,7 @@
   align-items: center;
   font-size: 13.5px;
 }
-.sm-mrow:nth-child(odd) { background: var(--color-white-a04); }
+.sm-mrow.alt { background: var(--color-white-a04); }
 .sm-mno {
   color: var(--color-text-faint);
   font-weight: 700;
@@ -126,16 +126,23 @@ button.sm-mv:hover { background: var(--color-white-a07); }
 
 /* Comments: a mainline move's comment gets its own line under the row;
    a sideline move's comment runs inline after the move. */
+/* A mainline comment reads as a note, not as another move row: lined up under
+   the move column, with an accent edge. */
 .sm-cm {
-  padding: 6px 14px 8px 50px;
-  font-size: 13.5px;
+  margin: 4px 10px 6px 38px;
+  padding: 7px 11px;
+  font-size: 13px;
   line-height: 1.55;
   color: var(--color-text-muted);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   cursor: pointer;
+  border-left: 2px solid color-mix(in srgb, var(--sm-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--sm-accent) 6%, transparent);
+  border-radius: 0 8px 8px 0;
 }
-.sm-cm-root { padding-left: 14px; cursor: default; border-bottom: 1px solid var(--color-white-a07); }
+.sm-cm:hover { color: var(--color-text); }
+.sm-cm-root { margin: 8px 10px; cursor: default; }
 .sm-var-cm {
   font-size: 12.5px;
   line-height: 1.5;
@@ -173,3 +180,10 @@ button.sm-mv:hover { background: var(--color-white-a07); }
    study page's tall list would push everything else out of view. */
 .sm-compact { margin-bottom: 10px; }
 .sm-compact .sm-moves-list { min-height: 0; max-height: 200px; }
+
+/* fill: the card takes the rest of its column — the list grows into all the
+   height there is and scrolls inside, the nav bar stays at the bottom. */
+.sm-fill { flex: 1 1 auto; min-height: 260px; margin-bottom: 0; }
+.sm-fill .sm-moves-list { flex: 1 1 auto; min-height: 0; max-height: none; }
+.sm-fill .sm-moves-foot { padding: 6px 10px; gap: 6px; }
+.sm-fill .sm-nav-btn { min-width: 34px; height: 26px; font-size: 11px; }

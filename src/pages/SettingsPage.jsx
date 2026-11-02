@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Chessboard from '../components/Chessboard';
 import { useGamePrefs, MOVE_SPEEDS } from '../contexts/GamePrefsContext';
@@ -142,6 +142,10 @@ const PREVIEW_FENS = [
   '8/8/8/8/8/2N5/8/8 w - - 0 1',
   '8/8/8/3N4/8/8/8/8 w - - 0 1',
 ];
+// The preview shows only a 4x4 window (b2–e5) of a full board, so the knight's
+// c3↔d5 hop stays big enough to follow.
+const PREVIEW_SQ = 50;
+const PREVIEW_WINDOW = PREVIEW_SQ * 4;
 
 function Choice({ active, onClick, title, sub }) {
   return (
@@ -170,6 +174,23 @@ function GamesPanel() {
     return () => clearInterval(id);
   }, []);
 
+  // Line the window up with the real b5–e2 squares (the board's frame shifts
+  // them a pixel or two from the nominal 50px grid).
+  const winRef = useRef(null);
+  const [win, setWin] = useState({ size: PREVIEW_WINDOW, left: -PREVIEW_SQ, top: -PREVIEW_SQ * 3 });
+  useLayoutEffect(() => {
+    const el = winRef.current;
+    const b5 = el && el.querySelector('[data-square="b5"]');
+    const e2 = el && el.querySelector('[data-square="e2"]');
+    if (!b5 || !e2) return;
+    const w = el.getBoundingClientRect(), a = b5.getBoundingClientRect(), z = e2.getBoundingClientRect();
+    setWin(prev => ({
+      size: Math.round(z.right - a.left),
+      left: prev.left - (a.left - w.left),
+      top: prev.top - (a.top - w.top),
+    }));
+  }, []);
+
   const card = { background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)', padding: '24px', marginBottom: 20 };
   const h2 = { fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 };
   const p = { color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 16 };
@@ -186,14 +207,20 @@ function GamesPanel() {
             <Choice active={moveSpeed === 'fast'} onClick={() => setGamePref('moveSpeed', 'fast')} title={t('Fast')} sub={t('Snappy · {ms}ms', { ms: MOVE_SPEEDS.fast })} />
           </div>
           <div style={{ flex: 'none' }}>
-            <Chessboard
-              position={PREVIEW_FENS[i]}
-              boardWidth={200}
-              draggable={false}
-              resizable={false}
-              showCoordinates={false}
-              mute
-            />
+            <div ref={winRef} style={{ width: win.size, height: win.size, overflow: 'hidden', position: 'relative', borderRadius: 'var(--radius-md)', pointerEvents: 'none' }}>
+              <div style={{ position: 'absolute', left: win.left, top: win.top }}>
+                <Chessboard
+                  position={PREVIEW_FENS[i]}
+                  boardWidth={PREVIEW_SQ * 8}
+                  minBoardWidth={PREVIEW_SQ * 8}
+                  maxBoardWidth={PREVIEW_SQ * 8}
+                  draggable={false}
+                  resizable={false}
+                  showCoordinates={false}
+                  mute
+                />
+              </div>
+            </div>
             <div style={{ fontSize: 11, color: 'var(--color-text-faint)', textAlign: 'center', marginTop: 6 }}>{t('Preview')}</div>
           </div>
         </div>

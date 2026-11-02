@@ -1,0 +1,403 @@
+/* Calculation challenge (/training/calculation). Nothing above the board: the
+   board starts at the top and takes all the room there is (sized in JS, see
+   useFitBoard), the panel sits on its right with the title and stats.
+   Phones: board edge to edge, panel below. */
+.cc-page { padding: 6px 16px; color: var(--color-text); }
+
+/* The app layout pads every page (up to 32px on desktop) and caps it at 1400px.
+   This page wants the board at the very top and as wide as the screen allows,
+   so it drops both — only here. Guarded like Newsletter.css: without :has()
+   the page simply keeps the normal layout padding. */
+@supports selector(div:has(.cc-page)) {
+  .user-main-content:has(.cc-page),
+  .user-main-content.desktop:has(.cc-page),
+  .user-main-content.with-sidebar.desktop:has(.cc-page),
+  .user-main-content.mobile:has(.cc-page) {
+    padding: 0;                 /* the page keeps its own slim 16px side gutter */
+    max-width: none;
+    margin-right: 0;
+  }
+}
+
+.cc-main {
+  display: grid; grid-template-columns: var(--cc-bw, 560px) var(--cc-pw, 360px);
+  gap: 16px; align-items: stretch; justify-content: center;
+}
+.cc-boardcol { width: var(--cc-bw, 560px); display: flex; flex-direction: column; }
+.cc-board { position: relative; width: 100%; }
+/* Square eval + Copy FEN, right under the board. Height reserved (UNDER_H in JS). */
+.cc-under { display: flex; align-items: center; gap: 8px; height: 40px; padding-top: 6px; box-sizing: border-box; }
+.cc-lock {
+  position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+  background: rgba(0, 0, 0, .55); pointer-events: none;
+}
+
+.cc-panel {
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a10);
+  border-radius: var(--radius-lg); padding: 18px; display: flex; flex-direction: column; gap: 10px;
+}
+.cc-step { font-size: 11.5px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase; color: var(--color-accent); }
+.cc-lead { margin: 0; font-size: 15.5px; font-weight: 700; line-height: 1.45; }
+.cc-muted { margin: 0; font-size: 13px; line-height: 1.5; color: var(--color-text-muted); }
+.cc-rating { font-size: 12px; color: var(--color-text-muted); }
+.cc-note { margin: 0; font-size: 13.5px; line-height: 1.45; padding: 8px 12px; border-radius: var(--radius-md); }
+.cc-note.ok { background: rgba(52, 211, 153, .12); color: #6ee7b7; }
+.cc-note.bad { background: rgba(248, 113, 113, .12); color: #fca5a5; }
+
+.cc-btn {
+  font: inherit; font-weight: 900; font-size: 15px; cursor: pointer; border: none;
+  border-radius: var(--radius-md); padding: 12px 18px; color: #04121a; background: var(--color-accent);
+  transition: transform .15s, filter .15s;
+}
+.cc-btn:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.08); }
+.cc-btn:disabled { opacity: .6; cursor: default; }
+.cc-next { margin-top: auto; }
+.cc-found { font-size: 17px; padding: 14px 18px; background: #34d399; }
+
+.cc-clock { display: flex; align-items: center; gap: 12px; }
+.cc-clock-num { font-size: 34px; font-weight: 900; min-width: 52px; font-variant-numeric: tabular-nums; }
+.cc-clock-bar { flex: 1; height: 10px; border-radius: var(--radius-pill); background: var(--color-white-a10); overflow: hidden; }
+.cc-clock-bar > div { height: 100%; background: #34d399; transition: width .1s linear; }
+.cc-clock.low .cc-clock-num { color: #f87171; }
+.cc-clock.low .cc-clock-bar > div { background: #f87171; }
+.cc-progress { font-size: 12.5px; font-weight: 700; color: var(--color-text-muted); }
+.cc-line {
+  font-size: 14px; font-weight: 700; line-height: 1.6; padding: 8px 12px; border-radius: var(--radius-md);
+  background: var(--color-white-a07); word-break: break-word;
+}
+
+.cc-result { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--radius-md); }
+.cc-result.win { background: rgba(52, 211, 153, .12); }
+.cc-result.lose { background: rgba(248, 113, 113, .12); }
+.cc-result-icon {
+  flex: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 900; color: #04121a;
+}
+.cc-result.win .cc-result-icon { background: #34d399; }
+.cc-result.lose .cc-result-icon { background: #f87171; }
+.cc-result > div { flex: 1; min-width: 0; }
+.cc-result-title { font-size: 15px; font-weight: 900; }
+.cc-delta { font-size: 18px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.cc-delta.up { color: #34d399; }
+.cc-delta.down { color: #f87171; }
+.cc-solution { display: flex; flex-direction: column; gap: 6px; }
+
+.cc-error { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; padding: 20px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .cc-panel > * { animation: cc-in .35s ease-out both; }
+  .cc-result-icon { animation: cc-pop .5s cubic-bezier(.34, 1.56, .64, 1) both; }
+  .cc-clock.low .cc-clock-num { animation: cc-pulse .5s ease-in-out infinite alternate; }
+}
+@keyframes cc-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes cc-pop { from { transform: scale(.3); } }
+@keyframes cc-pulse { to { transform: scale(1.12); } }
+
+@media (max-width: 860px) {
+  .cc-page { padding: 0 0 24px; }
+  .cc-main { grid-template-columns: 1fr; gap: 12px; }
+  .cc-boardcol { width: 100%; }
+  .cc-under { height: auto; padding: 8px 12px 0; flex-wrap: wrap; }
+  .cc-under:empty { display: none; }
+  .cc-panel { margin: 0 12px; }
+  .cc-next { margin-top: 6px; }
+  .cc-title { font-size: 18px; }
+}
+
+/* Moves card — the Healthy Mix look: rounded dark card, "MOVES" header,
+   centred empty text, square step buttons in the footer. Fills the panel's
+   free height; the list scrolls. */
+.cc-moves {
+  flex: 1 1 auto; min-height: 200px; display: flex; flex-direction: column; overflow: hidden;
+  border-radius: 16px; border: 1px solid var(--color-white-a07);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .025), rgba(0, 0, 0, .12));
+}
+.cc-moves-head { padding: 14px 18px; border-bottom: 1px solid var(--color-white-a07); background: rgba(0, 0, 0, .2); }
+.cc-moves-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.6px; color: var(--color-text-muted); }
+.cc-moves-list { flex: 1; overflow-y: auto; padding: 6px 0; scrollbar-width: thin; scrollbar-color: var(--color-white-a10) transparent; }
+.cc-moves-empty { display: block; padding: 40px 20px; text-align: center; font-size: 14px; font-weight: 600; color: var(--color-text-muted); opacity: .8; }
+.cc-mrow { display: grid; grid-template-columns: 42px minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+.cc-mrow:nth-child(odd) { background: var(--color-white-a04); }
+.cc-mno { text-align: center; font-size: 12px; font-weight: 700; color: var(--color-text-muted); font-family: 'JetBrains Mono', monospace; }
+.cc-mv {
+  padding: 8px 12px; min-height: 34px; text-align: left; border: none; background: transparent; color: var(--color-text);
+  font-family: 'JetBrains Mono', monospace; font-size: 13.5px; font-weight: 600; letter-spacing: -0.2px; cursor: pointer;
+  transition: background .15s;
+}
+.cc-mv:disabled { cursor: default; }
+button.cc-mv:not(:disabled):hover { background: var(--color-white-a07); }
+.cc-mv.on { background: linear-gradient(90deg, rgba(52, 211, 153, .18), transparent); color: #a7f3d0; box-shadow: inset 2px 0 0 #34d399; }
+.cc-mv.own { color: #fbbf24; font-style: italic; }
+.cc-mv-empty { color: var(--color-text-muted); cursor: default; }
+.cc-moves-foot { display: flex; gap: 8px; justify-content: center; padding: 14px 16px; border-top: 1px solid var(--color-white-a07); background: rgba(0, 0, 0, .2); }
+.cc-nav-btn {
+  width: 46px; height: 42px; display: grid; place-items: center; font-size: 13px; cursor: pointer;
+  border-radius: 10px; border: 1px solid var(--color-white-a07); background: var(--color-white-a04); color: var(--color-text);
+  transition: all .18s ease;
+}
+.cc-nav-btn:disabled { opacity: .35; cursor: default; }
+.cc-nav-btn:not(:disabled):hover { border-color: #34d399; color: #6ee7b7; }
+.cc-link { align-self: flex-start; font: inherit; font-size: 13px; font-weight: 800; color: var(--color-accent); background: none; border: none; cursor: pointer; padding: 0; }
+.cc-tool {
+  font: inherit; font-size: 12.5px; font-weight: 800; cursor: pointer; padding: 5px 11px; border-radius: 8px;
+  background: var(--color-white-a07); color: var(--color-text); border: 1px solid var(--color-white-a10); white-space: nowrap;
+}
+.cc-tool:hover { border-color: var(--color-accent); }
+.cc-tool.on { background: rgba(52, 211, 153, .18); border-color: rgba(52, 211, 153, .5); color: #6ee7b7; }
+.cc-sf { padding: 4px 10px; font-size: 12px; }
+
+/* Header row: back link left; Stockfish + "?" right. */
+.cc-head-tools { display: inline-flex; align-items: center; gap: 6px; }
+.cc-help-btn {
+  width: 26px; height: 26px; border-radius: 50%; padding: 0; display: inline-grid; place-items: center; cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 900; color: var(--color-text-muted);
+  background: var(--color-white-a07); border: 1px solid var(--color-white-a10);
+}
+.cc-help-btn.on, .cc-help-btn:hover { color: #04121a; background: #34d399; border-color: #34d399; }
+
+/* How to play (first visit only, or via "?"). */
+.cc-help { padding: 12px 14px; border-radius: 12px; background: rgba(52, 211, 153, .08); border: 1px solid rgba(52, 211, 153, .3); }
+.cc-help-title { font-size: 13px; font-weight: 900; margin-bottom: 6px; }
+.cc-help ol { margin: 0 0 10px; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; line-height: 1.45; color: var(--color-text-muted); }
+.cc-help-ok { font: inherit; font-size: 12.5px; font-weight: 800; cursor: pointer; padding: 5px 14px; border-radius: 999px; border: none; background: #34d399; color: #04121a; }
+
+/* Three small cards: moves to find, points, streak. */
+.cc-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cc-card {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 6px; border-radius: 12px;
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a07); text-align: center;
+}
+.cc-card-val { font-size: 20px; font-weight: 900; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.cc-card-val.pos { color: #34d399; }
+.cc-card-val.neg { color: #f87171; }
+.cc-card-lbl { font-size: 10.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--color-text-muted); }
+
+/* Short, quiet prompt while playing the line. */
+.cc-prompt { margin: 0; font-size: 13.5px; color: var(--color-text-muted); }
+
+/* Moving up a level: celebrated, without naming the level. */
+.cc-levelup {
+  display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px;
+  background: linear-gradient(120deg, rgba(251, 191, 36, .18), rgba(52, 211, 153, .14)); border: 1px solid rgba(251, 191, 36, .4);
+}
+.cc-levelup > span { font-size: 26px; }
+.cc-levelup div { display: flex; flex-direction: column; gap: 2px; }
+.cc-levelup strong { font-size: 15px; font-weight: 900; }
+.cc-levelup div span { font-size: 12.5px; color: var(--color-text-muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .cc-levelup { animation: cc-levelup-in .7s cubic-bezier(.34, 1.56, .64, 1) both; }
+  .cc-levelup > span { animation: cc-levelup-party 1.2s ease-in-out .3s 2; }
+}
+@keyframes cc-levelup-in { from { opacity: 0; transform: scale(.85); } }
+@keyframes cc-levelup-party { 0%, 100% { transform: none; } 25% { transform: rotate(-15deg) scale(1.2); } 75% { transform: rotate(12deg) scale(1.15); } }
+.cc-head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; }
+.cc-back { font-size: 13px; font-weight: 700; color: var(--color-text-muted); text-decoration: none; }
+.cc-back:hover { color: var(--color-accent); }
+
+/* ── Healthy Mix placement ─────────────────────────────────────────────────
+   three: left stats | board | right (moves card on top, controls under it),
+          the right column exactly as tall as the board.
+   two:   board | (stats on top of the right column).
+   stack: phones — board, right column, then stats. */
+.cc-main.cc-three {
+  grid-template-columns: var(--cc-lw) var(--cc-bw) var(--cc-rw);
+  grid-template-areas: "left board right"; align-items: start;
+}
+.cc-main.cc-two {
+  grid-template-columns: var(--cc-bw) var(--cc-rw);
+  grid-template-areas: "board left" "board right"; grid-template-rows: auto 1fr; align-items: start;
+}
+.cc-main.cc-stack { grid-template-columns: 1fr; grid-template-areas: "board" "right" "left"; }
+.cc-left { grid-area: left; }
+.cc-boardcol { grid-area: board; }
+.cc-right { grid-area: right; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.cc-main.cc-three .cc-right { height: var(--cc-bh); }
+.cc-main.cc-three .cc-right .cc-moves { flex: 1 1 0; min-height: 0; }
+.cc-main.cc-two .cc-right .cc-moves { min-height: 220px; }
+.cc-main.cc-stack .cc-right { margin: 0 12px; }
+.cc-main.cc-stack .cc-right .cc-moves { min-height: 160px; }
+.cc-controls { flex: none; }
+.cc-controls .cc-next { margin-top: 2px; }
+
+/* Left card: points, then Solved / Failed / Streak (Healthy Mix's stat row). */
+.cc-left { gap: 12px; }
+.cc-points {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px 10px;
+  border-radius: 12px; background: rgba(0, 0, 0, .2); border: 1px solid var(--color-white-a07);
+}
+.cc-points-lbl { font-size: 10.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-muted); }
+.cc-points-val { font-size: 34px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+.cc-points-val.pos { color: #34d399; }
+.cc-points-val.neg { color: #f87171; }
+.cc-stats3 {
+  display: grid; grid-template-columns: repeat(3, 1fr); border-radius: 12px; overflow: hidden;
+  background: rgba(0, 0, 0, .2); border: 1px solid var(--color-white-a07);
+}
+.cc-stats3 > div { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 14px 4px; border-right: 1px solid var(--color-white-a07); }
+.cc-stats3 > div:last-child { border-right: none; }
+.cc-s-num { font-size: 22px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.cc-s-num.good { color: #34d399; }
+.cc-s-num.bad { color: #f87171; }
+.cc-s-num.warn { color: #fb923c; }
+.cc-s-lbl { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-muted); }
+
+/* Right controls: "Moves to find" pinned at the top. */
+.cc-tofind { display: flex; align-items: center; gap: 10px; }
+.cc-tofind-num {
+  min-width: 38px; height: 38px; padding: 0 8px; border-radius: 10px; display: grid; place-items: center;
+  font-size: 20px; font-weight: 900; color: #04121a; background: #34d399;
+}
+.cc-tofind-lbl { font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: var(--color-text-muted); }
+@media (max-width: 860px) {
+  .cc-main.cc-stack .cc-left { margin: 0 12px; }
+}
+.cc-main.cc-stack .cc-right .cc-panel { margin: 0; }
+/* Phones: the action (I found it / clock / result) comes before the moves list. */
+.cc-main.cc-stack .cc-right .cc-controls { order: -1; }
+
+/* Solved / Failed / Streak: one per row — label left, number right. */
+.cc-stats3 { grid-template-columns: 1fr; }
+.cc-stats3 > div {
+  flex-direction: row-reverse; justify-content: space-between; align-items: center;
+  padding: 10px 14px; border-right: none; border-bottom: 1px solid var(--color-white-a07);
+}
+.cc-stats3 > div:last-child { border-bottom: none; }
+.cc-stats3 .cc-s-num { font-size: 20px; }
+.cc-stats3 .cc-s-lbl { font-size: 11px; }
+
+/* Moves card: slimmer header and step-button footer. */
+.cc-moves-head { padding: 8px 14px; }
+.cc-moves-foot { padding: 6px 12px; }
+.cc-nav-btn { height: 32px; width: 42px; }
+
+/* Left card: slimmer side padding. */
+.cc-panel.cc-left { padding-left: 10px; padding-right: 10px; }
+
+/* Solved / Failed / Streak as three separate cards, one under another. */
+.cc-stats3 { gap: 8px; background: none; border: none; border-radius: 0; overflow: visible; }
+.cc-stats3 > div,
+.cc-stats3 > div:last-child {
+  border: 1px solid var(--color-white-a07); border-radius: 12px; background: rgba(0, 0, 0, .2);
+}
+
+/* Each stat its own card, laid out like Points: label on top, value below. */
+.cc-stats3 > div {
+  flex-direction: column-reverse; justify-content: center; align-items: center; gap: 4px; padding: 12px 6px;
+}
+.cc-stats3 .cc-s-num { font-size: 24px; }
+.cc-points { padding: 12px 6px; }
+.cc-points-val { font-size: 26px; }
+/* Narrow left card: tighter header. */
+.cc-left .cc-back { font-size: 12px; }
+.cc-sq { width: 100%; padding: 7px 6px; font-size: 12px; white-space: normal; }
+.cc-left .cc-back { white-space: nowrap; }
+.cc-engine { flex: none; max-height: 45%; overflow-y: auto; }
+
+/* Moves card title: slim, with the Stockfish toggle on its right. */
+.cc-moves-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px 4px 14px; min-height: 32px; }
+.cc-moves-head .cc-sf { padding: 3px 9px; font-size: 11.5px; }
+
+/* Copy FEN | Next puzzle — one button, two parts. */
+.cc-split {
+  display: flex; align-items: stretch; height: 46px; border-radius: var(--radius-md); overflow: hidden;
+  margin-top: auto; background: var(--color-accent);
+}
+.cc-split-next {
+  flex: 1; border: none; cursor: pointer; font: inherit; font-size: 15px; font-weight: 900;
+  color: #04121a; background: var(--color-accent); transition: filter .15s;
+}
+.cc-split-next:hover { filter: brightness(1.08); }
+
+/* ── Compact pass: Healthy Mix's scale (the page reads large at 125–150%
+   Windows scaling, where the browser is only ~1280px wide). ───────────── */
+.cc-panel { padding: 12px; gap: 8px; }
+.cc-panel.cc-left { padding: 12px 8px; }
+.cc-left .cc-back { font-size: 12px; }
+.cc-points { padding: 10px 4px; gap: 3px; }
+.cc-points-lbl, .cc-stats3 .cc-s-lbl { font-size: 10px; letter-spacing: .8px; }
+.cc-points-val { font-size: 22px; }
+.cc-stats3 { gap: 6px; }
+.cc-stats3 > div { padding: 8px 4px; gap: 3px; }
+.cc-stats3 .cc-s-num { font-size: 20px; }
+.cc-sq { font-size: 11px; padding: 6px 4px; white-space: nowrap; }
+
+.cc-moves-title { font-size: 11px; }
+.cc-mv { font-size: 13px; padding: 6px 10px; min-height: 30px; }
+.cc-mrow { grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1fr); }
+.cc-nav-btn { width: 34px; height: 30px; font-size: 11px; }
+
+.cc-tofind { gap: 8px; }
+.cc-tofind-num { min-width: 28px; height: 28px; font-size: 15px; border-radius: 8px; padding: 0 6px; }
+.cc-tofind-lbl { font-size: 11px; }
+.cc-found { font-size: 15px; padding: 11px 14px; }
+.cc-clock-num { font-size: 26px; min-width: 40px; }
+.cc-prompt { font-size: 13px; }
+.cc-result { padding: 8px 10px; gap: 10px; }
+.cc-result-icon { width: 28px; height: 28px; font-size: 14px; }
+.cc-result-title { font-size: 14px; }
+.cc-delta { font-size: 15px; }
+.cc-levelup { padding: 8px 10px; gap: 10px; }
+.cc-levelup > span { font-size: 20px; }
+.cc-levelup strong { font-size: 13.5px; }
+.cc-levelup div span { font-size: 12px; }
+.cc-split { height: 38px; }
+.cc-split-next { font-size: 13.5px; white-space: nowrap; }
+.cc-split button:first-child { font-size: 12px !important; padding: 0 10px !important; }
+
+/* ── Left card: see-through, bigger text ───────────────────────────────────
+   No card of its own — Points and the three stats keep their small cards. */
+.cc-panel.cc-left { background: transparent; border-color: transparent; box-shadow: none; padding: 0; gap: 8px; }
+.cc-left .cc-back { font-size: 13.5px; }
+.cc-points { padding: 12px 4px; gap: 4px; }
+.cc-points-lbl, .cc-stats3 .cc-s-lbl { font-size: 11.5px; letter-spacing: .8px; }
+.cc-points-val { font-size: 27px; }
+.cc-stats3 > div { padding: 10px 4px; gap: 4px; }
+.cc-stats3 .cc-s-num { font-size: 24px; }
+.cc-sq { font-size: 12.5px; padding: 7px 4px; }
+
+/* "How to play" — a popup over the board. */
+.cc-help-overlay {
+  position: absolute; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center;
+  padding: 16px; background: rgba(0, 0, 0, .55); border-radius: 6px; animation: cc-fade .2s ease-out both;
+}
+.cc-help-overlay .cc-help {
+  width: min(380px, 100%); padding: 18px 20px; border-radius: 14px;
+  background: var(--color-surface, #14202b); border: 1px solid rgba(52, 211, 153, .45);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .5);
+}
+.cc-help-overlay .cc-help-title { font-size: 16px; margin-bottom: 10px; }
+.cc-help-overlay .cc-help ol { font-size: 14px; gap: 6px; color: var(--color-text); }
+.cc-help-overlay .cc-help-ok { font-size: 13.5px; padding: 7px 20px; }
+@keyframes cc-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Right column: exactly the board's height, never taller. Stockfish (top) and
+   the controls (bottom) keep their size; the moves card in between shrinks and
+   scrolls, and Stockfish scrolls inside itself if the board is short. */
+.cc-main.cc-three .cc-right { height: var(--cc-bh); max-height: var(--cc-bh); overflow: hidden; }
+.cc-main.cc-three .cc-right .cc-engine { flex: 0 1 auto; min-height: 0; max-height: 42%; overflow-y: auto; }
+.cc-main.cc-three .cc-right .cc-moves { flex: 1 1 0; min-height: 90px; }
+.cc-main.cc-three .cc-right .cc-controls { flex: none; }
+
+/* Copy FEN is the quiet grey half; only Next puzzle is in the accent colour. */
+.cc-split { background: none; border: 1px solid var(--color-white-a10); }
+/* A short board: Stockfish gives up its height first (it scrolls), so the
+   moves list always keeps a few rows in view and the controls never get cut. */
+.cc-main.cc-three .cc-right .cc-engine { flex: 0 1 auto; max-height: none; min-height: 96px; }
+.cc-main.cc-three .cc-right .cc-moves { min-height: 150px; }
+.cc-sq { white-space: normal; line-height: 1.25; }
+
+/* Under a move: the reply the player chose (accepted) next to the puzzle's own,
+   with a star on the better defence. */
+.cc-swap {
+  display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 2px 8px 6px 34px; padding: 6px 10px;
+  border-radius: 8px; background: rgba(251, 191, 36, .08); border: 1px solid rgba(251, 191, 36, .25);
+  font-size: 12px;
+}
+.cc-swap-item { display: inline-flex; align-items: center; gap: 6px; }
+.cc-swap-lbl { color: var(--color-text-muted); font-weight: 700; }
+.cc-swap-mv { font-weight: 800; font-family: inherit; font-size: 12.5px; color: var(--color-text); background: none; border: none; padding: 0; }
+.cc-swap-mv.mine { color: #fbbf24; }
+button.cc-swap-mv { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+button.cc-swap-mv:hover { color: #fde68a; }
+.cc-swap-best { font-size: 10.5px; font-weight: 900; letter-spacing: .3px; padding: 1px 6px; border-radius: 999px; color: #04121a; background: #34d399; }
