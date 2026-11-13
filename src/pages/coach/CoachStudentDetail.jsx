@@ -418,7 +418,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
   if (error) return <div className="coach-error">⚠️ {error}</div>;
   if (!data) return null;
 
-  const { student, link, gameRatings, activity = [], raceResults = [], testResults = [], arenaGames = [], assignments = [], totals = {} } = data;
+  const { student, link, gameRatings, activity = [], raceResults = [], testResults = [], arenaGames = [], assignments = [], totals = {}, calculation = null, puzzleLevel = null } = data;
   const maxSeconds = Math.max(1, ...activity.map(a => a.totalSeconds || 0));
 
   return (
@@ -612,6 +612,43 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           <span>{tr("Best race score")}</span>
           <strong>{fmt(student?.highestArenaRaceScore)}</strong>
           <em>{tr("all time")}</em>
+        </div>
+      </div>
+
+      {/* ── Puzzle level + calculation ─────────────
+          Same numbers the student sees on their Guide: the level, the
+          ratings of the puzzles they are actually solving now, the range
+          they reliably solve (70%+ in Healthy Mix, topic hidden) and the
+          Calculation challenge strength. */}
+      <div className="coach-section-head csd-level-head">
+        <h2>{tr("🎯 Puzzle level & calculation")}<InfoTip>
+          {tr("Level is the student's Nexus Guide level. \"Solving now\" is the rating of their last 20 puzzles. \"Solid at\" is the highest range they solve 70% or more of in Healthy Mix, where the topic is hidden. Calculation is the Calculation challenge score, separate from the puzzle rating.")}
+        </InfoTip></h2>
+      </div>
+      <div className="csd-stats">
+        <div className="csd-stat">
+          <span>{tr("Guide level")}</span>
+          <strong>{puzzleLevel?.level ? <>{puzzleLevel.level.n}<small> / {puzzleLevel.level.of}</small></> : '—'}</strong>
+          <em>{puzzleLevel?.level ? tr(puzzleLevel.level.title) : tr("level test not taken")}</em>
+        </div>
+        <div className="csd-stat">
+          <span>{tr("Solving now")}</span>
+          <strong>{puzzleLevel?.recent ? puzzleLevel.recent.avgRating : '—'}</strong>
+          <em>{puzzleLevel?.recent
+            ? `${puzzleLevel.recent.minRating}–${puzzleLevel.recent.maxRating} · ${puzzleLevel.recent.accuracy}% ${tr("right")} · ${fmtDate(puzzleLevel.recent.lastAt)}`
+            : tr("no puzzles yet")}</em>
+        </div>
+        <div className="csd-stat">
+          <span>{tr("Solid at")}</span>
+          <strong>{puzzleLevel?.standard ? `${puzzleLevel.standard.min}–${puzzleLevel.standard.max + 1}` : '—'}</strong>
+          <em>{puzzleLevel?.standard ? `${puzzleLevel.standard.accuracy}% ${tr("right")}` : tr("not enough Healthy Mix yet")}</em>
+        </div>
+        <div className="csd-stat">
+          <span>{tr("Calculation")}</span>
+          <strong>{calculation ? `${calculation.strength}%` : '—'}</strong>
+          <em>{calculation
+            ? `${tr("band")} ${calculation.band}–${calculation.bandTop + 1} · ${calculation.bandCorrect}/${calculation.bandToPass} · ${tr("last 10:")} ${calculation.last10.correct}/${calculation.last10.total}`
+            : tr("not started")}</em>
         </div>
       </div>
 

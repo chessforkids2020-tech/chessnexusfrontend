@@ -801,6 +801,7 @@
 .csd-stat strong { font-size: 24px; font-weight: 800; color: var(--color-text); line-height: 1.15; }
 .csd-stat strong small { font-size: 13px; font-weight: 600; color: var(--color-text-muted); }
 .csd-stat em { font-style: normal; font-size: 11px; color: var(--color-text-faint); }
+.csd-level-head { margin-top: -8px; }
 
 /* Analysis platform buttons: compact, not three big primaries */
 .csd-analyze-actions { gap: 6px !important; }

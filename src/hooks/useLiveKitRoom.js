@@ -41,55 +41,27 @@ const SIMULCAST = true;
 // hardware-accelerated essentially everywhere — including that GT 710. Nobody is
 // downgraded to fix somebody else's machine, which is what a global switch to
 // H.264 would have done.
-const CODEC_PROBE_KEY = 'lkVideoCodec:v1';
+// v2: v1 cached the old probe's 'vp9' answer per tab — a new key ignores it.
+// Only an explicit manual override is stored under this key now.
+const CODEC_PROBE_KEY = 'lkVideoCodec:v2';
 
-// Is `codec` encodable on this device, and is it POWER EFFICIENT (i.e. hardware)?
-// mediaCapabilities is the only web API that answers the hardware question —
-// RTCRtpSender.getCapabilities() lists a codec whether it is hardware or software,
-// so it cannot distinguish the machines that need help.
-async function probeEncoder(mimeType) {
-  try {
-    if (!navigator.mediaCapabilities?.encodingInfo) return null;
-    const info = await navigator.mediaCapabilities.encodingInfo({
-      type: 'webrtc',
-      video: {
-        contentType: mimeType,
-        width: VIDEO_PRESET.width,
-        height: VIDEO_PRESET.height,
-        bitrate: 2_500_000,
-        framerate: 30,
-      },
-    });
-    return { supported: !!info?.supported, efficient: !!info?.powerEfficient };
-  } catch {
-    return null; // API missing or threw — treat as "unknown", never as a failure
-  }
-}
-
-// Pick the publish codec for THIS device. Cached per browser: the answer depends
-// on hardware that does not change between classes, and probing costs a few ms.
+// Pick the publish codec. NOW ALWAYS H.264 (2026-11-13).
+//
+// Live class 2026-11-12/13: every camera published from Chrome 157 (Windows AND
+// Mac — the coach and two students) went out as a single-layer stream (VP8/VP9) that
+// the SFU never forwarded: subscribers were subscribed but received ZERO packets,
+// while the same students' Safari camera (3-layer H.264 simulcast) played fine.
+// Setting this key to 'h264' on the coach's Chrome mid-class fixed it instantly
+// for every viewer. So H.264 is the only path proven to work on all browsers.
+//
+// To experiment with VP9 again on one machine:
+//   sessionStorage.setItem('lkVideoCodec:v2','vp9')  then reload.
 async function pickVideoCodec() {
   try {
-    const cached = sessionStorage.getItem(CODEC_PROBE_KEY);
-    if (cached) return cached;
-  } catch { /* private mode — just probe again */ }
-
-  let codec = 'vp9'; // default unchanged: best quality where the hardware allows
-  try {
-    const vp9 = await probeEncoder('video/VP9');
-    // Only move OFF VP9 when we have positive evidence this device would software-
-    // encode it. `null` (API unavailable) keeps today's behaviour — an unknown
-    // device must not be silently downgraded.
-    if (vp9 && (!vp9.supported || !vp9.efficient)) {
-      const h264 = await probeEncoder('video/H264');
-      if (h264?.supported && h264.efficient) codec = 'h264';
-      // If H.264 is not hardware either, VP9 remains the better choice: it at
-      // least gives a cleaner picture for the same CPU spend.
-    }
-  } catch { /* keep the default */ }
-
-  try { sessionStorage.setItem(CODEC_PROBE_KEY, codec); } catch { /* ignore */ }
-  return codec;
+    const forced = sessionStorage.getItem(CODEC_PROBE_KEY);
+    if (forced) return forced;
+  } catch { /* private mode */ }
+  return 'h264';
 }
 
 // ── Video CLARITY (the "grainy / noisy video" fix) ──────────────────────────

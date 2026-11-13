@@ -91,6 +91,10 @@ export async function collectRemotes(room, sampler) {
       cam: cam ? {
         muted: !!cam.isMuted, subscribed: !!cam.isSubscribed, hasTrack: !!cam.track,
         fps: null, w: 0, h: 0, kbps: null, lossPct: null, freezes: null, codec: null,
+        // false = the browser has NO inbound-rtp stats for this track, i.e. not a
+        // single video packet has arrived since subscribing. Unknown numbers (fps
+        // null) must never be read as healthy.
+        inbound: false,
       } : null,
       mic: mic ? { muted: !!mic.isMuted, subscribed: !!mic.isSubscribed } : null,
       tile: null,
@@ -101,6 +105,7 @@ export async function collectRemotes(room, sampler) {
       stats?.forEach((r) => {
         if (r.type !== 'inbound-rtp' || r.kind !== 'video') return;
         const c = e.cam;
+        c.inbound = true;
         c.w = r.frameWidth || 0;
         c.h = r.frameHeight || 0;
         c.fps = fpsOf(sampler.delta(`if:${k}`, r.framesDecoded, r.timestamp));
@@ -173,6 +178,11 @@ export function evalLocal(local, roomState) {
   return out;
 }
 
+// Subscribed with a track, but the browser has never received a packet for it.
+// `inbound === false` (not undefined) so reports from older student pages, which
+// lack the field, are not misread as broken.
+const noPackets = (c) => !!c && c.subscribed && c.hasTrack && c.inbound === false;
+
 export function evalRemote(e) {
   const out = [];
   const bad = (msg) => out.push({ level: 'bad', msg });
@@ -185,6 +195,7 @@ export function evalRemote(e) {
   if (c.muted) { warn('camera turned off'); return out; }
   if (!c.subscribed) bad('not subscribed — video not arriving');
   else if (!c.hasTrack) bad('subscribed but no track');
+  else if (noPackets(c)) bad('no video packets have ever arrived for this track');
   else if (c.fps === 0) bad('no frames arriving');
   else if (c.fps != null && c.fps < 10) warn(`low frame rate (${c.fps}fps)`);
   if (c.lossPct != null && c.lossPct > 10) bad(`packet loss ${c.lossPct}%`);
@@ -264,6 +275,9 @@ export function diagnoseStudentView(local, roomState, rep, now = Date.now()) {
     if (rep.hidden) return verdict('student-page', 'their tab is minimized/hidden, so their browser stopped requesting your video', 'ask them to bring the class tab back to the front');
     return verdict('student-page', 'their browser stopped requesting your video (subscription dropped)', 'it auto-repairs within ~10s; if not, ask them to reload');
   }
+  if (noPackets(c)) {
+    return verdict('server', 'they are subscribed to your camera but not one video packet has reached them (your upload is running, so the server is not forwarding it)', 'check how your camera is being published (codec/layers) — see the COACH SENDING line');
+  }
   if (c.fps === 0 && c.kbps === 0) {
     return verdict('student-net', 'your video is not reaching their device — no data arriving', 'their internet/wifi is blocking or too weak — try mobile data or move closer to the router');
   }
@@ -303,6 +317,11 @@ export function diagnoseIncoming(e, rep, roomState) {
     if (m.length && m.every(l => l.fps === 0)) return verdict('student-cam', 'their camera is frozen (sending 0 frames)', 'ask them to turn their camera off and on');
   }
   if (!c.subscribed || !c.hasTrack) return verdict('you', 'your browser stopped requesting their video', 'it auto-repairs within ~10s; if not, reload your page');
+  if (noPackets(c)) {
+    return theirs && theirs.layers.some(l => l.active && l.kbps > 0)
+      ? verdict('server', 'they are uploading, but not one video packet has reached you (the server is not forwarding it)', 'check how their camera is published (codec/layers) in their report')
+      : verdict('student-net', 'not one video packet from them has reached you', 'their upload may be blocked — ask them to reload');
+  }
   if (c.fps === 0 && c.kbps === 0) {
     return theirs && theirs.layers.some(l => l.active && l.kbps > 0)
       ? verdict('server', 'they are sending, but nothing reaches you', 'if many students show this, it is your download or the server')
@@ -386,7 +405,7 @@ export function formatDebugText({ at, roomState, local, remotes, reports, coachN
     L.push(`  ${name} [${id}]${rep ? ` ${rep.browser} room=${rep.room} quality=${rep.quality} age=${Math.round((at - rep.at) / 1000)}s` : ''}`);
     if (rep) {
       L.push(`    my video on their screen: ${fmtCam(rep.coach?.cam)}  tile: ${rep.coach?.tile ? `${rep.coach.tile.w}px${rep.coach.tile.black ? ' BLACK' : ''}` : 'not on screen'}`);
-      L.push(`    their camera sending: cam=${rep.local?.camEnabled} track=${rep.local?.readyState} layers: ${fmtLayers(rep.local?.layers || [])}`);
+      L.push(`    their camera sending: cam=${rep.local?.camEnabled} track=${rep.local?.readyState} codec: ${rep.local?.codec || '?'} layers: ${fmtLayers(rep.local?.layers || [])}`);
       L.push(`    tabHidden=${rep.hidden} audioBlocked=${rep.audioBlocked} seesPeople=${rep.remoteCount}`);
     }
     L.push(fmtIssues(evalStudentReport(rep, at)));
