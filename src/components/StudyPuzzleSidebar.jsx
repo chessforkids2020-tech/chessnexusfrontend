@@ -265,16 +265,6 @@ export default function StudyPuzzleSidebar() {
           <div className="tooltip" style={styles.tooltip}></div>
         </div>
         <div 
-          style={styles.sidebarIcon} 
-          onClick={() => handleNavigate('/chessboard')}
-          title={tr("Chessboard")}
-          onMouseEnter={(e) => handleMouseEnter(e, "Chessboard")}
-          onMouseLeave={handleMouseLeave}
-        >
-          ♞
-          <div className="tooltip" style={styles.tooltip}></div>
-        </div>
-        <div 
           onClick={() => handleNavigate('/chat')}
           title={"Chat"}
           onMouseEnter={(e) => handleMouseEnter(e, "Chat")}

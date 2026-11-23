@@ -52,7 +52,6 @@ import TermsPage from "./pages/marketing/TermsPage";
 import RefundPolicyPage from "./pages/marketing/RefundPolicyPage";
 import ChessPuzzlesPage from "./pages/marketing/ChessPuzzlesPage";
 import ChessTacticsRacePage from "./pages/marketing/ChessTacticsRacePage";
-import ChessboardPage from "./pages/marketing/ChessboardPage";
 import PlayChessOnlinePage from "./pages/marketing/PlayChessOnlinePage";
 import PlayWithFriendsPage from "./pages/marketing/PlayWithFriendsPage";
 import MastersGamesPage from "./pages/marketing/MastersGamesPage";
@@ -645,11 +644,8 @@ export default function App() {
             <ChessTacticsRacePage />
           </MarketingLayout>
         } />
-        <Route path="/chessboard" element={
-          <MarketingLayout>
-            <ChessboardPage />
-          </MarketingLayout>
-        } />
+        {/* The board launch page was removed — old links and search results land on the homepage. */}
+        <Route path="/chessboard" element={<Navigate to="/" replace />} />
         <Route path="/play-chess-online" element={
           <MarketingLayout>
             <PlayChessOnlinePage />
